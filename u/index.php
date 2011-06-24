@@ -1,0 +1,3 @@
+<?php
+//silent is gold
+?>
