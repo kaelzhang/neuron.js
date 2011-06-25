@@ -1,5 +1,6 @@
-*.DS_Store
+*DS_Store
 license.txt
 readme.html
 lib/combo
 skin/*/combo
+lib/test
