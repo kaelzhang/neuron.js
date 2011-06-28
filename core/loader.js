@@ -349,7 +349,7 @@ function define(name, dependencies, factory){
 	
 	if(arguments[last] === true){			// -> define(uri1, uri2, uri3, true);
 		foreach(arguments, function(arg, i, U){
-			i < last && _define(EMPTY, U, U, arg);
+			i < last && _define(EMPTY, U, U, absolutizeURI(arg));
 		});
 		return;
 	}
