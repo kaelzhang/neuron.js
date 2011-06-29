@@ -399,7 +399,7 @@ function define(name, dependencies, factory){
  		{undefined} anonymous module definition - the module has no explicit identifier
  * @param {number=} version version of the custom module. (optional)
  * @param {(Array.<string>)=} dependencies
- * @param {(function()|Object|string)=} factory 
+ * @param {(function(...[number])|Object|string)=} factory 
  * @param {boolean=} isImplicit whether is implicit definition. (optional)
  		if true, _define is not called by users, but the loader itself.
  */
@@ -607,7 +607,7 @@ function _define(name, version, dependencies, factory, isImplicit){
  * method to load a module
  * @public
  * @param {Array.<String>} dependencies
- * @param {Function=} callback (optional)
+ * @param {(function(...[number]))=} callback (optional)
  */
 function provide(dependencies, callback){
 	dependencies = K.makeArray(dependencies);
