@@ -16,7 +16,7 @@
 /**
  * @param {undefined=} undef
  */
-;(function(K, undef){
+;(function(K, NULL, undef){
 
 /**
  * stack, config or flag for modules
@@ -24,14 +24,14 @@
 var	_mods = {},
 	_script_map = {},
 	_config = {},
-	_last_pkg_or_anonymous_mod = null,
-	_pending_script = null,
+	_last_pkg_or_anonymous_mod = NULL,
+	_pending_script = NULL,
 	
 	_allow_undefined_mod = true,
 	
 	// fix onload event on script in ie6-9
 	use_interactive = K.UA.ie < 10,
-	interactive_script = null,
+	interactive_script = NULL,
 	
 	warning,
 	
@@ -124,7 +124,7 @@ var	_mods = {},
 			
 			_pending_script = uri;
 			HEAD.insertBefore(node, HEAD.firstChild);
-			_pending_script = null;
+			_pending_script = NULL;
 			
 			return node;
 		},
@@ -136,7 +136,7 @@ var	_mods = {},
 			callback && ['load', 'abort', 'error'].each(function(name){
 			
 				node['on' + name] = function(){
-					node = node.onload = node.onabort = node.onerror = null;
+					node = node.onload = node.onabort = node.onerror = NULL;
 					
 					setTimeout(function(){
 						callback.call(node, name);
@@ -163,7 +163,7 @@ var	_mods = {},
 			    	node.onreadystatechange = function(){
 			        	var rs = node.readyState;
 			        	if (rs === 'loaded' || rs === 'complete'){
-			            	node.onreadystatechange = null;
+			            	node.onreadystatechange = NULL;
 			            	
 			            	callback.call(this);
 			        	}
@@ -231,7 +231,7 @@ function loadSrc(uri, callback, type){
 	
 	return extension ?
 		( asset[ extension.toLowerCase() ] || asset.img )(uri, callback)
-		: null;
+		: NULL;
 };
 
 
@@ -636,7 +636,7 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 		: 
 			function(){
 				var real_arg = []
-				callback.apply(null, args);
+				callback.apply(NULL, args);
 			};
 	}
 		
@@ -754,7 +754,7 @@ function provideOne(mod, callback, env){
 				}
 				
 				K.mix(mod, last);
-				_last_pkg_or_anonymous_mod = null;
+				_last_pkg_or_anonymous_mod = NULL;
 				
 				// when after loading a library module, 
 				// and IE didn't fire onload event during the insertion of the script node
@@ -936,7 +936,7 @@ function loadScript(uri, callback, type){
 				
 				HEAD.removeChild(node);
 			}
-			node = null;
+			node = NULL;
 		};
 	
 	node = asset[ type ](uri, cb);
@@ -1066,7 +1066,7 @@ function getInteractiveScript() {
 		}
 	}
 	
-	return null;
+	return NULL;
 };
 
 
@@ -1251,84 +1251,75 @@ function foreach(array, fn){
 	}
 };
 
-
 /**
  * @public
  * ---------------------------------------------------------------------------------- */
 
-// load a static source
-K.load = loadSrc;
-
-if(K.define){
-	return;
-}
-
-// define a module
-K._define = define; 
-
-// attach a module
-K._provide = provide;
-
-// define a package
-// this method will be used by package builder, not developers, except testing cases
-K._pkg = definePackage;
-
-K._allMods = showAllModules;
-
-/**
- * @param {Object=} conf {
-	 	base: 				{string} root "path" of module library
-	 	allowUndefinedMod: 	{boolean}
-	 	enableCDN:			{boolean}
-	 	CDNHasher: 			{function}
-	 }
- */
-K._loaderConfig = function(conf){
-	var config = K.mix(_config, conf || {}),
-		page_root,
-		
-		// TODO:
-		// whether should have a default value
-		base = config.base || '/';
-	
-	// exec only once
-	K._loaderConfig = NOOP;
-	
-	// initialize
-	if(!config.enableCDN || !config.CDNHasher){
-		page_root = getHost(LOC.href);
-		
-		config.CDNHasher = function(){
-			return page_root;
-		};
-	}
-	
-	if(isAbsoluteURI(base)){
-		config.defaultDir = base;
-		config.base = getDir( K.getLocation(base).pathname );
-	}else{
-		config.defaultDir = config.CDNHasher() + base;
-		config.base = base;
-	}
-	
-	_allow_undefined_mod = config.allowUndefinedMod;
+function init(){
+	K['_loaderConfig']();
 };
 
 
-K.define = K.provide = function(){
-	K._loaderConfig();
-};
+// use extend method to add public methods, 
+// so that google closure will NOT minify Object properties
+K.mix(K, {
+	'load'			: loadSrc,			// load a static source
+	'_define'		: define,			// define a module
+	'_provide'		: provide,			// attach a module
+	'define'		: init,
+	'provide'		: init,
+	
+	// define a package
+	// this method will be used by package builder, not developers, except testing cases
+	'_pkg'			: definePackage,
+	'_allMods'		: showAllModules,
+	
+	/**
+	 * @param {Object=} conf {
+		 	base: 				{string} root "path" of module library
+		 	allowUndefinedMod: 	{boolean}
+		 	enableCDN:			{boolean}
+		 	CDNHasher: 			{function}
+		 }
+	 */
+	'_loaderConfig' : function(conf){
+		var config = K.mix(_config, conf || {}),
+			page_root,
+			
+			// TODO:
+			// whether should have a default value
+			base = config.base || '/';
+		
+		// exec only once
+		K._loaderConfig = NOOP;
+		
+		// initialize
+		if(!config.enableCDN || !config.CDNHasher){
+			page_root = getHost(LOC.href);
+			
+			config.CDNHasher = function(){
+				return page_root;
+			};
+		}
+		
+		if(isAbsoluteURI(base)){
+			config.defaultDir = base;
+			config.base = getDir( K.getLocation(base).pathname );
+		}else{
+			config.defaultDir = config.CDNHasher() + base;
+			config.base = base;
+		}
+		
+		_allow_undefined_mod = config.allowUndefinedMod;
+	}
+});
+
 
 // bind initialization method to public methods
 K._lazyInit('define',  '_define',  K);
 K._lazyInit('provide', '_provide', K);
 
-// temp method for testing
-K._get = function(name){
-	return _mods[name];
-};
-
-})(KM);
+})(KM, null);
 
 /**
  * change log:
