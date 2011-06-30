@@ -32,7 +32,7 @@ function memoizeMethod(fn){
 	var stack = {};
 	
 	return function(){
-		var arg = array_slice.call(arguments).join('~^_^~');
+		var arg = array_join.call(arguments, '~^_^~');
 	
 		return (arg in stack) ? stack[arg] : (stack[arg] = fn.apply(null, arguments));
 	}
@@ -67,7 +67,7 @@ function toQueryString(obj, splitter){
 
 
 
-var	array_slice = Array.prototype.slice,
+var	array_join = Array.prototype.join,
 
 	/**
 	 * a simple and faster typeOf method, and an adapter for mootools
