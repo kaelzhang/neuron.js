@@ -307,20 +307,26 @@ function bind_domready(){
 })(KM);
 
 /**
- * TODO:
+ TODO:
+ - add more user-agent datas. 
 
- * change log:
- * 2011-06-12  Kael:
- * - fix a bug about the regular expression of location pattern that more than one question mark should be allowed in search query
+ change log:
+ 2011-06-12  Kael:
+ - fix a bug about the regular expression of location pattern that more than one question mark should be allowed in search query
+ - add UA.chrome. 
  
- * 2011-04-26  Kael:
- * - 封装 mootools.Browser
- * - 移除 ua.chrome, ua.safari, 增加 ua.webkit
- * - 修改 ua[browser] 的值
- * 2011-04-12  Kael Zhang:
- * - 修正domready一个不触发的bug
- * - 增加获取location的方法，为了兼容IE6可能出现的bug（当设置了document.domain）
- * 2010-12-31  Kael Zhang:
- * - 迁移domready方法由mt.js到lang.js，修改部分实现。
- * - 迁移data和delay方法至此
+ 2011-04-26  Kael:
+ - adapt mootools.Browser
+ - remove ua.chrome, ua.safari, 增加 ua.webkit
+ 
+ 2011-04-12  Kael Zhang:
+ - fix a bug that domready could not be properly fired
+ - add KM.getLocation method, 
+ 	1. to fix the bug of ie6, which will cause an exception when fetching the value of window.loation if document.domain is already specified
+ 	2. which can split an specified uri into different parts
+ 	
+ 2010-12-31  Kael Zhang:
+ - migrate domready event out from mootools to here, and change some way 
+ - migrate .data and .delay methods from core/lang to here
+ 
  */
