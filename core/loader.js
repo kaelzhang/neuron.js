@@ -335,7 +335,7 @@ function loadSrc(uri, callback, type){
  * @public
  * @param {string} name module name
  * @param {Array=.<string>} dependencies array of module names
- * @param {string=|function=|Object=} factory
+ * @param {(string|function|Object)=} factory
  * 		{string} 	the uri of a (packaged) module(s)
  *  	{function} 	the factory of a module
  *  	{object} 	module exports
@@ -1316,6 +1316,9 @@ K._lazyInit('provide', '_provide', K);
 })(KM, null);
 
 /**
+
+ milestone 2.0 ---------------------------
+ 
  * change log:
  2011-06-15  Kael:
  - fix a bug, in ie6 on virtual machine, that the module could not load successfully, 
@@ -1324,6 +1327,10 @@ K._lazyInit('provide', '_provide', K);
  TODO:
  - A. new API: KM.define(uri1, uri1, uri3, uri4, true) to define several module uris
  - B. add loader constructor to create more instance of loader
+ 	- 1. association of several instances of loader
+ 	- 2. comm definition
+ - C. package detection: if the uri of a package is already defined, then its children modules will associated with it even before the source file of the package is fetched
+ - D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
  
  2011-06-14  Kael:
  - TODO[06-08].A
@@ -1385,13 +1392,13 @@ K._lazyInit('provide', '_provide', K);
  - √ optimize and cache dependent modules and module infos
  - test TODO[05-17].B
  
- milestone 2.0 ---------------------------
- 
  2011-05-20  Kael:
  - redesign the realization of modules, 
    distinguish the 2 different ways to define a module - on page or in a module file
  - redesign require method
  - add config for CDNHasher
+ 
+ milestone 1.0 ---------------------------
  
  2011-05-19  Kael:
  - # remove lazy quantifier from the regexp to match comments
@@ -1400,7 +1407,7 @@ K._lazyInit('provide', '_provide', K);
  2011-05-18  Kael:
  - remove comments before parsing dependencies from factory function
  
- milestone 1.0 ---------------------------
+ 
  
  2011-05-17  Kael:
  - memoize the result of analysisModuleName
