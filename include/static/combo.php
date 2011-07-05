@@ -39,7 +39,7 @@ function kill_data(){
 }
 
 $output = '';
-$start_timestamp = time();
+$start_timestamp = microtime(true);
 preg_match('/\.(?<extension>js|css)$/', $filename, $match);
 $combo_type = $match['extension'];
 
@@ -73,6 +73,9 @@ for($i = 0, $len = count($paths); $i < $len; $i ++){
 }
 
 ob_end_clean();
+
+// replace buildtime into 
+$output = preg_replace('/%buildtime%/', date('M jS Y H:i:s e'), $output);
 
 if($file_open_error){
 	fail($file_open_error);
@@ -144,9 +147,9 @@ if($combo_type == 'js'){
 	header('Content-type: text/css');
 }
 
-$time_cost = time() - $start_timestamp;
+$time_cost = ( microtime(true) - $start_timestamp ) * 1000;
 
-echo '/* runtime compression, cost ' . $time_cost . 'ms */';
+echo '/* runtime compression, cost ' . (int)$time_cost . 'ms */';
 
 if($file_compression_timeout_error){
 	echo '/* remote compression failed */';
