@@ -4,6 +4,8 @@
  
  * - domready
  * - data storage
+ * - getLocation
+ * - UA
  */
 
 ;(function(K, undef){
@@ -52,6 +54,8 @@ function getCurrentLocation(){
 
 /**
  * parse a link to location object
+ * @param {string} H
+ * @return {Object} custom location object
  */
 function parseLocation(H){
 	var E = nullOrEmpty, port;
@@ -77,22 +81,22 @@ function nullOrEmpty(str){
 	return str || EMPTY;
 };
 
-	// @const
-var WIN = K.__HOST,
-	DOC = WIN.document,
-	EMPTY = '',
-	_Browser = Browser,
-	ua = navigator.userAgent,
-	REGEX_WEBKIT = /webkit[ \/]([\w.]+)/i,
-	
 	// @type {Object}
-	stored_data = {},
+var stored_data = {},
 
     is_domready = false,
 	is_domready_binded = false,
     is_loaded = false,
 	
     readyList = [],
+
+	// @const
+	WIN = K.__HOST,
+	DOC = WIN.document,
+	EMPTY = '',
+	_Browser = Browser,
+	ua = navigator.userAgent,
+	REGEX_WEBKIT = /webkit[ \/]([\w.]+)/i,
     
     /* 
     REGEX_URL = /^
@@ -114,16 +118,18 @@ var WIN = K.__HOST,
 K.mix(K, {
 	
 	/**
-	 * @module  data
+	 * module  data
 	
-	 * @setter
-	 * @getter
+	 * setter
+	 * getter
 	
-	 * @usage:
+	 * usage:
 	 * 1. KM.data()                     returns the shadow copy of the current data stack
 	 * 2. KM.data('abc')                returns the data named 'abc'
 	 * 3. KM.data('abc', 123)           set the value of 'abc' as 123
 	 * 4. KM.data({abc: 123, edf:456})  batch setter
+	 *
+	 * @param {all=} value 
 	 */
 	data: function(name, value){
 		var type = K._type(name),
@@ -161,7 +167,7 @@ K.mix(K, {
 	/**
 	 * the entire entry for domready event
 	 * window.addEvent('domready', fn) has been carried here, and has no more support
-	 * @param fn {Function} the function to be executed when dom is ready
+	 * @param {function()} fn the function to be executed when dom is ready
 	 */
 	ready: function(fn){
 		// delay the initialization of binding domready, making page render faster
@@ -175,8 +181,8 @@ K.mix(K, {
 	},
 	
 	/**
-	 * @param href {String}
-	 * @returns
+	 * @param {string} href
+	 * @return {Object}
 	 *	- if href undefined, returns the current location
 	 *	- if href is a string, returns the parsed loaction
 	 */
@@ -192,13 +198,13 @@ K.mix(K, {
 /**
  * user agent
 
- @type KM.UA.<browser> {Number} major version of current browser, default to undefined
+ type {number} KM.UA.<browser> major version of current browser, default to undefined
  - KM.UA.ie
  - KM.UA.firefox
  - KM.UA.opera
  - KM.UA.webkit
  
- @type KM.UA.version {String} full string version, example: 534.30 // webkit, maybe chrome 12 dev
+ @type {string} KM.UA.version  full string version, example: 534.30 // webkit, maybe chrome 12 dev
 
  */
 ['ie', 'firefox', 'opera', 'chrome'].each(function(name){
@@ -317,12 +323,12 @@ function bind_domready(){
  
  2011-04-26  Kael:
  - adapt mootools.Browser
- - remove ua.chrome, ua.safari, 增加 ua.webkit
+ - remove ua.chrome, ua.safari, add ua.webkit
  
  2011-04-12  Kael Zhang:
  - fix a bug that domready could not be properly fired
  - add KM.getLocation method, 
- 	1. to fix the bug of ie6, which will cause an exception when fetching the value of window.loation if document.domain is already specified
+ 	1. to fix the bug of ie6, which will cause an exception when fetching the value of window.location if document.domain is already specified
  	2. which can split an specified uri into different parts
  	
  2010-12-31  Kael Zhang:

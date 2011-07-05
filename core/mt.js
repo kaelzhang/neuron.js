@@ -1,21 +1,17 @@
-/*!
- * 1. A modified and simplified mootools.js
- * 2. Kael.me framework core, based on mootools lib
- *	- Copyright 2011, Kael Zhang(i@kael.me)
- */
+/*! A modified and simplified mootools.js */
 
 /**
  * Mootools.core
  * modified version from the mootools builder
  * PAY ATTENSION!
  
- * @include
+ * include
  * Array, Number, String, Function, Object, Event, Browser
  * Class, Class.Extra
  * Slick.*
  * Element, Element.Event
  
- * @exclude
+ * exclude
  * - Domready
  * - Element.Dimensions
  * - Fx
