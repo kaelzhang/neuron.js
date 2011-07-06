@@ -118,6 +118,10 @@ K.mix(K, {
 	 * use KM.isXXX instead
 	 */
 	_type: type,
+	
+	isPlainObject: function(obj){
+		return obj && K.isObject(obj) && 'isPrototypeOf' in obj;
+	},
 	 
 	merge: Object.merge, // Object.merge
 	
