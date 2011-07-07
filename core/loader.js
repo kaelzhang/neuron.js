@@ -41,24 +41,8 @@ var	_mods = {},			// map: identifier -> module
  * @const
  */
 	REGEX_FILE_TYPE = /\.(\w+)$/i,
-
-	/**
-	 * http://....../name.min.v2.6.7.334.js
-		 /
-		 	\b(\w+)						-> name
-		 	(?:\.min)?					-> .min
-		 	(?:							
-		 		\.v						-> .v
-		 		((?:\d+\.)*\d+)			-> 2.6.7.334
-		 	)?
-		 	
-		 	(\.js)?						-> .js
-		 $/i
-	 */
-	// REGEX_MODULENAME_SPLITTER = /\b(\w+)(?:\.min)?(?:\.v(?:\d+\.)*\d+)?(\.js)?$/i,
 	REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
 	REGEX_IS_CSS = /\.css[$#?]/i,
-	// REGEX_MODULE_NAME = /\b(\w+)(?:\.min)?$/i,
 	REGEX_PATH_CLEANER_MIN = /\.min/i,
 	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i,
 	REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
@@ -533,8 +517,14 @@ function _define(name, version, dependencies, factory){
 	 	KM.define('validator|1.0', 'http://kael.me/lib/form/validator.js');
 	 	KM.define('validator|2.0', 'http://kael.me/lib/2.0/form/validator.js');
 	 	
-	 	KM.provide(['validator', 'validator|1.0', 'validator|2.0'], function(K, v, v1, v2){
+	 	KM.provide(['form/validator', 'validator', 'validator|1.0', 'validator|2.0'], function(K, fv, v, v1, v2){
 	 		v === v2; // true
+	 		v === v1; // false
+	 		
+	 		// true, this is important, 'form/validator'(never defined) will point to a lib module. 
+	 		// for a lib module, only the uri that it concerns
+	 		fv === v1;
+	 		
 	 		v1; // validator 1.0
 	 		v2;	// validator 2.0 
 	 	});
