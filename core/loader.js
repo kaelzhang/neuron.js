@@ -59,7 +59,8 @@ var	_mods = {},			// map: identifier -> module
 	REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
 	REGEX_IS_CSS = /\.css[$#?]/i,
 	// REGEX_MODULE_NAME = /\b(\w+)(?:\.min)?$/i,
-	REGEX_PATH_CLEANER = /(?:\.min)\.v(?:\d+\.)*\d+/i,
+	REGEX_PATH_CLEANER_MIN = /\.min/i,
+	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i,
 	REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
 	
 	NOOP = function(){}, // no operation
@@ -347,7 +348,7 @@ function define(name, dependencies, factory){
 	
 	if(arguments[last] === true){			// -> define(uri1, uri2, uri3, true);
 		foreach(arguments, function(arg, i, U){
-			i < last && _define(EMPTY, U, U, absolutizeURI(arg));
+			i < last && _define(EMPTY, EMPTY, U, absolutizeURI(arg));
 		});
 		return;
 	}
@@ -400,7 +401,9 @@ function define(name, dependencies, factory){
  * @param {(Array.<string>)=} dependencies
  * @param {(function(...[number])|Object|string)=} factory 
  * @param {boolean=} isImplicit whether is implicit definition. (optional)
- 		if true, _define is not called by users, but the loader itself.
+ 		case true:
+ 			- _define is not called by users, but the loader itself.
+ 			- loader will treat <name> 
  */
 function _define(name, version, dependencies, factory, isImplicit){
 	/**	
@@ -416,10 +419,13 @@ function _define(name, version, dependencies, factory, isImplicit){
 		 	exports:	{Object}	module exports
 		 }
 	 */
-	var mod = {}, 
+	var mod = {},
 		name_with_ver, ver, pkg, path_info, identifier,
 		existed, existed_ver,
-		active_script_uri;
+		active_script_uri,
+		
+		// @type {boolean} whether override the existed module
+		override = true;
 	
 	/**
 	 * get module object 
@@ -540,21 +546,17 @@ function _define(name, version, dependencies, factory, isImplicit){
 	if(!isImplicit){
 		name_with_ver && memoizeMod(name_with_ver, mod);
 		
-		if(name){
-			existed = getMod(name);
+		override = !name || (
+		
+			// module doesn't exists
+			!(existed = getMod(name)) ||
 			
-			if( // module doesn't exists
-				!existed ||
-				
-				// the existed module has no version
-				!(existed_ver = existed.version) ||
-				
-				// current module is newer than the existed one
-				version && versionCompare(version, existed_ver)
-			){
-				memoizeMod(name, mod);
-			}
-		}
+			// the existed module has no version
+			!(existed_ver = existed.version) ||
+			
+			// current module is newer than the existed one
+			version && versionCompare(version, existed_ver)
+		);
 	}
 	
 	if(pkg){
@@ -567,8 +569,9 @@ function _define(name, version, dependencies, factory, isImplicit){
 		}
 	}
 	
-	if(identifier){
-		memoizeMod(identifier, mod);
+	if(override){
+		identifier && memoizeMod(identifier, mod);
+		name && memoizeMod(name, mod);
 	}
 	
 	// internal use
@@ -902,9 +905,11 @@ function definePackage(){
  	}
  */
 function showAllModules(){
-	K.provide('help/all-mods', function(K, allmods){
-		allmods();
-	});
+	// K.provide('help/all-mods', function(K, allmods){
+	//	allmods();
+	// });
+	
+	console.log(Object.clone(_mods));
 };
 
 
@@ -1001,7 +1006,7 @@ function generateModulePath(uri){
 
 	return {
 		u: path_for_uri,
-		i: path_for_identifier.replace(REGEX_PATH_CLEANER, '')
+		i: path_for_identifier.replace(REGEX_PATH_CLEANER_MIN, '').replace(REGEX_PATH_CLEANER_VERSION, '')
 	};
 };
 
@@ -1144,7 +1149,7 @@ function versionCompare(v1, v2){
     
     }while(len -- && ret === 0);
     
-    return result >= 0;
+    return ret >= 0;
 };
 
 
