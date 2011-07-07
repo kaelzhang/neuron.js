@@ -693,7 +693,7 @@ function getOrDefine(name, referenceURI, noWarn, undef){
 			 in this case, we will define a non-anonymous module
 			 
 			 <2.>
-			 on the contrary, it called in lib modules, we only define the module uri. 
+			 on the contrary, called in lib modules, we only define the module uri. 
 			 >> see the detail about the type of <name>
 			 */
 			mod = _define(!!referenceURI ? name : '', undef, undef, uri);
@@ -1328,10 +1328,15 @@ K._lazyInit('provide', '_provide', K);
 })(KM, null);
 
 /**
-
+ * change log:
+ 
  milestone 2.0 ---------------------------
  
- * change log:
+ 2011-07-07  Kael:
+ - fix a bug on regular expressions which could not properly remove the decorators(version and min) from uris
+ - fix a bug when defining a module with different versions
+ - change the way to determine the implicity of a module which will only relevant to the <name> param; remove the isImplicit flag from the '_define' method
+ 
  2011-06-15  Kael:
  - fix a bug, in ie6 on virtual machine, that the module could not load successfully, 
  	if onload event fired during insertion of the script node(interactive script fetched) 
