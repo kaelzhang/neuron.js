@@ -1,6 +1,14 @@
-*DS_Store
+.DS_Store
+.svn/
+
+*.db
+*.bak
+*.patch
+*.diff
+
 license.txt
 readme.html
+
 lib/combo
 skin/*/combo
 lib/test
