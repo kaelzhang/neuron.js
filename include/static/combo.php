@@ -76,6 +76,8 @@ ob_end_clean();
 
 // replace buildtime into 
 $output = preg_replace('/%buildtime%/', date('M jS Y H:i:s e'), $output);
+$dev_output = $output;
+
 
 if($file_open_error){
 	fail($file_open_error);
@@ -137,6 +139,7 @@ create_dir($root_dir . 'combo/--' . $files . '--/');
 // open file, truncate it to zero length, and then write it;
 create_file($root_dir . 'combo/--' . $files . '--/' . $filename, 'w+', $output);
 create_file($root_dir . 'combo/--' . $files . '--/latest.' . $combo_type, 'w+', $output);
+create_file($root_dir . 'combo/--' . $files . '--/latest-dev.' . $combo_type, 'w+', $dev_output);
 
 ob_end_clean();
 
