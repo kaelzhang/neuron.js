@@ -291,6 +291,7 @@ return {
 				break;
 			default:
 				size = element.getSize();
+		}
 		
 		return {
 			width: size.x,
