@@ -449,9 +449,14 @@ function _define(name, version, dependencies, factory, uri){
 			// > In IE, if the script is not in the cache, when define() is called you 
 			// > can iterate through the script tags and the currently executing one will 
 			// > have a script.readyState == "interactive" 
-			active_script_uri = getInteractiveScript();
+			active_script_uri = getInteractiveScript()
+			
+				// Kael:
+				// if no interactive script, fallback to _pending_script
+				// if the script is in the cache, there is actually no interactive scripts when it's executing
+				|| {};
 				
-			active_script_uri = active_script_uri.src	
+			active_script_uri = active_script_uri.src
 				
 				// > In IE, if the script is in the cache, it actually executes *during* 
 				// > the DOM insertion of the script tag, so you can keep track of which 
@@ -935,6 +940,8 @@ function showAllModules(){
 function loadScript(uri, callback, type){
 	var node,
 		cb = type === 'css' ? callback : function(){
+		
+			// execute the callback before tidy the script node
 			callback.call(node);
 	
 			if(!isDebugMode()){
