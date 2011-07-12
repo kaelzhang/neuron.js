@@ -1,5 +1,7 @@
 /*! Neuron core:loader * All rights reserved * author i@kael.me */
 
+;
+
 /**
  * version	2.1.4
  
