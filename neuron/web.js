@@ -250,8 +250,10 @@ WIN.addEvent('load', function(){
  * ----------------------------------------------------------------------------------------------------------- */
  
 // in mootools 1.3.2, on ie < 8, document.body and html must be 'dollar'ed before the using of most of the methods, esp in Element.dimension
-$(document.body);
-$(document.documentElement);
+readyList.push(function(){
+	$(document.body);
+	$(document.documentElement);
+});
 
 
 
@@ -295,16 +297,16 @@ function bind_domready(){
 	// browser event has already occurred.
 	if(doc.readyState === COMPLETE) return domready();
 	
-	function ready(){
-		doc.removeListener(eventType, ready).removeListener('load', ready)
+	function _ready(){
+		doc.removeListener(eventType, _ready).removeListener('load', _ready);
 		domready();
 	}
 	
-	doc.addListener(eventType, ready);
+	doc.addListener(eventType, _ready);
 	
 	// A fallback to load
 	// and make sure that domready event fires before load event registered by user
-	doc.addListener('load', ready);
+	doc.addListener('load', _ready);
 	
 	if(doScroll){
 		var not_framed = false;
