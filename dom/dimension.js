@@ -2,13 +2,26 @@
  changed methods from mootools
  - styleNumber: never return rounded value
  - getOffsets: never return rounded value
+ 
+ license: MIT-style license.
+
+ credits:
+  - Element positioning based on the [qooxdoo](http://qooxdoo.org/) code and smart browser fixes, [LGPL License](http://www.gnu.org/licenses/lgpl.html).
+  - Viewport dimensions based on [YUI](http://developer.yahoo.com/yui/) code, [BSD License](http://developer.yahoo.com/yui/license.html).
  */
 
 KM.define(function(K){
 
 // ---------- mootools.dimensions start ----------
 
-var brokenOffsetParent = function(){
+var DOC = document,
+	HTML = DOC.documentElement,
+	WIN = window,
+	COMPACT_ELEMENT = !DOC.compatMode || DOC.compatMode == 'CSS1Compat' ? HTML : DOC.body,
+	
+	FIXED = 'fixed', STATIC = 'static',
+
+	brokenOffsetParent = function(){
 		var element = document.createElement('div'),
 			child = document.createElement('div'),
 			ret;
@@ -21,6 +34,7 @@ var brokenOffsetParent = function(){
 	}(),
 	
 	styleString = Element.getComputedStyle;
+
 
 function styleNumber(element, style){
 	return parseFloat( styleString(element, style) ) || 0;
@@ -42,9 +56,8 @@ function isBody(element){
 	return (/^(?:body|html)$/i).test(element.tagName);
 };
 
-function getCompatElement(element){
-	var doc = element.getDocument();
-	return (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
+function isDocument(element){
+	return element === WIN || element === DOC;
 };
 
 function isOffset(el){
@@ -55,30 +68,44 @@ function isOffsetStatic(el){
 	return isOffset(el) || (/^(?:table|td|th)$/i).test(el.tagName);
 };
 
+/**
+ *
+ * ---------------------------------------------------------- */
+ 
+function getSize(element){
+	switch(true){
+		case isDocument(element):
+			element = COMPACT_ELEMENT;
+			return {
+				width	: doc.clientWidth, 
+				height	: doc.clientHeight
+			};
+			break;
+			
+		case isBody(element):
+		default:
+			element = WIN;
+			return {
+				width	: element.offsetWidth, 
+				height	: element.offsetHeight
+			}
+	}
+};
+
+
+function getScrollSize(element){
+	
+};
+
 Element.implement({
 
-	scrollTo: function(x, y){
-		if (isBody(this)){
-			this.getWindow().scrollTo(x, y);
-		} else {
-			this.scrollLeft = x;
-			this.scrollTop = y;
-		}
-		return this;
-	},
-
-	getSize: function(){
-		if (isBody(this)) return this.getWindow().getSize();
-		return {x: this.offsetWidth, y: this.offsetHeight};
-	},
-
 	getScrollSize: function(){
-		if (isBody(this)) return this.getWindow().getScrollSize();
+		if (isBody(this)) return WIN.getScrollSize();
 		return {x: this.scrollWidth, y: this.scrollHeight};
 	},
 
 	getScroll: function(){
-		if (isBody(this)) return this.getWindow().getScroll();
+		if (isBody(this)) return WIN.getScroll();
 		return {x: this.scrollLeft, y: this.scrollTop};
 	},
 
@@ -92,29 +119,12 @@ Element.implement({
 		return position;
 	},
 
-	getOffsetParent: brokenOffsetParent ? function(){
-		var element = this;
-		if (isBody(element) || styleString(element, 'position') == 'fixed') return null;
-
-		var isOffsetCheck = (styleString(element, 'position') == 'static') ? isOffsetStatic : isOffset;
-		while ((element = element.parentNode)){
-			if (isOffsetCheck(element)) return element;
-		}
-		return null;
-	} : function(){
-		var element = this;
-		if (isBody(element) || styleString(element, 'position') == 'fixed') return null;
-
-		try {
-			return element.offsetParent;
-		} catch(e) {}
-		return null;
-	},
+	getOffsetParent: ,
 
 	getOffsets: function(){
 		if (this.getBoundingClientRect && !Browser.Platform.ios){
 			var bound = this.getBoundingClientRect(),
-				html = document.id(this.getDocument().documentElement),
+				html = document.id(DOC.documentElement),
 				htmlScroll = html.getScroll(),
 				elemScrolls = this.getScrolls(),
 				isFixed = (styleString(this, 'position') == 'fixed');
@@ -172,30 +182,12 @@ Element.implement({
 		return position;
 	},
 
-	getCoordinates: function(element){
-		if (isBody(this)) return this.getWindow().getCoordinates();
-		var position = this.getPosition(element),
-			size = this.getSize();
-		var obj = {
-			left: position.x,
-			top: position.y,
-			width: size.x,
-			height: size.y
-		};
-		obj.right = obj.left + obj.width;
-		obj.bottom = obj.top + obj.height;
-		return obj;
-	},
 
 	computePosition: function(obj){
 		return {
 			left: obj.x - styleNumber(this, 'margin-left'),
 			top: obj.y - styleNumber(this, 'margin-top')
 		};
-	},
-
-	setPosition: function(obj){
-		return this.setStyles(this.computePosition(obj));
 	}
 
 });
@@ -203,77 +195,32 @@ Element.implement({
 
 [Document, Window].invoke('implement', {
 
-	getSize: function(){
-		var doc = getCompatElement(this);
-		return {x: doc.clientWidth, y: doc.clientHeight};
-	},
-
 	getScroll: function(){
-		var win = this.getWindow(), doc = getCompatElement(this);
+		var win = WIN, doc = getCompatElement(this);
 		return {x: win.pageXOffset || doc.scrollLeft, y: win.pageYOffset || doc.scrollTop};
 	},
 
 	getScrollSize: function(){
 		var doc = getCompatElement(this),
 			min = this.getSize(),
-			body = this.getDocument().body;
+			body = DOC.body;
 
 		return {x: Math.max(doc.scrollWidth, body.scrollWidth, min.x), y: Math.max(doc.scrollHeight, body.scrollHeight, min.y)};
 	},
 
 	getPosition: function(){
 		return {x: 0, y: 0};
-	},
-
-	getCoordinates: function(){
-		var size = this.getSize();
-		return {top: 0, left: 0, bottom: size.y, right: size.x, height: size.y, width: size.x};
 	}
 
 });
 
-[Window, Document, Element].invoke('implement', {
-
-	getHeight: function(){
-		return this.getSize().y;
-	},
-
-	getWidth: function(){
-		return this.getSize().x;
-	},
-
-	getScrollTop: function(){
-		return this.getScroll().y;
-	},
-
-	getScrollLeft: function(){
-		return this.getScroll().x;
-	},
-
-	getScrollHeight: function(){
-		return this.getScrollSize().y;
-	},
-
-	getScrollWidth: function(){
-		return this.getScrollSize().x;
-	},
-
-	getTop: function(){
-		return this.getPosition().y;
-	},
-
-	getLeft: function(){
-		return this.getPosition().x;
-	}
-
-});
 
 // ---------- / mootools.dimensions end ----------
 
 
 return {
 	// no setter
-	offset: function(element, relative){
+	offset: function(element, relative){ console.log($(element))
 		var offset = element.getPosition(relative);
 		
 		return {
@@ -283,20 +230,7 @@ return {
 	},
 	 
 	size: function(element, type){
-		var size;
-		
-		switch(type){
-			case 'scroll':
-				size = element.getScrollSize();
-				break;
-			default:
-				size = element.getSize();
-		}
-		
-		return {
-			width: size.x,
-			height: size.y
-		}
+		return type === scroll ? getScrollSize(element) : getSize(element);
 	},
 	
 	scrollTop: function(element){
@@ -304,12 +238,40 @@ return {
 	},
 	
 	scrollLeft: function(element){
-		return element.getScrollLeft();
+		return getScrollLeft(element);
 	},
 	
-	offsetParent: function(element){
-		return element.getOffsetParent();
-	}	
+	offsetParent: brokenOffsetParent ? 
+		function(element){
+			var position = styleString(element, 'position'),
+				parent = HTML,
+				offsetCheck;
+		
+			if (!isBody(element) && position !== FIXED){
+				offsetCheck = position === STATIC ? isOffsetStatic : isOffset;
+				
+				while ((element = element.parentNode)){
+					if (isOffsetCheck(element)){
+						parent = element;
+						break;
+					}
+				}
+			}
+			
+			return HTML;
+		} 
+	:	
+		function(element){
+			var parent = HTML;
+			
+			if (!isBody(element) && styleString(element, 'position') === FIXED){
+				try {
+					parent = element.offsetParent;
+				} catch(e) {}
+			}
+			
+			return parent;
+		}	
 };
 
 });
