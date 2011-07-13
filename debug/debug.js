@@ -1,7 +1,1 @@
-KM.define(function(){
-
-
-
-
-
-});
+// JavaScript Document

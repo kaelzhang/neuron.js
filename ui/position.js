@@ -1,9 +1,9 @@
-KM.define( ['dom/dimension'], function(K, require){
+KM.define(['dom/dimension'], function(K, require){
 
 
 var dimension = require('dom/dimension');
 
-TOP = 'top', LEFT = 'left', NOOP = function(){},
+TOP = 'top', LEFT = 'left',
 
 /**
  * 
@@ -108,11 +108,6 @@ function calculatePositions(node, target, node_pos, target_pos){
 };
 
 
-/**
- * @param {Element} node
- * @param {Object} offsets
- * @param {Object} adjust
- */
 function setPosition(node, offsets, adjust){
 	adjust = adjust || {};
 	var di = dimension,
@@ -125,15 +120,7 @@ function setPosition(node, offsets, adjust){
 	});
 };
 
-/*
-function isDocument(node){
-	var tagName = node.tagName || '';
-	
-	return node === document || /^(?:html|body)$/.test(tagName.toLowerCase());
-};
-*/
 
-// @public
 function Position(node){
 	this._node = node;
 };
@@ -152,77 +139,20 @@ K.mix(Position, {
 	'CC': 'cc'
 });
 
+
 Position.prototype = {
-	
-	/**
-	 * @param {Element} target target element to be aligned to
-	 * @param {Array.<string>} alignPos [element_alignPos, target_alignPos]
-	 * @param {Object=} adjust {
-	 		top: {number} adjust of y coordinate
-	 		left: {number} adjust of x coordinate
-	 	}
-	 * @param {boolean=} isFix TODO
-	 
-	 * usage:
-	 <code>
-	 	// esp for old popuppanel-alike Overlay instances
-	 	// the top-left corner of the element will be aligned to the bottom-left corner of container
-	 	instance.align(container, ['BL', 'TL'], {top: -1, left: 10});
-	 
-	 </code>
-	 */
-	align: function(target, pos, adjust, isFix){
-		var self = this,
-			node = self._node;
+	// .align(target, ['bl', 'tl'])
+	align: function(target, alignPos, adjust, isFix){
+		var node = this._node;
 		
-		self._target = target;
-		self._pos = pos;
-		
-		if(K.isBoolean(adjust)){	// align(target, ['cc', 'cc'], true)
-			isFix = adjust;
-			adjust = {};
-		}
-		
-		self._adjust = K.isPlainObject(adjust) ? adjust : {};
-		self._isFix = !!isFix;
-		
-		self._align();
-		self._bindFix();
+		setPosition(node, calculatePositions(node, target, alignPos[0], alignPos[1]), adjust);
 	},
 	
-	_bindFix: function(){
-		var self = this;
-	
-		if(self._isFix // && isDocument(self._target)
-		){
-			if(!self._alignFix){
-				window.addEvent('resize', function(){
-					self._alignFix();
-				});
-			}
-		
-			self._alignFix = self._align;
-					
-		}else if(self._alignFix){
-			self._alignFix = NOOP;
-		}
+	fix: function(x, y){
 	},
 	
-	_align: function(){
-		var self = this;
-		
-		setPosition(self._node, calculatePositions(self._node, self._target, self._pos[0], self._pos[1]), self._adjust, self._fixed);
-	},
-	
-	// TODO
-	fix: function(x, y, isFix){
-		
-	},
-	
-	// TODO
-	to: function(x, y, z, isFix){
-		/*
-var node = this._node;
+	to: function(x, y, z){
+		var node = this._node;
 	
 		setPosition(node, {
 			left: x,
@@ -232,7 +162,6 @@ var node = this._node;
 		if(z){
 			node.setStyle('zIndex', z);
 		}
-*/
 	}
 };
 

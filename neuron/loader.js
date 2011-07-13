@@ -711,7 +711,7 @@ function getOrDefine(name, referenceURI, noWarn, undef){
 			 on the contrary, called in lib modules, we only define the module uri. 
 			 >> see the detail about the type of <name>
 			 */
-			mod = _define(!referenceURI ? name : '', undef, undef, uri);
+			mod = _define(!!referenceURI ? name : '', undef, undef, uri);
 		}
 	}
 	
