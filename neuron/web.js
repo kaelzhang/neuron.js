@@ -172,7 +172,7 @@ K.mix(K, {
 	 */
 	ready: function(fn){
 		// delay the initialization of binding domready, making page render faster
-		is_domready_binded || bind_domready();
+		!is_domready_binded || bind_domready();
 		
 		if(is_domready){
 			fn.call(WIN, this);
@@ -216,8 +216,8 @@ K.mix(K, {
  */
 ['ie', 'firefox', 'opera', 'chrome'].each(function(name){
 	var B = _Browser;
-
-	UA[name]  = B[name] ? B.version : undef;
+	
+	B[name] && (UA[name] = B.version);
 });
 
 K.mix(UA, _Browser.Platform, true, ['mac', 'win', 'linux', 'ios', 'android', 'webos', 'other']);
