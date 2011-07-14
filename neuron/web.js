@@ -251,8 +251,8 @@ WIN.addEvent('load', function(){
  
 // in mootools 1.3.2, on ie < 8, document.body and html must be 'dollar'ed before the using of most of the methods, esp in Element.dimension
 readyList.push(function(){
-	$(document.body);
-	$(document.documentElement);
+	// $(document.body);
+	// $(document.documentElement);
 });
 
 
