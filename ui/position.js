@@ -3,7 +3,7 @@ KM.define(['dom/dimension'], function(K, require){
 
 var dimension = require('dom/dimension');
 
-TOP = 'top', LEFT = 'left', NOOP = function(){},
+TOP = 'top', LEFT = 'left', NOOP = function(){}, VIEWPORT = 'viewport', SCROLL = 'scroll',
 
 // ie 6 and former fail to deal with position:fixed
 broken_fixed = K.UA.ie < 7,
@@ -108,21 +108,21 @@ function parsePositions(pos){
 /**
  * calculate the real position
  */
-function calculatePositions(node, target, node_pos, target_pos, type){
+function calculatePositions(node, target, node_pos, target_pos, type, pos_fix){
 	var di = dimension,
 		base_offset 	= di.offset(target),
 		node_extra 		= parsePositions(node_pos),
 		target_extra 	= parsePositions(target_pos),
-		need_fake_fixed	= broken_fixed && type === 'viewport';
+		need_fake_fixed	= broken_fixed && pos_fix;
 
 	return {
 		top	: base_offset.top 
-			+ ( need_fake_fixed ? di.scrollTop(target) : 0 ) 
-			+ target_extra.top(target, type, TOP) 
+			+ ( need_fake_fixed ? di.scroll(target).top : 0 ) 
+			+ target_extra.top(target, type, TOP)
 			- node_extra.top(node, type, TOP),
 			
 		left: base_offset.left 
-			+ ( need_fake_fixed ? di.scrollLeft(target) : 0 ) 
+			+ ( need_fake_fixed ? di.scroll(target).left : 0 ) 
 			+ target_extra.left(target, type, LEFT) 
 			- node_extra.left(node, type, LEFT)
 	};
@@ -147,19 +147,17 @@ function setPosition(node, offsets, adjust){
 };
 
 
-function toggleStyleFix(node, broken_fixed, isFix){
-	var is_fixed = node.getStyle('position') === 'fixed';
-	
-	node.setStyle('position', broken_fixed || !isFix ? 'absolute' : 'fixed');	
+function toggleStyleFix(node, fixed){
+	node.setStyle('position', fixed ? 'fixed' : 'absolute');	
 };
 
-/*
-function isDocument(node){
+
+function isContainer(node){
 	var tagName = node.tagName || '';
 	
-	return node === document || /^(?:html|body)$/.test(tagName.toLowerCase());
+	return node === window || node === document || /^(?:html|body)$/.test(tagName.toLowerCase());
 };
-*/
+
 
 // @public
 function Position(node, cfg){
@@ -170,7 +168,7 @@ function Position(node, cfg){
 	self._node = node || $(node);
 	
 	// 'scroll' || 'viewport'
-	self._type = cfg.posType;
+	self._type = cfg.posType === VIEWPORT ? VIEWPORT : SCROLL;
 	
 	K.bind('_align', self);
 };
@@ -254,20 +252,25 @@ Position.prototype = {
 	
 	_bindFix: function(){
 		var self = this,
-			event = self._isFix ? 'addEvent' : 'removeEvent';
-		
+			need_resize_fix = self._isFix,
+			need_position_fix = self._posFix = self._isFix && isContainer(self._target);
+			
+		function action(add){
+			return add ? 'addEvent' : 'removeEvent';
+		};
+			
 		// fix the position when window resizing
-		window[event]('resize', self._align);
+		window[action(need_resize_fix)]('resize', self._align);
 		
-		if(self._type === 'viewport'){
+		if(self._type === VIEWPORT){
 			if(broken_fixed){
 			
 				// if browser fail to render the elements of position:fixed
 				// fall back to scroll
-				window[event]('scroll', self._align);
+				window[action(need_position_fix)]('scroll', self._align);
 			}
 			
-			toggleStyleFix(self._node, broken_fixed, self._isFix);
+			toggleStyleFix(self._node, !broken_fixed && need_position_fix );
 		}
 	},
 	
@@ -281,10 +284,10 @@ Position.prototype = {
 				self._target, 
 				self._pos[0], 
 				self._pos[1], 
-				self._type
+				self._type,
+				self._posFix
 			), 
-			self._adjust, 
-			self._fixed
+			self._adjust
 		);
 	}
 	
