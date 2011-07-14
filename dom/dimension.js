@@ -21,7 +21,6 @@ var brokenOffsetParent = function(){
 	}(),
 	
 	styleString = Element.getComputedStyle;
-	
 
 function styleNumber(element, style){
 	return parseFloat( styleString(element, style) ) || 0;
@@ -55,7 +54,6 @@ function isOffset(el){
 function isOffsetStatic(el){
 	return isOffset(el) || (/^(?:table|td|th)$/i).test(el.tagName);
 };
-
 
 Element.implement({
 
@@ -271,9 +269,6 @@ Element.implement({
 });
 
 // ---------- / mootools.dimensions end ----------
-
-$(document.body);
-$(document.documentElement);
 
 
 return {
