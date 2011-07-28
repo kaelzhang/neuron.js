@@ -1,6 +1,6 @@
 /*! Neuron core:loader * All rights reserved * author i@kael.me */
 
-;
+; // fix layout of UglifyJS
 
 /**
  * version	2.1.4
@@ -28,7 +28,7 @@
 var	_mods = {},			// map: identifier -> module
 	_script_map = {},	// map: url -> status
 	_config = {},
-	_last_pkg_or_anonymous_mod = NULL,
+	_last_anonymous_mod = NULL,
 	_pending_script = NULL,
 	_define_buffer_on = false,
 	
@@ -46,9 +46,8 @@ var	_mods = {},			// map: identifier -> module
 	REGEX_FILE_TYPE = /\.(\w+)$/i,
 	REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
 	REGEX_IS_CSS = /\.css(?:$|#|\?)/i,
-	REGEX_PATH_CLEANER_MIN = /\.min/i,
-	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i,
 	REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
+	REGEX_DIR_MATCHER = /.*(?=\/.*$)/,
 	
 	NOOP = function(){}, // no operation
 	
@@ -83,8 +82,6 @@ var	_mods = {},			// map: identifier -> module
 		// the module has been initialized, i.e. the module's factory function has been executed
 		// ATTACHED  	: 6
 	},
-	
-	STR_LOADER_CONFIG = '_loaderConfig',
 	
 /**
  * static resource loader
@@ -417,7 +414,7 @@ function _define(name, version, dependencies, factory, uri){
 		 }
 	 */
 	var mod = {},
-		name_with_ver, ver, pkg, path_info, identifier,
+		name_with_ver, ver, path_info, identifier,
 		existed, existed_ver,
 		active_script_uri,
 		
@@ -429,12 +426,14 @@ function _define(name, version, dependencies, factory, uri){
 	 */
 	if(name){
 		// mod.name = name;
-		pkg = _last_pkg_or_anonymous_mod;
+		// pkg = _last_anonymous_mod;
 		
 		// modules defined in packages will be treated as explicit-defined modules
 		// if(pkg){
 		//	isImplicit = true;
 		// }
+		
+		name.indexOf('/') !== 0 && warning('def a path may cause further problems');
 		
 		if(version){
 			name_with_ver = name + '|' + version;
@@ -469,7 +468,7 @@ function _define(name, version, dependencies, factory, uri){
 	    
 	    if(!active_script_uri){
 	    	// if fetching interactive script failed, so fall back to normal ways
-	    	_last_pkg_or_anonymous_mod = mod;
+	    	_last_anonymous_mod = mod;
 	    }else{
 	    	mod = getMod( generateModuleURI_Identifier(active_script_uri).i );
 	    }
@@ -479,7 +478,7 @@ function _define(name, version, dependencies, factory, uri){
 		
 		// convention:
 		// in this case, this module must not be defined in a module file
-		// # and the uri must be absolute uri
+		// # and the uri must be an absolute uri
 		case 'string':
 			mod.status = STATUS.DEFINING;
 			path_info = generateModuleURI_Identifier(factory);
@@ -522,7 +521,7 @@ function _define(name, version, dependencies, factory, uri){
 			break;
 			
 		default:
-			new LoaderError('Unexpected factory type for '
+			loaderError('Unexpected factory type for '
 				+ ( name ? 'module "' + name + '"' : 'anonymous module' ) 
 				+ ': ' + K._type(factory)
 			);
@@ -563,16 +562,6 @@ function _define(name, version, dependencies, factory, uri){
 			
 			// current module is newer than the existed one
 			version && versionCompare(version, existed_ver);
-	}
-	
-	if(pkg){
-		path_info = generateModuleURI_Identifier( moduleNameToURI(name) );
-		identifier = path_info.i;
-		
-		// modules defined in packages are treated as library module
-		if(!mod.exports){
-			uri = path_info.u;
-		}
 	}
 	
 	if(uri){
@@ -687,7 +676,7 @@ function _provide(dependencies, callback, env, noCallbackArgs){
  * @param {undefined=} undef
  */
 function getOrDefine(name, referenceURI, noWarn, undef){
-	var mod, uri, warn;
+	var mod, uri, warn, identifier;
 		
 	if(!referenceURI){
 		// check for explicitly defined module
@@ -759,7 +748,7 @@ function provideOne(mod, callback, env){
 		
 	}else if(status < STATUS.DEFINED){
 		loadModuleSrc(mod, function(){
-			var last = _last_pkg_or_anonymous_mod;
+			var last = _last_anonymous_mod;
 			
 			// CSS dependency
 			if(mod.isCSS){
@@ -770,11 +759,11 @@ function provideOne(mod, callback, env){
 			}else if(last && mod.status === STATUS.LOADING){
 				
 				if(last.status < STATUS.DEFINED){
-					new LoaderError('mod with no factory detected in a module file');
+					loaderError('mod with no factory detected in a module file');
 				}
 				
 				K.mix(mod, last);
-				_last_pkg_or_anonymous_mod = NULL;
+				_last_anonymous_mod = NULL;
 				
 				// when after loading a library module, 
 				// and IE didn't fire onload event during the insertion of the script node
@@ -796,7 +785,7 @@ function createRequire(envMod){
 		var mod = getOrDefine(id, envMod.uri, true);
 		
 		// if(!mod || mod.status < STATUS.READY){
-		// 	new LoaderError('Module "' + id + '" is not defined, or has not attached');
+		// 	loaderError('Module "' + id + '" is not defined, or has not attached');
 		// }
 		
 		return mod.exports || generateExports(mod);
@@ -849,85 +838,13 @@ function tidyModuleData(mod){
 
 
 /**
- Package Define >>>>>>>>
- 
- dir structure:
- | - form /
- |    | - validator
- |    | - placeholder
- |    | - html5-detect
- |
- | - remote /
- |    | - ajax
- |    | - jsonp
- |
- | - mix.js
-      
- if we define a package-module
- KM.define('mixed', 'http://....../mixed.js');
- 
- we could define the package structure in the TOP of form.js:
- 
- KM._pkg('form/validator', 'form/placeholder', 'form/html5-detect', 'remote/ajax');
- ---- this is how to deal with the ever changing of module path
- 
- KM.define('form/validator', ...);
- KM.define('form/placeholder', ...);
- KM.define('form/html5-detect', ...);
- KM.define('form/ajax', ...);
- 
- then, if we require the package 'mixed', code could be like below:
- 
- <1.>
- KM.define('review-form', function(K, require, exports){
- 	var mixed = require('mixed');
- 	
- 	// mixed with have 4 methods:
- 	// mixed.validator
- 	// mixed.placeholder
- 	// mixed['html-detect']
- 	// mixed.ajax
- });
- 
- <2.>
- KM.provide('mixed', function(K, mixed){
- 	// new mixed.validator(...);
- 	// new mixed.placeholder(...);
- });
- 
- note:
- when packaged, the uri source of a module is changed, 
- so we define its former dir by the declaration of KM.pkg 
- 
- */
- 
-/**
- * define a package
- * @public
- */
-function definePackage(){
-	var members = arguments;
-
-	if(members.length){
-		var U;
-		
-		_last_pkg_or_anonymous_mod = _define(U, U, members, function(K, require, exports){
-			foreach(members, function(member){
-				exports[member.match(/\b\w+$/i)[0]] = require(member);
-			});
-		});
-	}
-};
-
-
-/**
  Module View: >>>>>>>>>>>>>>>>>>>>>>>>
  display all modules that declared, with their informations, including attach status
  => {
  		moduleA: {},
  		moduleB: {}
  	}
- */
+ 
 function showAllModules(){
 	// K.provide('help/all-mods', function(K, allmods){
 	//	allmods();
@@ -935,6 +852,7 @@ function showAllModules(){
 	
 	console.log(Object.clone(_mods));
 };
+*/
 
 
 /**
@@ -1022,9 +940,11 @@ function moduleNameToURI(name, referenceURI){
  */
 function generateModuleURI_Identifier(uri){
 	var path_for_uri = uri,
-		path_for_identifier = uri;
+		path_for_identifier = uri,
+		EMPTY = '',
+		cfg = _config;
 
-	if(_config.enableCDN){
+	if(cfg.enableCDN){
 		var loc = K.getLocation(uri),
 			path = loc.pathname + loc.search;
 			
@@ -1037,11 +957,20 @@ function generateModuleURI_Identifier(uri){
 		u: path_for_uri,
 		
 		// identifier
-		i: path_for_identifier.replace(REGEX_PATH_CLEANER_MIN, '').replace(REGEX_PATH_CLEANER_VERSION, '')
+		i: cfg.santitizer(path_for_identifier)
 	};
 };
 
 generateModuleURI_Identifier = K._memoize(generateModuleURI_Identifier);
+
+
+function getParentModuleIndentifier(identifier){
+	var m = identifier.match(REGEX_DIR_MATCHER);
+	
+	return m ? m[0] + '.js' : false;
+};
+
+// K.test = getParentModuleIndentifier; // debug
 
 
 /**
@@ -1102,7 +1031,7 @@ function isDebugMode(){
  * custom error type
  * @constructor
  */
-function LoaderError(message){
+function loaderError(message){
 	throw {
 		message:	message,
 		toString:	function(){
@@ -1230,7 +1159,7 @@ function realpath(path) {
 	foreach(old, function(part, i){
 		if (part === '..') {
 			if (ret.length === 0) {
-			  	new LoaderError('Invalid module path: ' + path);
+			  	loaderError('Invalid module path: ' + path);
 			}
 			ret.pop();
 			
@@ -1250,14 +1179,14 @@ function realpath(path) {
  * vs: http://jsperf.com/regex-vs-split
  */
 function getDir(uri){
-	var s = uri.match(/.*(?=\/.*$)/);
-    return (s ? s[0] : '.') + '/';
+	var m = uri.match(REGEX_DIR_MATCHER); // greedy match
+    return (m ? m[0] : '.') + '/';
 };
 
 
 function getHost(uri){
-	var s = uri.match(/^\w+:\/\/[^/]+/); /* coda highlight error */ 
-	return s[0];
+	var m = uri.match(/^\w+:\/\/[^/]+/); /* coda highlight error */ 
+	return m[0];
 };
 
 
@@ -1285,7 +1214,9 @@ K.mix(define, {
 	
 	'off': function(){
 		_define_buffer_on = false;
-	}
+	} //,
+	
+	// 'alias': function(){}
 });
 
 // use extend method to add public methods, 
@@ -1297,8 +1228,8 @@ K.mix(K, {
 	
 	// define a package
 	// this method will be used by package builder, not developers, except testing cases
-	'_pkg'			: definePackage,
-	'_allMods'		: showAllModules,
+	// '_pkg'			: definePackage,
+	// '_allMods'		: showAllModules,
 	
 	/**
 	 * @param {Object=} conf {
@@ -1317,7 +1248,7 @@ K.mix(K, {
 			base = config.base || '/';
 		
 		// exec only once
-		K[STR_LOADER_CONFIG] = NOOP;
+		K['_loaderConfig'] = NOOP;
 		
 		// initialize
 		if(!config.enableCDN || !config.CDNHasher){
@@ -1327,6 +1258,8 @@ K.mix(K, {
 				return page_root;
 			};
 		}
+		
+		config.santitizer = config.santitizer || function(s){ return s; };
 		
 		if(isAbsoluteURI(base)){
 			config.defaultDir = base;
@@ -1373,6 +1306,9 @@ K.mix(K, {
  - F. tidy the logic about param factory of string type and param uri in _define method
  - ? G. nested define-provide structure. you can use KM.provide inside the factory function of KM.define to dynamically declare dependencies
  - H. complete ._allMods method
+ - I. abolish KM._pkg
+ - J. prevent defining a non-anonymous module with a name like pathname
+ - ? K. explode the cache object of modules
  
  2011-06-14  Kael:
  - TODO[06-08].A
