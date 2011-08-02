@@ -330,13 +330,13 @@ function loadSrc(uri, callback, type){
  *  	{object} 	module exports
  */
 function define(name, dependencies, factory){
-	var version, info, uri,
-		last = arguments.length - 1, 
+	var version, info, uri, identifier,
+		last = arguments.length - 1,
 		EMPTY = '';
 	
 	if(arguments[last] === true){			// -> define(uri1, uri2, uri3, true);
 		foreach(arguments, function(arg, i, U){
-			i < last && _define(EMPTY, EMPTY, U, absolutizeURI(arg));
+			i < last && _define(EMPTY, U, U, U, absolutizeURI(arg));
 		});
 		return;
 	}
@@ -374,13 +374,15 @@ function define(name, dependencies, factory){
 		}
 	}
 	
+	// TODO bug
 	if(_define_buffer_on){					// -> after define.on();
 		info = generateModuleURI_Identifier( moduleNameToURI(name) );
 		uri = info.u;
-		name = info.i;
+		identifier = info.i;
+		name = EMPTY;
 	}
 	
-	_define(name, version, dependencies, factory, uri);
+	_define(name, identifier, version, dependencies, factory, uri);
 };
 
 
@@ -392,14 +394,15 @@ function define(name, dependencies, factory){
  			=== '': in the case that only defining module uri
  			!== '': module identifier 
  		{undefined} anonymous module definition - the module has no explicit identifier
- 		
+ 
+ * @param {string=} identifier (optional)
  * @param {number=} version version of the custom module. (optional)
  * @param {(Array.<string>)=} dependencies
  * @param {(function(...[number])|Object|string)=} factory
  		{string} absolute! uri
  * @param {string=} uri
  */
-function _define(name, version, dependencies, factory, uri){
+function _define(name, identifier, version, dependencies, factory, uri){
 	/**	
 	 * @type {object}
 	 * restore mod data {
@@ -414,7 +417,7 @@ function _define(name, version, dependencies, factory, uri){
 		 }
 	 */
 	var mod = {},
-		name_with_ver, ver, path_info, identifier,
+		name_with_ver, ver, path_info,
 		existed, existed_ver,
 		active_script_uri,
 		
@@ -433,7 +436,7 @@ function _define(name, version, dependencies, factory, uri){
 		//	isImplicit = true;
 		// }
 		
-		name.indexOf('/') !== 0 && !_define_buffer_on && warning('def a path may cause further problems');
+		name.indexOf('/') !== -1 && !_define_buffer_on && warning('def a path may cause further problems:' + name);
 		
 		if(version){
 			name_with_ver = name + '|' + version;
@@ -441,6 +444,7 @@ function _define(name, version, dependencies, factory, uri){
 		}
 	
 	// anonymous module define
+	// define a module in a module file
 	}else if(name !== ''){
 		
 		// via Kris Zyp
@@ -527,6 +531,7 @@ function _define(name, version, dependencies, factory, uri){
 			
 			// tidy module data, when fetching interactive script succeeded
 			active_script_uri && tidyModuleData(mod);
+			uri = NULL;
 			break;
 			
 		default:
@@ -577,7 +582,7 @@ function _define(name, version, dependencies, factory, uri){
 		mod.uri = uri;
 	}
 	
-	if(override){ console.log('name:', name);
+	if(override){
 		name && memoizeMod(name, mod);
 		
 		if(identifier){
@@ -706,17 +711,8 @@ function getOrDefine(name, referenceURI, noWarn){
 	if(!mod){
 		warn = warn && !mod;
 		
-		
-		/**
-		 <1.>
-		 if no referenceURI, the getOrDefine method called in KM.provide, or custom module constructors
-		 in this case, we will define a non-anonymous module
-		 
-		 <2.>
-		 on the contrary, called in lib modules, we only define the module uri. 
-		 >> see the detail about the type of <name>
-		 */
-		mod = _define('', undef, undef, uri);
+		// always define the module url when providing
+		mod = _define('', undef, undef, undef, uri);
 		parent = getMod(getParentModuleIdentifier(identifier));
 		
 		// if its parent package exists, mark the module
@@ -746,17 +742,6 @@ function provideOne(mod, callback, env){
 		callback();
 	};
 	
-	// if a package
-	if(mod.parent){
-		return loadModuleSrc(mod.parent, function(){
-			delete mod.parent;
-			
-			console.log( 'parent loaded', Object.clone( _mods ) )
-			
-			provideOne(mod, callback, env);
-		});
-	};
-	
 	// provideOne method won't initialize the module or execute the factory function
 	if(mod.exports || status === STATUS.READY){
 		return callback();
@@ -777,6 +762,13 @@ function provideOne(mod, callback, env){
 			m.pending.length = 0;
 			delete m.pending;
 		}, env, true);
+	
+	// if a package exists, and module file has not been loaded
+	}else if(mod.parent){
+		return loadModuleSrc(mod.parent, function(){
+			delete mod.parent;
+			provideOne(mod, callback, env);
+		});
 		
 	}else if(status < STATUS.DEFINED){
 		loadModuleSrc(mod, function(){
@@ -925,7 +917,7 @@ function loadModuleSrc(mod, callback){
         	// _script_map[uri] = LOADED;
         	
         	// the logic of loader ensures that, once a uri completes loading, it will never be requested 
-        	delete _script_map[uri];
+        	// delete _script_map[uri];
         }, mod.isCSS ? 'css' : 'js');
         
     // } else if (script === LOADED) {
@@ -1292,9 +1284,16 @@ K.mix(K, {
 
 /**
  * change log:
+ 2011-08-02  Kael:
+ - refractor package definition
+ - 
  
  2011-08-01  Kael:
  - add config.santitizer, remove path_cleaner out from loader
+ 
+ TODO:
+ - A. failure control, if loading the package fails
+ - B. tidy parameters in _define 
  
  2011-07-10  Kael:
  - TODO[06-15].[E, A]
