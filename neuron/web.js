@@ -257,6 +257,13 @@ readyList.push(function(){
 });
 
 
+// add empty console.log to old browsers
+if(!WIN.console){
+	WIN.console = {
+		log: function(){}
+	};
+}
+
 
 /**
  * Custom domready event
