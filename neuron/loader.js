@@ -162,7 +162,6 @@ var	_mods = {},			// map: identifier -> module
 				function(node, callback){
 					if(callback){
 						node.addEventListener('load', callback, false);
-						// node.addEventListener('error', function(){}, false);
 					}
 				}
 		),
@@ -206,6 +205,7 @@ var	_mods = {},			// map: identifier -> module
 	  			}
   		)
   	}; // end assetOnload
+
 
 /**
  * method to load a resource file
@@ -365,17 +365,17 @@ function define(name, dependencies, factory){
 	// split name and version
 	if(name){
 		name = name.split('|');
-		version = name[1] || '';
+		version = name[1] || EMPTY;
 		name = name[0];
 	
 		if(arguments.length === 1){			// -> define(uri);
 			factory = absolutizeURI(name);
-			name = '';
+			name = EMPTY;
 		}
 	}
 	
 	if(_define_buffer_on){					// -> after define.on();
-		info = generateModuleURI_Identifier( moduleNameToURI(name) ).i;
+		info = generateModuleURI_Identifier( moduleNameToURI(name) );
 		uri = info.u;
 		name = info.i;
 	}
@@ -433,7 +433,7 @@ function _define(name, version, dependencies, factory, uri){
 		//	isImplicit = true;
 		// }
 		
-		name.indexOf('/') !== 0 && warning('def a path may cause further problems');
+		name.indexOf('/') !== 0 && !_define_buffer_on && warning('def a path may cause further problems');
 		
 		if(version){
 			name_with_ver = name + '|' + version;
@@ -446,6 +446,15 @@ function _define(name, version, dependencies, factory, uri){
 		// via Kris Zyp
 		// Ref: http://kael.me/-iikz
 		if (use_interactive) {
+			
+			// Kael: 
+			// In IE(tested on IE6-9), the onload event may NOT be fired 
+			// immediately after the script is downloaded and executed
+			// - it occurs much late usually, and especially if the script is in the cache, 
+			// So, the anonymous module can't be associated with its javascript file by onload event
+			// But, always, onload is never fired before the script is completed executed
+			
+			// demo: http://kael.me/TEMP/test-script-onload.php
 			
 			// > In IE, if the script is not in the cache, when define() is called you 
 			// > can iterate through the script tags and the currently executing one will 
@@ -568,9 +577,13 @@ function _define(name, version, dependencies, factory, uri){
 		mod.uri = uri;
 	}
 	
-	if(override){
-		identifier && memoizeMod(identifier, mod);
+	if(override){ console.log('name:', name);
 		name && memoizeMod(name, mod);
+		
+		if(identifier){
+			existed = getMod(identifier);
+			existed ? ( mod = K.mix(existed, mod) ) : memoizeMod(identifier, mod);
+		}
 	}
 	
 	// internal use
@@ -675,8 +688,8 @@ function _provide(dependencies, callback, env, noCallbackArgs){
  * @param {boolean=} noWarn
  * @param {undefined=} undef
  */
-function getOrDefine(name, referenceURI, noWarn, undef){
-	var mod, uri, warn, identifier;
+function getOrDefine(name, referenceURI, noWarn){
+	var mod, uri, warn, identifier, parent;
 		
 	if(!referenceURI){
 		// check for explicitly defined module
@@ -686,21 +699,29 @@ function getOrDefine(name, referenceURI, noWarn, undef){
 	
 	if(!mod){
 		uri = moduleNameToURI(name, referenceURI);
-		mod = getMod(generateModuleURI_Identifier(uri).i);
+		identifier = generateModuleURI_Identifier(uri).i
+		mod = getMod(identifier);
+	}
+	
+	if(!mod){
+		warn = warn && !mod;
 		
-		if(!mod){
-			warn = warn && !mod;
-			
-			/**
-			 <1.>
-			 if no referenceURI, the getOrDefine method called in KM.provide, or custom module constructors
-			 in this case, we will define a non-anonymous module
-			 
-			 <2.>
-			 on the contrary, called in lib modules, we only define the module uri. 
-			 >> see the detail about the type of <name>
-			 */
-			mod = _define(!referenceURI ? name : '', undef, undef, uri);
+		
+		/**
+		 <1.>
+		 if no referenceURI, the getOrDefine method called in KM.provide, or custom module constructors
+		 in this case, we will define a non-anonymous module
+		 
+		 <2.>
+		 on the contrary, called in lib modules, we only define the module uri. 
+		 >> see the detail about the type of <name>
+		 */
+		mod = _define('', undef, undef, uri);
+		parent = getMod(getParentModuleIdentifier(identifier));
+		
+		// if its parent package exists, mark the module
+		if(parent){
+			mod.parent = parent;
 		}
 	}
 	
@@ -722,7 +743,18 @@ function provideOne(mod, callback, env){
 			mod.status = ready;
 		}
 		
-		callback();	
+		callback();
+	};
+	
+	// if a package
+	if(mod.parent){
+		return loadModuleSrc(mod.parent, function(){
+			delete mod.parent;
+			
+			console.log( 'parent loaded', Object.clone( _mods ) )
+			
+			provideOne(mod, callback, env);
+		});
 	};
 	
 	// provideOne method won't initialize the module or execute the factory function
@@ -838,24 +870,6 @@ function tidyModuleData(mod){
 
 
 /**
- Module View: >>>>>>>>>>>>>>>>>>>>>>>>
- display all modules that declared, with their informations, including attach status
- => {
- 		moduleA: {},
- 		moduleB: {}
- 	}
- 
-function showAllModules(){
-	// K.provide('help/all-mods', function(K, allmods){
-	//	allmods();
-	// });
-	
-	console.log(Object.clone(_mods));
-};
-*/
-
-
-/**
  * load a script and remove script node after loaded
  * @param {string} uri
  * @param {function()} callback
@@ -964,13 +978,11 @@ function generateModuleURI_Identifier(uri){
 generateModuleURI_Identifier = K._memoize(generateModuleURI_Identifier);
 
 
-function getParentModuleIndentifier(identifier){
+function getParentModuleIdentifier(identifier){
 	var m = identifier.match(REGEX_DIR_MATCHER);
 	
 	return m ? m[0] + '.js' : false;
 };
-
-// K.test = getParentModuleIndentifier; // debug
 
 
 /**
@@ -1214,7 +1226,9 @@ K.mix(define, {
 	
 	'off': function(){
 		_define_buffer_on = false;
-	} //,
+	},
+	
+	'_mods': _mods //,
 	
 	// 'alias': function(){}
 });
@@ -1279,6 +1293,9 @@ K.mix(K, {
 /**
  * change log:
  
+ 2011-08-01  Kael:
+ - add config.santitizer, remove path_cleaner out from loader
+ 
  2011-07-10  Kael:
  - TODO[06-15].[E, A]
  
@@ -1301,7 +1318,9 @@ K.mix(K, {
  - C. package detection: 
  	- 1. if the uri of a package is already defined, then its children modules will associated with it even before the source file of the package is fetched
  	- 2. automatically detect the providing frequency within the modules in one package, in order to automatically use packages
- - D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
+ 
+ // never add this feature into module loader
+ - X D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
  - √ E. switcher to turn on define buffer, so we can load module files in traditional ways(directly use <script> to load external files)
  - F. tidy the logic about param factory of string type and param uri in _define method
  - ? G. nested define-provide structure. you can use KM.provide inside the factory function of KM.define to dynamically declare dependencies
@@ -1309,6 +1328,7 @@ K.mix(K, {
  - I. abolish KM._pkg
  - J. prevent defining a non-anonymous module with a name like pathname
  - ? K. explode the cache object of modules
+ - L. optimize the calling chain of define and getOrdefine, use less step to get module idenfitier.
  
  2011-06-14  Kael:
  - TODO[06-08].A
