@@ -501,6 +501,11 @@ function _define(name, identifier, version, dependencies, factory, uri){
 			if(REGEX_IS_CSS.test(factory)){
 				mod.isCSS = true;
 			}
+					
+			// need package checking
+			// only those who defined with module uri that need package checking
+			mod.npc = true;
+			mod.i = identifier;
 			
 			break;
 			
@@ -713,12 +718,6 @@ function getOrDefine(name, referenceURI, noWarn){
 		
 		// always define the module url when providing
 		mod = _define('', undef, undef, undef, uri);
-		parent = getMod(getParentModuleIdentifier(identifier));
-		
-		// if its parent package exists, mark the module
-		if(parent){
-			mod.parent = parent;
-		}
 	}
 	
 	warn && warning('module ' + name + ' has not explicitly defined!');
@@ -731,7 +730,7 @@ function getOrDefine(name, referenceURI, noWarn){
  * method to provide a module, push its status to at least STATUS.ready
  */
 function provideOne(mod, callback, env){
-	var status = mod.status;
+	var status = mod.status, parent;
 	
 	function cb(){
 		var ready = STATUS.READY;
@@ -763,10 +762,13 @@ function provideOne(mod, callback, env){
 			delete m.pending;
 		}, env, true);
 	
-	// if a package exists, and module file has not been loaded
-	}else if(mod.parent){
-		return loadModuleSrc(mod.parent, function(){
-			delete mod.parent;
+	// package definition may occurs much later than module, so we check the existence when providing a module
+	// if a package exists, and module file has not been loaded.
+	}else if(mod.npc && (parent = getMod(getParentModuleIdentifier(mod.i))) ){
+		return loadModuleSrc(parent, function(){
+			delete mod.npc;
+			delete mod.i;
+			
 			provideOne(mod, callback, env);
 		});
 		
@@ -1220,7 +1222,7 @@ K.mix(define, {
 		_define_buffer_on = false;
 	},
 	
-	'_mods': _mods //,
+	'__mods': _mods //,
 	
 	// 'alias': function(){}
 });
@@ -1286,14 +1288,17 @@ K.mix(K, {
  * change log:
  2011-08-02  Kael:
  - refractor package definition
- - 
+ - TODO[06-15].[C,I,J,K]
  
  2011-08-01  Kael:
  - add config.santitizer, remove path_cleaner out from loader
  
  TODO:
  - A. failure control, if loading the package fails
- - B. tidy parameters in _define 
+ - B. tidy parameters in _define
+ - C. lazily manage package association
+ - D*. detect if it fails to load a module file
+ - E. [issue] if define a package after the definition of a certain module, the package association fails
  
  2011-07-10  Kael:
  - TODO[06-15].[E, A]
@@ -1314,19 +1319,21 @@ K.mix(K, {
  - B. add loader constructor to create more instances of loader
  	- 1. association of several instances of loader
  	- 2. comm definition
- - C. package detection: 
+ - √ C. package detection: 
  	- 1. if the uri of a package is already defined, then its children modules will associated with it even before the source file of the package is fetched
- 	- 2. automatically detect the providing frequency within the modules in one package, in order to automatically use packages
+ 	# - 2. automatically detect the providing frequency within the modules in one package, in order to automatically use packages
  
  // never add this feature into module loader
- - X D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
+ - X # D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
  - √ E. switcher to turn on define buffer, so we can load module files in traditional ways(directly use <script> to load external files)
  - F. tidy the logic about param factory of string type and param uri in _define method
  - ? G. nested define-provide structure. you can use KM.provide inside the factory function of KM.define to dynamically declare dependencies
- - H. complete ._allMods method
- - I. abolish KM._pkg
- - J. prevent defining a non-anonymous module with a name like pathname
- - ? K. explode the cache object of modules
+ 
+ // ._allMods removed
+ - X # H. complete ._allMods method
+ - √ I. abolish KM._pkg
+ - √ J. prevent defining a non-anonymous module with a name like pathname
+ - √ ? K. explode the cache object of modules
  - L. optimize the calling chain of define and getOrdefine, use less step to get module idenfitier.
  
  2011-06-14  Kael:
