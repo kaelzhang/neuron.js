@@ -3,7 +3,7 @@
 ; // fix layout of UglifyJS
 
 /**
- * version	2.1.4
+ * version	3.3.1
  
  * include
  * - static resource loader
@@ -1286,19 +1286,28 @@ K.mix(K, {
 
 /**
  * change log:
+ - √ complete
+ - # deprecated scheme
+ - X discarded scheme
+ - * unimportant
+ 
+ 2011-08-03  Kael:
+ - TODO[08-01].[A,E]
+ 
  2011-08-02  Kael:
- - refractor package definition
+ - refractor package definition. 
+ 	if a relevant package is detected, neuron loader will try to fetch the package instead of the module file itself.
  - TODO[06-15].[C,I,J,K]
  
  2011-08-01  Kael:
  - add config.santitizer, remove path_cleaner out from loader
  
  TODO:
- - A. failure control, if loading the package fails
+ - √ A. failure control, if loading the package fails, fallback to normal way to provide modules
  - B. tidy parameters in _define
  - C. lazily manage package association
  - D*. detect if it fails to load a module file
- - E. [issue] if define a package after the definition of a certain module, the package association fails
+ - √ E. [issue] if define a package after the definition of a certain module, the package association fails
  
  2011-07-10  Kael:
  - TODO[06-15].[E, A]
@@ -1410,8 +1419,6 @@ K.mix(K, {
  
  2011-05-18  Kael:
  - remove comments before parsing dependencies from factory function
- 
- 
  
  2011-05-17  Kael:
  - memoize the result of analysisModuleName
