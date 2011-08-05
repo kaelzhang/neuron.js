@@ -711,11 +711,10 @@ function getOrDefine(name, referenceURI, noWarn){
 		uri = moduleNameToURI(name, referenceURI);
 		identifier = generateModuleURI_Identifier(uri).i
 		mod = getMod(identifier);
+		warn = warn && !mod;
 	}
 	
 	if(!mod){
-		warn = warn && !mod;
-		
 		// always define the module url when providing
 		mod = _define('', undef, undef, undef, uri);
 	}
