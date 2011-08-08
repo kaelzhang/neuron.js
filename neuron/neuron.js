@@ -1,4 +1,4 @@
-/*!
+/**
  * kael.me.core.js - based on mootools(http://mootools.net) compact javascript framework.
  * author  Kael Zhang[i@kael.me]
 
@@ -140,10 +140,8 @@ KM.namespace('UA', '_Config');
 
 
  * change log:
- * 2011-04-19  Kael: 迁移 KM.type 到 lang.js
- * 2011-04-01  Kael Zhang: 优化type的方法，为mootools的typeOf创建adapter
- * 2010-12-30  Kael Zhang: 分离 @adaptor 至 /core/lang.js
- * 2010-12-13  Kael Zhang: 修正KM.data()的一个取值错误
- * 2010-12-03  Kael Zhang: 分离 KM.log 模块的逻辑到 /core/debug.js：加载debug.js，会自动装载KM.log与KM.error方法
+ * 2011-04-19  Kael: move KM.type to lang.js
+ * 2011-04-01  Kael Zhang: add adapter for typeOf of mootools
+ * 2010-12-13  Kael Zhang: fix the getter of KM.data
  * 2010-10-09  Kael Zhang: 创建文件
  */

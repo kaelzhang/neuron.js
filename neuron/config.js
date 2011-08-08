@@ -10,6 +10,9 @@
 
 ;(function(K){
 
+var REGEX_PATH_CLEANER_MIN = /\.min/i,
+	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i;
+
 
 function CDNHasher(evidence){
 	function hashToNumber(s){
@@ -18,15 +21,23 @@ function CDNHasher(evidence){
 	
 	return 'http://i' + hashToNumber(evidence) + '.dpfile.com';
 };
+
+
+function santitizer(identifier){
+	var EMPTY = '';
+	return identifier.replace(REGEX_PATH_CLEANER_MIN, EMPTY).replace(REGEX_PATH_CLEANER_VERSION, EMPTY)
+};
 	
 
 K._loaderConfig(K.mix({
 	// root path of module files
-	base: 				'/lib/',
+	base: 		'/lib/',
 	
-	enableCDN:			false,
+	enableCDN:	false,
 	// @return: the domain of either cdn server
-	CDNHasher:			CDNHasher,
+	CDNHasher:	CDNHasher,
+	
+	santitizer: santitizer,
 	
 	allowUndefinedMod: 	true
 }, window.__loaderConfig));

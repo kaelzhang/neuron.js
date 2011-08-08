@@ -210,20 +210,21 @@ K.mix(K, {
 	
 	/**
 	 * run a method once and only ONCE before the real method executed
+	 * usefull for lazy initialization
 	 *
 	 * @example
-	 * if KM.Overlay::show is the public api to show the overlay
-	 * but it has a initialization method, which we want to be called just before the overlay shows, not the very moment when the instance of KM.Overlay created,
+	 * if Overlay::show is the public api to show the overlay
+	 * but it has a initialization method, which we want to be called just before the overlay shows, not the very moment when the instance of Overlay created,
 	 * so,
 	 * we apply:
-	 * initialization method 	-> KM.Overlay::_showInit
-	 * real show method 		-> KM.Overlay::show
+	 * initialization method 	-> Overlay::_showInit
+	 * real show method 		-> Overlay::show
 	 * and then:
 	 *
 	 * @usage
 		 <code>
 		 	// before 'show', '_showInit' will be executed only once
-		 	KM._onceBefore('show', '_showInit', KM.Overlay.prototype);
+		 	KM._onceBefore('show', '_showInit', Overlay.prototype);
 		 </code>
 	 */
 	_onceBefore: function(real_method_name, init_method_name, belong){
@@ -260,16 +261,15 @@ K.mix(K, {
  * TODO:
 
 
- * change log:
- * 2011-06-09  Kael:
- * - 增加 KM.each 
- * 2011-04-19  Kael:
- * - 增加 lazyInit 方法，修正 overloadInstanceMethod 的一个bug
- * - 增加 类型判断方法，将 KM._type 从主要api中移除
- * 2011-04-15  Kael:
- * - 增加 overloadSetter的adapter, 为普通函数与instance的方法，重构 overload 和 bind 的实现
- * 2011-04-1   Kael Zhang: 去除lang中的domready方法，增加KM.bind
- * 2010-12-31  Kael Zhang:
- * - 迁移domready方法由mt.js到lang.js，修改部分实现。
- * - 迁移data和delay方法至此
+ change log:
+ 2011-04-19  Kael:
+ - add method lazyInit，fix a bug of overloadInstanceMethod
+ - add method to detect the type of an object. set KM._type as semi-private method
+ 2011-04-15  Kael:
+ - add adapter for overloadSetter, 
+ - add method overloadInstanceMethod
+ 2011-04-1   Kael Zhang: move KM.ready to web.js
+ 2010-12-31  Kael Zhang:
+ - add KM.data and KM.delay
+ - remove domready from mootools
  */
