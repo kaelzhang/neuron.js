@@ -9,130 +9,203 @@ var EVENT_BEFORE_INIT = 'beforeInit',
     EVENT_AFTER_INIT = 'afterInit',
     EVENT_BEFORE_SWITCH = 'beforeSwitch',
     EVENT_ON_SWITCH = 'switching',
-    EVENT_FX_COMPLETE = 'fxcomplete',
-
-    FORWARD = 'forward',
-    BACKWARD = 'backward',
+    EVENT_COMPLETE_SWITCH = 'completeSwitch',
+    
+    PLUGIN_PREFIX = 'switch/plugin/',
 
     NOOP = function(){},
     EMPTY = '',
 
-    Switch, Initializer;
+    Switch, ASQueue = {}, ASQ_meta;
     
     
 /**
- * initializer, 
- * put all specified methods into an executing queue before initialization method complete
+ * Asynchronous and Synchronous Queue: 
+ * - put all specified methods into an executing queue before initialization methods completed
+ * - or execute a specified list of methods
+ * which could:
+ * - keep the executing ORDER even if the queue is mixed with both asynchronous and synchronous methods
+ * - make sure method A will be executed before method B if specified
+ * - make sure a method will be executed only once
  
  <code>
- 	// .plugin method is an asynchronous method, but .init method relies on the effect of .plugin method
+ 	// .plugin method is an asynchronous method, but .init method relies on the effect which the .plugin method caused
  	new Switch().plugin('carousel').init({...});
  </code>
  */
-Initializer = new Class({
-    Implements: Options,
+ 
+ASQ_meta = {
+	Runner: {
+		/**
+	     * run the list of configured methods
+	     */
+	    run: function(){
+	    	var self = this;
+	    	
+	    	self._sd();
+	    	
+	    	self._stack = Array.clone(self._presetItems);
+	    	self._items = self.host;
+	    	
+	    	self.resume();
+	    },
+	    
+	    _sd: function(){
+	    	var self = this, items = self._presetItems, i = 0, len = items.length;
+	    	
+	    	for(; i < len; i ++){
+	    		items[i] = self._santitize(items[i]);
+	    	}
+	    	
+	    	self._sd = NOOP;
+	    }
+	},
+
+	Converter: {
+		/**
+	     * make all specified method queue-supported
+	     */
+	    on: function(){
+	    	var self = this,
+	    		host = self.host;
+	    
+	    	K.makeArray(self._presetItems).each(function(i){
+	    		i && self._add(i, host);
+	    	});
+	    	
+	    	return self;
+	    },
+	    
+	    /**
+	     * recover the converted methods
+	     */
+	    off: function(){
+	    	var name, 
+	    		self = this,
+	    		host = self.host;
+	    	
+	    	for(name in self._items){
+	    		delete host[name];
+	    		host[name] = self._items[name];
+	    	}
+	    	
+	    	self._clean();
+	    	
+	    	return self;
+	    },
+	    
+	    _add: function(obj, host, undef){
+	    	var self = this,
+	    		name;
+
+			obj = self._santitize(obj);
+			name = obj.name;
+			
+			fn = self._items[name] = self._items[name] || host[name];
+			
+			if(fn){
+				host[name] = function(){
+					// 
+					if(
+						!self._history.contains(obj.before) && 
+						(!obj.once || 
+							!self._history.contains(name)
+						)
+					){
+						self._stack.push({
+							auto: obj.auto,
+							once: obj.once,
+							name: name,
+							arg: arguments
+						});
+						
+						self._history.push(name);
+					}
+					
+					// avoid recursive invocation
+					setTimeout(function(){
+						self._next();
+					}, 0);
+					
+					return host; // chain
+				}
+			}
+	    }
+	}
+};
+
+ASQ_proto = {
+	_items: {},
+    _stack: [],
+    _history: [],
     
     initialize: function(host, items){
     	var self = this;
     
     	self.host = host;
-    	
-    	K.makeArray(items).each(function(i){
-    		i && self._add(i, host);
-    	});
-    },
-
-    _items: {},
-    _stack: [],
-    _history: [],
-    
-    _add: function(name, host, undef){
-    	var self = this,
-    		auto = true, once = false,
-    		fn, before;
-    	
-    	if(K.isPlainObject(name)){
-    		// @type {boolean} 
-    		auto = name.auto;
-    		auto = auto === undef ? true : auto;
-    		
-    		// @type {}
-    		before = name.before;
-    		
-    		// @type {boolean} whether the item should be executed only once
-    		once = name.once;
-    		name = name.name;
-    	}
-		
-		fn = self._items[name] = self._items[name] || host[name];
-		
-		if(fn){
-			host[name] = function(){ console.log(name, 'wrapper', arguments)
-				// 
-				if(
-					!self._history.contains(before) && 
-					(!once || 
-						!self._history.contains(name)
-					)
-				){
-					self._stack.push({
-						auto: !!auto,
-						once: !!once,
-						name: name,
-						arg: arguments
-					});
-					
-					self._history.push(name);
-				}
-				
-				// avoid recursive invocation
-				setTimeout(function(){
-					self._next();
-				}, 0);
-				
-				return host; // chain
-			}
-		}
+    	self._presetItems = items;
     },
     
-    // finish will stop all functionalities of Initializer
-    finish: function(){
-    	var name, 
-    		self = this,
-    		host = self.host;
+    /**
+     * resume the paused executing queue
+     */
+    resume: function(){
+    	var self = this;
+    	self.processing = false;
     	
-    	for(name in self._items){
-    		host[name] = self._items[name];
+    	return self._next();
+    },
+    
+    _santitize: function(obj, undef){
+    	var self = this;
+    
+    	if(K.isPlainObject(obj)){
+    		// @type {boolean}
+    		if(obj.auto === undef){
+    			obj.auto = true;
+    		}
+    		
+    	}else{
+    		obj = {name: obj};
     	}
     	
+    	return K.mix({
+    		auto: true,
+    		once: false
+    	}, obj);
+    },
+    
+    _clean: function(){
+    	var self = this;
     	self._items = {};
+    	self._history.length = 0;
     },
     
     _next: function(){
     	var self = this,
     		current, fn;
 
-    	if(!self.on && (current = self._stack.shift()) && (fn = self._items[current.name])){
-    		self.on = true;
+    	if(!self.processing && (current = self._stack.shift()) && (fn = self._items[current.name])){
+    		self.processing = true;
     		
     		// clean the method before executing
     		if(current.once){
     			self._items[current.name] = NOOP;
     		}
-    		console.log(current)
     	
     		fn.apply(self.host, current.arg || []);
     		
     		return current.auto && self.resume();
     	}
-    },
-    
-    resume: function(){
-    	var self = this;
-    	self.on = false;
-    	
-    	return self._next();
     }
+};
+
+// ASQueue.Runner
+// ASQueue.Converter
+['Runner', 'Converter'].each(function(type){
+	var ASQ = ASQueue[type] = new Class(ASQ_proto);
+
+	K.mix(ASQ.prototype, ASQ_meta[type]);
 });
 
 
@@ -161,15 +234,15 @@ Switch = new Class({
 
         triggerType: 	'click',
 
-        // selectorPre {string} prefix of selectors
-        // if selectorPre === '#switch', then we will get previous button with $$('#switch ' + options.prev)[0]
+        // CSPre {string} prefix of selectors
+        // if CSPre === '#switch', then we will get previous button with $$('#switch ' + options.prev)[0]
         CSPre: 			EMPTY,
 
         // triggerS {dom selector $$ || Mootools Elements} trigger selector of switch tabs, such as 1,2,3,4
         triggerCS: 		EMPTY, 		// '.trigger',
-        triggerOnCls: 	EMPTY, 		// 'J_trigger-on',
+        triggerOnCls: 	EMPTY, 		// 'Jtrigger-on',
 
-        countCls: 		EMPTY, 		// '.page-count',
+        countCS: 		EMPTY, 		// '.page-count',
 
         // container, prev, next {dom selector $$[0] || Mootools Element} 
         containerCS: 	EMPTY, 		// '.switch-track',
@@ -177,31 +250,34 @@ Switch = new Class({
         nextCS: 		EMPTY, 		// '.next',
 
         // items will be fetched by container.getElements()
-        itemsCS: 		EMPTY, 		// 'li',
+        itemCS: 		EMPTY, 		// 'li',
         itemOnCls: 		EMPTY, 		// 'J_cont-on',
 
         // the index of the first items activated when initializing
-        activeIndex: 	0
+        activeIndex: 	0,
+        
+        lifeCycle: 		['_before', '_on', '_after']
     },
     
     initialize: function(){
     	var self = this;
     	
-    	/**
-    	 
-    	 */
-    	self._initializer = new Initializer(self, [{
+    	self._initializer = new ASQueue.Converter(self, [{
 	    		name: 'plugin',
 	    		auto: false,
+	    		
+	    		// after initialization, registering new plugin is forbidden
 	    		before: 'init'
 	    		
 	    	}, {
 	    		name: 'init',
+	    		
+	    		// method init should be executed only once
 	    		once: true	
 	    	},
 	    	
 	    	'switchTo', 'prev', 'next'
-    	]);
+    	]).on();
     },
     
 
@@ -212,10 +288,14 @@ Switch = new Class({
     // store the name of the plugins for indexing
     _plugin_names: [],
 	
+	/**
+	 * filter plugins to get the ones which need to be provided
+	 * @param {Array.<string, Object>} plugins
+	 */
 	_pendingPlugins: function(plugins){
 		var plugin, i = 0, len = plugins.length,
 			pending_plugins = [],
-			prefix = Switch.PREFIX;
+			prefix = PLUGIN_PREFIX;
 			
 		
 		for(; i < len; i ++){
@@ -229,6 +309,11 @@ Switch = new Class({
 		return pending_plugins;
 	},
 	
+	/**
+	 * attach a plugin or plugins to the switch instance
+	 * .plugin might be an asynchronous method which will be added to the end of the pending queue of Initializer
+	 * @param {string|Object} arguments
+	 */
 	plugin: function(){
 		var self = this,
 			arg = arguments,
@@ -244,35 +329,7 @@ Switch = new Class({
 		return self;
 	},
 	
-	/**
-	 * @param {Object} plugin
-	 * @return {boolean} whether is the final plugin
-	 */
-	_addPlugin: function(plugin){
-		var self = this;
-
-        // you can add a plugin only once
-        if(!plugin || !plugin.name || self._plugin_names.contains(plugin.name) || self.pluginFinal){
-            return;
-        }
-
-        // if has required plugin, register that plugin first
-        if(_plugin.require && arguments.callee(D.Switch.Plugins[_plugin.require]) ){
-            return _t.pluginFinal = true;
-        }
-
-        // set plugin options before method Switch.init, so that we can override plugin options before plugin.init
-        if(plugin.options){
-            self.setOptions(plugin.options);
-        }
-
-        self._plugins.push(plugin);
-        self._plugin_names.push(plugin.name);
-        
-        return plugin.final_ ? (self.pluginFinal = true) : false;
-	},
-	
-    // register plugins
+	// register plugins
     // @param {object} arguments plugin object
     _plugin: function(){
         if(!this.pluginFinal){
@@ -289,90 +346,120 @@ Switch = new Class({
                 }
 
                 if(K.isString(plugin)){
-                    K.provide(Switch.PREFIX + plugin.toLowerCase(), function(K, p){
+                
+                	// synchronous providing, because all plugins have been loaded
+                    K.provide(PLUGIN_PREFIX + plugin.toLowerCase(), function(K, p){
                     	plugin = p;
                     });
                 }
 
                 // add plugin,
                 // and if it's final, exit for-loop
-                if( self._addPlugin(plugin) ){
+                if( self._addOnePlugin(plugin) ){
                     break;
                 }
             }
 
         }
     },
+	
+	/**
+	 * @param {Object} plugin
+	 * @return {boolean} whether is the final plugin
+	 */
+	_addOnePlugin: function(plugin){
+		var self = this;
+
+        // you can add a plugin only once
+        if(!plugin || !plugin.name || self._plugin_names.contains(plugin.name) || self.pluginFinal){
+            return;
+        }
+		
+		// removed: dependency detection will be assigned to loader
+        // if has required plugin, register that plugin first
+        // if(plugin.require && arguments.callee(D.Switch.Plugins[_plugin.require]) ){
+        //    return t.pluginFinal = true;
+        // }
+
+        // set plugin options before method Switch.init, so that we can override plugin options before plugin.init
+        if(plugin.options){
+            self.setOptions(plugin.options);
+        }
+
+        self._plugins.push(plugin);
+        self._plugin_names.push(plugin.name);
+        
+        return plugin.final_ ? (self.pluginFinal = true) : false;
+	},
 
    	// initialization of Switch and Switch plugins
     // @param options {object} DP.Switch options and DP.Switch.Plugins options
-    init: function(options){ console.log('init')
-    
-    	this._initializer.finish();
-    
-    	return;
-        var _this = this,
+    init: function(options){
+        var self = this,
             o,
             currentTrigger, activeIndex,
-            plugins = _this._plugins;
+            plugins = self._plugins;
+
+		self._initializer.off();
 
         // we can override plugin options here
-        _this.setOptions(options);
-        o = _this.options;
+        self.setOptions(options);
+        o = self.options;
+        
+        self._lifeCycle = new ASQueue.Runner(self, o.lifeCycle);
 
-        if(o.selectorPre){
-            o.selectorPre = String(o.selectorPre).trim() + ' ';
+        if(o.CSPre){
+            o.CSPre = String(o.CSPre).trim() + ' ';
         }
 
         // apply plugin initialization method
         plugins.each(function(plugin){
             if(plugin.init){
-                plugin.init(_this);
+                plugin.init(self);
             }
         });
 
-        _this._initEvent();
+        self._initEvent();
 
         // however, the container should be found first
-        _this.container = $$(o.selectorPre + o.container)[0];
+        self.container = $$(o.CSPre + o.containerCS)[0];
                 
-        if(_this.container){
-            activeIndex = _this.activeIndex = o.activeIndex || 0;
+        if(self.container){
+            activeIndex = self.activeIndex = o.activeIndex || 0;
 
-            _this.fireEvent(EVENT_BEFORE_INIT);
+            self.fireEvent(EVENT_BEFORE_INIT);
 
-            _this._initDom();
-            _this._bindNav();
-            _this.fireEvent(EVENT_AFTER_INIT);
+            self._initDom();
+            self._bindNav();
+            self.fireEvent(EVENT_AFTER_INIT);
 
-            currentItem = _this.items[activeIndex];
+            currentItem = self.items[activeIndex];
 
-            if(currentItem && !currentItem.hasClass(_this.options.itemOnClass)){
-                _this.switchTo(activeIndex, true);
+            if(currentItem && !currentItem.hasClass(o.itemOnCls)){
+                self.switchTo(activeIndex, true);
             }
         }
 
-        // method init can be executed only once
-        // after initialization, registering new plugin is forbidden
-        _this.init = _this.plugin = function(){return _this;};
-
-        return _this;
+        return self;
     },
 
-    // initialize DOM
+    /**
+     * initialize DOM
+     *
+     */
     _initDom: function(){
-        var _this = this,
-            o = _this.options,
-            pre = o.selectorPre;
+        var self = this,
+            o = self.options,
+            pre = o.CSPre;
 
-        _this.items = _this.container.getElements(o.items);
-        _this.triggers = o.trigger ? $$(pre + o.trigger) : [];
-        _this.pageCounters = $$(pre + o.countClass);
+        self.items = self.container.getElements(o.itemCS);
+        self.triggers = o.triggerCS ? $$(pre + o.triggerCS) : [];
+        self.pageCounters = o.countCS ? $$(pre + o.countCS) : false;
 
-        o.prev && (_this.prevBtn = $$(pre + o.prev)[0]);
-        o.next && (_this.nextBtn = $$(pre + o.next)[0]);
+        o.prevCS && (self.prevBtn = $$(pre + o.prevCS)[0]);
+        o.nextCS && (self.nextBtn = $$(pre + o.nextCS)[0]);
 
-        _this.length = _this.items.length;
+        self.length = self.items.length;
 
 
 		/**
@@ -401,48 +488,48 @@ Switch = new Class({
          -> 1 + (length - stage)/move <= page < 2 + (length - stage)/move
          -> page = {1 + (length - stage)/move}
         */
-        _this.pages = 1 + Math.ceil( (_this.length - o.stage) / (o.move || 1) );
+        self.pages = 1 + Math.ceil( (self.length - o.stage) / (o.move || 1) );
 
-        if(_this.pages < 2){
-            _this.leftEnd = _this.rightEnd = true;
+        if(self.pages < 2){
+            self.leftEnd = self.rightEnd = true;
         }
     },
 
     // bind navigators and triggers
     _bindNav: function(){
-        var _this = this,
+        var self = this,
             o = this.options,
             type = o.triggerType,
             i = 0,
             len = this.triggers.length,
             trigger;
             
-        _this.prevBtn && _this.prevBtn.addEvent(type, _this.prev.bind(_this));
-        _this.nextBtn && _this.nextBtn.addEvent(type, _this.next.bind(_this));
+        self.prevBtn && self.prevBtn.addEvent(type, self.prev.bind(self));
+        self.nextBtn && self.nextBtn.addEvent(type, self.next.bind(self));
 
         for(; i < len; ++ i){
 
             // use closure to store i
             (function(index){
-                var _t = _this;
+                var t = self;
 
-                trigger = _t.triggers[index];
+                trigger = t.triggers[index];
 
                 trigger.addEvent(type, function(e){
                     e && e.preventDefault();
-                    _t.switchTo(index);
+                    t.switchTo(index);
 
                 }).addEvents({
-                    mouseenter: function(){ _t._onEnterTrigger(index); },
-                    mouseleave: function(){ _t._onLeaveTrigger(index); }
+                    mouseenter: function(){ t._onEnterTrigger(index); },
+                    mouseleave: function(){ t._onLeaveTrigger(index); }
                 });
 
             })(i);
         };
 
-//        _this.container.addEvents({
-//            mouse enter: function(){ _this.hoverOn = true; },
-//            mouse leave: function(){ _this.hoverOn = false; }
+//        self.container.addEvents({
+//            mouse enter: function(){ self.hoverOn = true; },
+//            mouse leave: function(){ self.hoverOn = false; }
 //        });
     },
 
@@ -459,34 +546,48 @@ Switch = new Class({
     },
 
     // switch to a certain item
-    // @param index {Number} the index of the item to be switched on
-    // @param force {Boolean} force to switching
+    // @param {number} index the index of the item to be switched on
+    // @param {boolean} force force to switching
     switchTo: function(index, force){
-        var _this = this;
+        var self = this;
 
-        if(force || _this.activeIndex !== index){
-            _this.fireEvent(EVENT_BEFORE_SWITCH, [_this.activeIndex, index]);
-            _this.activeIndex = index;
-            _this.fireEvent(EVENT_ON_SWITCH);
-            _this.pageCounters.set('text', index + 1);
+        if(force || self.activeIndex !== index){
+        
+        	self._lifeCycle.run();
+            // self._prepareSwitch(index);
+            // self.activeIndex = index;
+            // self.fireEvent(EVENT_ON_SWITCH);
+            // self.pageCounters && self.pageCounters.set('text', index + 1);
         }
 
-        return _this;
+        return self;
     },
+    
+    _before: function(){
+    	var self = this;
+    
+    	self.fireEvent(EVENT_BEFORE_SWITCH, [self.activeIndex, index]);
+    },
+    
+    _on: function(){
+    },
+    
+    _after: function(){
+    }
 
     prev: function(e){
         e && e.preventDefault();
-        var _this = this;
+        var self = this;
 
         // 限制 activeIndex 的范围
-        !_this.leftEnd && _this.switchTo((_this.activeIndex - 1).limit(0, _this.pages - 1));
+        !self.leftEnd && self.switchTo((self.activeIndex - 1).limit(0, self.pages - 1));
     },
 
     next: function(e){
         e && e.preventDefault();
-        var _this = this;
+        var self = this;
 
-        !_this.rightEnd && _this.switchTo((_this.activeIndex + 1).limit(0, _this.pages - 1));
+        !self.rightEnd && self.switchTo((self.activeIndex + 1).limit(0, self.pages - 1));
     },
 
     // 激活或者禁用导航按钮，并设置标识状态
@@ -500,48 +601,27 @@ Switch = new Class({
                 opacity: 1,
                 cursor: ''
             },
-            _this = this;
+            self = this;
 
-        if(_this.prevBtn){
-            if(_this.leftEnd = !_this.activeIndex){
-                _this.prevBtn.setStyles(disable);
+        if(self.prevBtn){
+            if(self.leftEnd = !self.activeIndex){
+                self.prevBtn.setStyles(disable);
             }else{
-                _this.prevBtn.setStyles(enable);
+                self.prevBtn.setStyles(enable);
             }
         }
 
-        if(_this.nextBtn){
-            if(_this.rightEnd = (_this.activeIndex >= _this.pages - 1) ){
-                _this.nextBtn.setStyles(disable);
+        if(self.nextBtn){
+            if(self.rightEnd = (self.activeIndex >= self.pages - 1) ){
+                self.nextBtn.setStyles(disable);
             }else{
-                _this.nextBtn.setStyles(enable);
+                self.nextBtn.setStyles(enable);
             }
         }
     }
 });
 
-
-// 检查舞台，删除多余的trigger
-// @method checkStage
-// @param t {Object} DP.Switch instance
-function checkStage(_t){
-    var triggerlength = _t.triggers.length,                            
-        i;
-                        
-    // 若trigger数比翻页数更多，则移除多余的trigger，这是为了避免后端输出错误，对js造成影响
-    for(i = _t.pages; i < triggerlength; ++ i){
-        _t.triggers[i].dispose();
-    }
-
-    // 设置container为offsetParent，从而正确的定位和获得偏移量
-    if(_t.items[0].offsetParent !== _t.container){
-        _t.container.setStyle('position', 'relative');
-    }
-                            
-};
-
-
-Switch.PREFIX = 'switch/';
+Switch._ASQ = ASQueue;
 
 return Switch;
 
@@ -549,14 +629,29 @@ return Switch;
 
 /**
  change log:
-
+ 
+ 2011-08-07  Kael:
  TODO:
- A. plugin host, a instance of loader
- B. hirachical plugin
- C. split methods of utilities
+ - ASQueue::convert, method to convert the exist methods as ASQueue methods
+ - ASQueue::run, method to run a specific list of methods
+ 
+ 2011-08-05  Kael:
+ - migrate all of the current plugins to loader
+ - add Initializer (instead of TODO[08.01].[A,B])
+ 	1. which can dynamically load dependencies and plugins
+ 	2. is a pending queue for async and sync methods
+ - enhance the stability of the lazy-load plugin
 
  2011-08-01  Kael:
  - migrate to loader
+ 
+ TODO:
+ √ A. plugin host, a instance of loader
+ √ B. hirachical plugin
+ C. split methods of utilities
+ D. if the 'before' property is defined, the method will be emptied after the terminator executed
+ E. Initializer: allow parallelly executing many methods of the same type
+ F. deal with the letter case of plugin names
  
  2010-01-05  Kael:
  - 修正一个nextBtn没有正确禁用的问题
