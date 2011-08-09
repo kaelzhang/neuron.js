@@ -1,11 +1,26 @@
 /*!
  * module  switch
+ 	- ASQueue
+ 	- plugin host
+ 	- switch/core
+ 	
  * author  Kael Zhang
  */
+ 
+/**
+ 
+ life cycle --------->  Switch  <--------- event interface
+                        ^   ^ 
+                        |   |
+                        |   |
+ plugin host -----------|   |-------- prototype inheritance: 
+                                      only allowd for methods about life cycle
+ */ 
 
-KM.define(function(K){
+KM.define(['util/asqueue'], function(K, require){
 
-var EVENT_BEFORE_INIT = 'beforeInit',
+var __CONSTRUCT = 'construct',
+	EVENT_BEFORE_INIT = 'beforeInit',
     EVENT_AFTER_INIT = 'afterInit',
     EVENT_BEFORE_SWITCH = 'beforeSwitch',
     EVENT_ON_SWITCH = 'switching',
@@ -16,205 +31,15 @@ var EVENT_BEFORE_INIT = 'beforeInit',
     NOOP = function(){},
     EMPTY = '',
 
-    Switch, ASQueue = {}, ASQ_meta;
-    
-    
-/**
- * Asynchronous and Synchronous Queue: 
- * - put all specified methods into an executing queue before initialization methods completed
- * - or execute a specified list of methods
- * which could:
- * - keep the executing ORDER even if the queue is mixed with both asynchronous and synchronous methods
- * - make sure method A will be executed before method B if specified
- * - make sure a method will be executed only once
- 
- <code>
- 	// .plugin method is an asynchronous method, but .init method relies on the effect which the .plugin method caused
- 	new Switch().plugin('carousel').init({...});
- </code>
- */
- 
-ASQ_meta = {
-	Runner: {
-		/**
-	     * run the list of configured methods
-	     */
-	    run: function(){
-	    	var self = this;
-	    	
-	    	self._sd();
-	    	
-	    	self._stack = Array.clone(self._presetItems);
-	    	self._items = self.host;
-	    	
-	    	self.resume();
-	    },
-	    
-	    _sd: function(){
-	    	var self = this, items = self._presetItems, i = 0, len = items.length;
-	    	
-	    	for(; i < len; i ++){
-	    		items[i] = self._santitize(items[i]);
-	    	}
-	    	
-	    	self._sd = NOOP;
-	    }
-	},
-
-	Converter: {
-		/**
-	     * make all specified method queue-supported
-	     */
-	    on: function(){
-	    	var self = this,
-	    		host = self.host;
-	    
-	    	K.makeArray(self._presetItems).each(function(i){
-	    		i && self._add(i, host);
-	    	});
-	    	
-	    	return self;
-	    },
-	    
-	    /**
-	     * recover the converted methods
-	     */
-	    off: function(){
-	    	var name, 
-	    		self = this,
-	    		host = self.host;
-	    	
-	    	for(name in self._items){
-	    		delete host[name];
-	    		host[name] = self._items[name];
-	    	}
-	    	
-	    	self._clean();
-	    	
-	    	return self;
-	    },
-	    
-	    _add: function(obj, host, undef){
-	    	var self = this,
-	    		name;
-
-			obj = self._santitize(obj);
-			name = obj.name;
-			
-			fn = self._items[name] = self._items[name] || host[name];
-			
-			if(fn){
-				host[name] = function(){
-					// 
-					if(
-						!self._history.contains(obj.before) && 
-						(!obj.once || 
-							!self._history.contains(name)
-						)
-					){
-						self._stack.push({
-							auto: obj.auto,
-							once: obj.once,
-							name: name,
-							arg: arguments
-						});
-						
-						self._history.push(name);
-					}
-					
-					// avoid recursive invocation
-					setTimeout(function(){
-						self._next();
-					}, 0);
-					
-					return host; // chain
-				}
-			}
-	    }
-	}
-};
-
-ASQ_proto = {
-	_items: {},
-    _stack: [],
-    _history: [],
-    
-    initialize: function(host, items){
-    	var self = this;
-    
-    	self.host = host;
-    	self._presetItems = items;
-    },
-    
-    /**
-     * resume the paused executing queue
-     */
-    resume: function(){
-    	var self = this;
-    	self.processing = false;
-    	
-    	return self._next();
-    },
-    
-    _santitize: function(obj, undef){
-    	var self = this;
-    
-    	if(K.isPlainObject(obj)){
-    		// @type {boolean}
-    		if(obj.auto === undef){
-    			obj.auto = true;
-    		}
-    		
-    	}else{
-    		obj = {name: obj};
-    	}
-    	
-    	return K.mix({
-    		auto: true,
-    		once: false
-    	}, obj);
-    },
-    
-    _clean: function(){
-    	var self = this;
-    	self._items = {};
-    	self._history.length = 0;
-    },
-    
-    _next: function(){
-    	var self = this,
-    		current, fn;
-
-    	if(!self.processing && (current = self._stack.shift()) && (fn = self._items[current.name])){
-    		self.processing = true;
-    		
-    		// clean the method before executing
-    		if(current.once){
-    			self._items[current.name] = NOOP;
-    		}
-    	
-    		fn.apply(self.host, current.arg || []);
-    		
-    		return current.auto && self.resume();
-    	}
-    }
-};
-
-// ASQueue.Runner
-// ASQueue.Converter
-['Runner', 'Converter'].each(function(type){
-	var ASQ = ASQueue[type] = new Class(ASQ_proto);
-
-	K.mix(ASQ.prototype, ASQ_meta[type]);
-});
-
+    Switch,
+    ASQueue = require('util/asqueue');
 
 /**
  * @constructor
  *
  * @usage 
  *
- *  new Switch().plugin('lazyLoad', 'autoPlay'[, …]).init(options);
+ * new Switch().plugin('lazyLoad', 'autoPlay'[, …]).init(options);
  *
  * if no plugin is specified, the items will plainly switched with no effect
  */
@@ -254,14 +79,15 @@ Switch = new Class({
         itemOnCls: 		EMPTY, 		// 'J_cont-on',
 
         // the index of the first items activated when initializing
-        activeIndex: 	0,
-        
-        lifeCycle: 		['_before', '_on', '_after']
+        activeIndex: 	0
     },
     
     initialize: function(){
     	var self = this;
     	
+    	self.fireEvent(__CONSTRUCT);
+    	
+    	// initialization queue for dynamicly loading plugins
     	self._initializer = new ASQueue.Converter(self, [{
 	    		name: 'plugin',
 	    		auto: false,
@@ -278,8 +104,10 @@ Switch = new Class({
 	    	
 	    	'switchTo', 'prev', 'next'
     	]).on();
+    	
+    	// processing queue for switch life cycle
+    	self._lifeCycle = new ASQueue.Runner(self, self._lifeCycle);
     },
-    
 
     // @private
     // store the instance of plugin
@@ -287,6 +115,8 @@ Switch = new Class({
 
     // store the name of the plugins for indexing
     _plugin_names: [],
+	
+	_lifeCycle: ['_before', '_on', '_after'],
 	
 	/**
 	 * filter plugins to get the ones which need to be provided
@@ -347,7 +177,7 @@ Switch = new Class({
 
                 if(K.isString(plugin)){
                 
-                	// synchronous providing, because all plugins have been loaded
+                	// synchronous providing, for all plugins have been loaded
                     K.provide(PLUGIN_PREFIX + plugin.toLowerCase(), function(K, p){
                     	plugin = p;
                     });
@@ -405,8 +235,6 @@ Switch = new Class({
         // we can override plugin options here
         self.setOptions(options);
         o = self.options;
-        
-        self._lifeCycle = new ASQueue.Runner(self, o.lifeCycle);
 
         if(o.CSPre){
             o.CSPre = String(o.CSPre).trim() + ' ';
@@ -550,30 +378,37 @@ Switch = new Class({
     // @param {boolean} force force to switching
     switchTo: function(index, force){
         var self = this;
-
-        if(force || self.activeIndex !== index){
         
-        	self._lifeCycle.run();
-            // self._prepareSwitch(index);
-            // self.activeIndex = index;
-            // self.fireEvent(EVENT_ON_SWITCH);
-            // self.pageCounters && self.pageCounters.set('text', index + 1);
-        }
+        self.force = force;
+        self.expectIndex = index;
+        
+        self._lifeCycle.run();
 
         return self;
     },
     
+    // life cycle: before switching
     _before: function(){
-    	var self = this;
-    
-    	self.fireEvent(EVENT_BEFORE_SWITCH, [self.activeIndex, index]);
+    	var self = this, index = self.expectIndex;
+    	
+    	if(self.force || self.activeIndex !== index){
+    		self.fireEvent(EVENT_BEFORE_SWITCH, [self.activeIndex, index]);
+    	}else{
+    		self._lifeCycle.stop();
+    	}
     },
     
+    // life cycle: on switching
     _on: function(){
+    	this.fireEvent(EVENT_ON_SWITCH);
     },
     
+    // life cycle: after switching
     _after: function(){
-    }
+    	var self = this;
+    	
+    	self.pageCounters && self.pageCounters.set('text', self.activeIndex + 1);
+    },
 
     prev: function(e){
         e && e.preventDefault();
@@ -629,11 +464,17 @@ return Switch;
 
 /**
  change log:
+ 2011-08-09  Kael:
+ - complete the whole life cycle
+ 
+ 2011-08-08  Kael:
+ - complete ASQueue.Converter and ASQueue.Runner. TODO[08-07].A
  
  2011-08-07  Kael:
  TODO:
- - ASQueue::convert, method to convert the exist methods as ASQueue methods
- - ASQueue::run, method to run a specific list of methods
+ √  A. ASQ	
+ 		ASQueue::convert, method to convert the exist methods as ASQueue methods
+ 		ASQueue::run, method to run a specific list of methods
  
  2011-08-05  Kael:
  - migrate all of the current plugins to loader

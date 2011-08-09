@@ -1,3 +1,8 @@
+/**
+ * Switch Plugin: Auto play
+ * author  Kael Zhang
+ */
+
 KM.define({
     name: 'autoPlay',
     options: {

@@ -1,5 +1,6 @@
 /**
- * switch plugin: carousel
+ * Switch Plugin: Carousel Effect
+ * author  Kael Zhang
  */
 
 KM.define(['fx/tween', 'fx/easing'], function(K, require){
@@ -91,7 +92,7 @@ return {
 
         self.addEvent(EVENT_ON_SWITCH, function(){
             var t = self,
-                active = t.activeIndex;
+                active = t.activeIndex = t.expectIndex;
 
             t._dealBtn();
 

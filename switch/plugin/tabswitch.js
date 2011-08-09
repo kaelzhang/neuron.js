@@ -1,3 +1,8 @@
+/**
+ * Switch Plugin: Tab Switching
+ * author  Kael Zhang
+ */
+
 KM.define({
     name: 'tabSwitch',
     // no plugins will be added after this one
@@ -19,7 +24,7 @@ KM.define({
         self.addEvent(EVENT_ON_SWITCH, function(){
             var t = self;
                 o = t.options,
-                activeIndex = t.activeIndex;
+                activeIndex = t.activeIndex = t.expectIndex;
 
             t.triggers[activeIndex] && t.triggers[activeIndex].addClass(o.triggerOnCls);
             t.items[activeIndex] && t.items[activeIndex].addClass(o.itemOnCls);
