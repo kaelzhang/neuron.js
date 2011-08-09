@@ -2,13 +2,14 @@
  * module  asqueue
  * author  Kael Zhang
 
- * Asynchronous and Synchronous Queue: 
- * - Converter: put all specified methods into an executing queue before initialization methods completed
- * - Runner: or execute a specified list of methods
- * which could:
- * - keep the executing ORDER even if the queue is mixed with both asynchronous and synchronous methods
- * - make sure method A will be executed before method B if specified
- * - make sure a method will be executed only once
+ Asynchronous and Synchronous Queue: 
+ - Converter: put all specified methods into an executing queue before initialization methods completed
+ - Runner: execute a specified list of methods
+ 
+ which could:
+ - keep the executing ORDER even if the queue is mixed with both asynchronous and synchronous methods
+ - make sure method A will be executed before method B if assigned to
+ - make sure a method will be executed only once if specified 
  
  <code>
  	// .plugin method is an asynchronous method, but .init method relies on the effect which the .plugin method caused
