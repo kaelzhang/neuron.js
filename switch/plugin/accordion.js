@@ -33,40 +33,53 @@ return {
     },
     
     init: function(self){
-    	function getFx(element){
-    		var EFFECT_KEY = '_s_accordion',
-    			effect = element.retrieve(EFFECT_KEY);
+    	var EFFECT_KEY = '_s_accordion',
+    		o = self.options,
+    		fx = o.fx,
+    		on_complete = [],
+    		active_cls = o.itemOnCls;
+    	
+    	delete o.fx;
+    
+    	function getFx(element, offset){
+    		var effect = element.retrieve(EFFECT_KEY);
     		
     		if(!effect){
-    			effect = new Tween(element, fx);
+    			effect = new Tween(
+    				element, 
+    				K.mix({
+    					onComplete: function(){
+    						var cb = on_complete[offset];
+    						cb && cb();
+    					}
+    				}, fx)
+    			);
     			element.store(EFFECT_KEY, effect);
     		}	
     		
     		return effect;
     	};
     	
-    	function checkComplete(){
-    		if( -- counter < 0 ){
-    			// self.activeIndex = self.expectIndex;
+    	function setFxCallback(active, expect){
+    		delete on_complete[active];
+    		delete on_complete[expect];
+    	
+    		on_complete[active] = function(){
+    			self.items[active].removeClass(active_cls);
+    		}
+    		
+    		on_complete[expect] = function(){
+    			self.items[expect].addClass(active_cls);
+    			self.fireEvent(EVENT_COMPLETE_SWITCH);
     		}
     	};
     	
     	function chk(a){
     		return a || a === 0;
     	};
-    
-    	var o = self.options,
-    		fx = o.fx,
-    		counter = 0;
-    	
-    	delete o.fx;
     	
     	if(!fx.property){
             fx.property = o.property;
-        };
-
-        fx.onComplete = function(){
-            checkComplete();
         };
 
         self.addEvent(EVENT_AFTER_INIT, function(){
@@ -87,10 +100,9 @@ return {
                 active = t.activeIndex,
                 expect = t.expectIndex;
                 
-            counter = 1;
-                
-            getFx(t.items[active]).start(o.normalSize);
-            getFx(t.items[expect]).start(o.activeSize);
+            setFxCallback(active, expect);    
+            getFx(t.items[active], active).start(o.normalSize);
+            getFx(t.items[expect], expect).start(o.activeSize);
             
             
 /**
@@ -118,8 +130,6 @@ return {
  */
  			// set expectIndex as activeIndex immediately after fx started
             t.activeIndex = expect;
-            
-            // currentTriggerClass(false, active);
         });
     }
 }
