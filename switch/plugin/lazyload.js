@@ -14,8 +14,6 @@ function getLazyData(container){
 	return data || '';
 };
 
-var EVENT_BEFORE_INIT = 'beforeInit';
-
 return {
     // name为一个插件声明所必需的,若name未定义,则会被认为是无效插件
     name: 'lazyLoad',
@@ -41,8 +39,10 @@ return {
                 lazyLoadTextarea.dispose();
             }
         };
+        
+        var EVENTS = self.get('EVENTS');
 
-        self.addEvent(EVENT_BEFORE_INIT, renderData);
+        self.addEvent(EVENTS.BEFORE_INIT, renderData);
     }
 };
 

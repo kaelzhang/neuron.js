@@ -6,13 +6,7 @@
 KM.define(['fx/tween', 'fx/easing'], function(K, require){
 
 var Tween = require('fx/tween'),
-	Easing = require('fx/easing'),
-	
-	EVENT_BEFORE_INIT = 'beforeInit',
-    EVENT_AFTER_INIT = 'afterInit',
-    EVENT_BEFORE_SWITCH = 'beforeSwitch',
-    EVENT_ON_SWITCH = 'switching',
-    EVENT_COMPLETE_SWITCH = 'completeSwitch';
+	Easing = require('fx/easing');
     
     
 // 检查舞台，删除多余的trigger
@@ -49,7 +43,8 @@ return {
     init: function(self){
         var o = self.options,
             fx = o.fx,
-            _offset_direction = 'offset' + o.direction.capitalize();
+            _offset_direction = 'offset' + o.direction.capitalize(),
+            EVENTS = self.get('EVENTS');
 
         function currentTriggerClass(remove, index){
             var t = self,
@@ -66,15 +61,15 @@ return {
         };
 
         fx.onComplete = function(){
-            self.fireEvent(EVENT_COMPLETE_SWITCH);
+            self.fireEvent(EVENTS.COMPLETE_SWITCH);
         };
 
-        self.addEvent(EVENT_BEFORE_INIT, function(){
+        self.addEvent(EVENTS.BEFORE_INIT, function(){
             self.effect = new Tween(self.container, fx);
             delete self.options.fx;
         });
 
-        self.addEvent(EVENT_AFTER_INIT, function(){
+        self.addEvent(EVENTS.AFTER_INIT, function(){
             checkStage(self);
 
             var t = self,
@@ -86,11 +81,11 @@ return {
             t._dealBtn();
         });
 
-        self.addEvent(EVENT_BEFORE_SWITCH, function(){
+        self.addEvent(EVENTS.BEFORE_SWITCH, function(){
             currentTriggerClass(true);
         });
 
-        self.addEvent(EVENT_ON_SWITCH, function(){
+        self.addEvent(EVENTS.ON_SWITCH, function(){
             var t = self,
                 active = t.activeIndex = t.expectIndex;
 

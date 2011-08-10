@@ -9,10 +9,9 @@ KM.define({
     final_: true,
 
     init: function(self){
-    	var EVENT_BEFORE_SWITCH = 'beforeSwitch',
-    		EVENT_ON_SWITCH = 'switching';
+    	var EVENTS = self.get('EVENTS');
     
-        self.addEvent(EVENT_BEFORE_SWITCH, function(){
+        self.addEvent(EVENTS.BEFORE_SWITCH, function(){
             var t = self;
                 o = t.options,
                 activeIndex = t.activeIndex;
@@ -21,7 +20,7 @@ KM.define({
 			t.items[activeIndex] && t.items[activeIndex].removeClass(o.itemOnCls);
         });
 
-        self.addEvent(EVENT_ON_SWITCH, function(){
+        self.addEvent(EVENTS.ON_SWITCH, function(){
             var t = self;
                 o = t.options,
                 activeIndex = t.activeIndex = t.expectIndex;

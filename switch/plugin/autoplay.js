@@ -23,12 +23,7 @@ KM.define({
             autoPlayTimer = KM.delay(autoplay, o.interval),
             paused = false,
             
-            __CONSTRUCT = 'construct',
-            EVENT_BEFORE_INIT = 'beforeInit',
-		    EVENT_AFTER_INIT = 'afterInit',
-		    EVENT_BEFORE_SWITCH = 'beforeSwitch',
-		    EVENT_ON_SWITCH = 'switching',
-		    EVENT_COMPLETE_SWITCH = 'completeSwitch';
+            EVENTS = self.get('EVENTS');
 		    
 		function pause(){
 			paused = true;
@@ -40,14 +35,14 @@ KM.define({
 			autoPlayTimer.start();
 		};
 		    
-		self.addEvent(__CONSTRUCT, function(){
+		self.addEvent(EVENTS.__CONSTRUCT, function(){
 			K.mix(self, {
 				pause: pause,
 				resume: resume
 			})
 		});
 
-        self.addEvent(EVENT_AFTER_INIT, function(){
+        self.addEvent(EVENTS.AFTER_INIT, function(){
             var t = self;
 
             o.hoverStop && t.container.addEvents({
@@ -65,11 +60,11 @@ KM.define({
         });
 
         // 
-        self.addEvent(EVENT_BEFORE_SWITCH, function(){
+        self.addEvent(EVENTS.BEFORE_SWITCH, function(){
             autoPlayTimer.cancel();
         });
             
-        self.addEvent(EVENT_COMPLETE_SWITCH, function(){
+        self.addEvent(EVENTS.COMPLETE_SWITCH, function(){
             !paused && autoPlayTimer.start();
         });
     }

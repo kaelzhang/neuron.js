@@ -7,12 +7,7 @@ KM.define(['fx/tween', 'fx/easing'], function(K, require){
 
 var Tween = require('fx/tween'),
 	Easing = require('fx/easing'),
-
-	EVENT_BEFORE_INIT = 'beforeInit',
-    EVENT_AFTER_INIT = 'afterInit',
-    EVENT_BEFORE_SWITCH = 'beforeSwitch',
-    EVENT_ON_SWITCH = 'switching',
-    EVENT_COMPLETE_SWITCH = 'completeSwitch',
+	
     EVENT_ON_ITEM_ACTIVE = 'itemActive',
     EVENT_ON_ITEM_DEACTIVE = 'itemDeactive',
     
@@ -36,6 +31,7 @@ return {
     
     init: function(self){
     	var EFFECT_KEY = '_s_accordion',
+    		EVENTS = self.get('EVENTS'),
     		o = self.options,
     		fx = o.fx,
     		on_complete = [],
@@ -74,7 +70,7 @@ return {
     		on_complete[expect] = function(){
     			self.items[expect].addClass(active_cls);
     			self.fireEvent(EVENT_ON_ITEM_ACTIVE, [expect]);
-    			self.fireEvent(EVENT_COMPLETE_SWITCH);
+    			self.fireEvent(EVENTS.COMPLETE_SWITCH);
     		}
     	};
     	
@@ -86,7 +82,7 @@ return {
             fx.property = o.property;
         };
 
-        self.addEvent(EVENT_AFTER_INIT, function(){
+        self.addEvent(EVENTS.AFTER_INIT, function(){
             var t = self,
                 active = t.activeIndex;
                 
@@ -99,7 +95,7 @@ return {
           	}
         });
 
-        self.addEvent(EVENT_ON_SWITCH, function(){
+        self.addEvent(EVENTS.ON_SWITCH, function(){
             var t = self,
                 active = t.activeIndex,
                 expect = t.expectIndex;

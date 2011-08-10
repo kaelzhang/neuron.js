@@ -455,8 +455,23 @@ Switch = new Class({
                 self.nextBtn.setStyles(enable);
             }
         }
+    },
+    
+    get: function(key){
+    	return this.constructor[key];
     }
 });
+
+
+Switch.EVENTS = {
+	__CONSTRUCT		: __CONSTRUCT,
+	BEFORE_INIT		: EVENT_BEFORE_INIT,
+    AFTER_INIT		: EVENT_AFTER_INIT,
+    BEFORE_SWITCH	: EVENT_BEFORE_SWITCH,
+    ON_SWITCH		: EVENT_ON_SWITCH,
+    COMPLETE_SWITCH	: EVENT_COMPLETE_SWITCH
+};
+
 
 return Switch;
 
