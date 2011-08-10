@@ -8,7 +8,6 @@
  */
  
 /**
- 
  life cycle --------->  Switch  <--------- event interface
                         ^   ^ 
                         |   |
@@ -17,7 +16,8 @@
                                       only allowd for methods about life cycle
  */ 
 
-KM.define(['util/asqueue'], function(K, require){
+KM.define(['util/asqueue' // , 'event/multi'
+], function(K, require){
 
 var __CONSTRUCT = 'construct',
 	EVENT_BEFORE_INIT = 'beforeInit',
@@ -32,7 +32,9 @@ var __CONSTRUCT = 'construct',
     EMPTY = '',
 
     Switch,
+    // MultiEvent = require('event/multi'),
     ASQueue = require('util/asqueue');
+    
 
 /**
  * @constructor
@@ -456,8 +458,6 @@ Switch = new Class({
     }
 });
 
-Switch._ASQ = ASQueue;
-
 return Switch;
 
 });
@@ -466,6 +466,12 @@ return Switch;
  change log:
  2011-08-09  Kael:
  - complete the whole life cycle
+ 
+ TODO:
+ A. add multi-event support
+ B. add event interface of onActive and onDeactive
+ C. dom santitizer for all plugins
+ D. manage all event method and names of switch core and plugins
  
  2011-08-08  Kael:
  - complete ASQueue.Converter and ASQueue.Runner. TODO[08-07].A

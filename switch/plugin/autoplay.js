@@ -21,11 +21,31 @@ KM.define({
 
         var o = self.options,
             autoPlayTimer = KM.delay(autoplay, o.interval),
+            paused = false,
+            
+            __CONSTRUCT = 'construct',
             EVENT_BEFORE_INIT = 'beforeInit',
 		    EVENT_AFTER_INIT = 'afterInit',
 		    EVENT_BEFORE_SWITCH = 'beforeSwitch',
 		    EVENT_ON_SWITCH = 'switching',
 		    EVENT_COMPLETE_SWITCH = 'completeSwitch';
+		    
+		function pause(){
+			paused = true;
+			autoPlayTimer.cancel();
+		};
+
+		function resume(){
+			paused = false;
+			autoPlayTimer.start();
+		};
+		    
+		self.addEvent(__CONSTRUCT, function(){
+			K.mix(self, {
+				pause: pause,
+				resume: resume
+			})
+		});
 
         self.addEvent(EVENT_AFTER_INIT, function(){
             var t = self;
@@ -50,7 +70,15 @@ KM.define({
         });
             
         self.addEvent(EVENT_COMPLETE_SWITCH, function(){
-            autoPlayTimer.start();
+            !paused && autoPlayTimer.start();
         });
     }
 });
+
+/**
+ TODO:
+ A. add api: pause and resume
+
+
+
+ */

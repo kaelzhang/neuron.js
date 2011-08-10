@@ -13,6 +13,8 @@ var Tween = require('fx/tween'),
     EVENT_BEFORE_SWITCH = 'beforeSwitch',
     EVENT_ON_SWITCH = 'switching',
     EVENT_COMPLETE_SWITCH = 'completeSwitch',
+    EVENT_ON_ITEM_ACTIVE = 'itemActive',
+    EVENT_ON_ITEM_DEACTIVE = 'itemDeactive',
     
     NULL = null;
 
@@ -28,8 +30,8 @@ return {
         
         property: 'height',
         
-        activeSize: NULL,
-        normalSize: NULL
+        activeValue: NULL,
+        normalValue: NULL
     },
     
     init: function(self){
@@ -66,10 +68,12 @@ return {
     	
     		on_complete[active] = function(){
     			self.items[active].removeClass(active_cls);
+    			self.fireEvent(EVENT_ON_ITEM_DEACTIVE, [active]);
     		}
     		
     		on_complete[expect] = function(){
     			self.items[expect].addClass(active_cls);
+    			self.fireEvent(EVENT_ON_ITEM_ACTIVE, [expect]);
     			self.fireEvent(EVENT_COMPLETE_SWITCH);
     		}
     	};
@@ -86,12 +90,12 @@ return {
             var t = self,
                 active = t.activeIndex;
                 
-          	if(!chk(o.activeSize)){
-          		o.activeSize = t.items[active].getStyle(fx.property);
+          	if(!chk(o.activeValue)){
+          		o.activeValue = t.items[active].getStyle(fx.property);
           	}
           	
-          	if(!chk(o.normalSize)){
-          		o.normalSize = t.items[(active + 1) % t.items.length].getStyle(fx.property);
+          	if(!chk(o.normalValue)){
+          		o.normalValue = t.items[(active + 1) % t.items.length].getStyle(fx.property);
           	}
         });
 
@@ -101,12 +105,12 @@ return {
                 expect = t.expectIndex;
                 
             setFxCallback(active, expect);    
-            getFx(t.items[active], active).start(o.normalSize);
-            getFx(t.items[expect], expect).start(o.activeSize);
+            getFx(t.items[active], active).start(o.normalValue);
+            getFx(t.items[expect], expect).start(o.activeValue);
             
             
 /**
- a: active,  e: expect,  n: normal, normalSize: 0, activeSize: 3;  'e' will be activated
+ a: active,  e: expect,  n: normal, normalSize: 0, activeValue: 3;  'e' will be activated
  ////////////////////////////////////////////////////////////////////////////////////////////
  
        | 2. but, at this point                       |
