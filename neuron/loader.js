@@ -167,7 +167,7 @@ var	_mods = {},			// map: identifier -> module
 		),
 		
 		/**
-		 * assert.css from Frank Wang
+		 * assert.css from Frank Wang [lifesinger@gmail.com]
 		 */
 		css: ( DOC.createElement('css').attachEvent ?
 				function(node, callback){
@@ -1158,7 +1158,8 @@ function isAbsoluteURI(uri){
  * realpath('a/b/c/') ==> 'a/b/c/'
  * # realpath('a//b/c') ==> 'a/b/c' ?
  * realpath('a//b/c') ==> 'a//b/c'   - for 'a//b/c' is a valid uri
- * by Frank Wang -> http://jsperf.com/memoize
+ * by Frank Wang [lifesinger@gmail.com] 
+     -> http://jsperf.com/memoize
  */
 function realpath(path) {
 	var old = path.split('/'),
