@@ -12,8 +12,7 @@
                                       only allowd for methods about life cycle
  */
  
-KM.define(['util/asqueue' // , 'event/multi'
-], function(K, require){
+KM.define(['util/asqueue' /* , 'event/multi' */ ], function(K, require){
 
 
 // the event name of __CONSTRUCT begins with 2 underscores, 
@@ -24,8 +23,20 @@ var __CONSTRUCT = '__construct',
     EVENT_BEFORE_SWITCH = 'beforeSwitch',
     EVENT_ON_SWITCH = 'switching',
     EVENT_COMPLETE_SWITCH = 'completeSwitch',
+    EVENT_NAV_ENABLE = 'navEnable',
+    EVENT_NAV_DISABLE = 'navDisable',
     
     PLUGIN_PREFIX = 'switch/plugin/',
+    
+    NAVITATOR_DISABLE_STYLE = {
+        opacity	: .3,
+        cursor	: 'default'
+    },
+
+    NAVITATOR_ENABLE_STYLE = {
+        opacity	: 1,
+        cursor	: ''
+    },
 
     NOOP = function(){},
     EMPTY = '',
@@ -82,7 +93,15 @@ Switch = new Class({
         itemOnCls: 		EMPTY, 		// 'J_cont-on',
 
         // the index of the first items activated when initializing
-        activeIndex: 	0
+        activeIndex: 	0,
+        
+        onNavEnable:	function(btn, which){
+        	btn.setStyles(NAVITATOR_ENABLE_STYLE);
+        },
+        
+        onNavDisable:	function(btn, which){
+        	btn.setStyles(NAVITATOR_DISABLE_STYLE);
+        }
     },
     
     initialize: function(){
@@ -290,14 +309,16 @@ Switch = new Class({
     _initDom: function(){
         var self = this,
             o = self.options,
-            pre = o.CSPre;
+            pre = o.CSPre,
+            nav = self.nav = {};
 
         self.items = self.container.getElements(o.itemCS);
         self.triggers = o.triggerCS ? $$(pre + o.triggerCS) : [];
         self.pageCounters = o.countCS ? getNoEmptyElements(pre + o.countCS) : null;
 
-        o.prevCS && (self.prevBtn = getNoEmptyElements(pre + o.prevCS));
-        o.nextCS && (self.nextBtn = getNoEmptyElements(pre + o.nextCS));
+		
+        o.prevCS && (nav.prev = getNoEmptyElements(pre + o.prevCS));
+        o.nextCS && (nav.next = getNoEmptyElements(pre + o.nextCS));
         
         self._itemData();
     },
@@ -338,21 +359,22 @@ Switch = new Class({
 
 	// _checkPages: function(){
 	//	if(self.pages < 2){
-    //        self.leftEnd = self.rightEnd = true;
+    //        self.noprev = self.rightEnd = true;
     //    }
 	// },
 
-    // bind navigators and triggers
+    // bind navgators and triggers
     _bindNav: function(){
         var self = this,
-            o = this.options,
+            o = self.options,
+            nav = self.nav,
             type = o.triggerType,
             i = 0,
-            len = this.triggers.length,
+            len = self.triggers.length,
             trigger;
             
-        self.prevBtn && self.prevBtn.addEvent(type, self.prev);
-        self.nextBtn && self.nextBtn.addEvent(type, self.next);
+        nav.prev && nav.prev.addEvent(type, self.prev);
+        nav.next && nav.next.addEvent(type, self.next);
 
         for(; i < len; ++ i){
 
@@ -434,7 +456,7 @@ Switch = new Class({
         var self = this;
 
         // 限制 activeIndex 的范围
-        !self.leftEnd && self.switchTo((self.activeIndex - 1).limit(0, self.pages - 1));
+        !self.noprev && self.switchTo((self.activeIndex - 1).limit(0, self.pages - 1));
     },
 
     next: function(e){
@@ -449,49 +471,37 @@ Switch = new Class({
 	 * method to check the number of pages to determine whether the Switch instance meet either of the 2 ends
 	 * which could be overridden for infinite carousel and step loading
 	 */
-    _isLeftEnd: function(){
+    _isNoprev: function(){
     	var self = this;
     
-    	return self.leftEnd = !self.activeIndex;
+    	return self.noprev = !self.activeIndex;
     },
     
-    _isRightEnd: function(){
+    _isNonext: function(){
     	var self = this;
     	
-    	return self.rightEnd = (self.activeIndex >= self.pages - 1);
+    	return self.nonext = (self.activeIndex >= self.pages - 1);
     },
 
     // disable or enable navigation buttons
  
  	// TODO:
  	// use event instead
-    _dealBtn: function(){
-        var disable = {
-                opacity: .3,
-                cursor: 'default'
-            },
-
-            enable = {
-                opacity: 1,
-                cursor: ''
-            },
-            self = this;
-
-        if(self.prevBtn){
-            if(self._isLeftEnd()){
-                self.prevBtn.setStyles(disable);
-            }else{
-                self.prevBtn.setStyles(enable);
-            }
-        }
-
-        if(self.nextBtn){
-            if(self._isRightEnd()){
-                self.nextBtn.setStyles(disable);
-            }else{
-                self.nextBtn.setStyles(enable);
-            }
-        }
+    _dealNavs: function(){
+        var self = this;
+        
+        self._dealNav('prev');
+        self._dealNav('next');
+    },
+    
+    _dealNav: function(type){
+    	var self = this, nav = self.nav[type], isEnd;
+    
+    	if(nav){
+    		isEnd = self['_isNo' + type]();
+    		
+    		self.fireEvent((isEnd ? EVENT_NAV_DISABLE : EVENT_NAV_ENABLE), [nav, type]);
+    	}
     },
     
     get: function(key){

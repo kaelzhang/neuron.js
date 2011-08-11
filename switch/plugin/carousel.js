@@ -78,7 +78,7 @@ return {
             // there's a bug about moo tools Fx: the container's position must be specified before you use Fx,
             // or the first Fx will have no animation
             t.container.setStyle(o.direction, - t.items[active * t.options.move][_offset_direction] );
-            t._dealBtn();
+            t._dealNavs();
         });
 
         self.addEvent(EVENTS.BEFORE_SWITCH, function(){
@@ -89,7 +89,7 @@ return {
             var t = self,
                 active = t.activeIndex = t.expectIndex;
 
-            t._dealBtn();
+            t._dealNavs();
 
             t.effect.start( - ( t.items[active * t.options.move] )[_offset_direction] );
 
