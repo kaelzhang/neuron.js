@@ -1,9 +1,5 @@
 /*!
  * module  switch
- 	- ASQueue
- 	- plugin host
- 	- switch/core
- 	
  * author  Kael Zhang
  */
  
@@ -14,12 +10,15 @@
                         |   |
  plugin host -----------|   |-------- prototype inheritance: 
                                       only allowd for methods about life cycle
- */ 
-
+ */
+ 
 KM.define(['util/asqueue' // , 'event/multi'
 ], function(K, require){
 
-var __CONSTRUCT = 'construct',
+
+// the event name of __CONSTRUCT begins with 2 underscores, 
+// preventing user from configuring __CONSTRUCT event by Switch options
+var __CONSTRUCT = '__construct',
 	EVENT_BEFORE_INIT = 'beforeInit',
     EVENT_AFTER_INIT = 'afterInit',
     EVENT_BEFORE_SWITCH = 'beforeSwitch',
@@ -34,6 +33,12 @@ var __CONSTRUCT = 'construct',
     Switch,
     // MultiEvent = require('event/multi'),
     ASQueue = require('util/asqueue');
+    
+function getNoEmptyElements(CS){
+	var elements = $$(CS);
+	
+	return elements.length ? elements : null;
+};
     
 
 /**
@@ -54,10 +59,6 @@ Switch = new Class({
 
         // move {int} the number of items a single switch will move
         move: 1,
-
-        // to do
-        // moveRelative: false,
-        // noClick: false,
 
         triggerType: 	'click',
 
@@ -85,9 +86,15 @@ Switch = new Class({
     },
     
     initialize: function(){
-    	var self = this;
+    	var self = this,
+    		bind = K.bind;
     	
     	self.fireEvent(__CONSTRUCT);
+    	
+    	bind('prev', self);
+    	bind('next', self);
+    	bind('plugin', self);
+    	bind('init', self);
     	
     	// initialization queue for dynamicly loading plugins
     	self._initializer = new ASQueue.Converter(self, [{
@@ -96,7 +103,6 @@ Switch = new Class({
 	    		
 	    		// after initialization, registering new plugin is forbidden
 	    		before: 'init'
-	    		
 	    	}, {
 	    		name: 'init',
 	    		
@@ -118,6 +124,10 @@ Switch = new Class({
     // store the name of the plugins for indexing
     _plugin_names: [],
 	
+	/**
+	 * Life Cycle
+	 * key feature of switch module
+	 */
 	_lifeCycle: ['_before', '_on', '_after'],
 	
 	/**
@@ -197,7 +207,7 @@ Switch = new Class({
 	
 	/**
 	 * @param {Object} plugin
-	 * @return {boolean} whether is the final plugin
+	 * @return {boolean} whether is the a plugin
 	 */
 	_addOnePlugin: function(plugin){
 		var self = this;
@@ -284,14 +294,19 @@ Switch = new Class({
 
         self.items = self.container.getElements(o.itemCS);
         self.triggers = o.triggerCS ? $$(pre + o.triggerCS) : [];
-        self.pageCounters = o.countCS ? $$(pre + o.countCS) : false;
+        self.pageCounters = o.countCS ? getNoEmptyElements(pre + o.countCS) : null;
 
-        o.prevCS && (self.prevBtn = $$(pre + o.prevCS)[0]);
-        o.nextCS && (self.nextBtn = $$(pre + o.nextCS)[0]);
+        o.prevCS && (self.prevBtn = getNoEmptyElements(pre + o.prevCS));
+        o.nextCS && (self.nextBtn = getNoEmptyElements(pre + o.nextCS));
+        
+        self._itemData();
+    },
 
-        self.length = self.items.length;
-
-
+	_itemData: function(){
+		var self = this, o = self.options;
+	
+		self.length = self.items.length;
+		
 		/**
          calculate how many pages the Switcher has:
          
@@ -319,11 +334,13 @@ Switch = new Class({
          -> page = {1 + (length - stage)/move}
         */
         self.pages = 1 + Math.ceil( (self.length - o.stage) / (o.move || 1) );
+	},
 
-        if(self.pages < 2){
-            self.leftEnd = self.rightEnd = true;
-        }
-    },
+	// _checkPages: function(){
+	//	if(self.pages < 2){
+    //        self.leftEnd = self.rightEnd = true;
+    //    }
+	// },
 
     // bind navigators and triggers
     _bindNav: function(){
@@ -334,8 +351,8 @@ Switch = new Class({
             len = this.triggers.length,
             trigger;
             
-        self.prevBtn && self.prevBtn.addEvent(type, self.prev.bind(self));
-        self.nextBtn && self.nextBtn.addEvent(type, self.next.bind(self));
+        self.prevBtn && self.prevBtn.addEvent(type, self.prev);
+        self.nextBtn && self.nextBtn.addEvent(type, self.next);
 
         for(; i < len; ++ i){
 
@@ -426,8 +443,28 @@ Switch = new Class({
 
         !self.rightEnd && self.switchTo((self.activeIndex + 1).limit(0, self.pages - 1));
     },
+    
+    
+    /**
+	 * method to check the number of pages to determine whether the Switch instance meet either of the 2 ends
+	 * which could be overridden for infinite carousel and step loading
+	 */
+    _isLeftEnd: function(){
+    	var self = this;
+    
+    	return self.leftEnd = !self.activeIndex;
+    },
+    
+    _isRightEnd: function(){
+    	var self = this;
+    	
+    	return self.rightEnd = (self.activeIndex >= self.pages - 1);
+    },
 
-    // 激活或者禁用导航按钮，并设置标识状态
+    // disable or enable navigation buttons
+ 
+ 	// TODO:
+ 	// use event instead
     _dealBtn: function(){
         var disable = {
                 opacity: .3,
@@ -441,7 +478,7 @@ Switch = new Class({
             self = this;
 
         if(self.prevBtn){
-            if(self.leftEnd = !self.activeIndex){
+            if(self._isLeftEnd()){
                 self.prevBtn.setStyles(disable);
             }else{
                 self.prevBtn.setStyles(enable);
@@ -449,7 +486,7 @@ Switch = new Class({
         }
 
         if(self.nextBtn){
-            if(self.rightEnd = (self.activeIndex >= self.pages - 1) ){
+            if(self._isRightEnd()){
                 self.nextBtn.setStyles(disable);
             }else{
                 self.nextBtn.setStyles(enable);
@@ -479,21 +516,28 @@ return Switch;
 
 /**
  change log:
+ 2011-08-11  Kael:
+ - add support to multiple prev and next button
+ - split several methods, add ._itemData, ._isLeftEnd, ._isRightEnd
+ 
+ 2011-08-10  Kael:
+ - TODO[08.09].[B,D]
+ 
  2011-08-09  Kael:
  - complete the whole life cycle
  
  TODO:
  A. add multi-event support
- B. add event interface of onActive and onDeactive
+ √ B. add event interface of onActive and onDeactive
  C. dom santitizer for all plugins
- D. manage all event method and names of switch core and plugins
+ √ D. manage all event method and names of switch core and plugins
  
  2011-08-08  Kael:
  - complete ASQueue.Converter and ASQueue.Runner. TODO[08-07].A
  
  2011-08-07  Kael:
  TODO:
- √  A. ASQ	
+ √ A. ASQ	
  		ASQueue::convert, method to convert the exist methods as ASQueue methods
  		ASQueue::run, method to run a specific list of methods
  
@@ -515,12 +559,15 @@ return Switch;
  E. Initializer: allow parallelly executing many methods of the same type
  F. deal with the letter case of plugin names
  
- 2010-01-05  Kael:
- - 修正一个nextBtn没有正确禁用的问题
- 
- 2010-12-23  Kael:
+ 2010-02-23  Kael:
  - 处理activeIndex属性的一个问题，将其的初始化从插件里移动到本体中进行
  - 优化了plugin的调用链，优化部分性能
  - 加入autoplay
  - 修正本体中，一个计算分页值的算法错误
+ 
+ 2010-01-05  Kael:
+ - 修正一个nextBtn没有正确禁用的问题
+ 
+ 2009-10-20  Kael:
+ - 主体方法
  */
