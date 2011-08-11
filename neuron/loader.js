@@ -166,6 +166,9 @@ var	_mods = {},			// map: identifier -> module
 				}
 		),
 		
+		/**
+		 * assert.css from Frank Wang
+		 */
 		css: ( DOC.createElement('css').attachEvent ?
 				function(node, callback){
 					node.attachEvent('onload', callback);
@@ -1308,17 +1311,17 @@ K.mix(K, {
  - D*. detect if it fails to load a module file
  - √ E. [issue] if define a package after the definition of a certain module, the package association fails
  
- 2011-07-10  Kael:
+ 2011-06-10  Kael:
  - TODO[06-15].[E, A]
  
  milestone 2.0 ---------------------------
  
- 2011-07-07  Kael:
+ 2011-06-07  Kael:
  - fix a bug on regular expressions which could not properly remove the decorators(version and min) from uris
  - fix a bug when defining a module with different versions
  - change the way to determine the implicity of a module which will only relevant to the <name> param; remove the isImplicit flag from the '_define' method
  
- 2011-06-15  Kael:
+ 2011-05-15  Kael:
  - fix a bug, in ie6 on virtual machine, that the module could not load successfully, 
  	if onload event fired during insertion of the script node(interactive script fetched) 
  	
@@ -1344,14 +1347,14 @@ K.mix(K, {
  - √ ? K. explode the cache object of modules
  - L. optimize the calling chain of define and getOrdefine, use less step to get module idenfitier.
  
- 2011-06-14  Kael:
+ 2011-05-14  Kael:
  - TODO[06-08].A
  - add more annotations
  
- 2011-06-12  Kael:
+ 2011-05-12  Kael:
  - TODO[06-08].B
  
- 2011-06-10  Kael:
+ 2011-05-10  Kael:
  - add assetOnload.css
  - add support for css dependencies: TODO[05-17].H
  - add support for resources with search query
@@ -1361,7 +1364,7 @@ K.mix(K, {
  - A?. default configurations
  - B?. Loader Class support: to create various loader instances with different configurations
  
- 2011-06-08  Kael:
+ 2011-05-08  Kael:
  - tidy the status data of modules
  - modules defined in package files will be treated as library modules
  
@@ -1370,23 +1373,23 @@ K.mix(K, {
  		the module identifier should not be a pathname but absolute uri
  - √ B. tidy the logic about configuration, such as managing default settings, checking.
  
- 2011-06-07  Kael:
+ 2011-05-07  Kael:
  - fix a syntax exception when defining anonymous module in ie6-9
  
- 2011-06-05  Kael:
+ 2011-05-05  Kael:
  - TODO[05-27].A
  
- 2011-05-27  Kael:
+ 2011-04-27  Kael:
  - fix a bug of implicit module definition
  - fix a bug that the callback isn't able to be called when the module is already being providing
  
  TODO:
  - √ A. [issue] implicitly defined module dont properly saved as absolute uri
  
- 2011-05-26  Kael:
+ 2011-04-26  Kael:
  - TODO[05-17].C
  
- 2011-05-25  Kael: 95%!
+ 2011-04-25  Kael: 95%!
  - optimize call chain. create private methods with no type-detecting for arguments
  - module path will include location.search
  - config.enableCDN will affect module path
@@ -1395,7 +1398,7 @@ K.mix(K, {
  - remove analysisModuleName method
  - complete all functionalities relevant with package definition TODO[05-17].G
  
- 2011-05-24  Kael:
+ 2011-04-24  Kael:
  - require and define methods in inline docs and in module file will be different
  - TODO[05-17]['A', 'D', 'E1', 'B']
  - adjust annotations for advanced mode of closure compiler
@@ -1404,7 +1407,7 @@ K.mix(K, {
  - √ optimize and cache dependent modules and module infos
  - test TODO[05-17].B
  
- 2011-05-20  Kael:
+ 2011-04-20  Kael:
  - redesign the realization of modules, 
    distinguish the 2 different ways to define a module - on page or in a module file
  - redesign require method
@@ -1412,14 +1415,14 @@ K.mix(K, {
  
  milestone 1.0 ---------------------------
  
- 2011-05-19  Kael:
+ 2011-04-19  Kael:
  - # remove lazy quantifier from the regexp to match comments
  	choose lazy match afterwards
  
- 2011-05-18  Kael:
+ 2011-04-18  Kael:
  - remove comments before parsing dependencies from factory function
  
- 2011-05-17  Kael:
+ 2011-04-17  Kael:
  - memoize the result of analysisModuleName
  - santitize the logic of providing a module, split provideOne off from provide
  - complete basic work flow
@@ -1445,11 +1448,11 @@ K.mix(K, {
  			- √ warn, if a module's uri has not been specified
  - √ G. package association
  
- 2011-05-10  Kael:
+ 2011-04-10  Kael:
  - create main function of provide
  - add a new api, KM.pkg to define a package
  
- 2011-05-02  Kael:
+ 2011-04-05  Kael:
  - create main function of define
  
  2011-04-03  Kael: basic api design
