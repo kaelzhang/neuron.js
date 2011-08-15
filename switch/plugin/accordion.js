@@ -135,3 +135,12 @@ return {
 }
 
 });
+
+/**
+ TODO:
+ A. html santitizer for horizontal accordion, making the content of each item stable and no deformation during switching
+ 
+ */
+ 
+ 
+ 
