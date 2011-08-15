@@ -344,7 +344,8 @@ function bind_domready(){
 
 /**
  TODO:
- - add more user-agent datas. 
+ - add more user-agent datas.
+ - add constructor for DP.data 
 
  change log:
  2011-07-05  Kael:
