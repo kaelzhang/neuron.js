@@ -43,8 +43,6 @@ return new Class({
 		self.fn = onMotion;
 		self.eq = K.makeArray(equations);
 		
-		
-		
 		self.periodical = Math.round(1000 / this.options.fps);
 		
 		o.end < 0 && (o.end = 0);
@@ -59,10 +57,16 @@ return new Class({
 		var self = this,
 			o = self.options;
 	
-		self.time = + new Date - self.time;
+		self.time += + new Date - self.ts;
 		
 		if( !o.end || self.time < o.end ){
 			self._motion();
+			
+			/**
+			 * set the timing timestamp when a single frame completed
+			 * so that timer would not be affected by the executing of user functions and efficiency
+			 */
+			self.ts = + new Date;
 		}else{
 			self.time = o.end;
 			self._motion();
@@ -94,11 +98,16 @@ return new Class({
 	start: function(){
 		var self = this;
 		
-		if(self.timer.id) return;
-
-		self.time = self.options.begin;
-		self._startTimer();
-		self.fireEvent('start');
+		if(!self.timer.id){
+			self.time = self.options.begin;
+			
+			// timestamp
+			self.ts = + new Date();
+			self._startTimer();
+			self.fireEvent('start');
+		}
+		
+		return self;
 	},
 	
 	cancel: function(){
@@ -114,7 +123,7 @@ return new Class({
 	},
 	
 	resume: function(){
-		this._stopTimer().fireEvent('onResume');
+		this._startTimer().fireEvent('onResume');
 		return this;
 	},
 	
@@ -130,8 +139,7 @@ return new Class({
 	
 	_startTimer: function(){
 		var self = this;
-	
-		self.time = + new Date - self.time;
+		
 		self.timer.start();
 		
 		return self;
