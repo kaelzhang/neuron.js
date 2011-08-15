@@ -526,6 +526,11 @@ return Switch;
 
 /**
  change log:
+ 2011-08-15  Kael:
+ 
+ TODO:
+ A. add method .addItem .addTrigger
+ 
  2011-08-11  Kael:
  - add support to multiple prev and next button
  - split several methods, add ._itemData, ._isLeftEnd, ._isRightEnd
