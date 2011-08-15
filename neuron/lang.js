@@ -163,25 +163,20 @@ K.mix(K, {
 	 * method to encapsulate the delayed function
 	 */
 	delay: function(fn, delay, isInterval){
-		var timer;
-	
-		return {
+		var ret = {
 			start: function(){
-				this.cancel();
-				return timer = isInterval ? setInterval(fn, delay) : setTimeout(fn, delay);
+				ret.cancel();
+				return ret.id = isInterval ? setInterval(fn, delay) : setTimeout(fn, delay);
 			},
 			cancel: function(){
-				isInterval ? clearInterval(timer) : clearTimeout(timer);
-				return this;
+				var timer = ret.id;
+				
+				ret.id = isInterval ? clearInterval(timer) : clearTimeout(timer);
+				return ret;
 			}
-		}
-	},
-	
-	/**
-	 * 
-	 */
-	each: function(obj, fn, stop){
+		};
 		
+		return ret;
 	},
 	
 	makeArray: function(obj){
