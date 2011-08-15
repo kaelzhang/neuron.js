@@ -1,4 +1,4 @@
-KM.define(function(){
+KM.define([], function(){
 
 var Fx, instances = {}, timers = {};
 
@@ -37,6 +37,7 @@ Fx = new Class({
 		onStart: nil,
 		onCancel: nil,
 		onComplete: nil,
+		onStep: nil,
 		*/
 		fps: 60,
 		unit: false,
@@ -67,8 +68,11 @@ Fx = new Class({
 		}
 		
 		if (this.frame < this.frames){
-			var delta = this.transition(this.frame / this.frames);
-			this.set(this.compute(this.from, this.to, delta));
+			var delta = this.transition(this.frame / this.frames),
+				now = this.compute(this.from, this.to, delta);
+				
+			this.set(now);
+			this.fireEvent('step', [now]);
 		} else {
 			this.frame = this.frames;
 			this.set(this.compute(this.from, this.to, 1));
@@ -162,3 +166,10 @@ Fx.Durations = {'short': 250, 'normal': 500, 'long': 1000};
 return Fx;
 
 });
+
+/**
+ TODO:
+ A. CSS3 transition support
+ 
+ 
+ */
