@@ -43,7 +43,6 @@
  - AP.pick
  - FP.bind				!   -> KM.bind
  - FP.periodical		!	-> KM.delay
- - FP.pass				!
  - SP.stripScripts
  - AP.hexToRgb
  - AP.rgbToHex
@@ -76,9 +75,9 @@
  - Object.getLength
  - Object.keyOf
  - Object.contains
- - Object.toQueryString			-> KM.toQueryString
- - Number.each(alias)		!
- - String.uniqueID				-> KM.guid
+ - Object.toQueryString		-> KM.toQueryString
+ - Number.each(alias)	!
+ - String.uniqueID			-> KM.guid
  
  deprecated MooTools method --------------
  - Browser.*			!	-> KM.UA
@@ -700,12 +699,11 @@ String.implement({
 	test: function(regex, params){
 		return ((typeOf(regex) == 'regexp') ? regex : new RegExp('' + regex, params)).test(this);
 	},
-
+*/
 	contains: function(string, separator){
 		return (separator) ? (separator + this + separator).indexOf(separator + string + separator) > -1 : this.indexOf(string) > -1;
 	},
 
-*/
 	trim: function(){
 		return this.replace(/^\s+|\s+$/g, '');
 	},
@@ -874,11 +872,7 @@ Function.implement({
 			return self.apply(bind, args || arguments);
 		};
 	},
-	</!ES5>
-	
-	periodical: function(periodical, bind, args){
-		return setInterval(this.pass((args == null ? [] : args), bind), periodical);
-	},
+	</!ES5> 
 
 	pass: function(args, bind){
 		var self = this;
@@ -887,17 +881,20 @@ Function.implement({
 			return self.apply(bind, args || arguments);
 		};
 	},
+	
+	periodical: function(periodical, bind, args){
+		return setInterval(this.pass((args == null ? [] : args), bind), periodical);
+	},
 */
 
 	delay: function(delay, bind, args){
 		// return setTimeout(this.pass((args == null ? [] : args), bind), delay);
-		var self = this;
+		var fn = this;
 		
 		return setTimeout(function(){
-			return self.apply(bind, args == null ? [] : args);
+			fn.apply(bind, args == null ? [] : Array.from(args));
 		}, delay);
 	}
-
 });
 
 
