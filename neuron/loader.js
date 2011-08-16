@@ -122,7 +122,7 @@ var	_mods = {},			// map: identifier -> module
 			var node = DOC.createElement('img'),
 				delay = setTimeout;
 
-			callback && ['load', 'abort', 'error'].each(function(name){
+			callback && ['load', 'abort', 'error'].forEach(function(name){
 			
 				node['on' + name] = function(){
 					node = node.onload = node.onabort = node.onerror = NULL;

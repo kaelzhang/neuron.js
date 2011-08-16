@@ -214,7 +214,7 @@ K.mix(K, {
  	if(Browser.ie && Browser.version < 8){...}
  </code>
  */
-['ie', 'firefox', 'opera', 'chrome'].each(function(name){
+['ie', 'firefox', 'opera', 'chrome'].forEach(function(name){
 	var B = _Browser;
 	
 	B[name] && (UA[name] = B.version);

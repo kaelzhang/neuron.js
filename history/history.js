@@ -365,7 +365,7 @@ function queryStringToArguments(query){
 		}else{
 			ret = {};
 			
-			args.each(function(i){
+			args.forEach(function(i){
 				i = i.split(SPLITTER_OBJECT_KEY_VALUE);
 				
 				if(i.length === 2 && i[0]){
@@ -389,7 +389,7 @@ function queryStringToArguments(query){
 function _splitNClean(string){
 	var ret = [];
 
-	string.split(',').each(function(s){
+	string.split(',').forEach(function(s){
 		s = s.trim();
 		
 		(s || s === '') && ret.push(REGEX_NUMBER.test(s) ? Number(s) : s);

@@ -13,7 +13,11 @@ function loop(){
 function pushInstance(fps){
 	var list = instances[fps] || (instances[fps] = []);
 	list.push(this);
-	if (!timers[fps]) timers[fps] = loop.periodical(Math.round(1000 / fps), list);
+	if (!timers[fps]){
+		timers[fps] = setInterval(function(){
+			loop.call(list);
+		}, Math.round(1000 / fps));
+	}
 };
 
 function pullInstance(fps){
@@ -89,10 +93,14 @@ Fx = new Class({
 	},
 
 	check: function(){
-		if (!this.isRunning()) return true;
-		switch (this.options.link){
-			case 'cancel': this.cancel(); return true;
-			case 'chain': this.chain(this.caller.pass(arguments, this)); return false;
+		var self = this, args = arguments;
+	
+		if (!self.isRunning()) return true;
+		switch (self.options.link){
+			case 'cancel': self.cancel(); return true;
+			case 'chain': self.chain(function(){
+				return self.caller.apply(self, args);
+			}); return false;
 		}
 		return false;
 	},

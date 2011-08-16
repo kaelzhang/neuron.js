@@ -40,11 +40,14 @@ FxCSS = new Class({
 	//computes by a from and to prepared objects, using their parsers.
 
 	compute: function(from, to, delta){
-		var computed = [];
-		(Math.min(from.length, to.length)).times(function(i){
+		var computed = [], i = 0, len = Math.min(from.length, to.length);
+		
+		for(; i < len; i ++){
 			computed.push({value: from[i].parser.compute(from[i].value, to[i].value, delta), parser: from[i].parser});
-		});
+		}
+		
 		computed.$family = Function.from('fx:css:value');
+		
 		return computed;
 	},
 

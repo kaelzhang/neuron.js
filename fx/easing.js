@@ -88,7 +88,7 @@ Easing.extend({
 
 });
 
-['Quad', 'Cubic', 'Quart', 'Quint'].each(function(transition, i){
+['Quad', 'Cubic', 'Quart', 'Quint'].forEach(function(transition, i){
 	Easing[transition] = new Transition(function(p){
 		return Math.pow(p, i + 2);
 	});
