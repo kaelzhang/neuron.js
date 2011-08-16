@@ -5,25 +5,97 @@
  * modified version from the mootools builder
  * PAY ATTENSION!
  
- * include
- * Array, Number, String, Function, Object, Event, Browser
- * Class, Class.Extra
- * Slick.*
- * Element, Element.Event
+	! important - concerns with frequent methods
+	removed - no longer included in this file, using them will cause fatal errors
+	deprecated - included in this file, but extremely NOT recommended 
+	AP - Array.prototype
+	OP - Object.prototype
+	FP - Function.prototype
+	NP - Number.prototype
+	SP - String.prototype
+	EP - Element.prototype
+	
+ include MooTools package --------------
+ Array, Number, String, Function, Object, Event, Browser
+ Class, Class.Extra
+ Slick.*
+ Element, Element.Event
  
- * exclude
- * - Domready
- * - Element.Dimensions
- * - Fx.*
- * - Request.*
- * - Cookie
- * - JSON
- * - Swiff
- * - Browser.Request	!
- * - Browser.exec		!
- * - Browser.Plugins	!
- * - Function.bind		!
- * - Number.each(alias)	!
+ ALL of non-ECMAScript5 will be deprecated or removed(excluded), never use them.  
+ only the frequent relative methods or removed methods that will be listed below 
+ 
+ removed MooTools method --------------
+ - Domready				!	-> KM.ready
+ - Element.Dimensions
+ - Fx.*
+ - Request.*
+ - Cookie
+ - JSON
+ - Swiff
+ - Browser.Request		!
+ - Browser.exec			!
+ - Browser.Plugins		!
+ - IFrame				!
+ 
+ removed Native implements --------------
+ - AP.clean				!
+ - AP.empty				!
+ - AP.pick
+ - FP.bind				!   -> KM.bind
+ - FP.periodical		!	-> KM.delay
+ - FP.pass				!
+ - SP.stripScripts
+ - AP.hexToRgb
+ - AP.rgbToHex
+ - SP.hexToRgb
+ - SP.rgbToHex
+ - SP.test
+ - SP.contains
+ - SP.escapeRegExp
+ - SP.toFloat
+ - NP.toFloat
+ 
+ - NP[Math.*]
+ 
+ removed Host implements -------------
+ - EP.toQueryString
+ - EP.setOpacity
+ - EP.getOpacity
+ 
+ 
+ removed Native extends -------------
+ - Object.extend		!	-> KM.mix
+ - Object.append		!	-> KM.mix
+ - Object.merge			!	-> KM.merge
+ - Object.subset
+ - Object.map
+ - Object.filter
+ - Object.every
+ - Object.some
+ - Object.values
+ - Object.getLength
+ - Object.keyOf
+ - Object.contains
+ - Object.toQueryString			-> KM.toQueryString
+ - Number.each(alias)		!
+ - String.uniqueID				-> KM.guid
+ 
+ deprecated MooTools method --------------
+ - Browser.*			!	-> KM.UA
+ 
+ deprecated Native implements --------------
+ - AP.each 				!	-> AP.forEach
+ - AP.contains			!	-> AP.indexOf
+ - AP.clone				!	-> KM.clone
+ - FP.delay				!	-> KM.delay
+ - FP.attempt			!	-> try{ }catch(e){}
+ 
+ deprecated Native extends
+ 
+ 
+ modified MooTools method
+ - FP.delay
+
  */
 
 /*
@@ -341,7 +413,6 @@ Object.extend('forEach', function(object, fn, bind){
 Object.each = Object.forEach;
 
 Array.implement({
-
 	forEach: function(fn, bind){
 		for (var i = 0, l = this.length; i < l; i++){
 			if (i in this) fn.call(bind, this[i], i, this);
@@ -352,7 +423,6 @@ Array.implement({
 		Array.forEach(this, fn, bind);
 		return this;
 	}
-
 });
 
 // Array & Object cloning, Object merging and appending
@@ -420,10 +490,11 @@ Object.extend({
 
 var UID = Date.now();
 
+/*
 String.extend('uniqueID', function(){
 	return (UID++).toString(36);
 });
-
+*/
 
 
 })();
@@ -486,12 +557,14 @@ Array.implement({
 		return false;
 	},
 	/*</!ES5>*/
+/*
 
 	clean: function(){
 		return this.filter(function(item){
 			return item != null;
 		});
 	},
+*/
 
 	invoke: function(methodName){
 		var args = Array.slice(arguments, 1);
@@ -532,20 +605,22 @@ Array.implement({
 	getLast: function(){
 		return (this.length) ? this[this.length - 1] : null;
 	},
-
+/*
 	getRandom: function(){
 		return (this.length) ? this[Number.random(0, this.length - 1)] : null;
 	},
-
+*/
 	include: function(item){
 		if (!this.contains(item)) this.push(item);
 		return this;
 	},
+/*
 
 	combine: function(array){
 		for (var i = 0, l = array.length; i < l; i++) this.include(array[i]);
 		return this;
 	},
+*/
 
 	erase: function(item){
 		for (var i = this.length; i--;){
@@ -559,22 +634,14 @@ Array.implement({
 		return this;
 	},
 
-	flatten: function(){
-		var array = [];
-		for (var i = 0, l = this.length; i < l; i++){
-			var type = typeOf(this[i]);
-			if (type == 'null') continue;
-			array = array.concat((type == 'array' || type == 'collection' || type == 'arguments' || instanceOf(this[i], Array)) ? Array.flatten(this[i]) : this[i]);
-		}
-		return array;
-	},
-
+/*
 	pick: function(){
 		for (var i = 0, l = this.length; i < l; i++){
 			if (this[i] != null) return this[i];
 		}
 		return null;
 	},
+
 
 	hexToRgb: function(array){
 		if (this.length != 3) return null;
@@ -594,6 +661,16 @@ Array.implement({
 			hex.push((bit.length == 1) ? '0' + bit : bit);
 		}
 		return (array) ? hex : '#' + hex.join('');
+	},
+*/
+	flatten: function(){
+		var array = [];
+		for (var i = 0, l = this.length; i < l; i++){
+			var type = typeOf(this[i]);
+			if (type == 'null') continue;
+			array = array.concat((type == 'array' || type == 'collection' || type == 'arguments' || instanceOf(this[i], Array)) ? Array.flatten(this[i]) : this[i]);
+		}
+		return array;
 	}
 
 });
@@ -618,6 +695,7 @@ provides: String
 */
 
 String.implement({
+/*
 
 	test: function(regex, params){
 		return ((typeOf(regex) == 'regexp') ? regex : new RegExp('' + regex, params)).test(this);
@@ -627,6 +705,7 @@ String.implement({
 		return (separator) ? (separator + this + separator).indexOf(separator + string + separator) > -1 : this.indexOf(string) > -1;
 	},
 
+*/
 	trim: function(){
 		return this.replace(/^\s+|\s+$/g, '');
 	},
@@ -660,10 +739,11 @@ String.implement({
 	toInt: function(base){
 		return parseInt(this, base || 10);
 	},
-
+/*
 	toFloat: function(){
 		return parseFloat(this);
 	},
+
 
 	hexToRgb: function(array){
 		var hex = this.match(/^#?(\w{1,2})(\w{1,2})(\w{1,2})$/);
@@ -675,6 +755,7 @@ String.implement({
 		return (rgb) ? rgb.rgbToHex(array) : null;
 	},
 
+*/
 	substitute: function(object, regexp){
 		return this.replace(regexp || (/\\?\{([^{}]+)\}/g), function(match, name){
 			if (match.charAt(0) == '\\') return match.slice(1);
@@ -711,15 +792,17 @@ Number.implement({
 		precision = Math.pow(10, precision || 0).toFixed(precision < 0 ? -precision : 0);
 		return Math.round(this * precision) / precision;
 	},
+/*
 
 	times: function(fn, bind){
 		for (var i = 0; i < this; i++) fn.call(bind, i, this);
 	},
 
+
 	toFloat: function(){
 		return parseFloat(this);
 	},
-
+*/
 	toInt: function(base){
 		return parseInt(this, base || 10);
 	}
@@ -728,6 +811,7 @@ Number.implement({
 
 // Number.alias('each', 'times');
 
+/*
 (function(math){
 	var methods = {};
 	math.each(function(name){
@@ -737,6 +821,7 @@ Number.implement({
 	});
 	Number.implement(methods);
 })(['abs', 'acos', 'asin', 'atan', 'atan2', 'ceil', 'cos', 'exp', 'floor', 'log', 'max', 'min', 'pow', 'sin', 'sqrt', 'tan']);
+*/
 
 
 /*
@@ -789,7 +874,11 @@ Function.implement({
 			return self.apply(bind, args || arguments);
 		};
 	},
-	</!ES5>*/
+	</!ES5>
+	
+	periodical: function(periodical, bind, args){
+		return setInterval(this.pass((args == null ? [] : args), bind), periodical);
+	},
 
 	pass: function(args, bind){
 		var self = this;
@@ -798,13 +887,15 @@ Function.implement({
 			return self.apply(bind, args || arguments);
 		};
 	},
+*/
 
 	delay: function(delay, bind, args){
-		return setTimeout(this.pass((args == null ? [] : args), bind), delay);
-	},
-
-	periodical: function(periodical, bind, args){
-		return setInterval(this.pass((args == null ? [] : args), bind), periodical);
+		// return setTimeout(this.pass((args == null ? [] : args), bind), delay);
+		var self = this;
+		
+		return setTimeout(function(){
+			return self.apply(bind, args == null ? [] : args);
+		}, delay);
 	}
 
 });
@@ -834,6 +925,7 @@ var hasOwnProperty = Object.prototype.hasOwnProperty;
 
 Object.extend({
 
+/*
 	subset: function(object, keys){
 		var results = {};
 		for (var i = 0, l = keys.length; i < l; i++){
@@ -850,6 +942,7 @@ Object.extend({
 		}
 		return results;
 	},
+
 
 	filter: function(object, fn, bind){
 		var results = {};
@@ -873,14 +966,14 @@ Object.extend({
 		}
 		return false;
 	},
-
+*/
 	keys: function(object){
 		var keys = [];
 		for (var key in object){
 			if (hasOwnProperty.call(object, key)) keys.push(key);
 		}
 		return keys;
-	},
+	} /* ,
 
 	values: function(object){
 		var values = [];
@@ -927,7 +1020,7 @@ Object.extend({
 
 		return queryString.join('&');
 	}
-
+*/
 });
 
 })();
@@ -1064,6 +1157,7 @@ Browser.exec = function(text){
 
 */
 
+/*
 String.implement('stripScripts', function(exec){
 	var scripts = '';
 	var text = this.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, function(all, code){
@@ -1074,6 +1168,7 @@ String.implement('stripScripts', function(exec){
 	else if (typeOf(exec) == 'function') exec(scripts, text);
 	return text;
 });
+*/
 
 // Window, Document
 
@@ -1428,7 +1523,7 @@ this.Chain = new Class({
 	},
 
 	clearChain: function(){
-		this.$chain.empty();
+		this.$chain.length = 0;
 		return this;
 	}
 
@@ -2794,7 +2889,7 @@ if (!Browser.Element){
 
 Element.Constructors = {};
 
-
+/*
 
 var IFrame = new Type('IFrame', function(){
 	var params = Array.link(arguments, {
@@ -2819,6 +2914,7 @@ var IFrame = new Type('IFrame', function(){
 	else iframe.addListener('load', onLoad);
 	return iframe;
 });
+*/
 
 var Elements = this.Elements = function(nodes){
 	if (nodes && nodes.length){
@@ -3286,6 +3382,7 @@ Element.implement({
 		}));
 	},
 
+/*
 	toQueryString: function(){
 		var queryString = [];
 		this.getElements('input, select, textarea').each(function(el){
@@ -3303,6 +3400,7 @@ Element.implement({
 		});
 		return queryString.join('&');
 	},
+*/
 
 	destroy: function(){
 		var children = clean(this).getElementsByTagName('*');
@@ -3571,6 +3669,7 @@ Element.implement({
 		return (computed) ? computed.getPropertyValue((property == floatName) ? 'float' : property.hyphenate()) : null;
 	},
 
+/*
 	setOpacity: function(value){
 		setOpacity(this, value);
 		return this;
@@ -3579,7 +3678,7 @@ Element.implement({
 	getOpacity: function(){
 		return this.get('opacity');
 	},
-
+*/
 	setStyle: function(property, value){
 		switch (property){
 			case 'opacity': return this.set('opacity', parseFloat(value));
