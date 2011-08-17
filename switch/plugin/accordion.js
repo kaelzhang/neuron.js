@@ -1,5 +1,5 @@
 /**
- * Switch Plugin: Accordian Effect
+ * Switch Plugin: Accordion Effect
  * author  Kael Zhang
  */
  
@@ -39,6 +39,8 @@ return {
     	
     	delete o.fx;
     
+    	// get the fx of the items, 
+    	// create new fx if not exists
     	function getFx(element, offset){
     		var effect = element.retrieve(EFFECT_KEY);
     		
@@ -116,7 +118,7 @@ return {
         \  | it would be ended here                  |           \  |
           \                                          |             \
                                                      |
-          /                                          |          | before [n] interrupted in
+          /                                          |          | before [n] taking effect
         /                                            |          | [e] should have been the new [active]
       /                                              |         / \   
  e: /                                                |    e: /     \
@@ -128,7 +130,7 @@ return {
 
  ////////////////////////////////////////////////////////////////////////////////////////////
  */
- 			// set expectIndex as activeIndex immediately after fx started
+ 			// so, as it explained above, set expectIndex as activeIndex immediately after fx started
             t.activeIndex = expect;
         });
     }

@@ -44,11 +44,16 @@ var __CONSTRUCT = '__construct',
     Switch,
     // MultiEvent = require('event/multi'),
     ASQueue = require('util/asqueue');
-    
+
+  
 function getNoEmptyElements(CS){
 	var elements = $$(CS);
 	
 	return elements.length ? elements : null;
+};
+
+function limit(num, min, max){
+	return Math.min(max, Math.max(min, num));
 };
     
 
@@ -116,8 +121,11 @@ Switch = new Class({
     	bind('init', self);
     	
     	// initialization queue for dynamicly loading plugins
-    	self._initializer = new ASQueue.Converter([{
+    	self._initializer = new ASQueue.Converter([
+    		{
 	    		method: 'plugin',
+	    		
+	    		// asychronously loading more plugins
 	    		auto: false,
 	    		
 	    		// after initialization, registering new plugin is forbidden
@@ -146,6 +154,8 @@ Switch = new Class({
 	/**
 	 * Life Cycle
 	 * key feature of switch module
+	 * to extend the Switch Class into a much more complex switcher,
+	 * you could override this setting, according to the api of util/asqueue
 	 */
 	_lifeCycle: ['_before', '_on', '_after'],
 	
@@ -428,7 +438,7 @@ Switch = new Class({
         return self;
     },
     
-    // life cycle: before switching
+    //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
     _before: function(){
     	var self = this, index = self.expectIndex;
     	
@@ -439,31 +449,30 @@ Switch = new Class({
     	}
     },
     
-    // life cycle: on switching
     _on: function(){
     	this.fireEvent(EVENT_ON_SWITCH);
     },
     
-    // life cycle: after switching
     _after: function(){
     	var self = this;
     	
     	self.pageCounters && self.pageCounters.set('text', self.activeIndex + 1);
     },
+    //////// life cycle end ///////////////////////////////////////////////////////////////////////////////
 
     prev: function(e){
         e && e.preventDefault();
         var self = this;
 
         // 限制 activeIndex 的范围
-        !self.noprev && self.switchTo((self.activeIndex - 1).limit(0, self.pages - 1));
+        !self.noprev && self.switchTo( limit(self.activeIndex - 1, 0, self.pages - 1) );
     },
 
     next: function(e){
         e && e.preventDefault();
         var self = this;
 
-        !self.rightEnd && self.switchTo((self.activeIndex + 1).limit(0, self.pages - 1));
+        !self.rightEnd && self.switchTo( limit(self.activeIndex + 1, 0, self.pages - 1) );
     },
     
     
