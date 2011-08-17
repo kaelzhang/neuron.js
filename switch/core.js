@@ -116,24 +116,24 @@ Switch = new Class({
     	bind('init', self);
     	
     	// initialization queue for dynamicly loading plugins
-    	self._initializer = new ASQueue.Converter(self, [{
-	    		name: 'plugin',
+    	self._initializer = new ASQueue.Converter([{
+	    		method: 'plugin',
 	    		auto: false,
 	    		
 	    		// after initialization, registering new plugin is forbidden
 	    		before: 'init'
 	    	}, {
-	    		name: 'init',
+	    		method: 'init',
 	    		
 	    		// method init should be executed only once
-	    		once: true	
+	    		once: true
 	    	},
 	    	
 	    	'switchTo', 'prev', 'next'
-    	]).on();
+    	], self).on();
     	
     	// processing queue for switch life cycle
-    	self._lifeCycle = new ASQueue.Runner(self, self._lifeCycle);
+    	self._lifeCycle = new ASQueue.Runner(self._lifeCycle, self);
     },
 
     // @private
