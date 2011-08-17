@@ -90,7 +90,7 @@ var	NOOP = function(){},
 			adapter = typeOf,
 			toString = Object.prototype.toString;
 	
-		'Boolean Number String Function Array Date RegExp Object'.split(' ').each(function(name){
+		'Boolean Number String Function Array Date RegExp Object'.split(' ').forEach(function(name){
 			var nl = name.toLowerCase();
 		
 			type_map[ '[object ' + name + ']' ] = nl;
@@ -180,7 +180,7 @@ K.mix(K, {
 	},
 	
 	makeArray: function(obj){
-		return K.isArray(obj) ? obj : [obj];
+		return Array.from(obj); // K.isArray(obj) ? obj : [obj];
 	},
 	
 	toQueryString: function(obj, splitter){
