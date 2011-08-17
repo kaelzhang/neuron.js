@@ -15,11 +15,49 @@
  	// .plugin method is an asynchronous method, but .init method relies on the effect which the .plugin method caused
  	new Switch().plugin('carousel').init({...});
  </code>
+ 
+ example:
+ <code>
+ 
+ var ASQ = require('until/asqueue'),
+ 	 asq_r,
+ 	 module = {
+ 	 	a: function(){
+ 	 		console.log('a');
+ 	 	},
+ 	 	
+ 	 	b: function(){
+ 	 		console.log('b');
+ 	 		asyncMethod(function(){
+ 	 			console.log('b callback');
+ 	 			asq_r.resume();
+ 	 		});
+ 	 	}
+ 	 }
+ 
+ asq_r = new ASQ.Runner([
+ 	{
+ 		method: 'b',
+ 		auto: false
+ 	},
+ 	
+ 	'a'
+ ], module);
+ 
+ asq_r.run();
+
+ </code>
+ 
+ result:
+ b
+ b callback
+ a
+ 
  */
  
 KM.define([], function(K){
 
-var NOOP = function(){}
+var NOOP = function(){},
 
 ASQueue = {},
     
@@ -29,29 +67,28 @@ ASQ_meta = {
 		/**
 	     * run the list of configured methods
 	     */
-	    run: function(){
+	    run: function(queue){
 	    	var self = this;
 	    	
-	    	self._sd();
-	    	
-	    	self._stack = Array.clone(self._presetItems);
-	    	self._items = self.host;
+	    	self._stack = self._sd( queue ? K.makeArray(queue) : self._presetItems );
 	    	
 	    	self.resume();
 	    },
 	    
 	    stop: function(){
-	    	this._clean();
+	    	this._stack.length = 0;
 	    },
 	    
-	    _sd: function(){
-	    	var self = this, items = self._presetItems, i = 0, len = items.length;
-	    	
-	    	for(; i < len; i ++){
-	    		items[i] = self._santitize(items[i]);
-	    	}
-	    	
-	    	self._sd = NOOP;
+	    // santitize data
+	    _sd: function(queue){
+	    	var self = this, 
+	    		ret = [];
+	    		
+	    	queue.forEach(function(q){
+	    		ret.push(self._santitize(q));
+	    	});
+	    		    	
+	    	return ret;
 	    }
 	},
 
@@ -61,10 +98,17 @@ ASQ_meta = {
 	     */
 	    on: function(){
 	    	var self = this, host = self.host;
-	    
-	    	K.makeArray(self._presetItems).each(function(i){
-	    		i && self._add(i, host);
-	    	});
+	    	
+	    	self._items = {};
+	    	self._history = [];
+	    	
+	    	if(host){		    
+		    	self._presetItems.forEach(function(i){
+		    		i && self._add(i);
+		    	});
+		    }
+		    
+		    self._converted = true;
 	    	
 	    	return self;
 	    },
@@ -73,7 +117,9 @@ ASQ_meta = {
 	     * recover the converted methods
 	     */
 	    off: function(){
-	    	var name, self = this, host = self.host;
+	    	var identifier, 
+	    		self = this, 
+	    		host = self.host;
 	    	
 	    	for(name in self._items){
 	    		delete host[name];
@@ -81,34 +127,51 @@ ASQ_meta = {
 	    	}
 	    	
 	    	self._clean();
+	    	self._converted = false;
+	    	
 	    	return self;
 	    },
 	    
-	    _add: function(obj, host, undef){
-	    	var self = this, name;
+	    _clean: function(){
+	    	var self = this;
+	    	self._items = {};
+	    	self._stack.length = self._history.length = 0;
+	    },
+	    
+	    _add: function(obj){
+	    	var self = this,
+	    		host = self.host, 
+	    		identifier;
+	    	
+	    	if(self._converted || !host) return self;
 
 			obj = self._santitize(obj);
-			name = obj.name;
+			identifier = obj.id;
 			
-			fn = self._items[name] = self._items[name] || host[name];
+			delete obj.id;
 			
-			if(fn){
-				host[name] = function(){
-					// 
+			if(identifier){
+				self._items[identifier] = obj.method;
+			
+				host[identifier] = function(){
+					var id = identifier, clone, mix;
+				
 					if(
-						!self._history.contains(obj.before) && 
+						self._history.indexOf(obj.before) === -1 && 
 						(!obj.once || 
-							!self._history.contains(name)
+							self._history.indexOf(id) === -1
 						)
 					){
-						self._stack.push({
-							auto: obj.auto,
-							once: obj.once,
-							name: name,
-							arg: arguments
-						});
+						mix = K.mix;
+						clone = mix({}, obj);
+						clone.args = arguments;
 						
-						self._history.push(name);
+						self._stack.push(clone);
+						self._history.push(id);
+					}
+					
+					if(obj.once){
+						self._items[id] = NOOP;
 					}
 					
 					// avoid recursive invocation
@@ -122,15 +185,26 @@ ASQ_meta = {
 },
 
 ASQ_proto = {
-	_items: {},
     _stack: [],
-    _history: [],
     
-    initialize: function(host, items){
+    /**
+     * @param {Array.<function(),string,Object>} items
+     	{function()}
+     	{string}
+     	{Object} detail configuration for each method
+     		{
+     			auto: {Boolean},
+     			once: {Boolean},
+     			method: {function()|string}
+     			args: {Array} arguments
+     		}
+     * @param {Object} host
+     */
+    initialize: function(items, host){
     	var self = this;
-    
-    	self.host = host;
-    	self._presetItems = items;
+    	
+    	self._presetItems = K.makeArray(items);
+    	self.host = host || null;
     },
     
     /**
@@ -146,38 +220,45 @@ ASQ_proto = {
     // apply default settings
     // 'method' -> {name: 'method'}
     _santitize: function(obj, undef){
-    	var self = this;
+    	var self = this,
+    		host = self.host,
+    		mix = K.mix;
     
-    	if(K.isString(obj)){
-    		obj = {name: obj};
+    	if(K.isFunction(obj)){
+    		obj = {
+    			method: obj
+    		};
+    		
+    	}else if(K.isPlainObject(obj)){
+    		obj = mix(obj, self._santitize(obj.method), true, ['method', 'bind', 'id']);
+    	
+    		host && !('bind' in obj) && (obj.bind = host);
+    	
+    	}else if(K.isString(obj) && host){
+    		obj = {
+    			method: host[obj],
+    			bind: host,
+    			id: obj
+    		};
+    		
+    	}else{
+    		obj = {};
     	}
     	
-    	return K.mix({
+    	return mix({
     		auto: true,
     		once: false
     	}, obj);
-    },
-    
-    _clean: function(){
-    	var self = this;
-    	self._items = {};
-    	self._history.length = 0;
-    	self._stack.length = 0;
     },
     
     _next: function(){
     	var self = this,
     		current, fn;
 
-    	if(!self.processing && (current = self._stack.shift()) && (fn = self._items[current.name])){
+    	if(!self.processing && (current = self._stack.shift()) && (fn = current.method)){
     		self.processing = true;
-    		
-    		// clean the method before executing
-    		if(current.once){
-    			self._items[current.name] = NOOP;
-    		}
     	
-    		fn.apply(self.host, current.arg || []);
+    		fn.apply(current.bind || null, current.args || []);
     		
     		return current.auto && self.resume();
     	}
