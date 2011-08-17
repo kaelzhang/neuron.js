@@ -71,9 +71,9 @@
  - Object.filter
  - Object.every
  - Object.some
+ - Object.keyOf
  - Object.values
  - Object.getLength
- - Object.keyOf
  - Object.contains
  - Object.toQueryString		-> KM.toQueryString
  - Number.each(alias)	!
@@ -91,9 +91,9 @@
  
  deprecated Native extends
  
- 
  modified MooTools method
  - FP.delay
+ - Event.js: Object.keyOf
 
  */
 
@@ -970,7 +970,9 @@ Object.extend({
 			if (hasOwnProperty.call(object, key)) keys.push(key);
 		}
 		return keys;
-	} /* ,
+	}
+/*	
+	,
 
 	values: function(object){
 		var values = [];
@@ -1254,6 +1256,14 @@ provides: Event
 ...
 */
 
+function Object_keyOf(object, value){
+	for (var key in object){
+		if (object.hasOwnProperty(key) && object[key] === value) return key;
+	}
+	return null;
+};
+
+
 var Event = new Type('Event', function(event, win){
 	if (!win) win = window;
 	var doc = win.document;
@@ -1270,7 +1280,7 @@ var Event = new Type('Event', function(event, win){
 
 	if (type.indexOf('key') != -1){
 		code = event.which || event.keyCode;
-		key = Object.keyOf(Event.Keys, code);
+		key = Object_keyOf(Event.Keys, code);
 		if (type == 'keydown'){
 			var fKey = code - 111;
 			if (fKey > 0 && fKey < 13) key = 'f' + fKey;

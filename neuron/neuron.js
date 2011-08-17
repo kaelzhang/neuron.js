@@ -136,7 +136,10 @@ mix(K, {
 KM.namespace('UA', '_Config');
 
 /**
- * 2 do:
+
+ 2010-08-16
+ TODO:
+ √ GLOBAL: remove all native implements of non-ECMAScript5 standards
 
 
  * change log:
