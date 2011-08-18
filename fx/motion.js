@@ -101,8 +101,6 @@ return new Class({
 		if(!self.timer.id){
 			self.time = self.options.begin;
 			
-			// timestamp
-			self.ts = + new Date();
 			self._startTimer();
 			self.fireEvent('start');
 		}
@@ -140,6 +138,8 @@ return new Class({
 	_startTimer: function(){
 		var self = this;
 		
+		// timestamp
+		self.ts = + new Date;
 		self.timer.start();
 		
 		return self;
