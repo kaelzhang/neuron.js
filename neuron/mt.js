@@ -38,8 +38,8 @@
  - IFrame				!
  
  removed Native implements --------------
- - AP.clean				!
- - AP.empty				!
+ - AP.clean				!	-> AP.filter
+ - AP.empty				!	-> <Array>.length = 0
  - AP.pick
  - FP.bind				!   -> KM.bind
  - FP.periodical		!	-> KM.delay
@@ -48,7 +48,7 @@
  - AP.rgbToHex
  - SP.hexToRgb
  - SP.rgbToHex
- - SP.test
+ - SP.test				!	-> <RegExp>.test(<String>)
  - SP.contains
  - SP.escapeRegExp
  - SP.toFloat
@@ -65,7 +65,6 @@
  removed Native extends -------------
  - Object.extend		!	-> KM.mix
  - Object.append		!	-> KM.mix
- - Object.merge			!	-> KM.merge
  - Object.subset
  - Object.map
  - Object.filter
@@ -90,6 +89,7 @@
  - FP.attempt			!	-> try{ }catch(e){}
  
  deprecated Native extends
+ - Object.merge			!	-> KM.merge
  
  modified MooTools method
  - FP.delay
