@@ -14,19 +14,19 @@ KM.define({
         self.addEvent(EVENTS.BEFORE_SWITCH, function(){
             var t = self;
                 o = t.options,
-                activeIndex = t.activeIndex;
+                activePage = t.activePage;
 
-            t.triggers[activeIndex] && t.triggers[activeIndex].removeClass(o.triggerOnCls);
-			t.items[activeIndex] && t.items[activeIndex].removeClass(o.itemOnCls);
+            t.triggers[activePage] && t.triggers[activePage].removeClass(o.triggerOnCls);
+			t.items[activePage] && t.items[activePage].removeClass(o.itemOnCls);
         });
 
         self.addEvent(EVENTS.ON_SWITCH, function(){
             var t = self;
                 o = t.options,
-                activeIndex = t.activeIndex = t.expectIndex;
+                activePage = t.activePage = t.expectPage;
 
-            t.triggers[activeIndex] && t.triggers[activeIndex].addClass(o.triggerOnCls);
-            t.items[activeIndex] && t.items[activeIndex].addClass(o.itemOnCls);
+            t.triggers[activePage] && t.triggers[activePage].addClass(o.triggerOnCls);
+            t.items[activePage] && t.items[activePage].addClass(o.itemOnCls);
         });
     }
 });

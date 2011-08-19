@@ -98,7 +98,7 @@ Switch = new Class({
         itemOnCls: 		EMPTY, 		// 'J_cont-on',
 
         // the index of the first items activated when initializing
-        activeIndex: 	0,
+        activePage: 	0,
         
         onNavEnable:	function(btn, which){
         	btn.setStyles(NAVITATOR_ENABLE_STYLE);
@@ -268,7 +268,7 @@ Switch = new Class({
     init: function(options){
         var self = this,
             o,
-            currentTrigger, activeIndex,
+            currentTrigger, activePage,
             plugins = self._plugins;
 
 		self._initializer.off();
@@ -294,7 +294,7 @@ Switch = new Class({
         self.container = $$(o.CSPre + o.containerCS)[0];
                 
         if(self.container){
-            activeIndex = self.activeIndex = o.activeIndex || 0;
+            activePage = self.activePage = o.activePage || 0;
 
             self.fireEvent(EVENT_BEFORE_INIT);
 
@@ -302,10 +302,10 @@ Switch = new Class({
             self._bindNav();
             self.fireEvent(EVENT_AFTER_INIT);
 
-            currentItem = self.items[activeIndex];
+            currentItem = self.items[activePage];
 
             if(currentItem && !currentItem.hasClass(o.itemOnCls)){
-                self.switchTo(activeIndex, true);
+                self.switchTo(activePage, true);
             }
         }
 
@@ -431,7 +431,7 @@ Switch = new Class({
         var self = this;
         
         self.force = force;
-        self.expectIndex = index;
+        self.expectPage = index;
         
         self._lifeCycle.run();
 
@@ -440,10 +440,10 @@ Switch = new Class({
     
     //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
     _before: function(){
-    	var self = this, index = self.expectIndex;
+    	var self = this, index = self.expectPage;
     	
-    	if(self.force || self.activeIndex !== index){
-    		self.fireEvent(EVENT_BEFORE_SWITCH, [self.activeIndex, index]);
+    	if(self.force || self.activePage !== index){
+    		self.fireEvent(EVENT_BEFORE_SWITCH, [self.activePage, index]);
     	}else{
     		self._lifeCycle.stop();
     	}
@@ -456,7 +456,7 @@ Switch = new Class({
     _after: function(){
     	var self = this;
     	
-    	self.pageCounters && self.pageCounters.set('text', self.activeIndex + 1);
+    	self.pageCounters && self.pageCounters.set('text', self.activePage + 1);
     },
     //////// life cycle end ///////////////////////////////////////////////////////////////////////////////
 
@@ -464,15 +464,15 @@ Switch = new Class({
         e && e.preventDefault();
         var self = this;
 
-        // 限制 activeIndex 的范围
-        !self.noprev && self.switchTo( limit(self.activeIndex - 1, 0, self.pages - 1) );
+        // 限制 activePage 的范围
+        !self.noprev && self.switchTo( limit(self.activePage - 1, 0, self.pages - 1) );
     },
 
     next: function(e){
         e && e.preventDefault();
         var self = this;
 
-        !self.rightEnd && self.switchTo( limit(self.activeIndex + 1, 0, self.pages - 1) );
+        !self.rightEnd && self.switchTo( limit(self.activePage + 1, 0, self.pages - 1) );
     },
     
     
@@ -483,13 +483,13 @@ Switch = new Class({
     _isNoprev: function(){
     	var self = this;
     
-    	return self.noprev = !self.activeIndex;
+    	return self.noprev = !self.activePage;
     },
     
     _isNonext: function(){
     	var self = this;
     	
-    	return self.nonext = (self.activeIndex >= self.pages - 1);
+    	return self.nonext = (self.activePage >= self.pages - 1);
     },
 
     // disable or enable navigation buttons
@@ -585,7 +585,7 @@ return Switch;
  F. deal with the letter case of plugin names
  
  2010-02-23  Kael:
- - 处理activeIndex属性的一个问题，将其的初始化从插件里移动到本体中进行
+ - 处理activePage属性的一个问题，将其的初始化从插件里移动到本体中进行
  - 优化了plugin的调用链，优化部分性能
  - 加入autoplay
  - 修正本体中，一个计算分页值的算法错误

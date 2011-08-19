@@ -48,7 +48,7 @@ return {
 
         function currentTriggerClass(remove, index){
             var t = self,
-                currentTrigger = t.triggers[index || t.activeIndex];
+                currentTrigger = t.triggers[index || t.activePage];
                 
             currentTrigger && (remove ? 
             	currentTrigger.removeClass(t.options.triggerOnCls) : 
@@ -73,7 +73,7 @@ return {
             checkStage(self);
 
             var t = self,
-                active = t.activeIndex;
+                active = t.activePage;
 
             // there's a bug about moo tools Fx: the container's position must be specified before you use Fx,
             // or the first Fx will have no animation
@@ -87,7 +87,7 @@ return {
 
         self.addEvent(EVENTS.ON_SWITCH, function(){
             var t = self,
-                active = t.activeIndex = t.expectIndex;
+                active = t.activePage = t.expectPage;
 
             t._dealNavs();
 

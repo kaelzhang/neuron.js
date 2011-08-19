@@ -15,7 +15,7 @@ KM.define({
         function autoplay(){
             var t = self;
             if(!t.triggerOn && !t.paused){
-                t.switchTo( (t.activeIndex + 1) % t.length );
+                t.switchTo( (t.activePage + 1) % t.pages );
             }
         };
 
@@ -71,9 +71,10 @@ KM.define({
 });
 
 /**
+ 2011-08-19  Kael:
+ - fix a bug calculating activePage when auto playing
+
  TODO:
  A. add api: pause and resume
-
-
 
  */

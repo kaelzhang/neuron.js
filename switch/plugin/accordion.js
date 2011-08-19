@@ -86,7 +86,7 @@ return {
 
         self.addEvent(EVENTS.AFTER_INIT, function(){
             var t = self,
-                active = t.activeIndex;
+                active = t.activePage;
                 
           	if(!chk(o.activeValue)){
           		o.activeValue = t.items[active].getStyle(fx.property);
@@ -99,8 +99,8 @@ return {
 
         self.addEvent(EVENTS.ON_SWITCH, function(){
             var t = self,
-                active = t.activeIndex,
-                expect = t.expectIndex;
+                active = t.activePage,
+                expect = t.expectPage;
                 
             setFxCallback(active, expect);    
             getFx(t.items[active], active).start(o.normalValue);
@@ -130,8 +130,8 @@ return {
 
  ////////////////////////////////////////////////////////////////////////////////////////////
  */
- 			// so, as it explained above, set expectIndex as activeIndex immediately after fx started
-            t.activeIndex = expect;
+ 			// so, as it explained above, set expectPage as activePage immediately after fx started
+            t.activePage = expect;
         });
     }
 }
