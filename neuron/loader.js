@@ -1294,6 +1294,10 @@ K.mix(K, {
  - X discarded scheme
  - * unimportant
  
+ 2011-08-20  Kael:
+ TODO:
+ - A. improve stability if user provide a package file
+ 
  2011-08-03  Kael:
  - TODO[08-01].[A,E]
  
