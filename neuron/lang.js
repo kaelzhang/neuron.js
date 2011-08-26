@@ -56,10 +56,10 @@ function overload_for_instance_method(fn){
 
 
 function toQueryString(obj, splitter){
-	var key, ret = [];
+	var key, value, ret = [], encode = encodeURIComponent;
 	
 	for(key in obj){
-		ret.push(key + '=' + obj[key]);
+		!K.isObject(value = obj[key];) && !K.isArray(value) && ret.push(key + '=' + encode(value));
 	}
 	
 	return ret.join(splitter || '&');
