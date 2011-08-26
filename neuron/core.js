@@ -10,7 +10,7 @@
  
 /**
  * corek
- * mt.js -> km.js -> lang.js -> web.js -> loader.js -> config.js
+ * mt.js -> core.js -> lang.js -> web.js -> loader.js -> config.js
  *
  */
 
