@@ -37,6 +37,63 @@ var Chain, Events, Options,
 	mootools_implement = mootools_class_enum.Implements;
 	
 
+Chain = new Class({
+
+	_chain: [],
+
+	chain: function(){
+		this._chain.append(Array.flatten(arguments));
+		return this;
+	},
+
+	callChain: function(){
+		return (this._chain.length) ? this._chain.shift().apply(this, arguments) : false;
+	},
+
+	clearChain: function(){
+		this._chain.empty();
+		return this;
+	},
+	
+	/**
+	 * method to set current method to trigger the pipline chain
+	 
+	 * @param methodName {String} method name of the current instance
+	 * @param judge {Function}
+	 * if returns
+	 *		- 'chain'	: chain the method
+	 *		- 'stop'	: stop the method
+	 *		-  other	: exec the method
+	 */
+	setChain: function(methodName, judge){
+		var self = this,
+			method = self[methodName];
+			
+			
+		if(method){
+			self[methodName] = function(){
+				var result = judge && judge.call(self);
+				
+				switch(result){
+					case 'chain':
+						self.chain(function(){
+							method.apply(self, arguments);
+						});
+						break;
+							
+					case 'cancel':
+						break;
+					
+				}
+				
+				return result || method.apply(self, arguments);
+			}
+		}
+		
+		return self;
+	}
+
+});
 
 
 Events = new Class({
