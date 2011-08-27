@@ -67,6 +67,11 @@ mix(K, {
 	// @const
 	__HOST: K.__HOST || host,
 	
+	/**
+	 * DOM Parser
+	 */
+	__PARSER: Slick,
+	
 	build: '%buildtime%',
 
 	mix: mix,
