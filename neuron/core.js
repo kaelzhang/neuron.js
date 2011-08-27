@@ -149,8 +149,10 @@ mix(K, {
 KM.namespace('UA', '_Config');
 
 /**
+ 2010-08-27  Kael:
+ - add global configuration: KM.__PARSER as DOM selector and parser
 
- 2010-08-16
+ 2010-08-16  Kael:
  TODO:
  √ GLOBAL: remove all native implements of non-ECMAScript5 standards
 
