@@ -326,8 +326,8 @@ function loadSrc(uri, callback, type){
  * method to define a module
  * @public
  * @param {string} name module name
- * @param {(Array.<string>)=} dependencies array of module names
- * @param {(string|function|Object)=} factory
+ * @param {(Array.<string>|string)=} dependencies array of module names
+ * @param {(string|function()|Object)=} factory
  * 		{string} 	the uri of a (packaged) module(s)
  *  	{function} 	the factory of a module
  *  	{object} 	module exports
@@ -407,7 +407,7 @@ function define(name, dependencies, factory){
  */
 function _define(name, identifier, version, dependencies, factory, uri){
 	/**	
-	 * @type {object}
+	 * @type {Object}
 	 * restore mod data {
 		 	version:	{String=}	version
 		 	status:		{Number}	module status
@@ -543,7 +543,7 @@ function _define(name, identifier, version, dependencies, factory, uri){
 			break;
 			
 		default:
-			loaderError('Unexpected factory type for '
+			new loaderError('Unexpected factory type for '
 				+ ( name ? 'module "' + name + '"' : 'anonymous module' ) 
 				+ ': ' + K._type(factory)
 			);
@@ -787,7 +787,7 @@ function provideOne(mod, callback, env){
 			}else if(last && mod.status === STATUS.LOADING){
 				
 				if(last.status < STATUS.DEFINED){
-					loaderError('mod with no factory detected in a module file');
+					new loaderError('mod with no factory detected in a module file');
 				}
 				
 				K.mix(mod, last);
@@ -1168,7 +1168,7 @@ function realpath(path) {
 	foreach(old, function(part, i){
 		if (part === '..') {
 			if (ret.length === 0) {
-			  	loaderError('Invalid module path: ' + path);
+			  	new loaderError('Invalid module path: ' + path);
 			}
 			ret.pop();
 			
