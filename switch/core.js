@@ -540,6 +540,7 @@ return Switch;
  TODO:
  A. add method .addItem .addTrigger
  B. [issue] when there's only one page, the status of prev button is incorrect
+ C. add plugin conf support for the configuration of module base path
  
  2011-08-11  Kael:
  - add support to multiple prev and next button
