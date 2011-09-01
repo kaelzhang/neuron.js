@@ -27,6 +27,9 @@ function santitizer(identifier){
 	var EMPTY = '';
 	return identifier.replace(REGEX_PATH_CLEANER_MIN, EMPTY).replace(REGEX_PATH_CLEANER_VERSION, EMPTY)
 };
+
+
+K.__PARSER = Slick;
 	
 
 K._loaderConfig(K.mix({

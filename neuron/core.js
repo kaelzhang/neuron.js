@@ -78,7 +78,7 @@ mix(K, {
 	 
 	 within the Neuron Framework, using methods of KM.__PARSER besides the above three is forbidden
 	 */
-	__PARSER: Slick,
+	// __PARSER: Slick,
 	
 	build: '%buildtime%',
 
