@@ -1294,6 +1294,9 @@ K.mix(K, {
  - X discarded scheme
  - * unimportant
  
+ 2011-09-01  Kael:
+ - A. prevent duplicate loading a certain module
+ 
  2011-08-20  Kael:
  TODO:
  - A. improve stability if user provide a package file
