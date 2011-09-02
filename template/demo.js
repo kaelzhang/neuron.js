@@ -1,5 +1,6 @@
 KM.define({
-	HTML: '<div id="form-wrap">'
+	HTML: '<div id="form-wrap" class="ele-wrap wrap">'
+		+ '<div class="dialog-title">登陆或注册</div>'
 		+ '<div class="field">'
 		+ 		'<label>field1</label>'
 		+ 		'<input class="input" id="i-field1" placeholder="input here..."/>'

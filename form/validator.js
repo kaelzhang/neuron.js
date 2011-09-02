@@ -1,25 +1,21 @@
-/**
- * @module  validator
- * method to check a value
- * form/validator will NOT deal with business relevant to form elements, error display and value getter any more.
- */
+KM.define([], function(K){
 
-
-KM.define([], function(K, require){
-
+function isInputable(element){
+	return element.match('input') || element.match('textarea');
+};
 
 /**
  * 'required max-length:10' -> ['required', 'maxlength:10']
  * function(){} -> [function(){}]
  */
 function splitIfString(obj, splitter){
-	return K.isString(obj) ? obj.trim().split(splitter || ',') : K.makeArray(obj);
+	return K._type(obj) === 'string' ? obj.trim().split(splitter || ',') : K.makeArray(obj);
 };
 
 
 /**
  * count how many elements has been checked
- */ 
+ */
 function checkedCounter(elements, onlyCheckExists){
 	var i = 0, len = elements.length,
 		counter = 0;
@@ -35,32 +31,41 @@ function checkedCounter(elements, onlyCheckExists){
 	return counter;
 };
 
+function bind_method(fn, bind){
+	return function(){
+		return fn.apply(bind, arguments);
+	}
+};
+
+function bind(fn, bind){
+	return K.isFunction(fn) ?
+		bind_method(fn, bind)
+	:
+		(bind[fn] = bind_method(bind[fn], bind));
+};
+
 
 /**
  * 
  */
- 
-/*
- 
-function smartSelector(id, single){	
-	return K.isString(id) ? REGEX_IS_CSS_SELECTOR.test(id) ? single ? $$(id)[0] : $$(id) : $(id) : id;
+function smartSelector(id){	
+	return K.isString(id) ? REGEX_IS_CSS_SELECTOR.test(id) ? $$(id) : $(id) : id;
 };
 
-*/
 
 function addValidator(name, module, branch){
 	validators[branch || DEFAULT_VALIDATOR_TYPE][name] = module;
 };
 
 
-var undef,
-	REGEX_IS_CSS_SELECTOR = /^(?:\.|#)/,
-	REGEX_IS_EMAIL = /^(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]\.?){0,63}[a-z0-9!#$%&'*+\/=?^_`{|}~-]@(?:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\])$/i,
-	
+var REGEX_IS_CSS_SELECTOR = /^(?:\.|#)/,
+    REGEX_IS_EMAIL = /^(?:[a-z0-9!#$%&'*+\/=?^_`{|}~-]\.?){0,63}[a-z0-9!#$%&'*+\/=?^_`{|}~-]@(?:(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)*[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\])$/i,
+
 	DEFAULT_VALIDATOR_TYPE = 'input',
-	
+
+	Form = {}, 
 	Validator,
-	AjaxChain,
+	Complex,
 
 	// preset validators for input element
 	validators = {
@@ -91,13 +96,7 @@ var undef,
 			
 			'regex': {
 				test: function(v, prop){
-					return ( K.isRegExp(prop) ? prop : new RegExp(prop) ).test(v);
-				}
-			},
-			
-			'capcha': {
-				test: function(v){
-					return !!v;
+					return ( K._type(prop) === 'regexp' ? prop : new RegExp(prop) ).test(v);
 				}
 			}
 		},
@@ -119,7 +118,7 @@ var undef,
 		}
 	},
 	
-	validator_presets_get_checkbox = function(){
+	validator_presets_val_checkbox = function(){
 		var ret = [];
 	
 		this.element.each(function(i){
@@ -137,63 +136,24 @@ var undef,
 		
 	validator_presets = {
 		checkOnBlur: true,
-		showErrOnBlur: true,
+		showMsgOnBlur: true,
 		trim: true,
 		errCls: 'err-input',
+        errHideCls: 'Hide',
 		
 		// module is prior to element attribute
 		testRuleAttr: 'data-validate-rule',
 		errMsgAttr: 'data-err-msg',
 		
-		enableHTML5: true
-	},
-	
-	validator_method_presets = {
-		
-		_get: {
+		_Val: {
 			input: function(){
 				var v = this.element.get('value');
 			
 				return this.options.trim ? v.trim() : v;
 			},
 			
-			checkbox: validator_presets_get_checkbox,
-			radio: validator_presets_get_checkbox
-		},
-		
-		_set: {
-			input: function(value){
-				return (this.element.value = value, this);
-			},
-			
-			/**
-			 * @param sets
-			 *		{Array} [0, 1, 0, 1, 0]
-			 *		{}
-			 * @param reverse {Boolean} 
-			 */
-			checkbox: function(sets){
-				var self = this,
-					checkboxes = self.element,
-					setAll = K.isBoolean(sets) || sets === 1 || sets === 0,
-					reverse = sets === 'reverse';
-				
-				checkboxes.each(function(c, i){
-					c.checked = reverse ? !c.checked : setAll ? sets : sets[i];
-				});
-				
-				return self;
-			},
-			
-			radio: function(index){
-				var el = this.element[index];
-				
-				if(el){
-					el.checked = true;
-				}
-				
-				return this;
-			}
+			checkbox: validator_presets_val_checkbox,
+			radio: validator_presets_val_checkbox
 		},
 		
 		_getCheckObj: {
@@ -203,54 +163,15 @@ var undef,
 			
 			checkbox: validator_presets_getCheckObj_checkbox,
 			radio: validator_presets_getCheckObj_checkbox
-		},
-	};
-	
-	
-AjaxChain = new Class({
-	Implements: Chain,
-	
-	clearChain: function(fn){
-		if(K.isFunction(fn)){
-			
 		}
+	},
 	
-		this.$chain.empty();
-		return this;
-	}
-});
-
-/**
- <code> 
- 	var v = new Validator(validate_rules, options);
- 	v.check('my input');
- </code>
- 
- 
- static method >>>>
- 
- {1.}
- create new validator preset
- static.add(name, module, branch);
- 
- instance method >>>>
- 
- {1.}
- add new validator
- instance.add(rule, errMsg)
- add a validate rule
- 
- {2.}
- instance.parseHTML(element)
- 
- {3.}
- check the value
- instance.check(value);
- instance.check(radio[s]);
- instance.check(checkbox[es]);
- 
- 
- */
+	complex_presets = {
+		enableHTML5: true,
+		CSPrefix: '',
+		errCSSuffix: '-err',
+		showAllErr: false
+	};
 	
 /**
  * @constructor
@@ -258,162 +179,180 @@ AjaxChain = new Class({
  */	
 Validator = new Class({
 	
-	Implements: [Options, Events],
-	
-	_errMsg: [],
-	_tests: [],
+	Implements: Options,
 	
 	/**
-	 @param {Object} options {
-	 	onAfterCheck: {Function}
-	 }
 	 
+	 	new KM.Form.Validator('email', 'email-err', {
+	 		test: ['required', function(v){}],
+	 		errMsg: ['input is require', '{value} is xxx']
+	 	});
+	 	 
 	 */
-	initialize: function(options){
-	
-		var self = this;
+
+	initialize: function(element, errHolder, module, options){
+		element = smartSelector(element);
+		errHolder = $(errHolder);
 		
-		self.setOptions(validator_presets, options);
+		if(element){
+			var self = this,
+				o,
+				tests, errMsg,
+				type = K._type,
+				B = bind,
+				
+				check_type = module.type;
+
+            self.setOptions(validator_presets, options);
+            o = self.options;
+				
+			if(!check_type && type(element) === 'element'){
+				check_type = DEFAULT_VALIDATOR_TYPE;
+			}
+				
+			self._config(check_type);
+					
+			self.element = element;
+			self.errHolder = errHolder;
 			
-		// bind public methods
-		bind('parseHTML', self);
-		bind('check', self);
-		bind('add', self);	
+			if(!module && element){	
+				tests = element.getAttribute(o.testRuleAttr).replace(/\\\\/g, '\\');
+				errMsg = element.getAttribute(o.errMsgAttr);
+			}else{
+				tests = module.test;
+				errMsg = module.errMsg;
+			}
+			
+			// if no validate rules, always return true
+			tests = splitIfString(tests || function(){return true});
+			
+			errMsg = splitIfString(errMsg || []);
+			
+			tests.each(function(test, index){
+				self.addValidator(test, errMsg[index]);
+			});
+			
+			/**
+			 * TODO:
+			 * other types of elements
+			 */
+			if(o.checkOnBlur){
+				element.addEvent('blur', function(){
+					self.check(o.showMsgOnBlur);
+				});
+			};
+			
+			// bind public methods
+			B('val', self);
+			B('check', self);
+			B('addValidator', self);	
+		}
 	},
 	
-	/**
-	 * @param type {String} check type of the current form fields. 
-	 *	available for 'input', 'checkbox', 'radio' 
-	 */
 	_config: function(type){
 		var self = this,
 			o = self.options;
-		
-		self._config = NOOP;
-		
-	},	
+			
+		if(!type){
+			throw new TypeError('Form.Validator: invalid validate type');
+		}
+			
+		self._type = type;
+		self._getCheckObj = validator_presets._getCheckObj[type];
+		self._val = o.getVal || validator_presets._Val[type];
+			
+		delete o.getVal;
+	},
 	
-	/**
-	 * parse the HTML to fetch validating rules
-	 */
-	parseHTML: function(element){
-				
+	_errMsg: [],
+	
+	_tests: [],
+	
+	showMsg: function(msg){
+		var errHolder = this.errHolder,
+            o = this.options;
+
+        msg = msg || '';
+		
+		if(errHolder){
+            errHolder[msg ? 'removeClass' : 'addClass'](o.errHideCls).set('html', msg);
+        }
 	},
 	
 	/**
-	 * @param showErr {Boolean} default to true. whether deal with err message after checking
+	 * @getter
+	 * @setter
 	 */
-	check: function(v, element){
+	val: function(getter){
+		var self = this;
+		
+		return K._type(getter) === 'function' ?
+			(self._val = getter, self)
+			: self._val.call(self);
+	},
+	
+	
+	/**
+	 * @param showMsg {Boolean} default to true. whether deal with err message after checking
+	 */
+	check: function(showMsg){
 		var self = this,
-			i = 0,
+			i = 0, 
 			tests = self._tests,
 			len = tests.length,
 			test,
 			pass = true,
-			err_msg;
+			
+			v = self._getCheckObj();
 			
 		for(; i < len; i ++){
 			test = tests[i];
 			
-/**
- ajax rule for validation {
- 	ajax: true,
- 	
- 	// @type {Function(): (KM.ajax)}
- 	// @param {String} v the value to be checked
- 	// @param {Function(this:element)} cb callback function(isPassed, errorMsg){}
- 	//		@param {Boolean} isPassed is ajax checking passed
- 	//		@param {String=}
- 	test: function(v, cb){}
- }
- 
- <code>
- myValidator.add({
- 	ajax: true,
- 	test: function(v, cb){
- 		return new Ajax({
- 			url: '...',
- 			data: {
- 				username: v
- 			}
- 			onSuccess: function(r){
- 				cb(r.pass, r.msg);
- 			}
- 		});
- 	}
- }, 'username already taken');
- 
- </code>
- */
+			// ajax check
 			if(test.ajax === true){
-				self.lastAjax = test(v, function(isPassed, msg){
-				
-					// for sync httprequest
-					if(!isPassed){
+				test(v, function(_pass, errMsg){
+					if(!_pass){
 						pass = false;
+						showMsg && self._fail(showMsg, errMsg, v);
 					}
-					
-					// self.fireEvent('afterCheck', [pass, msg]);
 				});
 				
 			// normal check
-			
-			/**
-			 * TODO:
-			 * store the lastest errMsg
-			 * if current errMsg is undef use the last one
-			 */
-			}else{
-				self.lastAjax && self.lastAjax.cancel();
-				if(!test(v)){
-					pass = false;
-				}
-				
-				// self.fireEvent('afterCheck', [pass, msg]);
+			}else if(!test(v)){
+				pass = false;
+				showMsg && self._fail(showMsg, self._errMsg[i], v);
 			}
 			
 			if(!pass){
 				break;
 			}
 		}
+		
+		if(pass){
+			showMsg && self.showMsg();
+		}
 			
 		return pass;
 	},
+
+	_fail: function(showMsg, errMsg, v){
+		var self = this;
+		
+		self.element[showMsg ? 'addClass' : 'removeClass'](self.options.errCls);
+		(showMsg || showMsg === undef) && self.showMsg( (errMsg || '').substitute({value:v}) );
+	},
 	
-	
-/**
- @param {String|RegExp|Function|Object} module
- 	{String} preset validate rule
- 	{RegExp} regular expression for testing
- 	{Function} validation function(v){}
- 		
- 	{Object} {
- 		ajax: {Boolean}
- 		test: 
- 	}
- */
-	add: function(module, errMsg){
-		var self = this, prop, test, rule_method, regex;
+	addValidator: function(module, errMsg){
+		var self = this, prop, test, rule_method;
 		
 		// module presets
 		switch( K._type(module) ){
-		
-			// add('max-length:10', '{value} is longer than 10')
-			// 'max-length:10' -> prop = 10, validators[...]['max-length']
 			case 'string':
 				module = module.split(':');
 				prop = (module[1] || '').trim();
 				module = validators[self._type][ module[0].trim() ];
 				
 				break;
-				
-			case 'regexp':
-				regex = module;
-				module = {
-					test: function(v){
-						return regex.test(v);
-					}
-				};
 				
 			case 'function':
 				module = {
@@ -429,41 +368,164 @@ Validator = new Class({
 			(!module.condition || module.condition(self.element) )
 		){
 			
-			rule_method = function(v){
-				return module.test(v, prop);
+			rule_method = function(){
+				return module.test.apply(null, arguments);
 			};
 			
-			if(module.ajax){
+			if(module.ajax || module.test.ajax){
 				rule_method.ajax = true;
-				rule_method.chain = module.chain;
 			}
 			
 			self._tests.push(rule_method);
+			
 			self._errMsg.push(errMsg);
 		}
 	}
 });
 
-Validator.add = addValidator;
+
+/**
+ * @constructor
+ 
+ * TODO:
+ * method to set err msg for all fields
+ */	
+Complex = new Class({
+
+	_vals: {},
+	_checks: [],
 	
-return Validator;
+	
+	/**
+	 * TODO:
+	 * transfer the slice of lines into html5-enabler.js
+	 * refraction
+	 */
+	_HTML5: function(element, validator){
+		// var placeholder = element.getAttribute('placeholder');
+	
+		// if(placeholder){
+		//	new Form.Placeholder(element, {valSetter: validator.val});
+		// }
+	},
+	
+	Implements: Options,
+	
+	initialize: function(wrap, module, options){
+		var self = this,
+			o,
+			modname,
+			mod,
+			modCS;
+
+        self.setOptions(complex_presets, options);
+        o = self.options;
+
+		wrap = $(wrap);
+		
+		if(wrap){		
+			for(modname in module){
+				mod = module[modname];
+				modCS = mod.CS || modname;
+			
+				self.add(
+					wrap.getElement( o.CSPrefix + modCS ), 
+					wrap.getElement( o.CSPrefix + (mod.errCS || (modCS + o.errCSSuffix) ) ),
+					modname, 
+					mod,
+					options
+				);
+			}
+		}
+	},
+	
+	add: function(selector, errHolder, modname, mod, options){
+		element = $(selector);
+		errHolder = $(errHolder);
+		
+        if(element){
+	        var self = this,
+		        validator,
+		        is_normal_field = true;
+		
+	        /**
+		        * TODO:
+		        * transfer to Validator
+		        */
+	        if(mod.type === 'checkbox' || mod.type === 'radio'){
+		        element = element.getElements('input[type=' + mod.type + ']');
+		        is_normal_field = false;
+	        }
+		
+	        validator = new Validator(element, errHolder, mod, options);
+		
+	        if(is_normal_field){		
+		        self.options.enableHTML5 && self._HTML5(element, validator);
+	        }
+		
+	        self._checks.push(validator.check);
+	        self._vals[modname] = validator.val;
+        }
+		
+		return self;
+	},
+	
+	check: function(showMsg){
+        showMsg = showMsg || showMsg === undefined;
+
+		var self = this,
+			show_all_err = self.options.showAllErr,
+			i = 0,
+			pass = true,
+			len = self._checks.length,
+			check;
+			
+		for(; i < len; i ++){
+			check = self._checks[i];
+			
+			// check first
+			pass = check(showMsg) && pass;
+			
+			if(!pass && !show_all_err){
+				break;
+			}
+		}
+			
+		return pass;
+	},
+	
+	val: function(isQueryString){
+		var ret = {}, key, vals = this._vals;
+		
+		for(key in vals){
+			ret[key] = vals[key]();
+		}
+		
+		return isQueryString ? K.toQueryString(ret) : ret;
+	}
+
+});	
+	
+
+Form.addValidator = addValidator;
+Form.Validator = Validator;
+Form.Complex = Complex;
+
+return Form;
 
 });
 
 
 /**
- TODO:
- - remove public method val, showErr. Validator will only deal with ONE thing, i.e. form checking
- - public APIs: instance.check, instance.add, static.add
- - add oncheck event in instance.check method, remove instance._fail
+ * TODO:
+ *
+ * 1. 事件支持，用于同其他组件的通信。
+     注册表单事件
 
+
+ * 2. 整理与配置相关的代码
  
- @change-log:
- 2011-06-15  Kael
- - refractor, migrate to loader module
- 
- 2011-05-04  Kael:
- - change type-detecting method
- 2011-04-14  Kael:
- - basic functionality
+ * @change-log:
+ * 2011-04-14  Kael:
+ * - 完成基本功能
  */

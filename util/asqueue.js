@@ -276,11 +276,3 @@ ASQ_proto = {
 return ASQueue;
 
 });
-
-/**
- 
- TODO:
- A. add judger instead of property 'once', and also improve it. 
- 
- 
- */
