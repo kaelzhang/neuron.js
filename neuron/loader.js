@@ -3,7 +3,7 @@
 ; // fix layout of UglifyJS
 
 /**
- * version	3.3.1
+ * version	3.4.0
  
  * include
  * - static resource loader
