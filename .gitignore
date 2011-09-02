@@ -6,9 +6,7 @@
 *.diff
 license.txt
 readme.html
-lib/combo
-skin/*/combo
-lib/test
-lib/reference
-lib/old
-lib/*.js
+combo
+test
+reference
+old
