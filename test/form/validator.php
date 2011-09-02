@@ -1,1 +1,0 @@
-<script src="http://kael.me/lib/combo/--core%3Emt.js,core%3Ekm.js,core%3Elang.js,core%3Eweb.js,core%3Eloader.js,core%3Econfig.js--/latest.js"></script>

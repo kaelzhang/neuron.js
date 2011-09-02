@@ -1,0 +1,14 @@
+.DS_Store
+.svn/
+*.db
+*.bak
+*.patch
+*.diff
+license.txt
+readme.html
+lib/combo
+skin/*/combo
+lib/test
+lib/reference
+lib/old
+lib/*.js
