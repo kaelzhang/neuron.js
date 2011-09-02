@@ -46,7 +46,7 @@ var	_mods = {},			// map: identifier -> module
 	REGEX_FILE_TYPE = /\.(\w+)$/i,
 	REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
 	REGEX_IS_CSS = /\.css(?:$|#|\?)/i,
-	REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
+	// REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
 	REGEX_DIR_MATCHER = /.*(?=\/.*$)/,
 	
 	NOOP = function(){}, // no operation
@@ -226,101 +226,8 @@ function loadSrc(uri, callback, type){
 };
 
 /**
- * module loader
+ * module define
  * --------------------------------------------------------------------------------------------------- */
- 
-/**
- API Design:
- Module Define: >>>>>>>>>>>>>>>>>>>>>>>
- 
- <1.> 
- define a module with a module id, 
- specially for defining modules in inline script
- never define a non-anonymous module in a non-package file
- 
-	 1.1
-	 with factory function
-	 
-	 KM.define(
-	 	'moduleA|1.10.3', 
-	 	
-	 	function(K, require, exports){
-		 	var B = require('moduleB');
-		 	
-		 	// readonly
-		 	// a shadow copy
-		 	B.__DATA => {
-		 	
-		 		// dependencies will be dynamically analysised
-		 		// after the module's first requirement 
-		 		dependencies: ['moduleC', 'moduleB'],
-		 		uri: 'http://....js'
-		 	}
-		 	
-		 	1.1.1: 
-		 	exports.method1 = f1(B);
-		 	exports.method2 = f2(B);
-		 	
-		 	1.1.2: 
-		 	return {
-		 		method1: f1(B),
-		 		method2: f2(B)
-		 	}	
-	 	}
-	 );
-	 
-	 1.2
-	 with exports object
-	 
-	 KM.define('moduleA', {
-	 	method1: ....,
-	 	method2: ....
-	 });
-	 
-	 1.3
-	 with explicit dependencies,
-	 in this case, KM module loader will not parse the factory function to fetch them
-	 
-	 KM.define('moduleA', ['moduleB'], function(){
-	 	...
-	 });
-
- <2.>
- define a module's uri - for a version ctrl system, such as main-site
- esp for inline declarations
- 
-	 2.1 normal
-	 KM.define('moduleA', 'http://......./A.js');
-	 KM.define('moduleA', '/pack/A.js');
-	 
-	 2.2 with version
-	 KM.define('moduleA|version', 'http://.../A.js');
-	 
-	 2.3 direct define a uri
-	 KM.define('http://.../A.js');
-	 
- 
- ## 3. anonymous module will be executed right now
- ## 3. configuration, before any module has been defined
- 
- <3.> 
- anonymous module definition
- for defining a module in a module file
- 
- if define a anonymous in a javascript file, the module will be related to the module name of {2.}
- 
-	 3.1
-	 KM.define({
-	 	options1: ...
-	 })
-	 
-	 3.2
-	 KM.define(function(K){
-	 	return {
-	 		options1:
-	 	}
-	 });
- */
 
 /**
  * method to define a module
@@ -517,11 +424,11 @@ function _define(name, identifier, version, dependencies, factory, uri){
 			
 			// if dependencies is explicitly defined, loader will never parse them from the factory function
 			// so, to define a standalone module, you can set dependencies as []
-			if(!dependencies){
-				dependencies = parseDependencies(factory);
-			}
+			// if(!dependencies){
+			//	dependencies = parseDependencies(factory);
+			// }
 			
-			if(dependencies.length){
+			if(dependencies && dependencies.length){
 				mod.status = STATUS.DEFINED;
 				
 				// only if defined with factory function, can a module has dependencies
@@ -603,31 +510,10 @@ function _define(name, identifier, version, dependencies, factory, uri){
 	return mod;
 };
 
+
 /**
- Module Load: >>>>>>>>>>>>>>>>>>>>>>>
- will immediately attach a module into the environment
- -> STATUS.ATTACHED
- 
- <1.>
- provide a module without callback
- will make a module or modules ready to use, and attach all requirements
- -> STATUS.READY
- 
- KM.provide('moduleA');
- KM.provide(['moduleA', 'moduleB'])
- 
- 
- <2.>
- provide a module with callback
- 
- KM.provide('moduleA', function(K, A){});
- KM.provide(['moduleA', 'moduleB'], function(K, A, B){});
- 
- 
- ARGUMENTS:
- if module name is a source uri, it will define a module before the actions above
-	 
- */
+ * module load
+ * --------------------------------------------------------------------------------------------------- */
  
 /**
  * method to load a module
@@ -1003,10 +889,12 @@ function isCyclic(env, uri) {
 /**
  * parse dependencies from a factory function
  */
+
+/*
 function parseDependencies(factory){
 	return parseAllSubMatches(removeComments(String(factory)), REGEX_FACTORY_DEPS_PARSER);
 };
-
+*/
 
 function getInteractiveScript() {
 	if (interactive_script && interactive_script.readyState === 'interactive') {
@@ -1062,6 +950,8 @@ warning = WIN.console && console.warn ?
 /**
  * parse all sub matches of a string according to a regular expression
  */
+ 
+/*
 function parseAllSubMatches(string, regex){
 	var ret = [], match;
 	
@@ -1078,7 +968,7 @@ function parseAllSubMatches(string, regex){
 	
 	return ret;
 };
-
+*/
 
 /**
  * simply remove comments from the factory function
@@ -1294,7 +1184,11 @@ K.mix(K, {
  - X discarded scheme
  - * unimportant
  
+ 2011-09-02  Kael:
+ - remove parseDependencies methods
+ 
  2011-09-01  Kael:
+ TODO:
  - A. prevent duplicate loading a certain module
  
  2011-08-20  Kael:
