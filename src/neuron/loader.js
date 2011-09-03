@@ -1188,10 +1188,14 @@ K.mix(K, {
  - remove parseDependencies methods
  TODO:
  - A. support non-browser environment
+ - B. distinguish the identifier for anonymous module and non-anonymous module in the module cache. 
+ 	if define('abc', fn), it will be saved as {'~abc': fn}, 
+ 	prevent user from defining a path as the module identifier to override lib modules
+ - C. support the module which could automatically initialize itself if provided
  
  2011-09-01  Kael:
  TODO:
- - A. prevent duplicate loading a certain module
+ - A. prevent duplicate loading or defining a certain module
  
  2011-08-20  Kael:
  TODO:
@@ -1203,6 +1207,7 @@ K.mix(K, {
  2011-08-02  Kael:
  - refractor package definition. 
  	if a relevant package is detected, neuron loader will try to fetch the package instead of the module file itself.
+ 	if the id of module A is the parent dirname of module B, A will be treated as the pkg of B 
  - TODO[06-15].[C,I,J,K]
  
  2011-08-01  Kael:
