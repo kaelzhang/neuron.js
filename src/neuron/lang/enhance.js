@@ -1,8 +1,5 @@
 /**
- * @module  lang
- 
- * - language enhancement for javascript
- * - adapter for mootools
+ * language and OOP enhancement for non-ECMAScript5 standards
  */
 
 ;(function(K){
