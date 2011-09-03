@@ -1192,6 +1192,7 @@ K.mix(K, {
  	if define('abc', fn), it will be saved as {'~abc': fn}, 
  	prevent user from defining a path as the module identifier to override lib modules
  - C. support the module which could automatically initialize itself if provided
+ - D. split the logic of module management and script manipulation, so that loader could work on non-browser environment
  
  2011-09-01  Kael:
  TODO:
