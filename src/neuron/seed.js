@@ -6,7 +6,7 @@
  
 /**
  * corek
- * seed.js -> enhance/ -> loader.js -> selector/ -> dom/ -> core/
+ * seed.js -> enhance/ -> loader.js -> selector/ -> core/ -> dom/
  */
 
 /**
@@ -25,7 +25,7 @@ K = host[K] = host && host[K] || {};
 /**
  * isXXX method - basic javascript method detecting
  
- * Never use KM._type to test for a certain type in your javascript for business, 
+ * NEVER use KM._type to test for a certain type in your javascript for business, 
  * since the returned string may be subject to change in a future version 
  * use KM.isXXX instead
  * ------------------------------------------------------------------------------------ */
