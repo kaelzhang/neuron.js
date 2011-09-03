@@ -1186,6 +1186,8 @@ K.mix(K, {
  
  2011-09-02  Kael:
  - remove parseDependencies methods
+ TODO:
+ - A. support non-browser environment
  
  2011-09-01  Kael:
  TODO:
