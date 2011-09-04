@@ -43,7 +43,7 @@ var UA = K.namespace('UA'),
 
 
 UA.platform = platform = platform.match(/ip(?:ad|od|hone)/) ? 'ios' 
-	: ( ua.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || [DEFAULT_PLATFORM] )[0];
+	: ( platform.match(/(?:webos|android)/) || platform.match(/mac|win|linux/) || [DEFAULT_PLATFORM] )[0];
 
 
 if(platform !== DEFAULT_PLATFORM){
