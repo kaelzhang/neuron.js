@@ -17,6 +17,9 @@
  4. __SELECTOR.uid(element)
  return {number} the uid of the element
  
+ 5. __SELECTOR.parse(selector)
+ return {Object} selector object
+ 
  
  arguments:
 	 context {DOMElement|DOMDocument|Array.<DOMElement>}
@@ -69,7 +72,8 @@ KM.__SELECTOR = {
 	},
 	
 	contains: Slick.contains,
-	match: Slick.match
+	match: Slick.match,
+	parse: Slick.parse
 };
 
 })(KM);
