@@ -60,12 +60,6 @@ DOM.prototype = {
 }
 
 
-
-
-
-
-
-
 WIN.$ = DOM;
 
 
