@@ -32,7 +32,7 @@
  
 // adapter for Slick
 KM.__SELECTOR = {
-	find		: function(selector, context, first){
+	find: function(selector, context, first){
 		context = K.makeArray( context || document );
 		
 		var ret = [],
@@ -68,8 +68,8 @@ KM.__SELECTOR = {
 		return ret;
 	},
 	
-	contains	: Slick.contains,
-	match		: Slick.match
+	contains: Slick.contains,
+	match: Slick.match
 };
 
 })(KM);
