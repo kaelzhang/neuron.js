@@ -47,8 +47,26 @@ function bind_method(fn, bind){
  * functions that could accept object arguments
  * @adapter
  */
-function batch_setter(fn){
-	return fn.overloadSetter();
+function overloadSetter(fn){
+	return function(key, value){
+		var self = this;
+	
+		if (!a && a !== 0){
+			return self;
+		}
+		
+		if (K.isString(key)){
+			fn.call(self, key, value);
+		
+		}else if (K.isObject(key)){	
+			K.each(key, function(v, k){
+				fn.call(self, k, v);
+			});
+			
+		}
+		
+		return self;
+	};
 };
 
 
@@ -69,6 +87,7 @@ function memoizeMethod(fn){
 /**
  * transform constructor functions to functions that could change a method of a instance or singleton 
  */
+/*
 function overload_for_instance_method(fn){
 	var self = this;
 
@@ -80,6 +99,7 @@ function overload_for_instance_method(fn){
 		:	instance[methodname] = fn.call(instance, instance[methodname], instance);
 	};
 };
+*/
 
 
 function toQueryString(obj, splitter){
@@ -113,6 +133,27 @@ mix(K, {
 	
 	guid: function(){
 		return _guid ++;
+	},
+	
+	/**
+	 * forEach method for Object
+	 */
+	each: function(obj, fn){
+		if(K.isFunction(fn)){
+	
+			if(K.isObject(obj)){
+				var keys = Object.keys(obj), i = 0, len = keys.length, key;
+				
+				for(; i < len; i ++){
+					key = keys[i];
+					obj.hasOwnProperty(key) && fn.call(obj, obj[key], key);
+				}
+				
+			}else if(K.isArray(obj)){
+				obj.forEach(fn);
+				
+			}
+		}
 	},
 	 
 	merge: function(){
@@ -181,12 +222,12 @@ mix(K, {
 	/**
 	 * overload a setter function or a setter method of a instance
 	 */
-	_overloadSetter: overload_for_instance_method( batch_setter ),
+	_overloadSetter: overloadSetter, // overload_for_instance_method( batch_setter ),
 	
 	/**
 	 * 
 	 */
-	_overloadInstanceMethod: overload_for_instance_method,
+	// _overloadInstanceMethod: overload_for_instance_method,
 	
 	/**
 	 * run a method once and only ONCE before the real method executed
@@ -230,7 +271,7 @@ mix(K, {
 			var memoizedMyMethod = KM._memoize(myMethod);
 		 </code>
 	 */
-	_memoize: overload_for_instance_method( memoizeMethod )
+	_memoize: memoizeMethod // overload_for_instance_method( memoizeMethod )
 
 });
 
