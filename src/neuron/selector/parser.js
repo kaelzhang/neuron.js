@@ -6,7 +6,7 @@ provides: Slick.Parser
 ...
 */
 
-;(function(){
+(function(){
 	
 var parsed,
 	separatorIndex,
@@ -211,5 +211,7 @@ Slick.parse = function(expression){
 Slick.escapeRegExp = escapeRegExp;
 
 if (!this.Slick) this.Slick = Slick;
+
+console.log(Slick, this.Slick, this)
 	
 }).apply(/*<CommonJS>*/(typeof exports != 'undefined') ? exports : /*</CommonJS>*/this);
