@@ -24,17 +24,6 @@ function DOM(element, attributes){
  * @param {string} name
  * @param {function()} method
  * @param {string|boolean.<false>} type
-	- 'mutator'	:   the method modify the current context({Object} this.context, as the same as below), 
-					and return the modified DOM instance(the old one) itself
-					
-	- 'iterator':	the method replace the current context with a new one, 
-					and return the modified DOM instance(the old one) itself
-					
-	- 'getter'	:	the method will generate something based on the current context,
-					and return the value
-					
-	- false 	:   (not recommended) simply implement the method into the prototype of DOM,
-					and the returned value based on the method
  */
 
 // extends is one of the javascript reserved words
@@ -49,6 +38,8 @@ function extend(name, method, type){
 	}else{
 		generator(host, name, method);
 	}
+	
+	return DOM;
 };
 
 
@@ -59,6 +50,19 @@ SELECTOR = K.__SELECTOR,
 	
 DOC = WIN.document,
 
+/**
+ 'mutator'	:   the method modify the current context({Object} this.context, as the same as below), 
+				and return the modified DOM instance(the old one) itself
+					
+ 'iterator'	:	the method iterate the current context, may modify the context, maybe not 
+				and return the modified DOM instance(the old one) itself
+					
+ 'accessor'	:	the method will not modify the context, and generate something based on the current context,
+				and return the new value
+					
+ 'def' 		:   (not recommended) simply implement the method into the prototype of DOM,
+				and the returned value based on the method
+ */
 IMPLEMENT_GENERATOR = {
 	mutator: function(host, name, method){
 		host[name] = function(){
@@ -69,15 +73,22 @@ IMPLEMENT_GENERATOR = {
 		}
 	},
 	
+	// todo
 	iterator: function(host, name, method){
 		host[name] = function(){
-			var self = this;
-			self.context = method.apply(self, arguments);
+			var self = this,
+				context = self.context, 
+				i = 0, len = context.length;
+				
+			for(; i < len; i ++){
+				method.apply(context[i], arguments);
+			}
+			
 			return self;
 		}
 	},
 	
-	getter: function(host, name, method){
+	accessor: function(host, name, method){
 		host[name] = function(){
 			return method.apply(this, arguments);
 		}
@@ -98,15 +109,18 @@ DOM.all = function(selector){
 	return new DOM( SELECTOR.find(selector) );
 };
 
+
+// temporary method for dom creation
+// will be override in module DOM/create
 DOM.create = function(fragment, attributes){
 	var element;
 	
 	if(typeof fragment === 'string'){
 		element = DOC.createElement(selector);
 		
-		attributes = attributes || {};
+		// attributes = attributes || {};
 		
-		K.mix(element, attributes);
+		// K.mix(element, attributes);
 	}
 	
 	return element;
@@ -118,17 +132,27 @@ DOM.extend = extend;
 
 extend({
 	one: function(selector){
-		return SELECTOR.find(selector, this.context, true);
+		return new DOM( SELECTOR.find(selector, this.context, true) );
 	},
 	
 	all: function(selector){
-		return SELECTOR.find(selector, this.context);
+		return new DOM( SELECTOR.find(selector, this.context) ); 
+	},
+	
+	el: function(index){
+		var context = this.context;
+	
+		return K.isNumber(index) ? context[index] : context;
+	},
+	
+	isEmpty: function(){
+		return !!this.context.length;
 	}
 	
-}, 'iterator');
+}, 'accessor');
 
 
-WIN.$ = DOM;
+WIN.$ = K.DOM = DOM;
 
 
 /*
