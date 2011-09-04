@@ -36,7 +36,7 @@ DOM.one = function(selector){
 	return new DOM( SELECTOR.find(selector, NULL, true) );
 };
 
-DOM.all = function(){
+DOM.all = function(selector){
 	return new DOM( SELECTOR.find(selector) );
 };
 
@@ -51,11 +51,17 @@ DOM.prototype = {
 	one: function(selector){
 		var self = this;
 		
+		self.context = SELECTOR.find(selector, self.context, true);
 		
-		
+		return self;
 	},
 	
-	all: function(){
+	all: function(selector){
+		var self = this;
+		
+		self.context = SELECTOR.find(selector, self.context);
+		
+		return self;
 	}
 }
 
