@@ -2,7 +2,7 @@
  * language and OOP enhancement for non-ECMAScript5 standards
  */
 
-;(function(K){
+;(function(K, undef){
 	
 /**
  * copy all properties in the supplier to the receiver
@@ -100,7 +100,7 @@ var	NOOP = function(){},
 	_guid = 1;
  
 
-K.mix(K, {
+mix(K, {
 		  
 /**
  * language enhancement 
@@ -108,14 +108,8 @@ K.mix(K, {
  * for non-ECMAScript5 implementations, we'll add them into the KM namespace
  * and ECMAScript5 standard methods will be included in native.js
  * --------------------------------------------------------------------------------------------- */
-			
-	/**
-	 * Never use KM._type to test for a certain type in your javascript for business, 
-	 * since the returned string may be subject to change in a future version
-	 
-	 * use KM.isXXX instead
-	 */
-	_type: type,
+	
+	mix: mix,
 	
 	guid: function(){
 		return _guid ++;

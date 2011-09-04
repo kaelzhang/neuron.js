@@ -84,20 +84,10 @@ function nullOrEmpty(str){
 	// @type {Object}
 var stored_data = {},
 
-    is_domready = false,
-	is_domready_binded = false,
-    is_loaded = false,
-	
-    readyList = [],
-
 	// @const
 	WIN = K.__HOST,
 	DOC = WIN.document,
 	EMPTY = '',
-	_Browser = Browser,
-	ua = navigator.userAgent,
-	UA = K.UA,
-	REGEX_WEBKIT = /webkit[ \/]([^\s]+)/i,
     
     /* 
     REGEX_URL = /^
@@ -157,30 +147,6 @@ K.mix(K, {
 		return is_getter ? ret : K;
 	},
 	
-	isDomReady: function(){
-		return is_domready;
-	},
-	
-	isLoaded: function(){
-		return is_loaded;
-	},
-	
-	/**
-	 * the entire entry for domready event
-	 * window.addEvent('domready', fn) has been carried here, and has no more support
-	 * @param {function()} fn the function to be executed when dom is ready
-	 */
-	ready: function(fn){
-		// delay the initialization of binding domready, making page render faster
-		is_domready_binded || bind_domready();
-		
-		if(is_domready){
-			fn.call(WIN, this);
-		}else{
-			readyList.push(fn);
-		}
-	},
-	
 	/**
 	 * @param {string} href
 	 * @return {Object}
@@ -195,150 +161,6 @@ K.mix(K, {
 
 });
 
-
-/**
- * user agent
-
- type {number} KM.UA.<browser> major version of current browser, default to undefined
- - KM.UA.ie
- - KM.UA.firefox
- - KM.UA.opera
- - KM.UA.chrome
- - KM.UA.webkit
- 
- usage:
- <code>
- 	if(KM.UA.ie < 8){...}
- 
- 	// always instead of using this:
- 	if(Browser.ie && Browser.version < 8){...}
- </code>
- */
-['ie', 'firefox', 'opera', 'chrome'].forEach(function(name){
-	var B = _Browser;
-	
-	B[name] && (UA[name] = B.version);
-});
-
-K.mix(UA, _Browser.Platform, true, ['mac', 'win', 'linux', 'ios', 'android', 'webos', 'other']);
-UA.platform = _Browser.Platform.name;
-
-
-// UA.fullversion = String(_Browser.version);
-
-(function(UA){
-	var m = ua.match(REGEX_WEBKIT);
-	
-	if(m){
-		UA.webkit = parseInt( m[1] );
-	}
-})(K.UA);
-
-
-
-/**
- * load event
- */
-WIN.addEvent('load', function(){
-	is_loaded = true;
-});
-
-
-
-/**
- * fix bugs of mootools
- * ----------------------------------------------------------------------------------------------------------- */
-
-// for those who dont have native Element 
-// in mootools 1.3.2, on ie < 8, document.body and html must be 'dollar'ed before the using of most of the implemented methods
-readyList.push(function(){
-	$(document.body);
-	$(document.documentElement);
-});
-
-
-// add empty console.log to old browsers
-if(!WIN.console){
-	WIN.console = {
-		log: function(){}
-	};
-}
-
-
-/**
- * Custom domready event
- * @private
- * ----------------------------------------------------------------------------------------------------------- */
-
-function domready(){
-
-	// fire domready only once
-	if(!is_domready){
-		is_domready = true;
-		fire_domready();
-	}
-}
-
-function fire_domready(){
-	var self = this,
-		r = readyList, fn;
-		
-	if(r){	
-		for(var i = 0, len = r.length; i < len; i ++){
-			fn = r[i]
-			fn && fn.call(WIN, K);
-		}
-
-		r.length = 0;
-		readyList = null;
-	}
-};
-
-function bind_domready(){
-	var COMPLETE = 'complete', doc = DOC,
-		doScroll = doc.documentElement.doScroll,
-		eventType = doScroll ? 'readystatechange' : 'DOMContentLoaded';
-		
-	is_domready_binded = true;
-	
-	// Catch cases where ready() is called after the
-	// browser event has already occurred.
-	if(doc.readyState === COMPLETE) return domready();
-	
-	function _ready(){
-		doc.removeListener(eventType, _ready).removeListener('load', _ready);
-		domready();
-	}
-	
-	doc.addListener(eventType, _ready);
-	
-	// A fallback to load
-	// and make sure that domready event fires before load event registered by user
-	doc.addListener('load', _ready);
-	
-	if(doScroll){
-		var not_framed = false;
-		
-		try {
-			not_framed = win.frameElement == null;
-		} catch(e) {}
-		
-		if(not_framed){
-			
-			// use conditional function declaration, poll_scroll will not be declared in firefox, that it will save memory
-			function poll_scroll(){
-				try {
-					// doScroll technique by Diego Perini http://javascript.nwbox.com/IEContentLoaded/
-					doScroll('left');
-					ready();
-				} catch(ex) {
-					setTimeout(poll_scroll, 10);
-				}
-			}
-			poll_scroll();
-		}
-	}
-}
 
 })(KM);
 

@@ -7,6 +7,27 @@
  * always has no dependencies on Neuron
  
  * codes from mootools, MDC or by Kael Zhang
+ 
+ Array.prototype
+ 	- indexOf
+ 	- lastIndexOf
+ 	- filter
+ 	- forEach
+ 	- every
+ 	- map
+ 	- some
+ 	- reduce
+ 	- reduceRight
+ 
+ Object
+ 	- create
+ 	- keys
+ 	
+ String.prototype
+ 	- trim
+ 	- trimLeft
+ 	- trimRight
+ 
  */
 
 ;(function(){
