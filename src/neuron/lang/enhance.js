@@ -115,16 +115,14 @@ mix(K, {
 		return _guid ++;
 	},
 	 
-	merge: Object.merge, // Object.merge
+	merge: function(){
+	}, // Object.merge
 	
 	// random: Number.random, // Number.random
 	
 	now: function(){
 		return + new Date;
 	},
-	
-	
-	lambda: Function.from,
 	
 	/**
 	 * bind 'this' pointer for a function
@@ -164,8 +162,10 @@ mix(K, {
 		return ret;
 	},
 	
+	// TODO:
+	// improve stability
 	makeArray: function(obj){
-		return Array.from(obj); // K.isArray(obj) ? obj : [obj];
+		return K.isArray(obj) ? obj : [obj];
 	},
 	
 	toQueryString: function(obj, splitter){
@@ -240,6 +240,9 @@ mix(K, {
 /**
  * TODO:
 
+ 2011-09-04  Kael:
+ TODO:
+ A. improve stability for KM.makeArray
 
  change log:
  2011-04-19  Kael:

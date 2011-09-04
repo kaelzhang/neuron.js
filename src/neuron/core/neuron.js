@@ -1,9 +1,9 @@
-mix(K, {
-	mix: mix,
-	
-	guid: function(){
-		return _guid ++;
-	},
+;(function(K){
+
+var NOOP = function(){},
+	EMPTY = '';
+
+K.mix(K, {
 
     // if debug mode is off, KM.log & KM.error will do nothing
 	log: NOOP,
@@ -20,7 +20,7 @@ mix(K, {
      * @return {Object} current app namespace
      */
     namespace: function(){
-        var args = arguments, self = this, h = self.__HOST,
+        var args = arguments, self = K, h = self.__HOST,
             root = null,
 
             i = 0, i_len = args.length,
@@ -50,6 +50,4 @@ mix(K, {
     
 });
 
-})(this, 'KM');
-
-KM.namespace('UA', '_Config');
+})(KM);
