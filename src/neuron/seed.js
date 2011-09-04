@@ -53,7 +53,7 @@ K._type = function(){
 		
 		_K['is' + name] = function(nl){
 			return function(o){
-				_type(o) === nl;
+				return _type(o) === nl;
 			}
 		}(name_lower);
 	}
@@ -72,13 +72,20 @@ K.__HOST = K.__HOST || host;
 K.build = '%buildtime%';
 
 
-})(this, 'KM');
+// NodeJS
+})( typeof exports != 'undefined' ? exports : this, 'KM');
 
 
 
 /**
  
  milestone 2.0 ------------------------------------
+ 
+ 2011-09-04  Kael:
+ - add global support for CommonJS(NodeJS)
+ 
+ TODO:
+ A. make Slick Selector Engine slim
  
  2011-09-02  Kael:
  - rename core.js as seed.js
