@@ -6,7 +6,7 @@
  1. __SELECTOR.find(selector, context = document, first)
  finds a set of matching elements, always return an array
  
- return {Array.<DOMElement>}
+ return {Array.<DOMElement>} !important !!!!!!!!!!!!!!
  
  2. __SELECTOR.contains(context, selector)
  return {boolean}
@@ -28,16 +28,51 @@
  
  */
  
+;(function(K){
+ 
 // adapter for Slick
 KM.__SELECTOR = {
 	find		: function(selector, context, first){
-		context = context || document;
-	
-		return first ? Slick.find(context, selector) : Slick.search(context, selector);
+		context = K.makeArray( context || document );
+		
+		var ret = [],
+			len = context.length,
+			i = 0,
+			found,
+			c,
+			slick = Slick;
+			
+		for(; i < len; i ++){
+			c = context[i];
+			
+			if(first){
+				found = slick.find(c, selector);
+				
+				// if found stop searching
+				if(found){
+					ret[0] = found;
+					break;
+				}
+				
+			}else{
+				found = slick.search(c, selector);
+				if(found.length){
+				
+					// find all matches
+					ret = ret.concat(found);
+				}
+			}
+		}
+		
+		// always return an array
+		return ret;
 	},
+	
 	contains	: Slick.contains,
 	match		: Slick.match
 };
+
+})(KM);
 
 
 /**
