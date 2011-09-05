@@ -69,9 +69,7 @@ TRAVERSING_CONFIG = {
 	parents: {
 		op: '!'
 	}
-},
-
-ACCESSOR = 'accessor';
+};
 
 K.each(TRAVERSING_CONFIG, function(cfg, key){
 	this[key] = function(selector){
@@ -101,7 +99,7 @@ K.each(TRAVERSING_CONFIG, function(cfg, key){
  </code>
  
  */
-DOM.extend(TRAVERSING_CONFIG, ACCESSOR).extend({
+DOM.extend(TRAVERSING_CONFIG).extend({
 
 	// @return {Object} the new DOM instance with the first element of the current matches
 	first: function(){
@@ -113,7 +111,7 @@ DOM.extend(TRAVERSING_CONFIG, ACCESSOR).extend({
 		return new DOM( this.context.slice(-1) );
 	}
 	
-}, ACCESSOR);
+});
 
 
 })(KM);
