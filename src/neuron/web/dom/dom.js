@@ -13,7 +13,7 @@ function DOM(element, attributes){
 		return new DOM(DOM.create(element, attributes));
 		
 	}else{
-		self.context = K.makeArray(selector).filter(function(el){
+		self.context = K.makeArray(element).filter(function(el){
 			return el && el.nodeType;
 		});
 	}
@@ -28,14 +28,17 @@ function DOM(element, attributes){
 
 // extends is one of the javascript reserved words
 function extend(name, method, type){
-	var generator = IMPLEMENT_GENERATOR[type] || IMPLEMENT_GENERATOR.def,
+	var generator,
 		host = DOM.prototype;
 
 	if(K.isPlainObject(name)){
+		generator = IMPLEMENT_GENERATOR[method] || IMPLEMENT_GENERATOR.def;
+		
 		for(var n in name){
 			generator(host, n, name[n]);
 		}
 	}else{
+		generator = IMPLEMENT_GENERATOR[type] || IMPLEMENT_GENERATOR.def;
 		generator(host, name, method);
 	}
 	
@@ -73,7 +76,6 @@ IMPLEMENT_GENERATOR = {
 		}
 	},
 	
-	// todo
 	iterator: function(host, name, method){
 		host[name] = function(){
 			var self = this,
@@ -87,13 +89,14 @@ IMPLEMENT_GENERATOR = {
 			return self;
 		}
 	},
-	
+
+/**	
 	accessor: function(host, name, method){
 		host[name] = function(){
 			return method.apply(this, arguments);
 		}
 	},
-	
+*/	
 	def: function(host, name, method){
 		host[name] = method;
 	}
