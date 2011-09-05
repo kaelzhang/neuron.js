@@ -2,7 +2,7 @@
  * module  DOM/manipulate
  */
  
-;(function(K){
+;(function(K, undef){
 
 function cleanClass(str){
 	return str.replace(/\s+/g, ' ');
@@ -12,7 +12,9 @@ function hasClass(el, cls){
 	return el.className.indexOf(cls) !== -1;
 };
 
-function getStorage(id){
+function getStorage(el){
+	var id = SELECTOR.uid(el);
+
 	return storage[id] || (storage[id] = {});
 };
 
@@ -40,6 +42,11 @@ function overloadDOMGetterSetter(methods){
 	};
 };
 
+function getFirstContext(el){
+	el = (el instanceof DOM) ? el.el(0) : el;
+	return el && el.nodeType ? el : false;
+};
+
 
 var DOM = K.DOM,
 
@@ -61,13 +68,33 @@ ATTR = {
 
 DATA = {
 	SET: K._overloadSetter( function(name, value){
-		var s = getStorage( SELECTOR.uid(this) );
+		var s = getStorage(this);
 		s[name] = value;
 	}),
 	
 	GET: function(name){
-		var s = getStorage( SELECTOR.uid(this) );
+		var s = getStorage(this);
 		return s[name];
+	}
+},
+
+inserters = {
+	before: function(context, element){
+		var parent = element.parentNode;
+		parent && parent.insertBefore(context, element);
+	},
+
+	after: function(context, element){
+		var parent = element.parentNode;
+		parent && parent.insertBefore(context, element.nextSibling);
+	},
+
+	bottom: function(context, element){
+		element.appendChild(context);
+	},
+
+	top: function(context, element){
+		element.insertBefore(context, element.firstChild);
 	}
 };
 
@@ -89,6 +116,26 @@ DOM.extend({
 	dispose: function(){
 		var parent = this.parentNode;
 		parent && parent.removeChild(this);
+	},
+	
+	removeData: function(name){
+		if(name === undef){
+			var id = SELECTOR.uid(this);
+			id && delete storage[id]
+		}else{
+			var s = getStorage(this);
+			delete s[name];
+		}
+	},
+	
+	inject: function(el, where){
+		el = getFirstContext(el);
+		el && inserters[where || 'bottom'](this, el);
+	},
+	
+	grab: function(el, where){
+		el = getFirstContext(el);
+		el && inserters[where || 'bottom'](el, this);
 	}
 	
 }, 'iterator'
@@ -97,12 +144,8 @@ DOM.extend({
 ).extend({
 	hasClass: function(cls){
 		return hasClass(this.context[0], cls);
-	}
-
-}, 'accessor'
-
-
-).extend({
+	},
+	
 	data: overloadDOMGetterSetter(DATA),
 	attr: overloadDOMGetterSetter(ATTR)
 });
