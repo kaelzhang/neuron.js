@@ -60,10 +60,11 @@ DOC = WIN.document,
  'iterator'	:	the method iterate the current context, may modify the context, maybe not 
 				and return the modified DOM instance(the old one) itself
 					
- 'accessor'	:	the method will not modify the context, and generate something based on the current context,
+ X 'accessor'	:	the method will not modify the context, and generate something based on the current context,
 				and return the new value
+				have been merged with 'def'
 					
- 'def' 		:   (not recommended) simply implement the method into the prototype of DOM,
+ 'def' 		:   (default, not recommended) simply implement the method into the prototype of DOM,
 				and the returned value based on the method
  */
 IMPLEMENT_GENERATOR = {
@@ -102,6 +103,7 @@ IMPLEMENT_GENERATOR = {
 	}
 };
 
+DOM.__storage = {};
 
 
 DOM.one = function(selector){
@@ -120,10 +122,6 @@ DOM.create = function(fragment, attributes){
 	
 	if(typeof fragment === 'string'){
 		element = DOC.createElement(selector);
-		
-		// attributes = attributes || {};
-		
-		// K.mix(element, attributes);
 	}
 	
 	return element;
