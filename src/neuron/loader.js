@@ -1184,8 +1184,14 @@ K.mix(K, {
  - X discarded scheme
  - * unimportant
  
+ 2011-09-07  Kael:
+ TODO:
+ - A. [issue] if pkg module is directly defined by define.on(), automatically providing called by a child module will fail
+ - B. support fake package module definition: define.on(); define('dom', fn); define.off(); define('dom/dimension', fn)
+ 
  2011-09-02  Kael:
- - remove parseDependencies methods
+ - remove parseDependencies methods, all reps must be explicitly declared.
+ 
  TODO:
  - A. support non-browser environment
  - B. distinguish the identifier for anonymous module and non-anonymous module in the module cache. 
