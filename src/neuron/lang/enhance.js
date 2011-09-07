@@ -48,21 +48,21 @@ function bind_method(fn, bind){
  * @adapter
  */
 function overloadSetter(fn){
+
+	// @return {undefined} setter method will always return this, 
+	// for the sake of potential chain-style invocations
 	return function(key, value){
 		var self = this;
 	
-		if (!a && a !== 0){
-			return self;
-		}
-		
-		if (K.isString(key)){
-			fn.call(self, key, value);
-		
-		}else if (K.isObject(key)){	
-			K.each(key, function(v, k){
-				fn.call(self, k, v);
-			});
+		if (key || key === 0){
+			if (K.isString(key)){
+				fn.call(self, key, value);
 			
+			}else if (K.isObject(key)){	
+				K.each(key, function(v, k){
+					fn.call(self, k, v);
+				});
+			}
 		}
 		
 		return self;
