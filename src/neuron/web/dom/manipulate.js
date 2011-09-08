@@ -151,12 +151,16 @@ var DOM = K.DOM,
 	
 	storage = DOM.__storage = {},
 	
+	// @type {Object}
+	// list of methods for both getter and setter
+	METHODS = DOM.METHODS,
+	
 	data_storage = storage.data = {},
 	
 	TRUE = true,
 	
 	ATTR_CONVERT = {
-		defaultvalue	: 'defaultValue',
+		// defaultvalue	: 'defaultValue',
 		tabindex		: 'tabIndex',
 		readonly		: 'readOnly',
 		'for'			: 'htmlFor',
@@ -191,124 +195,6 @@ var DOM = K.DOM,
 	
 	ATTR_BOOLS = ['compact', 'nowrap', 'ismap', 'declare', 'noshade', 'checked', 'disabled', 'readOnly', 'multiple', 'selected', 'noresize', 'defer', 'defaultChecked'],
 	
-	ATTR = {},
-	
-	ATTR_METHODS = {
-	
-		// attribute setter
-		SET: K._overloadSetter( function(name, value){
-			var prop = ATTR_CONVERT[name] || name, el = this;
-			
-			name in ATTR_KEY ? el[prop] = value
-				: ATTR_BOOLS.indexOf(prop) !== -1 ? el[prop] = !!value
-					: el.setAttribute(prop, '' + value);
-		}),
-	
-		// attribute getter
-		// @return {string|boolean}
-		GET: function(name){
-			var prop = ATTR_CONVERT[name] || name,
-				el = this, attrNode;
-			
-			return name in ATTR_KEY ? el[prop]
-			
-				// getAttribute(name, 2), return value as string
-				// ref: http://msdn.microsoft.com/en-us/library/ms536429%28v=vs.85%29.aspx
-				: ( REGEX_IS_URI_ATTR.test(prop) ? el.getAttribute(prop, 2)
-				
-					// ref: https://developer.mozilla.org/en/DOM/element.getAttributeNode
-					: (attrNode = el.getAttributeNode(prop)) ? attrNode.nodeValue
-						: NULL 
-				  ) || NULL;
-		}
-	},
-	
-	DATA_METHODS = {
-		SET: K._overloadSetter( function(name, value){
-			var s = getStorage(this);
-			s[name] = value;
-		}),
-		
-		GET: function(name){
-			var s = getStorage(this);
-			return s[name];
-		}
-	},
-	
-	HTML_METHODS = {
-	
-		/**
-		 * prevent using .set('html', '')
-		 * use .empty() instead
-		
-		 * ref:
-		 * Creating and Manipulating Tables: http://msdn.microsoft.com/en-us/library/ms532998%28v=vs.85%29.aspx
-		 */
-		SET: function(){
-			var allow_table_innerHTML = false,
-				table_test = document.createElement('table'),
-				container = document.createElement('div'),
-				WRAPPERS;
-			
-			try{
-				table_test.innerHTML = '<tr><td></td></tr>';
-				allow_table_innerHTML = true;
-			}catch(e){}
-			
-			table_test = NULL;
-			
-			if(!allow_table_innerHTML){
-			
-				// in IE, which said by Microsoft: 
-				// > However, because of the specific structure required by tables, 
-				// > the innerText and innerHTML properties of the table and tr objects are read-only
-				WRAPPERS = {
-					table	: [1, '<table>', '</table>'],
-					select	: [1, '<select>', '</select>'],
-					tbody	: [2, '<table><tbody>', '</tbody></table>'],
-					tr		: [3, '<table><tbody><tr>', '</tr></tbody></table>']
-				};
-				
-				WRAPPERS.thead = WRAPPERS.tfoot = WRAPPERS.tbody;
-			}
-			
-			return function(html){
-				var el = this,
-					wrapper = !allow_table_innerHTML && WRAPPERS[ el.tagName.toLowerCase() ];
-					
-				if(wrapper){
-					var c = container, dimension = wrapper[0];
-					c.innerHTML = wrapper[1] + html + wrapper[2];
-					
-					while(dimension --){
-						c = c.firstChild;
-					};
-					
-					emptyElement.call(el);
-					grabElements(el, c.childNodes);
-					
-				}else{
-					el.innerHTML = html
-				}
-			};
-		}(),
-		
-		GET: function(){
-			return this.innerHTML;
-		}
-	},
-	
-	TEXT_METHODS = {
-		SET: function(text){
-			emptyElement.call(this);
-			this[ATTR_CONVERT.text] = text;
-		},
-		
-		GET: function(){	
-			return this[ATTR_CONVERT.text];
-		}
-	},
-	
 	inserters = {
 		before: function(context, element){
 			var parent = element.parentNode;
@@ -328,9 +214,142 @@ var DOM = K.DOM,
 			element.insertBefore(context, element.firstChild);
 		}
 	};
+	
+	
+// .attr() methods
+METHODS.attr = {
 
+	// arguments length of getter: 1
+	len: 1,
+	
+	// attribute setter
+	SET: K._overloadSetter( function(name, value){
+		var prop = ATTR_CONVERT[name] || name, el = this;
+		
+		name in ATTR_KEY ? el[prop] = value
+			: ATTR_BOOLS.indexOf(prop) !== -1 ? el[prop] = !!value
+				: el.setAttribute(prop, '' + value);
+	}),
 
-DOM.ATTR = ATTR;
+	// attribute getter
+	// @return {string|boolean}
+	GET: function(name){
+		var prop = ATTR_CONVERT[name] || name,
+			el = this, attrNode;
+		
+		return name in ATTR_KEY ? el[prop]
+		
+			// getAttribute(name, 2), return value as string
+			// ref: http://msdn.microsoft.com/en-us/library/ms536429%28v=vs.85%29.aspx
+			: ( REGEX_IS_URI_ATTR.test(prop) ? el.getAttribute(prop, 2)
+			
+				// ref: https://developer.mozilla.org/en/DOM/element.getAttributeNode
+				: (attrNode = el.getAttributeNode(prop)) ? attrNode.nodeValue
+					: NULL 
+			  ) || NULL;
+	}
+};
+	
+
+// .data() methods
+METHODS.data = {
+	len: 1,
+	
+	SET: K._overloadSetter( function(name, value){
+		var s = getStorage(this);
+		s[name] = value;
+	}),
+	
+	GET: function(name){
+		var s = getStorage(this);
+		return s[name];
+	}
+};
+	
+
+/**
+ * .html() methods
+
+ * no api equivalent to .set('html', '') of mootools
+ * use .empty() instead to prevent memleak
+ 
+ * .html() is a getter
+ */
+METHODS.html = {
+
+	/**
+	 * prevent using .set('html', '')
+	 * use .empty() instead
+	
+	 * ref:
+	 * Creating and Manipulating Tables: http://msdn.microsoft.com/en-us/library/ms532998%28v=vs.85%29.aspx
+	 */
+	SET: function(){
+		var allow_table_innerHTML = false,
+			table_test = document.createElement('table'),
+			container = document.createElement('div'),
+			WRAPPERS;
+		
+		try{
+			table_test.innerHTML = '<tr><td></td></tr>';
+			allow_table_innerHTML = true;
+		}catch(e){}
+		
+		table_test = NULL;
+		
+		if(!allow_table_innerHTML){
+		
+			// in IE, which said by Microsoft: 
+			// > However, because of the specific structure required by tables, 
+			// > the innerText and innerHTML properties of the table and tr objects are read-only
+			WRAPPERS = {
+				table	: [1, '<table>', '</table>'],
+				select	: [1, '<select>', '</select>'],
+				tbody	: [2, '<table><tbody>', '</tbody></table>'],
+				tr		: [3, '<table><tbody><tr>', '</tr></tbody></table>']
+			};
+			
+			WRAPPERS.thead = WRAPPERS.tfoot = WRAPPERS.tbody;
+		}
+		
+		return function(html){
+			var el = this,
+				wrapper = !allow_table_innerHTML && WRAPPERS[ el.tagName.toLowerCase() ];
+				
+			if(wrapper){
+				var c = container, dimension = wrapper[0];
+				c.innerHTML = wrapper[1] + html + wrapper[2];
+				
+				while(dimension --){
+					c = c.firstChild;
+				};
+				
+				emptyElement.call(el);
+				grabElements(el, c.childNodes);
+				
+			}else{
+				el.innerHTML = html
+			}
+		};
+	}(),
+	
+	GET: function(){
+		return this.innerHTML;
+	}
+};
+
+	
+// .text() methods
+METHODS.text = {
+	SET: function(text){
+		emptyElement.call(this);
+		this[ATTR_CONVERT.text] = text;
+	},
+	
+	GET: function(){	
+		return this[ATTR_CONVERT.text];
+	}
+};
 
 
 DOM.extend({
@@ -399,20 +418,22 @@ DOM.extend({
 		});
 		
 		return NULL;
-	},
-	
-	data: overloadDOMGetterSetter(DATA_METHODS, 1),
-	attr: overloadDOMGetterSetter(ATTR_METHODS, 1),
-	
-	/**
-	 * no api equivalent to set('html', '') in mootools
-	 * use .empty() instead to prevent memleak
-	 
-	 * .html() is a getter
-	 */
-	html: overloadDOMGetterSetter(HTML_METHODS, 0),
-	text: overloadDOMGetterSetter(TEXT_METHODS, 0)
+	}
+};
+
+
+// extend setter and getter methods
+K.each(METHODS, function(method, name){
+	this[name] = overloadDOMGetterSetter(method, method.len || 0);
+	delete method.len;
 });
+
+
+DOM.extend(METHODS);
+
+
+delete DOM.METHODS;
+
 
 })(KM, null);
 
