@@ -27,7 +27,12 @@ K = host[K] = host && host[K] || {};
  
  * NEVER use KM._type to test for a certain type in your javascript for business, 
  * since the returned string may be subject to change in a future version 
- * use KM.isXXX instead
+ 
+ * ALWAYS use KM.isXXX instead, because:
+  	- typeof is unreliable and imprecise
+  	- the best method to detect whether the passed object matches a specified type is ever changing
+  	
+   in the future, KM.isXXX method may support Object.is(obj, type) of ECMA6		
  * ------------------------------------------------------------------------------------ */
 K._type = function(){
 	
@@ -62,6 +67,19 @@ K._type = function(){
 	_K.isPlainObject = function(obj){
 		return obj && _K.isObject(obj) && 'isPrototypeOf' in obj;
 	};
+	
+	/**
+	 * never use isNaN function, use KM.isNaN instead.  NaN === NaN // false
+	 * @return {boolean} 
+	 	true, if Number(obj) is NaN
+	 	
+	 * ref:
+	 * http://es5.github.com/#x15.1.2.4
+	 * https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/isNaN
+	 */
+	// _K.isNaN = function(obj){
+	//	return obj == null || !/\d/.test( obj ) || isNaN( obj );
+	// };
 
 	return _type;
 }();
