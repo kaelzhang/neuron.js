@@ -4,16 +4,6 @@
  
 ;(function(K){
 
-// __SELECTOR makes sure that element is a DOMElement/DOMDocument
-function getDocument(element){
-	return 'setInterval' in element ? 
-		  element.document 
-		: 'getElementById' in element ? 
-			  element 
-			: element;
-};
-
-
 // TEMP!
 function createSelectorObject(expression, combinator){
 	if (!expression) return combinator;
