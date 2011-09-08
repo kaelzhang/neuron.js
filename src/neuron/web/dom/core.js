@@ -1,4 +1,5 @@
 /**
+ * basic DOM parsing
  * module  DOM/core
  * author  Kael Zhang
  */
@@ -13,6 +14,9 @@ function DOM(element, attributes){
 		return new DOM(DOM.create(element, attributes));
 		
 	}else{
+	
+		// @type {Array.<DOMElement>}
+		// @private
 		self.context = K.makeArray(element).filter(function(el){
 			return el && el.nodeType;
 		});
@@ -62,7 +66,7 @@ DOC = WIN.document,
 					
  X 'accessor'	:	the method will not modify the context, and generate something based on the current context,
 				and return the new value
-				have been merged with 'def'
+				(removed!)have been merged with 'def'
 					
  'def' 		:   (default, not recommended) simply implement the method into the prototype of DOM,
 				and the returned value based on the method
@@ -103,8 +107,6 @@ IMPLEMENT_GENERATOR = {
 	}
 };
 
-DOM.__storage = {};
-
 
 DOM.one = function(selector){
 	return new DOM( SELECTOR.find(selector, NULL, true) );
@@ -126,9 +128,6 @@ DOM.create = function(fragment, attributes){
 	
 	return element;
 };
-
-
-DOM.extend = extend;
 
 
 extend({
@@ -156,6 +155,12 @@ extend({
 WIN.$ = K.DOM = DOM;
 
 
+// create basic methods and hooks
+DOM.__storage = {};
+DOM.methods = {};
+DOM.extend = extend;
+
+
 /*
 K.define.on();
 
@@ -167,3 +172,10 @@ K.define.off();
 */
 
 })(KM, window, null);
+
+/**
+ change log:
+ - add method to return $ back to window
+
+
+ */
