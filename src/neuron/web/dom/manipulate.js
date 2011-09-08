@@ -78,7 +78,9 @@ function cleanElement(el){
 function overloadDOMGetterSetter(methods, getterArgLength){
 	return function(){
 		var context = this.context,
-			args = arguments, 
+			args = arguments,
+			first_arg = args[0],
+			
 			type, 
 			len = args.length, 
 			getter_len = getterArgLength,
@@ -87,18 +89,28 @@ function overloadDOMGetterSetter(methods, getterArgLength){
 		// getter	
 		if(
 			getter_len === len && 
-			( getter_len === 0 || K.isString(args[0]) )
-		){
-			// getter only get the value of the first element
-			return methods[GET].call(context[0], args[0])
 			
-		}else if(len >= getter_len){
+			// value() || get('value')
+			( getter_len === 0 || K.isString(first_arg) )
+		){
+			// getter always only get the value of the first element
+			return methods[GET].call(context[0], first_arg)
+		
+		// setter
+		}else if(
+			len >= getter_len &&
+			
+			// value(<whatever>) || set(<must not false>, <optional>)
+			// don't judge the type of first_arg, which will be done in KM._overloadSetter
+			( getter_len === 0 || first_arg )
+		){
 			m = methods[SET];
 		
 			m && context.forEach(function(el){
 				m.apply(el, args);
 			});
 		}
+		// else do nothing
 		
 		return this;
 	};
@@ -153,7 +165,7 @@ var DOM = K.DOM,
 	
 	// @type {Object}
 	// list of methods for both getter and setter
-	METHODS = DOM.METHODS,
+	METHODS = DOM.methods,
 	
 	data_storage = storage.data = {},
 	
@@ -431,15 +443,15 @@ K.each(METHODS, function(method, name){
 
 DOM.extend(METHODS);
 
-
-delete DOM.METHODS;
-
-
 })(KM, null);
 
 
 /**
  change log:
+ 
+ 2011-09-08  Kael:
+ - improve stability of function overloadDOMGetterSetter
+ - add method hooks, DOM.methods
  
  2011-09-07  Kael:
  - complete methods about attributes manipulation
