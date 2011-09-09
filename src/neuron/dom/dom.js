@@ -68,11 +68,12 @@ DOC = WIN.document,
 				and return the new value
 				(removed!)have been merged with 'def'
 					
- 'def' 		:   (default, not recommended) simply implement the method into the prototype of DOM,
-				and the returned value based on the method
+ 'def' 		:   simply implement the method into the prototype of DOM,
+				and the returned value determined by the method
  */
 IMPLEMENT_GENERATOR = {
 
+// never used currently
 /**
 	mutator: function(host, name, method){
 		host[name] = function(){
@@ -98,6 +99,7 @@ IMPLEMENT_GENERATOR = {
 		}
 	},
 
+// never used currently
 /**	
 	accessor: function(host, name, method){
 		host[name] = function(){
@@ -187,7 +189,12 @@ K.define.off();
 
 /**
  change log:
- - add method to return $ back to window
+ 
+ 2011-09-09  Kael:
+ - add .forEach method
+ 
+ TODO
+ A. add method to return $ back to window
 
 
  */

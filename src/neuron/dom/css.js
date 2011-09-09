@@ -16,7 +16,7 @@ function getDocument(element){
 
 
 function camelCase(str){
-	return str.replace(REGEX_CAMEL_FIRST_LETTER, function(matchAll, match1){
+	return str.replace(REGEX_CAMELCASE, function(matchAll, match1){
 		return match1.toUpperCase();
 	});
 };
@@ -28,10 +28,24 @@ function hyphenate(str){
 	});
 };
 
+function filterCSSType(name){
+	return camelCase(name === 'float' ? STR_FLOAT_NAME : name);
+};
+
+/*
+function filterNumberCSSValue(value){
+	var match = REGEX_CSS_VALUE_NUMBER.match('' + value);
+	
+	return match ? match[0] : value;
+};
+*/
+
 
 var DOM = K.DOM,
 	UA = K.UA,
 	DOC = document,
+	HTML = DOC.documentElement,
+	TRUE = true,
 	
 	currentCSS,
 	
@@ -40,19 +54,32 @@ var DOM = K.DOM,
 	REGEX_OPACITY = /opacity=([^)]*)/,
 	REGEX_FILTER_ALPHA = /alpha\([^)]*\)/i,
 	
-	SRT_CSSFLOAT = 'cssFloat',
+	// 0.123
+	// .23
+	// 23.456
+	// REGEX_CSS_VALUE_NUMBER = /^(?:\d*\.)?\d+(?=px$)/i,
+	
+	STR_CSSFLOAT = 'cssFloat',
 	
 	feature = DOM.feature,
 												 
-	STR_FLOAT_NAME = SRT_CSSFLOAT in html.style ? 
-		SRT_CSSFLOAT 		// standard, IE9+
+	STR_FLOAT_NAME = STR_CSSFLOAT in HTML.style ?
+		STR_CSSFLOAT 		// standard, IE9+
 		: 'styleFloat', 	// IE5.5 - IE8, IE9
 		
-	CSS_methods = {};
+	CSS_methods = {},
+	
+	CSS_CANBE_SINGLE_PX = {
+		left: TRUE, top: TRUE, bottom: TRUE, right: TRUE,
+		width: TRUE, height: TRUE, maxWidth: TRUE, maxHeight: TRUE, minWidth: TRUE, minHeight: TRUE, textIndent: TRUE,
+		fontSize: TRUE, letterSpacing: TRUE, lineHeight: TRUE,
+		margin: TRUE, padding: TRUE, borderWidth: TRUE
+	};
+
 
 
 // @private
-currentCSS = html.currentStyle ? 
+currentCSS = HTML.currentStyle ? 
 
 	// IE5.5 - IE8, ref: 
 	// http://msdn.microsoft.com/en-us/library/ms535231%28v=vs.85%29.aspx
@@ -92,8 +119,6 @@ if(!feature.opacity){
 			opacity = opacity || opacity === 0 ?
 				  ''
 				: 'alpha(opacity=' + opacity * 100 + ')';
-				
-				
 
 			style.filter = REGEX_FILTER_ALPHA.test( filter ) ?
 				  filter.replace( REGEX_FILTER_ALPHA, opacity )
@@ -114,14 +139,53 @@ if(!feature.opacity){
 DOM.methods.css = {
 	len: 1,
 	
-	SET: function(name, value){
-	},
+	/**
+	 * @param {string} name
+	 * @param {number|string} value
+	 	setter of css will be simple, value will not accept Array. unlike mootools
+	 */
+	SET: K._overloadSetter(function(name, value){
+		name = filterCSSType(name);
 	
-	
-	GET: function(name){
+		var el = this,
+			specified = CSS_methods[name];
 		
+		if(specified && specified.SET){
+			specified.SET(el, value);
+		}else{
+		
+			if( CSS_CANBE_SINGLE_PX[name] && (
+					   // is number string and the current style type need 'px' suffix
+					   K.isString(value) && value === String(Number(value))
+					|| K.isNumber(value)
+				)
+			){
+				value += 'px';
+			}
+			
+			el.style[name] = value;
+		}
+	}),
+	
+	// @return {string}
+	GET: function(name){
+		name = filterCSSType(name);
+		
+		var el = this, ret,
+			specified = CSS_methods[name];
+			
+		return specified && specified.GET ? specified.GET(el) : filterNumberCSSValue(el.style[name]);
 	}
 };
 
 
 })(KM, null);
+
+/**
+ change log:
+ 
+ 2011-09-09  Kael:
+ - complete basic css methods
+ - create getter and setter method for opacity in old ie
+
+ */

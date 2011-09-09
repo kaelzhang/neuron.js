@@ -1,0 +1,11 @@
+<project name="neuron" dir="src">
+	<package dir="neuron" output="neuron.js" modulepkg="false" relativepath="true" maintainorder="true" devextra="KM._debugOn();">
+		<path path="core.js" 	/>
+		<path path="mt.js" 		/>
+		<path path="lang.js" 	/>
+		<path path="web.js" 	/>
+		<path path="loader.js" 	/>
+		<path path="config.js" 	/>
+		<path path="test/abc.js" module="true" />
+	</package>
+</project>
