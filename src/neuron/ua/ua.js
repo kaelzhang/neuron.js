@@ -6,7 +6,7 @@
 (function(K){
 
 	// @namespace KM.UA 
-var UA = K.namespace('UA'),
+var UA = K.UA = {},
 	
 	// @enum {RegExp}
 	REGEX_UA_MATCHER = {
