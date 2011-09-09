@@ -1,12 +1,8 @@
-/*!
- * @license  Neuron Framwork
- * author    i@kael.me
- */
- 
+/*! @license Neuron Framwork & Library * author i@kael.me */
  
 /**
  * corek
- * seed.js -> enhance/ -> loader.js -> selector/ -> core/ -> dom/
+ * seed.js -> lang/ -> ua/ -> loader/ -> selector/ -> core/ -> dom/
  */
 
 /**
@@ -23,7 +19,7 @@ K = host[K] = host && host[K] || {};
 
 
 /**
- * isXXX method - basic javascript method detecting
+ * isXXX method - basic javascript type detecting
  
  * NEVER use KM._type to test for a certain type in your javascript for business, 
  * since the returned string may be subject to change in a future version 
@@ -85,13 +81,29 @@ K._type = function(){
 }();
 
 
+/**
+ * host of global runtime environment
+ 
+ * @type {Object}
+ 	exports, if NodeJS
+	DOMWindow, if browsers 	
+ */
 K.__HOST = K.__HOST || host;
 
+
+/**
+ * build time, will be replaced when packaging and compressing
+ */
 K.build = '%buildtime%';
 
 
-// NodeJS
-})( typeof exports != 'undefined' ? exports : this, 'KM');
+})( 
+	typeof exports != 'undefined' ? 
+		  exports  // NodeJS
+		: this,    // other environment, usually on browsers
+		
+	'KM'
+);
 
 
 
