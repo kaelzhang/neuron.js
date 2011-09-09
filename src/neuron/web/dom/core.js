@@ -72,6 +72,8 @@ DOC = WIN.document,
 				and the returned value based on the method
  */
 IMPLEMENT_GENERATOR = {
+
+/**
 	mutator: function(host, name, method){
 		host[name] = function(){
 			var self = this;
@@ -80,6 +82,7 @@ IMPLEMENT_GENERATOR = {
 			return self;
 		}
 	},
+*/
 	
 	iterator: function(host, name, method){
 		host[name] = function(){
@@ -147,9 +150,18 @@ extend({
 	
 	isEmpty: function(){
 		return !!this.context.length;
-	}
+	},
 	
-}, 'accessor');
+	forEach: function(fn, wrap){
+		var $;
+		
+		fn = wrap ? 
+			( $ = DOM, function(el){ fn(new $(el)); } )
+			: fn;
+			
+		this.context.forEach(fn);
+	}
+});
 
 
 WIN.$ = K.DOM = DOM;
