@@ -49,12 +49,15 @@ function cleanElement(el){
 
 
 /**
- * batch setter, single getter
+ * multiple setter or single getter
 
  * data({a:1}) 	-> iterative setter
  * data('a', 1) -> setter
  * data('a')	-> getter
  
+ @this {DOM}
+ 
+ @param {Object} methods object contains setter and getter methods
  @paran {number} getterArgLength
  
  <code:pseudo>
@@ -84,17 +87,19 @@ function overloadDOMGetterSetter(methods, getterArgLength){
 			type, 
 			len = args.length, 
 			getter_len = getterArgLength,
-			m;
+			m,
+			hook_methods,
+			no_getter_args = getter_len === 0;
 		
 		// getter	
 		if(
 			getter_len === len && 
 			
 			// value() || get('value')
-			( getter_len === 0 || K.isString(first_arg) )
+			( no_getter_args || K.isString(first_arg) )
 		){
 			// getter always only get the value of the first element
-			return methods[GET].call(context[0], first_arg)
+			return methods.GET.call(context[0], first_arg)
 		
 		// setter
 		}else if(
@@ -102,9 +107,9 @@ function overloadDOMGetterSetter(methods, getterArgLength){
 			
 			// value(<whatever>) || set(<must not false>, <optional>)
 			// don't judge the type of first_arg, which will be done in KM._overloadSetter
-			( getter_len === 0 || first_arg )
+			( no_getter_args || first_arg )
 		){
-			m = methods[SET];
+			m = methods.SET;
 		
 			m && context.forEach(function(el){
 				m.apply(el, args);
@@ -134,11 +139,13 @@ function getAllContexts(element){
 };
 
 
+// @this {DOMElement}
 function disposeElement(){
 	var parent = this.parentNode;
 	parent && parent.removeChild(this);
 };
 
+// @this {DOMElement}
 function emptyElement(){
 	this.childNodes.forEach(disposeElement, this); // bind this
 };
@@ -157,8 +164,6 @@ function grabElements(element, elements, where){
 
 var DOM = K.DOM,
 
-	GET = 'GET',
-	SET = 'SET',
 	SELECTOR = K.__SELECTOR,
 	
 	storage = DOM.__storage = {},
@@ -290,7 +295,7 @@ METHODS.data = {
 METHODS.html = {
 
 	/**
-	 * prevent using .set('html', '')
+	 * avoid using .html('')
 	 * use .empty() instead
 	
 	 * ref:
@@ -323,8 +328,8 @@ METHODS.html = {
 			
 			WRAPPERS.thead = WRAPPERS.tfoot = WRAPPERS.tbody;
 		}
-		
-		return function(html){
+
+		return function(html){
 			var el = this,
 				wrapper = !allow_table_innerHTML && WRAPPERS[ el.tagName.toLowerCase() ];
 				
@@ -431,10 +436,10 @@ DOM.extend({
 		
 		return NULL;
 	}
-};
+});
 
 
-// extend setter and getter methods
+// extend setter and getter(batch or single) methods
 K.each(METHODS, function(method, name){
 	this[name] = overloadDOMGetterSetter(method, method.len || 0);
 	delete method.len;
