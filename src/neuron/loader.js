@@ -1184,6 +1184,12 @@ K.mix(K, {
  - X discarded scheme
  - * unimportant
  
+ 2011-09-09  Kael:
+ TODO:
+ - A. add loader constructor to create more than one configuration about library base, etc.
+ 	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); Checkin.define('http://...timeline.js');
+ 	KM.provide('Checkin::timeline', function(K, timeline){ … });
+ 
  2011-09-07  Kael:
  TODO:
  - A. [issue] if pkg module is directly defined by define.on(), automatically providing called by a child module will fail
@@ -1196,13 +1202,14 @@ K.mix(K, {
  - A. support non-browser environment
  - B. distinguish the identifier for anonymous module and non-anonymous module in the module cache. 
  	if define('abc', fn), it will be saved as {'~abc': fn}, 
- 	prevent user from defining a path as the module identifier to override lib modules
- - C. support the module which could automatically initialize itself if provided
+ 	completely prevent user from defining a path as the module identifier to override lib modules
+ 	
+ - C. support the module which could automatically initialize itself when provided
  - D. split the logic of module management and script manipulation, so that loader could work on non-browser environment
  
  2011-09-01  Kael:
  TODO:
- - A. prevent duplicate loading or defining a certain module
+ - A. prevent duplicate defining a certain module
  
  2011-08-20  Kael:
  TODO:
@@ -1264,15 +1271,15 @@ K.mix(K, {
  - L. optimize the calling chain of define and getOrdefine, use less step to get module idenfitier.
  
  2011-05-14  Kael:
- - TODO[06-08].A
+ - TODO[05-08].A
  - add more annotations
  
  2011-05-12  Kael:
- - TODO[06-08].B
+ - TODO[05-08].B
  
  2011-05-10  Kael:
  - add assetOnload.css
- - add support for css dependencies: TODO[05-17].H
+ - add support for css dependencies: TODO[04-17].H
  - add support for resources with search query
  - if module uri has a location.search and location.hash, it wont be fulfilled width the extension of '.js' any more
  
@@ -1293,7 +1300,7 @@ K.mix(K, {
  - fix a syntax exception when defining anonymous module in ie6-9
  
  2011-05-05  Kael:
- - TODO[05-27].A
+ - TODO[04-27].A
  
  2011-04-27  Kael:
  - fix a bug of implicit module definition
@@ -1303,25 +1310,25 @@ K.mix(K, {
  - √ A. [issue] implicitly defined module dont properly saved as absolute uri
  
  2011-04-26  Kael:
- - TODO[05-17].C
+ - TODO[04-17].C
  
  2011-04-25  Kael: 95%!
  - optimize call chain. create private methods with no type-detecting for arguments
  - module path will include location.search
  - config.enableCDN will affect module path
  - support modules with multiple versions
- - complete cdn auto delivery TODO[05-17].E2
+ - complete cdn auto delivery TODO[04-17].E2
  - remove analysisModuleName method
  - complete all functionalities relevant with package definition TODO[05-17].G
  
  2011-04-24  Kael:
  - require and define methods in inline docs and in module file will be different
- - TODO[05-17]['A', 'D', 'E1', 'B']
+ - TODO[04-17]['A', 'D', 'E1', 'B']
  - adjust annotations for advanced mode of closure compiler
  
  TODO:
  - √ optimize and cache dependent modules and module infos
- - test TODO[05-17].B
+ - test TODO[04-17].B
  
  2011-04-20  Kael:
  - redesign the realization of modules, 
