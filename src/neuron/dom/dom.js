@@ -173,6 +173,7 @@ WIN.$ = K.DOM = DOM;
 DOM.__storage = {};
 DOM.methods = {};
 DOM.extend = extend;
+DOM.SELECTOR = SELECTOR;
 
 
 /*

@@ -166,7 +166,7 @@ function grabElements(element, elements, where){
 
 var DOM = K.DOM,
 
-	SELECTOR = K.__SELECTOR,
+	SELECTOR = DOM.SELECTOR,
 	
 	storage = DOM.__storage = {},
 	
@@ -449,6 +449,8 @@ K.each(METHODS, function(method, name){
 
 
 DOM.extend(METHODS);
+
+DOM._overload = overloadDOMGetterSetter;
 
 })(KM, null);
 
