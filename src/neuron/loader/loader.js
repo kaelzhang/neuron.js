@@ -1,4 +1,4 @@
-/*! Neuron core:loader * All rights reserved * author i@kael.me */
+/*! Neuron core:loader v3.4.0 * All rights reserved * author i@kael.me */
 
 ; // fix layout of UglifyJS
 
@@ -973,13 +973,13 @@ function parseAllSubMatches(string, regex){
 /**
  * simply remove comments from the factory function
  * http://is.gd/qEf8pH
- */
+ 
 function removeComments(code){
 	return code
 		.replace(/(?:^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/g, '\n')
         .replace(/(?:^|\n|\r)\s*\/\/.*(?:\r|\n|$)/g, '\n');
 };
-
+*/
  
 /**
  * compare two version, such as a.b.c.d
@@ -1184,11 +1184,20 @@ K.mix(K, {
  - X discarded scheme
  - * unimportant
  
+ milestone 4.0 ---------------------------
+ 
+ 2011-09-10  Kael:
+ 
+ 
+ milestone 3.0 ---------------------------
+ 
  2011-09-09  Kael:
  TODO:
  - A. add loader constructor to create more than one configuration about library base, etc.
  	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); Checkin.define('http://...timeline.js');
  	KM.provide('Checkin::timeline', function(K, timeline){ … });
+ - B. optimize isXXX methods for scope chain
+ - C. use native forEach methods for Array
  
  2011-09-07  Kael:
  TODO:
@@ -1205,7 +1214,8 @@ K.mix(K, {
  	completely prevent user from defining a path as the module identifier to override lib modules
  	
  - C. support the module which could automatically initialize itself when provided
- - D. split the logic of module management and script manipulation, so that loader could work on non-browser environment
+ - D. split the logic of module management and script manipulation, 
+ 	so that loader could work on non-browser environment, such as NodeJS
  
  2011-09-01  Kael:
  TODO:
@@ -1361,11 +1371,11 @@ K.mix(K, {
  - # F. detecting potential invocation errors
  		- change 'exports' object
  		- define non-anonymous module in a module file
- - H. support css dependencies
+ - √ H. support css dependencies
  - √ Z. debug-release mode switching
  		- debug: 
  			- √ maintain the script nodes which attached into the document
- 			- print dependency tree
+ 			- X print dependency tree
  		- release: 
  			- √ remove script nodes
  			- √ warn, if a module's uri has not been specified

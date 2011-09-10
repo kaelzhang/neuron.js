@@ -1,5 +1,7 @@
 /**
  * module  DOM/manipulate
+ 	- basic method to manipulate DOMElements
+ 	- initialize all specified DOM related methods defined in previous modules
  */
  
 ;(function(K, NULL, undef){
@@ -457,6 +459,8 @@ DOM.extend(METHODS);
  2011-09-08  Kael:
  - improve stability of function overloadDOMGetterSetter
  - add method hooks, DOM.methods
+ TODO:
+ A. overloadDOMGetterSetter: add support for iterative setters
  
  2011-09-07  Kael:
  - complete methods about attributes manipulation

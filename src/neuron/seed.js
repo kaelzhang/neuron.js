@@ -2,7 +2,7 @@
  
 /**
  * corek
- * seed.js -> lang/ -> ua/ -> loader/ -> selector/ -> core/ -> dom/
+ * seed.js -> lang/ -> class/ -> ua/ -> loader/ -> selector/ -> core/ -> dom/
  */
 
 /**
@@ -92,7 +92,7 @@ K.__HOST = K.__HOST || host;
 
 
 /**
- * build time, will be replaced when packaging and compressing
+ * build time will be replaced when packaging and compressing
  */
 K.build = '%buildtime%';
 
