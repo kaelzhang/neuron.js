@@ -28,8 +28,14 @@ function hyphenate(str){
 	});
 };
 
+// TODO: add hooks for compatibility
 function filterCSSType(name){
 	return camelCase(name === 'float' ? STR_FLOAT_NAME : name);
+};
+
+
+function santitizeColorData(color){
+	return [];
 };
 
 /*
@@ -69,7 +75,7 @@ var DOM = K.DOM,
 		
 	CSS_methods = {},
 	
-	CSS_CANBE_SINGLE_PX = {
+	CSS_CAN_BE_SINGLE_PX = {
 		left: TRUE, top: TRUE, bottom: TRUE, right: TRUE,
 		width: TRUE, height: TRUE, maxWidth: TRUE, maxHeight: TRUE, minWidth: TRUE, minHeight: TRUE, textIndent: TRUE,
 		fontSize: TRUE, letterSpacing: TRUE, lineHeight: TRUE,
@@ -79,6 +85,7 @@ var DOM = K.DOM,
 
 
 // @private
+// get computed styles
 currentCSS = HTML.currentStyle ? 
 
 	// IE5.5 - IE8, ref: 
@@ -88,6 +95,7 @@ currentCSS = HTML.currentStyle ?
 		return element.currentStyle[camelCase(property)];
 	} :
 	
+	// standard
 	function(element, property){
 		var defaultView = getDocument(element).defaultView,
 	
@@ -134,6 +142,14 @@ if(!feature.opacity){
 	};
 }
 
+['height', 'width'].forEach(function(property){
+	CSS_methods[property] = {
+		GET: function(){
+			
+		}
+	};
+});
+
 
 // add css getter and setter to DOM hook functions
 DOM.methods.css = {
@@ -150,13 +166,18 @@ DOM.methods.css = {
 		var el = this,
 			specified = CSS_methods[name];
 		
+		// if has a specified setter
 		if(specified && specified.SET){
 			specified.SET(el, value);
+			
 		}else{
 		
-			if( CSS_CANBE_SINGLE_PX[name] && (
+			if( CSS_CAN_BE_SINGLE_PX[name] && (
 					   // is number string and the current style type need 'px' suffix
+					   // -> .css('margin', '20')
 					   K.isString(value) && value === String(Number(value))
+					   
+					   // -> .css('margin', 20)
 					|| K.isNumber(value)
 				)
 			){
@@ -167,15 +188,37 @@ DOM.methods.css = {
 		}
 	}),
 	
-	// @return {string}
+	/**
+	 * Get the value of a style property for the first element
+	 * @param {string} name Array is not allowed, unlike mootools
+	 * @return {string|number|(Array.<number>)}
+	 	- {string} numeric values with *units*, such as font-size ('12px'), height, width, etc
+	 	- {number} numeric values without units, such as zIndex
+	 	- ? {Array} color related values, always be [<r>, <g>, <b>, <a>] // TODO
+	 	
+	 * never determine your control flow by css styles!
+	 */
 	GET: function(name){
 		name = filterCSSType(name);
 		
 		var el = this, ret,
 			specified = CSS_methods[name];
 			
-		return specified && specified.GET ? specified.GET(el) : filterNumberCSSValue(el.style[name]);
+		if(specified && specified.GET){
+			return specified.GET(el);
+		}
+		
+		ret = el.style[name];
+		
+		if(!ret || name === 'zIndex'){
+			ret = currentCSS(el, name);
+		}
+		
+		// TODO: color
+		
+		return ret;
 	}
+	
 };
 
 
@@ -183,6 +226,14 @@ DOM.methods.css = {
 
 /**
  change log:
+ 
+ 2011-09-10  Kael:
+ 
+ 
+ TODO:
+ - A. test runtimeStyle, ref:
+ 	http://lists.w3.org/Archives/Public/www-style/2009Oct/0060.html
+ 	http://msdn.microsoft.com/en-us/library/ms535889(v=vs.85).aspx
  
  2011-09-09  Kael:
  - complete basic css methods
