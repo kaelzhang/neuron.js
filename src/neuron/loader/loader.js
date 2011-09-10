@@ -242,11 +242,12 @@ function loadSrc(uri, callback, type){
 function define(name, dependencies, factory){
 	var version, info, uri, identifier,
 		last = arguments.length - 1,
-		EMPTY = '';
+		EMPTY = '',
+		_def = _define;
 	
 	if(arguments[last] === true){			// -> define(uri1, uri2, uri3, true);
 		foreach(arguments, function(arg, i, U){
-			i < last && _define(EMPTY, U, U, U, absolutizeURI(arg));
+			i < last && _def(EMPTY, U, U, U, absolutizeURI(arg));
 		});
 		return;
 	}
@@ -292,7 +293,7 @@ function define(name, dependencies, factory){
 		name = EMPTY;
 	}
 	
-	_define(name, identifier, version, dependencies, factory, uri);
+	_def(name, identifier, version, dependencies, factory, uri);
 };
 
 

@@ -114,7 +114,7 @@ K.build = '%buildtime%';
  2011-09-04  Kael:
  - add global support for CommonJS(NodeJS)
  
- TODO:
+ Global TODO:
  A. make Slick Selector Engine slim
  
  2011-09-02  Kael:

@@ -8,7 +8,7 @@
  		- warning config
  * - evironment config
  		- debug mode
- 		- global dom parser
+ 		X - global dom parser
  */
  
 
@@ -30,13 +30,9 @@ function CDNHasher(evidence){
 
 
 function santitizer(identifier){
-	var EMPTY = '';
-	return identifier.replace(REGEX_PATH_CLEANER_MIN, EMPTY).replace(REGEX_PATH_CLEANER_VERSION, EMPTY)
+	return identifier.replace(REGEX_PATH_CLEANER_MIN, '').replace(REGEX_PATH_CLEANER_VERSION, '')
 };
 
-
-K.__PARSER = Slick;
-	
 
 K._loaderConfig(K.mix({
 	// root path of module files
