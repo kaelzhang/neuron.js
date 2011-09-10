@@ -17,6 +17,7 @@
  4. __SELECTOR.uid(element)
  return {number} the uid of the element
  
+ // TEMP!
  5. __SELECTOR.parse(selector)
  return {Object} selector object
  
@@ -32,6 +33,8 @@
  */
  
 ;(function(K){
+
+var S = Slick;
  
 // adapter for Slick
 KM.__SELECTOR = {
@@ -43,7 +46,7 @@ KM.__SELECTOR = {
 			i = 0,
 			found,
 			c,
-			slick = Slick;
+			slick = S;
 			
 		for(; i < len; i ++){
 			c = context[i];
@@ -71,9 +74,10 @@ KM.__SELECTOR = {
 		return ret;
 	},
 	
-	contains: Slick.contains,
-	match: Slick.match,
-	parse: Slick.parse
+	contains	: S.contains,
+	match		: S.match,
+	parse		: S.parse,
+	uid			: S.uidOf
 };
 
 })(KM);
