@@ -6,7 +6,7 @@
  1. __SELECTOR.find(selector, context = document, first)
  finds a set of matching elements, always return an array
  
- return {Array.<DOMElement>} !important !!!!!!!!!!!!!!
+ always return {Array.<DOMElement>} !important !!!!!!!!!!!!!!
  
  2. __SELECTOR.contains(context, selector)
  return {boolean}
@@ -34,10 +34,11 @@
  
 ;(function(K){
 
+// Store Slick in closure
 var S = Slick;
  
 // adapter for Slick
-KM.__SELECTOR = {
+K.__SELECTOR = {
 	find: function(selector, context, first){
 		context = K.makeArray( context || document );
 		
@@ -79,6 +80,12 @@ KM.__SELECTOR = {
 	parse		: S.parse,
 	uid			: S.uidOf
 };
+
+
+// remove Slick from window
+// Slick is defined with 'this.Slick'
+// so, it's removable and is not [DontDelete]
+delete window.Slick;
 
 })(KM);
 
