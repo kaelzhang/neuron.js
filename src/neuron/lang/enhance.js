@@ -113,14 +113,63 @@ function toQueryString(obj, splitter){
 };
 
 
+/**
+ * @param {mixed} o
+ * @param {Object} stack
+ */
+function clone(o, marked, cached){
+	var cloned = {}, m, id;
+	
+	// internal use
+	cached || (cached = {});
+	
+	switch(K._type(o)){
+		case 'date':
+			return new Date(o);
+			
+		case 'array':
+			cloned = [];
+			
+		// object, plainObject, instance
+		case 'object':
+			m = CLONE_MARKER;
+		
+			if(o[m]){
+				return cached[o[m]];
+			}
+			
+			id = _guid ++;
+			
+			// mark copied object to prevent duplicately cloning
+			o[m] = id;
+			marked[id] = o;
+			cached[id] = cloned;
+			
+			K.each(o, function(value, key){
+				if(key !== m){
+					cloned[key] = clone(value, marked, cached);
+				}
+			});
+			
+			// free
+			marked = cached = null;
+		
+			return cloned;
+			
+		// number, boolean, element(DOMElement, HTMLWindow, HTMLDocument, HTMLhtmlElement), collections
+		// arguments?
+		default:
+			return o;
+	}
+};
+
 
 var	NOOP = function(){},
 	array_join = Array.prototype.join,
+	CLONE_MARKER = '>_>~cloned',
 
 	_guid = 1;
- 
 
-mix(K, {
 		  
 /**
  * language enhancement 
@@ -129,157 +178,183 @@ mix(K, {
  * and ECMAScript5 standard methods will be included in native.js
  * --------------------------------------------------------------------------------------------- */
 	
-	mix: mix,
+K.mix = mix;
 	
-	guid: function(){
-		return _guid ++;
-	},
-	
-	/**
-	 * forEach method for Object
-	 */
-	each: function(obj, fn){
-		if(K.isFunction(fn)){
-	
-			if(K.isObject(obj)){
-				var keys = Object.keys(obj), i = 0, len = keys.length, key;
-				
-				for(; i < len; i ++){
-					key = keys[i];
-					obj.hasOwnProperty(key) && fn.call(obj, obj[key], key);
-				}
-				
-			}else if(K.isArray(obj)){
-				obj.forEach(fn);
-				
-			}
-		}
-	},
-	 
-	merge: function(){
-	}, // Object.merge
-	
-	// random: Number.random, // Number.random
-	
-	now: function(){
-		return + new Date;
-	},
-	
-	/**
-	 * bind 'this' pointer for a function
-	 * or bind a method for a constructor
-	 * @usage:
-	 * <code>
-	   1. KM.bind(myFunction, {a:1});
-	   2. KM.bind('method', {a:1, method: function(){ alert(this.a) }});
-	 
-	 * </code>
-	 * 
-	 */
-	bind: function(fn, bind){
-		return K.isFunction(fn) ?
-			bind_method(fn, bind)
-		:
-			(bind[fn] = bind_method(bind[fn], bind));
-	},
-	
-	/**
-	 * method to encapsulate the delayed function
-	 */
-	delay: function(fn, delay, isInterval){
-		var ret = {
-			start: function(){
-				ret.cancel();
-				return ret.id = isInterval ? setInterval(fn, delay) : setTimeout(fn, delay);
-			},
-			cancel: function(){
-				var timer = ret.id;
-				
-				ret.id = isInterval ? clearInterval(timer) : clearTimeout(timer);
-				return ret;
-			}
-		};
-		
-		return ret;
-	},
-	
-	// TODO:
-	// improve stability
-	makeArray: function(obj){
-		return K.isArray(obj) ? obj : [obj];
-	},
-	
-	toQueryString: function(obj, splitter){
-		return K.isObject(obj) ? toQueryString(obj, splitter) : obj;
-	},
-	
-	
-	/**
-	 * OOP Enhancement 
-	 * --------------------------------------------------------------------------------------------- */
-	 
-	 
-	/**
-	 * overload a setter function or a setter method of a instance
-	 */
-	_overloadSetter: overloadSetter, // overload_for_instance_method( batch_setter ),
-	
-	/**
-	 * 
-	 */
-	// _overloadInstanceMethod: overload_for_instance_method,
-	
-	/**
-	 * run a method once and only ONCE before the real method executed
-	 * usefull for lazy initialization
-	 *
-	 * @example
-	 * if Overlay::show is the public api to show the overlay
-	 * but it has a initialization method, which we want to be called just before the overlay shows, not the very moment when the instance of Overlay created,
-	 * so,
-	 * we apply:
-	 * initialization method 	-> Overlay::_showInit
-	 * real show method 		-> Overlay::show
-	 * and then:
-	 *
-	 * @usage
-		 <code>
-		 	// before 'show', '_showInit' will be executed only once
-		 	KM._onceBefore('show', '_showInit', Overlay.prototype);
-		 </code>
-	 */
-	_onceBefore: function(real_method_name, init_method_name, belong){
-		var init = belong[init_method_name],
-			real = belong[real_method_name];
-			
-		belong[real_method_name] = function(){
-			init.call(this);
-			real.apply(this, arguments);
-			
-			belong[real_method_name] = real;
-		};
-		
-		// delete belong[init_method_name];
-		// 
-		belong[init_method_name] = NOOP;
-	},
-	
-	/**
-	 @usage
-		 <code>
-			funcion myMethod(string){....}
-			var memoizedMyMethod = KM._memoize(myMethod);
-		 </code>
-	 */
-	_memoize: memoizeMethod // overload_for_instance_method( memoizeMethod )
+K.guid = function(){
+	return _guid ++;
+};
 
-});
+/**
+ * forEach method for Object
+ */
+K.each = function(obj, fn){
+	if(K.isFunction(fn)){
+
+		if(K.isObject(obj)){
+			var keys = Object.keys(obj), i = 0, len = keys.length, key;
+			
+			for(; i < len; i ++){
+				key = keys[i];
+				obj.hasOwnProperty(key) && fn.call(obj, obj[key], key);
+			}
+			
+		}else if(K.isArray(obj)){
+			obj.forEach(fn);
+			
+		}
+	}
+};
+ 
+
+/**
+ * deep clone an object, excluding properties on prototype chain
+ */
+K.clone = function(o) {
+	var marked = {},
+		m = CLONE_MARKER,
+		cloned = clone(o, marked);
+	
+	// remove CLONE_MARKER
+	K.each(marked, function(v){
+		try{
+			delete v[m];
+		}catch(e){
+			K.log('del CLONE_MARKER err', e);
+			v[m] = undefined;
+		}
+	});
+	
+	marked = null;
+	
+	return cloned;
+};
+
+// random: Number.random, // Number.random
+
+K.now = function(){
+	return + new Date;
+};
+
+/**
+ * bind 'this' pointer for a function
+ * or bind a method for a constructor
+ * @usage:
+ * <code>
+   1. KM.bind(myFunction, {a:1});
+   2. KM.bind('method', {a:1, method: function(){ alert(this.a) }});
+ 
+ * </code>
+ * 
+ */
+K.bind = function(fn, bind){
+	return K.isFunction(fn) ?
+		bind_method(fn, bind)
+	:
+		(bind[fn] = bind_method(bind[fn], bind));
+};
+
+/**
+ * method to encapsulate the delayed function
+ */
+K.delay = function(fn, delay, isInterval){
+	var ret = {
+		start: function(){
+			ret.cancel();
+			return ret.id = isInterval ? setInterval(fn, delay) : setTimeout(fn, delay);
+		},
+		cancel: function(){
+			var timer = ret.id;
+			
+			ret.id = isInterval ? clearInterval(timer) : clearTimeout(timer);
+			return ret;
+		}
+	};
+	
+	return ret;
+};
+
+// TODO:
+// improve stability
+K.makeArray = function(obj){
+	return K.isArray(obj) ? obj : [obj];
+};
+
+K.toQueryString = function(obj, splitter){
+	return K.isObject(obj) ? toQueryString(obj, splitter) : obj;
+};
+
+
+/**
+ * OOP Enhancement 
+ * --------------------------------------------------------------------------------------------- */
+ 
+ 
+/**
+ * overload a setter function or a setter method of a instance
+ */
+K._overloadSetter = overloadSetter; // overload_for_instance_method( batch_setter ),
+
+/**
+ * 
+ */
+// _overloadInstanceMethod: overload_for_instance_method,
+
+/**
+ * run a method once and only ONCE before the real method executed
+ * usefull for lazy initialization
+ *
+ * @example
+ * if Overlay::show is the public api to show the overlay
+ * but it has a initialization method, which we want to be called just before the overlay shows, not the very moment when the instance of Overlay created,
+ * so,
+ * we apply:
+ * initialization method 	-> Overlay::_showInit
+ * real show method 		-> Overlay::show
+ * and then:
+ *
+ * @usage
+	 <code>
+	 	// before 'show', '_showInit' will be executed only once
+	 	KM._onceBefore('show', '_showInit', Overlay.prototype);
+	 </code>
+ */
+K._onceBefore = function(real_method_name, init_method_name, belong){
+	var init = belong[init_method_name],
+		real = belong[real_method_name];
+		
+	belong[real_method_name] = function(){
+		init.call(this);
+		real.apply(this, arguments);
+		
+		belong[real_method_name] = real;
+	};
+	
+	// delete belong[init_method_name];
+	// 
+	belong[init_method_name] = NOOP;
+};
+
+/**
+ @usage
+	 <code>
+		funcion myMethod(string){....}
+		var memoizedMyMethod = KM._memoize(myMethod);
+	 </code>
+ */
+K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
 
 })(KM);
 
 /**
- * TODO:
+ change log:
+ 
+ 2011-09-10  Kael:
+ - add KM.clone to clone an object instead of Object.clone
+ 	fix the bug that mootools will exceede maximum call stack size when cloning a recursive object
+ 	
+ TODO:
+ A. test memleak about cached parameter in function clone on ie
 
  2011-09-04  Kael:
  TODO:
