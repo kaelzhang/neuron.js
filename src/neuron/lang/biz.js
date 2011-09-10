@@ -106,60 +106,56 @@ var stored_data = {},
     REGEX_URL = /^([\w\+\.\-]+:)\/\/([^\/?#:]+)(?::(\d+))?(\/[^?#]*)?(\?[^#]*)?(#.*)?$/;
     
 
-K.mix(K, {
+/**
+ * module  data
+
+ * setter
+ * getter
+
+ * usage:
+ * 1. KM.data()                     returns the shadow copy of the current data stack
+ * 2. KM.data('abc')                returns the data named 'abc'
+ * 3. KM.data('abc', 123)           set the value of 'abc' as 123
+ * 4. KM.data({abc: 123, edf:456})  batch setter
+ *
+ * @param {all=} value 
+ */
+K.data = function(name, value){
+	var type = K._type(name),
+		empty_obj = {},
+		is_getter, ret;
 	
-	/**
-	 * module  data
-	
-	 * setter
-	 * getter
-	
-	 * usage:
-	 * 1. KM.data()                     returns the shadow copy of the current data stack
-	 * 2. KM.data('abc')                returns the data named 'abc'
-	 * 3. KM.data('abc', 123)           set the value of 'abc' as 123
-	 * 4. KM.data({abc: 123, edf:456})  batch setter
-	 *
-	 * @param {all=} value 
-	 */
-	data: function(name, value){
-		var type = K._type(name),
-			empty_obj = {},
-			is_getter, ret;
-		
-		if(name === undef){
-			ret = cloneData(); // get: return shadow copy
+	if(name === undef){
+		ret = cloneData(); // get: return shadow copy
+		is_getter = true;
+
+	}else if(type === 'string'){
+		if(value === undef){
+			ret = getData(name); // get: return the value of name
 			is_getter = true;
-	
-		}else if(type === 'string'){
-			if(value === undef){
-				ret = getData(name); // get: return the value of name
-				is_getter = true;
-			}else{
-				empty_obj[name] = value;
-				setData(empty_obj) // set
-			}
-	
-		}else if(type === 'object'){
-			setData(name); // set
+		}else{
+			empty_obj[name] = value;
+			setData(empty_obj) // set
 		}
-	
-		return is_getter ? ret : K;
-	},
-	
-	/**
-	 * @param {string} href
-	 * @return {Object}
-	 *	- if href undefined, returns the current location
-	 *	- if href is a string, returns the parsed loaction
-	 */
-	getLocation: function(href){
-		return href ?
-			parseLocation(href)
-		:	getCurrentLocation();
+
+	}else if(type === 'object'){
+		setData(name); // set
 	}
-	
-});
+
+	return is_getter ? ret : K;
+};
+
+/**
+ * @param {string} href
+ * @return {Object}
+ *	- if href undefined, returns the current location
+ *	- if href is a string, returns the parsed loaction
+ */
+K.getLocation = function(href){
+	return href ?
+		parseLocation(href)
+	:	getCurrentLocation();
+};
 
 
 })(KM);
