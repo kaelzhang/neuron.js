@@ -12,6 +12,14 @@ function addEvent(el, type, fn){
 	el[METHOD] ? el[METHOD](type, fn, false) : el.attachEvent('on' + type, fn);
 };
 
+function getWindow(element){
+	// window
+	return 'setInterval' in element ? element
+	
+		// document
+		: 'getElementById' in element ? element.window
+			: element.ownerDocument.window;
+};
 
 function removeEvent(el, type, fn){
 	var METHOD = 'removeEventListener';
@@ -27,11 +35,33 @@ function getStorage(el){
 }; 
 
 
-function checkRelatedTarget(){
-	var related = event.relatedTarget;
-	if (related == null) return true;
-	if (!related) return false;
-	return (related != this && related.prefix != 'xul' && typeOf(this) != 'document' && !this.contains(related));
+// from jQuery
+function checkRelatedTarget(event){
+	var related = event.relatedTarget,
+		el = this;
+	
+	// Firefox sometimes assigns relatedTarget a XUL element
+	// which we cannot access the parentNode property of
+	try{
+		// Chrome does something similar, the parentNode property
+		// can be accessed but is null.
+		if ( related && related !== document && !related.parentNode ) {
+			return;
+		}
+
+		// Traverse up the tree
+		while ( related && related !== el ) {
+			related = related.parentNode;
+		}
+
+		if ( related !== this ) {
+			// handle event if we actually just moused on to a non sub-element
+			return true;
+		}
+		
+	}catch(e){}
+	
+	return;
 };
 
 
@@ -91,82 +121,66 @@ function DOMEvent(event, win){
 	win = win || K.__HOST;
 	event = event || win.event;
 	
-	var doc = win.document,
-		type = event.type,
-		target = event.target || event.srcElement,
-		page = {},
-		client = {},
-		related = null,
-		rightClick, wheel, code, key;
+	var self 	= this,
+		type 	= self.type = event.type,
+		target 	= self.type = event.target || event.srcElement,
+		page 	= self.page = {},
+		client 	= self.client = {},
+		NULL	= null,
+		related,
+		doc,
+		touch;
+		
+	self.event = event;
+	K.mix(self, event, true, ['shiftKey', 'ctrlKey', 'altKey', 'metaKey']);
 		
 	while (target && target.nodeType == 3){
 		target = target.parentNode;
 	}
 
 	if (type.indexOf('key') !== -1){
-		code = event.which || event.keyCode;
-		key = Object_keyOf(Event.Keys, code);
-		if (type == 'keydown'){
-			var fKey = code - 111;
-			if (fKey > 0 && fKey < 13) key = 'f' + fKey;
-		}
-		if (!key) key = String.fromCharCode(code).toLowerCase();
+		// TODO:
+		// test function keys, on macosx and win
+		self.code = event.which || event.keyCode;
 		
-	} else if ((/click|mouse|menu/i).test(type)){
-		doc = (!doc.compatMode || doc.compatMode == 'CSS1Compat') ? doc.html : doc.body;
-		page = {
-			x: (event.pageX != null) ? event.pageX : event.clientX + doc.scrollLeft,
-			y: (event.pageY != null) ? event.pageY : event.clientY + doc.scrollTop
-		};
-		client = {
-			x: (event.pageX != null) ? event.pageX - win.pageXOffset : event.clientX,
-			y: (event.pageY != null) ? event.pageY - win.pageYOffset : event.clientY
-		};
-		if ((/DOMMouseScroll|mousewheel/).test(type)){
-			wheel = (event.wheelDelta) ? event.wheelDelta / 120 : -(event.detail || 0) / 3;
+	} else if (type === 'click' || type === 'dblclick' || type === 'contextmenu' || !type.indexOf('mouse') ){
+		doc = getCompactElement(win.document);
+		
+		page.x = event.pageX != NULL ? event.pageX : event.clientX + doc.scrollLeft;
+		page.y = event.pageY != NULL ? event.pageY : event.clientY + doc.scrollTop;
+		
+		client.x = event.pageX != NULL ? event.pageX - win.pageXOffset : event.clientX;
+		client.y = event.pageY != NULL ? event.pageY - win.pageYOffset : event.clientY;
+		
+		if (type === 'DOMMouseScroll' || type === 'mousewheel'){
+			self.wheel = (event.wheelDelta) ? event.wheelDelta / 120 : - (event.detail || 0) / 3;
 		}
-		rightClick = (event.which == 3) || (event.button == 2);
-		if ((/over|out/).test(type)){
+		
+		self.rightClick = (event.which == 3) || (event.button == 2);
+		
+		if (type == 'mouseover' || type == 'mouseout'){
 			related = event.relatedTarget || event[(type == 'mouseover' ? 'from' : 'to') + 'Element'];
-			var testRelated = function(){
-				while (related && related.nodeType == 3) related = related.parentNode;
-				return true;
-			};
-			var hasRelated = (Browser.firefox2) ? testRelated.attempt() : testRelated();
-			related = (hasRelated) ? related : null;
+			
+			while (related && related.nodeType == 3){
+				related = related.parentNode;
+			}
+			
+			self.relatedTarget = related;
 		}
-	} else if ((/gesture|touch/i).test(type)){
-		this.rotation = event.rotation;
-		this.scale = event.scale;
-		this.targetTouches = event.targetTouches;
-		this.changedTouches = event.changedTouches;
-		var touches = this.touches = event.touches;
-		if (touches && touches[0]){
-			var touch = touches[0];
-			page = {x: touch.pageX, y: touch.pageY};
-			client = {x: touch.clientX, y: touch.clientY};
+				
+	} else if ((/^(?:gesture|touch)/i).test(type)){
+		K.mix(self, event, true, ['rotation', 'scale', 'targetTouches', 'changedTouches', 'touches']);
+	
+		touch = self.touches && self.touches[0];
+		
+		if (touch){
+			page.x = touch.pageX;
+			page.y = touch.pageY;
+			client.x = touch.clientX; 
+			client.y = touch.clientY;
 		}
 	}
-	
-	K.mix(this, event, true, ['shiftKey', 'ctrlKey', 'altKey', 'metaKey']);
-
-	K.mix(this, {
-		event: event,
-		type: type,
-
-		page: page,
-		client: client,
-		rightClick: rightClick,
-
-		wheel: wheel,
-
-		relatedTarget: document.id(related),
-		target: document.id(target),
-
-		code: code,
-		key: key
-	});
-});
+};
 
 
 DOMEvent.prototype = {
@@ -194,6 +208,9 @@ var DOM = K.DOM,
 	SELECTOR = DOM.SELECTOR,
 	storage = DOM.__storage,
 	event_storage = (storage.events = {}),
+	
+	getCompactElement = DOM.feature.compactEl,
+	
 	TRUE = true,
 	
 	Events = {
@@ -240,7 +257,7 @@ DOM.extend({
 			storage[type] = {fns: [], vals: []};
 		}
 		
-		fns = storage[type].fns;  console.log(fns);
+		fns = storage[type].fns;
 		
 		if(fns.indexOf(fn) !== -1){
 			return;
@@ -268,7 +285,7 @@ DOM.extend({
 			} :
 			
 			function(event){
-				event = new DOMEvent(event, WIN); // TODO: getWindow
+				event = new DOMEvent(event, getWindow(el)); // TODO: getWindow
 				if (condition.call(el, event) === false) event.stop();
 			};
 			
@@ -285,6 +302,7 @@ DOM.extend({
 	detach: K._overloadSetter(removeDOMEvent),
 	
 	fire: function(type){
+		
 	}
 
 
@@ -305,6 +323,7 @@ DOM.Events = Events;
  
  TODO:
  A. refractor Events
+ B. fix onchange event of input elements
 
 
  */
