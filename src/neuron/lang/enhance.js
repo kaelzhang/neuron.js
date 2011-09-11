@@ -207,7 +207,8 @@ K.each = function(obj, fn){
  
 
 /**
- * deep clone an object, excluding properties on prototype chain
+ * deep clone an object, excluding properties on prototype chain.
+ * is able to deal with recursive object, unlike the poor Object.clone of mootools
  */
 K.clone = function(o) {
 	var marked = {},
@@ -231,9 +232,9 @@ K.clone = function(o) {
 
 // random: Number.random, // Number.random
 
-K.now = function(){
-	return + new Date;
-};
+// K.now = function(){
+//	return + new Date;
+// };
 
 /**
  * bind 'this' pointer for a function
