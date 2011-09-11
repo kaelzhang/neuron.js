@@ -7,10 +7,6 @@
 
 var DOM = K.DOM;
 
-// store selector on DOM for further improvement
-DOM.SELECTOR = K.__SELECTOR;
-
-
 // remove public members
 delete K.DOM;
 delete K.__SELECTOR;
