@@ -3,7 +3,7 @@
  * module  DOM/core
  * author  Kael Zhang
  */
-;(function(K, WIN, NULL){
+;(function(K, NULL){
 
 
 // create element
@@ -51,7 +51,9 @@ function extend(name, method, type){
 
 
 // save the current $ in window, for the future we need to return it back
-var _$ = WIN.$,
+var WIN = K.__HOST,
+
+_$ = WIN.$,
 	
 SELECTOR = K.__SELECTOR,
 	
@@ -176,17 +178,7 @@ DOM.extend = extend;
 DOM.SELECTOR = SELECTOR;
 
 
-/*
-K.define.on();
-
-K.define('DOM', function(){
-	return DOM;
-});
-
-K.define.off();
-*/
-
-})(KM, window, null);
+})(KM, null);
 
 /**
  change log:
