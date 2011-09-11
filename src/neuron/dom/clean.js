@@ -11,10 +11,7 @@ var DOM = K.DOM;
 DOM.SELECTOR = K.__SELECTOR;
 
 
-window.Slick = null;
-
 // remove public members
-delete window.Slick;
 delete K.DOM;
 delete K.__SELECTOR;
 delete DOM.methods;

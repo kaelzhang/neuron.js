@@ -10,13 +10,15 @@
   - Viewport dimensions based on [YUI](http://developer.yahoo.com/yui/) code, [BSD License](http://developer.yahoo.com/yui/license.html).
  */
 
-KM.define(function(K){
+KM.define(['dom'], function(K, require){
 
 // ---------- mootools.dimensions start ----------
 
 var DOC = document,
 	HTML = DOC.documentElement,
 	WIN = window,
+	DOM = require('dom'),
+	
 	COMPACT_ELEMENT = !DOC.compatMode || DOC.compatMode == 'CSS1Compat' ? HTML : DOC.body,
 	
 	FIXED = 'fixed', STATIC = 'static', SCROLL = 'scroll',

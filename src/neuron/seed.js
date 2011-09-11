@@ -98,7 +98,7 @@ K.build = '%buildtime%';
 
 
 })( 
-	typeof exports != 'undefined' ? 
+	typeof exports !== 'undefined' ? 
 		  exports  // NodeJS
 		: this,    // other environment, usually on browsers
 		
@@ -116,6 +116,7 @@ K.build = '%buildtime%';
  
  Global TODO:
  A. make Slick Selector Engine slim
+ B. remove setAttribute opponent from Slick
  
  2011-09-02  Kael:
  - rename core.js as seed.js
@@ -132,9 +133,9 @@ K.build = '%buildtime%';
  √ GLOBAL: remove all native implements of non-ECMAScript5 standards
 
 
- * change log:
- * 2011-04-19  Kael: move KM.type to lang.js
- * 2011-04-01  Kael Zhang: add adapter for typeOf of mootools
- * 2010-12-13  Kael Zhang: fix the getter of KM.data
- * 2010-10-09  Kael Zhang: 创建文件
+ 2011-03-19  Kael: move KM.type to lang.js
+ 2011-03-01  Kael Zhang: add adapter for typeOf of mootools
+ 2010-12-13  Kael Zhang: fix the getter of KM.data
+ 2010-10-09  Kael Zhang: 创建文件
+ 
  */

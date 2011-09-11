@@ -229,11 +229,11 @@ DOM.methods.css = {
  
  2011-09-10  Kael:
  
- 
  TODO:
  - A. test runtimeStyle, ref:
  	http://lists.w3.org/Archives/Public/www-style/2009Oct/0060.html
  	http://msdn.microsoft.com/en-us/library/ms535889(v=vs.85).aspx
+ - B. computedStyle for width and height
  
  2011-09-09  Kael:
  - complete basic css methods
