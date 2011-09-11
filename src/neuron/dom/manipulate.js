@@ -45,7 +45,10 @@ function cleanElement(el){
 	el.clearAttributes && el.clearAttributes();
 	
 	K.each(storage, function(s){
-		delete s[id];
+		var m = '_clean';
+		
+		// if has a cleaner method, use it
+		s[m] ? s[m](id) : delete s[id];
 	});
 };
 
