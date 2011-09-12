@@ -34,17 +34,64 @@ function filterCSSType(name){
 };
 
 
-function santitizeColorData(color){
-	return [];
+// function santitizeColorData(color){
+//	return [];
+// };
+
+
+// from jQuery
+function swap(element, styles, callback){
+	var old = {}, name;
+
+	// Remember the old values, and insert the new ones
+	for(name in options){
+		old[name] = element.style[name];
+		element.style[name] = options[name];
+	}
+
+	callback.call(element);
+
+	// Revert the old values
+	for(name in options){
+		element.style[name] = old[name];
+	}
 };
 
-/*
-function filterNumberCSSValue(value){
-	var match = REGEX_CSS_VALUE_NUMBER.match('' + value);
+// @this {DOMElement}
+function getCSS(name){
+	name = filterCSSType(name);
 	
-	return match ? match[0] : value;
+	var el = this, ret,
+		specified = CSS_methods[name];
+		
+	if(specified && specified.GET){
+		ret = specified.GET(el);
+	
+	}else{
+		ret = el.style[name];
+		
+		if(!ret || name === 'zIndex'){
+			ret = currentCSS(el, name);
+		}
+	}
+	
+	// TODO: color
+	
+	return ret;
 };
-*/
+
+
+function getWH(element, property){
+	var minus = property === 'width' ? ['left', 'right'] : ['top', 'bottom'], 
+		ret = element[camelCase('offset-' + property)];
+		
+	minus.forEach(function(v){
+		ret -= parseFloat(getCSS.call(this, 'border-' + v + '-width')) 
+			  + parseFloat(getCSS.call(this, 'padding-' + v));
+	}, element);
+	
+	return ret;
+};
 
 
 var DOM = K.DOM,
@@ -59,6 +106,8 @@ var DOM = K.DOM,
 	REGEX_HYHPENATE = /[A-Z]/g,
 	REGEX_OPACITY = /opacity=([^)]*)/,
 	REGEX_FILTER_ALPHA = /alpha\([^)]*\)/i,
+	REGEX_NUM_PX = /^-?\d+(?:px)?$/i,
+	REGEX_NUM = /^-?\d/,
 	
 	// 0.123
 	// .23
@@ -66,6 +115,12 @@ var DOM = K.DOM,
 	// REGEX_CSS_VALUE_NUMBER = /^(?:\d*\.)?\d+(?=px$)/i,
 	
 	STR_CSSFLOAT = 'cssFloat',
+	
+	STYLE_INVISIBLE_SHOW = {
+		position	: 'absolute',
+		visibility	: 'hidden',
+		display		: 'block'
+	},
 	
 	feature = DOM.feature,
 												 
@@ -86,15 +141,8 @@ var DOM = K.DOM,
 
 // @private
 // get computed styles
-currentCSS = HTML.currentStyle ? 
+currentCSS = feature.computedStyle ? 
 
-	// IE5.5 - IE8, ref: 
-	// http://msdn.microsoft.com/en-us/library/ms535231%28v=vs.85%29.aspx
-	// http://www.quirksmode.org/dom/w3c_html.html
-	function(element, property){
-		return element.currentStyle[camelCase(property)];
-	} :
-	
 	// standard
 	function(element, property){
 		var defaultView = getDocument(element).defaultView,
@@ -105,8 +153,50 @@ currentCSS = HTML.currentStyle ?
 		return (computed) ? 
 			computed.getPropertyValue( property === STR_FLOAT_NAME ? 'float' : hyphenate(property) ) 
 			: null;
+	} :
+
+	// IE5.5 - IE8, ref: 
+	// http://msdn.microsoft.com/en-us/library/ms535231%28v=vs.85%29.aspx
+	// http://www.quirksmode.org/dom/w3c_html.html
+	function(element, property){
+		return element.currentStyle[camelCase(property)];
 	};
 	
+/*
+	
+	function(element, property){
+		var left,
+			ret = element.currentStyle && element.currentStyle[ property ],
+			runtime_left = element.runtimeStyle && element.runtimeStyle[ property ],
+			style = element.style;
+
+		// From the awesome hack by Dean Edwards
+		// http://erik.eae.net/archives/2007/07/27/18.54.15/#comment-102291
+
+		// If we're not dealing with a regular pixel number ( kael: such as '1em')
+		// but a number that has a weird ending, we need to convert it to pixels
+		if ( !REGEX_NUM_PX.test( ret ) && REGEX_NUM.test( ret ) ) {
+			// Remember the original values
+			left = style.left;
+
+			// Put in the new values to get a computed value out(kael: pixel value)
+			if ( runtime_left ) {
+				elem.runtimeStyle.left = elem.currentStyle.left;
+			}
+			style.left = property === 'fontSize' ? '1em' : (ret || 0);
+			ret = style.pixelLeft + 'px';
+
+			// Revert the changed values
+			style.left = left;
+			if ( runtime_left ) {
+				elem.runtimeStyle.left = runtime_left;
+			}
+		}
+
+		return ret === "" ? "auto" : ret;
+	};
+*/
+
 
 if(!feature.opacity){
 
@@ -142,10 +232,26 @@ if(!feature.opacity){
 	};
 }
 
+
+// When an element is temporarily not displayed, the height and width might be 0
+// so they need special treatment
 ['height', 'width'].forEach(function(property){
 	CSS_methods[property] = {
-		GET: function(){
+		GET: function(element){
+			var ret;
+		
+			// if element is set display: none;
+			if(element.offsetWidth === 0){
 			
+				// temporarily and shortly set the element not display:none 
+				swap(element, STYLE_INVISIBLE_SHOW, function(){
+					ret = getWH(element, property);
+				});
+			}else{
+				ret = getWH(element, property);
+			}
+			
+			return ret;
 		}
 	};
 });
@@ -198,27 +304,7 @@ DOM.methods.css = {
 	 	
 	 * never determine your control flow by css styles!
 	 */
-	GET: function(name){
-		name = filterCSSType(name);
-		
-		var el = this, ret,
-			specified = CSS_methods[name];
-			
-		if(specified && specified.GET){
-			return specified.GET(el);
-		}
-		
-		ret = el.style[name];
-		
-		if(!ret || name === 'zIndex'){
-			ret = currentCSS(el, name);
-		}
-		
-		// TODO: color
-		
-		return ret;
-	}
-	
+	GET: getCSS	
 };
 
 
