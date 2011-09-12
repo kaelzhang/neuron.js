@@ -1,10 +1,8 @@
-/*! Neuron core:loader v3.4.0 * All rights reserved * author i@kael.me */
+/*! Neuron core:loader v4.1.1 * All rights reserved * author i@kael.me */
 
 ; // fix layout of UglifyJS
 
 /**
- * version	3.4.0
- 
  * include
  * - static resource loader
  * - a commonjs module loader
@@ -920,7 +918,7 @@ function getInteractiveScript() {
 
 
 function isDebugMode(){
-	return K._Config.debug;
+	return K._Cfg.debug;
 };
 
 
@@ -1180,23 +1178,28 @@ K.mix(K, {
 
 /**
  * change log:
+ 
+ marks:
  - √ complete
  - # deprecated scheme
  - X discarded scheme
  - * unimportant
+ - ! important and of high priority
  
  milestone 4.0 ---------------------------
  
- 2011-09-10  Kael:
+ 2011-09-12  Kael:
+ TODO:
+ - A. split the logic about loader constructor and its instances
  
  
  milestone 3.0 ---------------------------
  
  2011-09-09  Kael:
  TODO:
- - A. add loader constructor to create more than one configuration about library base, etc.
+ - ! A. add loader constructor to create more than one configuration about library base, etc.
  	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); Checkin.define('http://...timeline.js');
- 	KM.provide('Checkin::timeline', function(K, timeline){ … });
+ 	KM.provide('Checkin:timeline', function(K, timeline){ … });
  - B. optimize isXXX methods for scope chain
  - C. use native forEach methods for Array
  
