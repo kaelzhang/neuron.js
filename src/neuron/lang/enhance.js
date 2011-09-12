@@ -187,19 +187,21 @@ K.guid = function(){
 /**
  * forEach method for Object
  */
-K.each = function(obj, fn){
+K.each = function(obj, fn, context){
 	if(K.isFunction(fn)){
+	
+		context = context || obj;
 
 		if(K.isObject(obj)){
 			var keys = Object.keys(obj), i = 0, len = keys.length, key;
 			
 			for(; i < len; i ++){
 				key = keys[i];
-				obj.hasOwnProperty(key) && fn.call(obj, obj[key], key);
+				obj.hasOwnProperty(key) && fn.call(context, obj[key], key);
 			}
 			
 		}else if(K.isArray(obj)){
-			obj.forEach(fn);
+			obj.forEach(fn, context);
 			
 		}
 	}
