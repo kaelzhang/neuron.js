@@ -4,14 +4,6 @@
 
 ;(function(K){
 
-
-// basic add event
-function addEvent(el, type, fn){
-	var METHOD = 'addEventListener';
-	
-	el[METHOD] ? el[METHOD](type, fn, false) : el.attachEvent('on' + type, fn);
-};
-
 function getWindow(element){
 	// window
 	return 'setInterval' in element ? element
@@ -19,12 +11,6 @@ function getWindow(element){
 		// document
 		: 'getElementById' in element ? element.window
 			: element.ownerDocument.window;
-};
-
-function removeEvent(el, type, fn){
-	var METHOD = 'removeEventListener';
-	
-	el[METHOD] ? el[METHOD](type, fn, false) : el.detachEvent('on' + type, fn);
 };
 
 
@@ -68,7 +54,8 @@ function checkRelatedTarget(event){
 function removeDOMEvent(type, fn){
 	var el = this,
 		storage = getStorage(el),
-		remove = removeDOMEventByType;
+		remove = removeDOMEventByType,
+		s;
 		
 	if(!storage){
 		return;
@@ -77,8 +64,9 @@ function removeDOMEvent(type, fn){
 	if(fn){
 		var index;
 	
-		index = storage[type] ? storage[type].fns.indexOf(fn) : -1;
-		index !== -1 && remove(el, type, storage, index);
+		s = storage[type];
+		index = s ? s.fns.indexOf(fn) : -1;
+		index !== -1 && remove(el, type, s, index);
 		
 	}else{
 		var types = type ?
@@ -86,8 +74,7 @@ function removeDOMEvent(type, fn){
 				: Object.keys(storage),
 				
 			len = types.length,
-			t,
-			s;
+			t;
 		
 		while(len --){
 			t = types[len]; 	// type
@@ -207,9 +194,13 @@ DOMEvent.prototype = {
 var DOM = K.DOM,
 	SELECTOR = DOM.SELECTOR,
 	storage = DOM.__storage,
+	feature = DOM.feature,
+	
 	event_storage = (storage.events = {}),
 	
-	getCompactElement = DOM.feature.compactEl,
+	getCompactElement = feature.compactEl,
+	addEvent = feature.addEvent,
+	removeEvent = feature.removeEvent,
 	
 	TRUE = true,
 	
@@ -299,12 +290,9 @@ DOM.extend({
 	 * .detach('click')		-> remove all click
 	 * .detach('click', fn)	-> remove click method fn
 	 */
-	detach: K._overloadSetter(removeDOMEvent),
+	detach: K._overloadSetter(removeDOMEvent) // ,
 	
-	fire: function(type){
-		
-	}
-
+	// fire: function(type){}
 
 }, 'iterator');
 
