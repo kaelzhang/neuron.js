@@ -43,7 +43,8 @@ function fire_domready(){
 function bind_domready(){
 	var COMPLETE = 'complete', doc = WIN.document,
 		doScroll = doc.documentElement.doScroll,
-		eventType = doScroll ? 'readystatechange' : 'DOMContentLoaded';
+		eventType = doScroll ? 'readystatechange' : 'DOMContentLoaded',
+		_doc = new DOM(doc);
 		
 	is_domready_binded = true;
 	
@@ -52,15 +53,16 @@ function bind_domready(){
 	if(doc.readyState === COMPLETE) return domready();
 	
 	function _ready(){
-		doc.removeListener(eventType, _ready).removeListener('load', _ready);
+		_doc.detach(eventType, _ready).detach('load', _ready);
+		_doc = null;
 		domready();
-	}
+	};
 	
-	doc.addListener(eventType, _ready);
+	_doc.on(eventType, _ready);
 	
 	// A fallback to load
 	// and make sure that domready event fires before load event registered by user
-	doc.addListener('load', _ready);
+	_doc.on('load', _ready);
 	
 	if(doScroll){
 		var not_framed = false;
@@ -90,6 +92,8 @@ function bind_domready(){
 var is_domready = false,
 	is_domready_binded = false,
     is_loaded = false,
+    
+    DOM = K.DOM,
 	
     readyList = [],
 
