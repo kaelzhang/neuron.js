@@ -1,4 +1,7 @@
-/*! @license Neuron Framwork & Library * author i@kael.me */
+/*! 
+ * @preserve
+ * Neuron Framwork & Library * author i@kael.me 
+ */
  
 /**
  * corek
@@ -96,6 +99,7 @@ K.__HOST = K.__HOST || host;
  */
 K.build = '%buildtime%';
 
+K._Cfg = {};
 
 })( 
 	typeof exports !== 'undefined' ? 
@@ -117,6 +121,7 @@ K.build = '%buildtime%';
  Global TODO:
  A. make Slick Selector Engine slim
  B. remove setAttribute opponent from Slick
+ C. move inline script for header searching back after the header
  
  2011-09-02  Kael:
  - rename core.js as seed.js
