@@ -5,13 +5,13 @@
 		<path path="lang/enhance.js" />
 		<path path="lang/biz.js" />
 		
-		<path path="class/class.js" />
-		<path path="class/tools.js" />
-		
 		<path path="ua/ua.js" />
 		
 		<path path="loader/loader.js" />
 		<path path="loader/instances.js" />
+		
+		<path path="class/class.js" />
+		<path path="class/tools.js" />
 		
 		<path path="selector/finder.js" />
 		<path path="selector/parser.js" />
