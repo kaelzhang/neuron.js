@@ -52,8 +52,11 @@ function overloadSetter(fn){
 	// @return {undefined} setter method will always return this, 
 	// for the sake of potential chain-style invocations
 	return function(key, value){
+	
+		// this must
 		var self = this;
 	
+		// set(0, 123); -> { '0': 123 }
 		if (key || key === 0){
 			if (K.isString(key)){
 				fn.call(self, key, value);
@@ -77,7 +80,7 @@ function memoizeMethod(fn){
 	var stack = {};
 	
 	return function(){
-		var arg = array_join.call(arguments, '~^_^~');
+		var arg = array_join.call(arguments, MEMOIZE_JOINER);
 	
 		return (arg in stack) ? stack[arg] : (stack[arg] = fn.apply(null, arguments));
 	}
@@ -114,14 +117,20 @@ function toQueryString(obj, splitter){
 
 
 /**
+ * @private
  * @param {mixed} o
  * @param {Object} stack
+ * @param {function=} filter
+ * @param {Object=} host, for both inner and external use
+ * @param {number=} depth, for inner use
  */
-function clone(o, marked, cached){
+function clone(o, marked, filter, host, cached, depth){
 	var cloned = {}, m, id;
 	
 	// internal use
 	cached || (cached = {});
+	depth || (depth = 1);
+	host || (host = cloned);
 	
 	switch(K._type(o)){
 		case 'date':
@@ -146,15 +155,23 @@ function clone(o, marked, cached){
 			cached[id] = cloned;
 			
 			K.each(o, function(value, key){
-				if(key !== m){
-					cloned[key] = clone(value, marked, cached);
+				var f;
+				
+				if(
+					// !CLONE_MARKER
+					key !== m && 
+					
+					// pass the filter
+					(!(f = filter) || f(value, key, depth))
+				){
+					host[key] = clone(value, marked, filter, null, cached, depth + 1);
 				}
 			});
 			
 			// free
 			marked = cached = null;
 		
-			return cloned;
+			return host;
 			
 		// number, boolean, element(DOMElement, HTMLWindow, HTMLDocument, HTMLhtmlElement), collections
 		// arguments?
@@ -164,9 +181,10 @@ function clone(o, marked, cached){
 };
 
 
-var	NOOP = function(){},
-	array_join = Array.prototype.join,
-	CLONE_MARKER = '>_>~cloned',
+var	NOOP 			= function(){},
+	array_join 		= Array.prototype.join,
+	CLONE_MARKER 	= '>_>~cloned',
+	MEMOIZE_JOINER 	= '~^_^~',
 
 	_guid = 1;
 
@@ -211,11 +229,23 @@ K.each = function(obj, fn, context){
 /**
  * deep clone an object, excluding properties on prototype chain.
  * is able to deal with recursive object, unlike the poor Object.clone of mootools
+ 
+ * @param {Object|Array} o
+ * @param {function()} filter filter function(value, key, depth)
+ * @param {Object} host
+ * @return {Object} cloned object
+ 
+ usage:
+ <code>
+ var a = {}, b = {}, c; a.a = a; 
+ KM.clone(a, false, b);
+ c = KM.clone(a); 
+ </code>
  */
-K.clone = function(o) {
+K.clone = function(o, filter, host) {
 	var marked = {},
 		m = CLONE_MARKER,
-		cloned = clone(o, marked);
+		cloned = clone(o, marked, filter, host);
 	
 	// remove CLONE_MARKER
 	K.each(marked, function(v){
