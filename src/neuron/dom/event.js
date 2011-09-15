@@ -306,6 +306,10 @@ DOM.Events = Events;
 /**
  change log:
  
+ 2011-09-12  Kael:
+ TODO:
+ - A. 
+ 
  2011-09-10  Kael:
  - basic functionalities
  

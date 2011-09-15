@@ -374,6 +374,18 @@ METHODS.text = {
 };
 
 
+// TODO
+// .val() methods
+METHODS.val = {
+	SET: function(value){
+		//
+	},
+	
+	GET: function(){
+	}
+};
+
+
 DOM.extend({
 
 	addClass: addClass,
@@ -460,6 +472,11 @@ DOM._overload = overloadDOMGetterSetter;
 
 /**
  change log:
+ 
+ 2011-09-12  Kael:
+ TODO:
+ A. review .inject and .grab. whether should only deal with the first element of all matches
+ B. deal with more elements of tables, such as caption, colgroup, etc
  
  2011-09-08  Kael:
  - improve stability of function overloadDOMGetterSetter
