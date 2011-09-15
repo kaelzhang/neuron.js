@@ -1,160 +1,193 @@
+/**
+ * module  oop/class
+ * author  Kael Zhang
+ 
+ * unlike mootools, new KM.Class will return a pure javascript constructor
+ */
+
+
 ;(function(K){
 
-function extend(host, methods){
-	for(name in methods){
-		if(!host[name]){
-			host[name] = methods[name];
-		}
-	}
-};
-
-/*
-function implement(host, methods){
-	extend(host.prototype, methods);
-};
-*/
 
 /**
- * @private
- * reset an object
- * unlink the reference relationship 
- */
-function reset(object){
-	var key, value, F;
+ Implements: 
+ 	- classes implemented, constructor and destructor will not be inherited
+ 	- destructor methods will be ignored
+ 	- implementing A will not make A instantiated
+ 
+ Extends: 
+	X - destructor methods will be collected
+	- 
 
-	for (key in object){
-		value = object[key];
+var Class = KM.Class,
+
+	myClass = Class( baseClass, {
+		Extends: [ Interface1, Interface2, 'options' ],
+		// Extends: 'options events',
 		
-		switch (K._type(value)){
-			case 'object':
-				F = function(){};
-				F.prototype = value;
-				object[key] = reset(new F);
-				break;
-				
-			case 'array':
-				object[key] = K.clone(value);
-				break;
-		}
+		initialize: function(){},
+		
+		__destruct: function(){},
+		
+		method: function(){}
+	}),
+
+	instance = new myClass();
+
+
+Class.destroy(instance);
+*/
+
+
+function getPrototype(obj){
+	var ret, type = K._type(obj);
+	
+	if(type === 'function'){
+		ret = obj.prototype;
+	}else if(type === 'object'){
+		ret = obj;
+	}else if(type === 'string'){
+		ret = getPrototype(INTERFACES[obj.toLowerCase()]);
 	}
 	
-	return object;
+	return ret;
 };
 
 
-// @private
-function parent(){
-	var self = this;
+function implementOne(host, alien){
+	var proto = getPrototype(alien);
 
-	if (!this.$caller) throw new Error('The method "parent" cannot be called.');
-	var name = this.$caller.$name,
-		parent = this.$caller.$owner.parent,
-		previous = (parent) ? parent.prototype[name] : null;
-	if (!previous) throw new Error('The method "' + name + '" has no parent.');
-	return previous.apply(this, arguments);
-};
-
-
-function getInstance(klass){
-	klass.$prototyping = true;
-	var proto = new klass;
-	delete klass.$prototyping;
-	return proto;
-};
-
-
-function Class(params){
-	function newClass(){
-		var self = this, ret;
-	
-		reset(self);
-		ret = self.initialize ? self.initialize.call(self, arguments) : self;
+	proto && K.mix(
+		host, 
+		K.clone(proto, function(value, key){
+			return PRIVATE_MEMBERS.indexOf(key) === -1;
+		}),
 		
-		return ret;
+		// methods of an interface have lower priorities
+		false
+	);
+};
+
+
+// implements a class with interfaces
+function implements(host, extensions){
+	if(typeof extensions === 'string'){
+		extensions = extensions.trim().split(/,\s*/);
+	}
+
+	K.makeArray(extensions).forEach(function(alien){
+		implementOne(this, alien);
+	}, host.prototype);
+};
+
+
+function isPublicMember(key){
+	return PRIVATE_MEMBERS.indexOf(key) === -1;
+};
+
+
+function createGetterSetter(host, attrs){
+
+	host.get = function(name){
+		var attr = attrs[name]
+	}
+};
+
+
+var INITIALIZE = 'initialize',
+	__DESTRUCT = '__construct',
+	PRIVATE_MEMBERS = [INITIALIZE, __DESTRUCT],
+	IMPLEMENETS = {};
+
+
+function Class(base, proto){
+	function newClass(){
+		var self = this;
+		
+		// clean and unlink the instance off its prototype
+		K.clone(self, isPublicMember, self);
+	
+		if(initialize){
+			return initialize.call(this);
+		}
 	};
 	
-	newClass.prototype = K.mix({
-			constructor: Class
-			parent: parent
-		}, 
-		K.isFunction(params) ? {initialize: params} : params
-	);
+	var initialize,
+		exts,
+		newProto = newClass.prototype;
+	
+	if(!proto){					// -> Class(proto)
+		proto = base;
+		base = proto['Extends'];
+	}
+	
+	if(K.isFunction(proto)){	// -> Class(function)
+		initialize = proto;
+		
+	}else{						// -> Class(base, proto)
+		initialize = proto[INITIALIZE];
+		delete proto[INITIALIZE];
+	}
+
+	K.mix(newProto, proto);
+	
+		// no override
+	(exts = proto['Implements']) && implements(self, exts);
+	
+	if(base){
+		newProto.superClass = base;
+		
+	}	
+		
+	newProto.constructor = Class;
 	
 	return newClass;
 };
 
 
+/**
+ * @public members
+ * ----------------------------------------------------------------------- */
+
+
 // @deprecated
 // use KM.Class instead
 // for backwards compact
-// this.Class
+this.Class =
 
-K.Class = this.Class = Class;
+// KM.Class
+K.Class = Class;
 
+Class.IMPLEMENETS = IMPLEMENETS;
+Class.PRIVATE_MEMBERS = PRIVATE_MEMBERS;
 
-var wrap = function(self, key, method){
-	if (method.$origin) method = method.$origin;
-	var wrapper = function(){
-		if (method.$protected && this.$caller == null) throw new Error('The method "' + key + '" cannot be called.');
-		var caller = this.caller, current = this.$caller;
-		this.caller = current; this.$caller = wrapper;
-		var result = method.apply(this, arguments);
-		this.$caller = current; this.caller = caller;
-		return result;
-	}.extend({$owner: self, $origin: method, $name: key});
-	return wrapper;
+/**
+ * method to destroy a instance
+ */
+Class.destroy = function(instance){
+	var destructor = instance[__DESTRUCT];
+	destructor && destructor();
 };
 
-var implement = function(key, value, retain){
-	if (Class.Mutators.hasOwnProperty(key)){
-		value = Class.Mutators[key].call(this, value);
-		if (value == null) return this;
-	}
-
-	if (typeOf(value) == 'function'){
-		if (value.$hidden) return this;
-		this.prototype[key] = (retain) ? value : wrap(this, key, value);
-	} else {
-		Object.merge(this.prototype, key, value);
-	}
-
-	return this;
-};
-
-var getInstance = function(klass){
-	klass.$prototyping = true;
-	var proto = new klass;
-	delete klass.$prototyping;
-	return proto;
-};
-
-Class.implement('implement', implement.overloadSetter());
-
-Class.Mutators = {
-
-	Extends: function(parent){
-		this.parent = parent;
-		this.prototype = getInstance(parent);
-	},
-
-	Implements: function(items){
-		Array.from(items).each(function(item){
-			var instance = new item;
-			for (var key in instance) implement.call(this, key, instance[key], true);
-		}, this);
-	}
-};
+Class.implements = implements;
+Class.hide = function(){
+	
+}
 
 
 })(KM);
 
+
 /**
  change log:
+ 
+ 2011-09-13  Kael:
+ - refractor the whole implementation about Class
  
  2011-09-12  Kael:
  TODO:
  - A. add destructor support
  - B. make Class faster if there's no Extends
- - C. no merge, clone instead1
+ - C. no merge, use KM.clone instead
  
  */
