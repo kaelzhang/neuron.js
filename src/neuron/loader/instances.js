@@ -1,5 +1,7 @@
 ;(function(K){
 
+return;
+
 
 var Loader = K._Loader;
 
@@ -8,8 +10,8 @@ var Loader = K._Loader;
  * and also create a new namespace for modules under this application
  * will be very useful for business requirement
 
- <code env="page">
- 	var Checkin = KM.app('Checkin', {
+ <code env="inline">
+ 	KM.app('Checkin', {
  		base: '/q/mods/'
  	});
  	
@@ -27,13 +29,14 @@ var Loader = K._Loader;
  	// provide a module of the kernel
  	KM.provide('io/ajax', function(K, Ajax){
  		new Ajax( ... )
- 	})
+ 	});
+ 	
  </code>
  
  <code env="index.js">
  
  	// '~/' -> the home dir for the current application
- 	KM.define(['~/timeline'], function(K, require){
+ 	KM.define(['~/timeline', 'dom'], function(K, require){
  		var timeline = require('~/timeline');
  	});
  	
