@@ -85,7 +85,13 @@ K.__SELECTOR = {
 // remove Slick from window
 // Slick is defined with 'this.Slick'
 // so, it's removable and is not [DontDelete]
-delete window.Slick;
+
+// IE6 - IE8 don't support delete a property of window, even if it's defined with this.MyNameSpace 
+try{
+	delete window.Slick;
+}catch(e){
+	K.log('del Slick err');
+}
 
 })(KM);
 
