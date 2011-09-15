@@ -6,6 +6,7 @@ var console = K.__HOST.console;
 // if debug mode is off, KM.log will do nothing
 K.log = console ? console.log : function(){};
 
+
 /**
  * Creates specified namespace if it doesn't exist 
 
@@ -42,7 +43,7 @@ K.namespace = function(){
 // load 'log' module to switch debug-mode on
 K._debugOn = function(){
     // K.provide('log', function(K){ K.log('debug module attached') });
-    K._Config.debug = true;
+    K._Cfg.debug = true;
 };
 
 

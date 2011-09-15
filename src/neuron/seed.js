@@ -5,7 +5,7 @@
  
 /**
  * corek
- * seed.js -> lang/ -> class/ -> ua/ -> loader/ -> selector/ -> core/ -> dom/
+ * seed.js -> lang/ -> ua/ -> loader/ -> class/ -> selector/ -> core/ -> dom/
  */
 
 /**
