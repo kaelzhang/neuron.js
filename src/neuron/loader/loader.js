@@ -1191,6 +1191,7 @@ K.mix(K, {
  2011-09-12  Kael:
  TODO:
  - A. split the logic about loader constructor and its instances
+ - ! B. refractor dependency model with AOP
  
  
  milestone 3.0 ---------------------------
