@@ -7,7 +7,7 @@
  * @param {boolean} ghost inner use
  	if true, setValue will ignore all flags or validators and force to writing the new value
  */
-function setValue(host, attr, value, mix, ghost){
+function setValue(host, attr, value, override, ghost){
 	var pass = true,
 		setter,
 		validator,
@@ -19,7 +19,7 @@ function setValue(host, attr, value, mix, ghost){
 			pass = false;
 			
 		}else{
-			validator = getMethod(host, attr, validator);
+			validator = getMethod(host, attr, VALIDATOR);
 			
 			pass = !validator || validator.call(host, value);
 		}
@@ -38,7 +38,7 @@ function setValue(host, attr, value, mix, ghost){
 		}else{
 		
 			// mix object values
-			mix && K.isObject(v = attr.value) ? K.mix(v, value) : (attr.value = value);
+			!override && isPlainObject(value) && isPlainObject(v = attr.value) ? K.mix(v, value) : (attr.value = value);
 		}
 	}
 };
@@ -48,13 +48,14 @@ function setValue(host, attr, value, mix, ghost){
  * getter for class attributes
  */
 function getValue(host, attr, undef){
-	var getter = getMethod(host, attr, GETTER);
+	var getter = getMethod(host, attr, GETTER),
+		v = attr.value;
 	
 	return getter ?
 	
 		  // getter could based on the value of the current value
-		  getter.call(host, attr.value)
-		: 'value' in attr ? attr.value : undef;
+		  getter.call(host, v)
+		: v;
 };
 
 
@@ -69,10 +70,10 @@ function getMethod(host, attr, name){
  * @private
  */
 function createGetterSetter(host, attrs, undef){
-	host.set = function(key, value, mix){
+	host.set = function(key, value, override){
 		var attr = attrs[key];
 		
-		attr && setValue(this, attr, value, mix);
+		attr && setValue(this, attr, value, override);
 	};
 	
 	host.get = function(key){
@@ -88,7 +89,9 @@ var TRUE = true,
 	SETTER = 'setter',
 	VALIDATOR = 'validator',
 	READ_ONLY = 'readOnly',
-	WRITE_ONCE = 'writeOnce';
+	WRITE_ONCE = 'writeOnce',
+	
+	isPlainObject = K.isPlainObject;
 
 
 /**
@@ -116,8 +119,8 @@ var TRUE = true,
 
  */
 	
-K.Class.IMPLEMENETS.attrs = {
-	setAttrs: function(options){
+K.Class.EXTS.attrs = {
+	setAttrs: function(options, force){
 		var self = this,
 		
 			// private members
@@ -125,6 +128,12 @@ K.Class.IMPLEMENETS.attrs = {
 		
 		// .set and .get methods won't be available util .setOptions method excuted
 		createGetterSetter(self, attrs);
+		
+		K.each(options, function(v, k){
+			var attr = attrs[k];
+			
+			attr && setValue(this, attr, v, false, force);
+		}, self);
 	}
 };
 
@@ -134,7 +143,7 @@ K.Class.IMPLEMENETS.attrs = {
 
 /**
  2011-09-15  Kael:
- - privatize 
+ - privatize attributes
  - create .get and .set method
 
 

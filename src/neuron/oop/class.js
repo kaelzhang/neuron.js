@@ -2,11 +2,21 @@
  * module  oop/class
  * author  Kael Zhang
  
- * unlike mootools, new KM.Class will return a pure javascript constructor
+ * unlike mootools
+	- new KM.Class will return a pure javascript constructor
+	- new KM.Class could inherit from a pure javascript constructor
  */
 
 
 ;(function(K){
+
+/**
+ javascript reserved words
+
+ extends
+ implements
+
+ */
 
 
 /**
@@ -47,7 +57,7 @@ function getPrototype(obj){
 	}else if(type === 'object'){
 		ret = obj;
 	}else if(type === 'string'){
-		ret = getPrototype(INTERFACES[obj.toLowerCase()]);
+		ret = getPrototype(EXTS[obj.toLowerCase()]);
 	}
 	
 	return ret;
@@ -69,10 +79,10 @@ function implementOne(host, alien){
 };
 
 
-// implements a class with interfaces
-function implements(host, extensions){
+// implement a class with interfaces
+function implement(host, extensions){
 	if(typeof extensions === 'string'){
-		extensions = extensions.trim().split(/,\s*/);
+		extensions = extensions.trim().split(/\s+/);
 	}
 
 	K.makeArray(extensions).forEach(function(alien){
@@ -86,60 +96,85 @@ function isPublicMember(key){
 };
 
 
-function createGetterSetter(host, attrs){
+var INITIALIZE 		= 'initialize',
+	__DESTRUCT 		= '__destruct',
+	__SUPER_CLASS 	= '__super',
+	// __PRIVATE 		= '__private',
+	// PRIVATE_MEMBERS = [__SUPER_CLASS, __DESTRUCT],
+	EXTS			= {};
 
-	host.get = function(name){
-		var attr = attrs[name]
-	}
+
+// @public
+function Class(base, proto){
+	var EXTENDS = 'Extends';
+
+	if(!K.isObject(proto)){
+		if(K.isObject(base)){				// -> Class({ key: 123 })
+			proto = base;
+			base = proto[EXTENDS];
+			
+		}else{								// -> Class(myClass)
+			return K.isFunction(base) ? base : function(){};
+		}
+	}	
+	
+	delete proto[EXTENDS];
+	
+	return _Class(base, proto);
 };
 
 
-var INITIALIZE = 'initialize',
-	__DESTRUCT = '__construct',
-	PRIVATE_MEMBERS = [INITIALIZE, __DESTRUCT],
-	IMPLEMENETS = {};
-
-
-function Class(base, proto){
+/**
+ * @private
+ * @param {function()|Class}
+ * @param {Object} proto must be an object
+ */
+function _Class(base, proto){
 	function newClass(){
-		var self = this;
+		var self = this,
+			init = initialize;
 		
 		// clean and unlink the instance off its prototype
-		K.clone(self, isPublicMember, self);
+		// K.clone(self, isPublicMember, self);
+		K.clone(self, false, self);
 	
-		if(initialize){
-			return initialize.call(this);
+		if(init){
+			return initialize.apply(this, arguments);
 		}
 	};
 	
-	var initialize,
-		exts,
-		newProto = newClass.prototype;
-	
-	if(!proto){					// -> Class(proto)
-		proto = base;
-		base = proto['Extends'];
-	}
-	
-	if(K.isFunction(proto)){	// -> Class(function)
-		initialize = proto;
+	var IMPLEMENTS = 'Implements',
+		F,
+		newProto,
 		
-	}else{						// -> Class(base, proto)
-		initialize = proto[INITIALIZE];
-		delete proto[INITIALIZE];
-	}
-
-	K.mix(newProto, proto);
+		// so, KM.Class could make a new class inherit from a pure javascript constructor
+		initialize = proto[INITIALIZE] || base,
+		exts = proto[IMPLEMENTS];
+		
+	delete proto[INITIALIZE];
+	delete proto[IMPLEMENTS];
 	
-		// no override
-	(exts = proto['Implements']) && implements(self, exts);
-	
+	// apply super prototypes
 	if(base){
-		newProto.superClass = base;
+		F = function(){};
+		F.prototype = base.prototype;
 		
-	}	
+		// create prototype chain
+		newClass.prototype = new F;
+	}
+	
+	// argument proto has the highest priority
+	newProto = K.mix(newClass.prototype, proto);
+	
+	// no override
+	exts && implement(newClass, exts);
 		
-	newProto.constructor = Class;
+	if(base){
+		newProto[__SUPER_CLASS] = base;
+	}
+	
+	// fix constructor
+	newProto.constructor = newClass;
 	
 	return newClass;
 };
@@ -153,13 +188,13 @@ function Class(base, proto){
 // @deprecated
 // use KM.Class instead
 // for backwards compact
-this.Class =
+K.__HOST.Class =
 
 // KM.Class
 K.Class = Class;
 
-Class.IMPLEMENETS = IMPLEMENETS;
-Class.PRIVATE_MEMBERS = PRIVATE_MEMBERS;
+Class.EXTS = EXTS;
+// Class.PRIVATE_MEMBERS = PRIVATE_MEMBERS;
 
 /**
  * method to destroy a instance
@@ -169,8 +204,8 @@ Class.destroy = function(instance){
 	destructor && destructor();
 };
 
-Class.implements = implements;
-Class.hide = function(){
+Class.implement = implement;
+Class.hide = function(class_, key){
 	
 }
 
@@ -180,6 +215,9 @@ Class.hide = function(){
 
 /**
  change log:
+ 
+ 2011-09-16  Kael:
+ - remove a reserved word for possible future use 
  
  2011-09-13  Kael:
  - refractor the whole implementation about Class
