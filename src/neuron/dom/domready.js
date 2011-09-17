@@ -41,6 +41,25 @@ function fire_domready(){
 
 
 function bind_domready(){
+
+	// X <del>use conditional function declaration, poll_scroll will not be declared in firefox, that it will save memory</del>
+	// use strict
+	function poll_scroll(){
+		try {
+			// doScroll technique by Diego Perini http://javascript.nwbox.com/IEContentLoaded/
+			doScroll('left');
+			ready();
+		} catch(ex) {
+			setTimeout(poll_scroll, 10);
+		}
+	};
+	
+	function _ready(){
+		_doc.detach(eventType, _ready).detach('load', _ready);
+		_doc = null;
+		domready();
+	};
+
 	var COMPLETE = 'complete', doc = WIN.document,
 		doScroll = doc.documentElement.doScroll,
 		eventType = doScroll ? 'readystatechange' : 'DOMContentLoaded',
@@ -51,12 +70,6 @@ function bind_domready(){
 	// Catch cases where ready() is called after the
 	// browser event has already occurred.
 	if(doc.readyState === COMPLETE) return domready();
-	
-	function _ready(){
-		_doc.detach(eventType, _ready).detach('load', _ready);
-		_doc = null;
-		domready();
-	};
 	
 	_doc.on(eventType, _ready);
 	
@@ -72,17 +85,6 @@ function bind_domready(){
 		} catch(e) {}
 		
 		if(not_framed){
-			
-			// use conditional function declaration, poll_scroll will not be declared in firefox, that it will save memory
-			function poll_scroll(){
-				try {
-					// doScroll technique by Diego Perini http://javascript.nwbox.com/IEContentLoaded/
-					doScroll('left');
-					ready();
-				} catch(ex) {
-					setTimeout(poll_scroll, 10);
-				}
-			}
 			poll_scroll();
 		}
 	}

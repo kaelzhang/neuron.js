@@ -2,6 +2,9 @@
  * @preserve
  * Neuron Framwork & Library * author i@kael.me 
  */
+
+"use strict";
+
  
 /**
  * corek
