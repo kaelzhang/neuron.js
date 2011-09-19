@@ -57,7 +57,19 @@ function swap(element, styles, callback){
 	}
 };
 
-// @this {DOMElement}
+
+
+/**
+ * Get the value of a style property for the first element
+ * @this {DOMElement}
+ * @param {string} name Array is not allowed, unlike mootools
+ * @return {string|number|(Array.<number>)}
+ 	- {string} numeric values with *units*, such as font-size ('12px'), height, width, etc
+ 	- {number} numeric values without units, such as zIndex
+ 	- ? {Array} color related values, always be [<r>, <g>, <b>, <a>] // TODO
+ 	
+ * never determine your control flow by css styles!
+ */
 function getCSS(name){
 	name = filterCSSType(name);
 	
@@ -294,16 +306,6 @@ DOM.methods.css = {
 		}
 	}),
 	
-	/**
-	 * Get the value of a style property for the first element
-	 * @param {string} name Array is not allowed, unlike mootools
-	 * @return {string|number|(Array.<number>)}
-	 	- {string} numeric values with *units*, such as font-size ('12px'), height, width, etc
-	 	- {number} numeric values without units, such as zIndex
-	 	- ? {Array} color related values, always be [<r>, <g>, <b>, <a>] // TODO
-	 	
-	 * never determine your control flow by css styles!
-	 */
 	GET: getCSS	
 };
 
