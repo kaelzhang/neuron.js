@@ -69,20 +69,19 @@ function getMethod(host, attr, name){
 /**
  * @private
  */
-function createGetterSetter(host, attrs, undef){
+function createGetterSetter(host, sandbox, undef){
 	host.set = function(key, value, override){
-		var attr = attrs[key];
+		var attr = sandbox[key];
 		
 		attr && setValue(this, attr, value, override);
 	};
 	
 	host.get = function(key){
-		var attr = attrs[key];
+		var attr = sandbox[key];
 		
 		return attr ? getValue(this, attr) : undef;
 	};
 };
-
 
 var TRUE = true,
 	GETTER = 'getter',
@@ -90,6 +89,8 @@ var TRUE = true,
 	VALIDATOR = 'validator',
 	READ_ONLY = 'readOnly',
 	WRITE_ONCE = 'writeOnce',
+	
+	__SUPER_CLASS = '__super',
 	
 	isPlainObject = K.isPlainObject;
 
@@ -124,13 +125,13 @@ K.Class.EXTS.attrs = {
 		var self = this,
 		
 			// private members
-			attrs = K.clone(self.constructor.ATTRS);
+			sandbox = K.clone(self.constructor.ATTRS);
 		
 		// .set and .get methods won't be available util .setOptions method excuted
-		createGetterSetter(self, attrs);
+		createGetterSetter(self, sandbox);
 		
 		K.each(options, function(v, k){
-			var attr = attrs[k];
+			var attr = sandbox[k];
 			
 			attr && setValue(this, attr, v, false, force);
 		}, self);
@@ -142,9 +143,14 @@ K.Class.EXTS.attrs = {
 
 
 /**
+ 2011-09-17  Kael:
+ - TODO[09-15].A
+
  2011-09-15  Kael:
  - privatize attributes
  - create .get and .set method
-
+ 
+ TODO:
+ - √ A. ATTRs inheritance
 
  */

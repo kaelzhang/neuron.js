@@ -69,11 +69,12 @@ function implementOne(host, alien){
 
 	proto && K.mix(
 		host, 
-		K.clone(proto, function(value, key){
-			return PRIVATE_MEMBERS.indexOf(key) === -1;
-		}),
+		K.clone(proto),
+		// K.clone(proto, function(value, key){
+		//	return PRIVATE_MEMBERS.indexOf(key) === -1;
+		// }),
 		
-		// methods of an interface have lower priorities
+		// methods of an interface have lowest priorities
 		false
 	);
 };
@@ -94,6 +95,28 @@ function implement(host, extensions){
 function isPublicMember(key){
 	return PRIVATE_MEMBERS.indexOf(key) === -1;
 };
+
+
+function setAttrs(class_, attr){
+	var attrs = [], parent_attr, cls = class_;
+
+	while(cls = cls.prototype[__SUPER_CLASS]){
+		if(parent_attr = cls.ATTRS){
+			attrs.push(parent_attr);
+		}
+	}
+	
+	attrs.forEach(function(a){
+		K.each(a, function(v, key){
+			if(!attr[key]){
+				attr[key] = K.clone(v);
+			}
+		});
+	});
+	
+	class_.ATTRS = attr;
+};
+
 
 
 var INITIALIZE 		= 'initialize',
@@ -134,7 +157,7 @@ function _Class(base, proto){
 		var self = this,
 			init = initialize;
 		
-		// clean and unlink the instance off its prototype
+		// clean and unlink the reference relationship between the instance and its prototype
 		// K.clone(self, isPublicMember, self);
 		K.clone(self, false, self);
 	
@@ -148,6 +171,7 @@ function _Class(base, proto){
 		newProto,
 		
 		// so, KM.Class could make a new class inherit from a pure javascript constructor
+		// inherit constructor from superclass
 		initialize = proto[INITIALIZE] || base,
 		exts = proto[IMPLEMENTS];
 		
@@ -157,16 +181,19 @@ function _Class(base, proto){
 	// apply super prototypes
 	if(base){
 		F = function(){};
-		F.prototype = base.prototype;
 		
-		// create prototype chain
+		// discard the parent constructor
+		F.prototype = base.prototype;
 		newClass.prototype = new F;
+		
+		// argument proto has the highest priority
+		newProto = K.mix(newClass.prototype, proto);
+	}else{
+		newProto = newClass.prototype = proto;
 	}
 	
-	// argument proto has the highest priority
-	newProto = K.mix(newClass.prototype, proto);
-	
 	// no override
+	// Implements have the lowest priority
 	exts && implement(newClass, exts);
 		
 	if(base){
@@ -205,10 +232,8 @@ Class.destroy = function(instance){
 };
 
 Class.implement = implement;
-Class.hide = function(class_, key){
-	
-}
 
+Class.setAttrs = setAttrs;
 
 })(KM);
 
@@ -216,8 +241,12 @@ Class.hide = function(class_, key){
 /**
  change log:
  
+ 2011-09-19  Kael:
+ - fix a bug the instance fail to clear the reference off its prototype
+ 
  2011-09-16  Kael:
- - remove a reserved word for possible future use 
+ - remove a reserved word for possible future use
+ - complete class extends
  
  2011-09-13  Kael:
  - refractor the whole implementation about Class
