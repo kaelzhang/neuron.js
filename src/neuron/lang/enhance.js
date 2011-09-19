@@ -119,18 +119,18 @@ function toQueryString(obj, splitter){
 /**
  * @private
  * @param {mixed} o
- * @param {Object} stack
+ * @param {Object} marked stack for marked objects
  * @param {function=} filter
  * @param {Object=} host, for both inner and external use
+ * @param {Object=} cached stack for cached objects which are the clones of marked objects
  * @param {number=} depth, for inner use
  */
 function clone(o, marked, filter, host, cached, depth){
-	var cloned = {}, m, id;
+	var cloned = {}, m, id, key, value;
 	
 	// internal use
 	cached || (cached = {});
 	depth || (depth = 1);
-	host || (host = cloned);
 	
 	switch(K._type(o)){
 		case 'date':
@@ -142,6 +142,7 @@ function clone(o, marked, filter, host, cached, depth){
 		// object, plainObject, instance
 		case 'object':
 			m = CLONE_MARKER;
+			host || (host = cloned);
 		
 			if(o[m]){
 				return cached[o[m]];
@@ -154,19 +155,19 @@ function clone(o, marked, filter, host, cached, depth){
 			marked[id] = o;
 			cached[id] = cloned;
 			
-			K.each(o, function(value, key){
-				var f;
-				
+			for(key in o){
+				value = o[key];
+
 				if(
 					// !CLONE_MARKER
-					key !== m && 
+					key !== m &&
 					
 					// pass the filter
-					(!(f = filter) || f(value, key, depth))
+					(!filter || filter(value, key, depth))
 				){
 					host[key] = clone(value, marked, filter, null, cached, depth + 1);
 				}
-			});
+			}
 			
 			// free
 			marked = cached = null;
@@ -231,21 +232,21 @@ K.each = function(obj, fn, context){
  * is able to deal with recursive object, unlike the poor Object.clone of mootools
  
  * @param {Object|Array} o
- * @param {function()} filter filter function(value, key, depth)
- * @param {Object} host
- * @return {Object} cloned object
+ * @param {?function()} filter filter function(value, key, depth)
+ * @param {Object=} receiver
+ * @return {Object} the cloned object
  
  usage:
  <code>
- var a = {}, b = {}, c; a.a = a; 
- KM.clone(a, false, b);
- c = KM.clone(a); 
+	 var a = {}, b = {}, c; a.a = a; 
+	 KM.clone(a, false, b);	// clone a to b
+	 c = KM.clone(a); 		// clone a to c
  </code>
  */
-K.clone = function(o, filter, host) {
+K.clone = function(o, filter, receiver) {
 	var marked = {},
 		m = CLONE_MARKER,
-		cloned = clone(o, marked, filter, host);
+		cloned = clone(o, marked, filter, receiver);
 	
 	// remove CLONE_MARKER
 	K.each(marked, function(v){
@@ -379,12 +380,18 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
 })(KM);
 
+
 /**
  change log:
  
+ 2011-09-17  Kael:
+ - add receiver to KM.clone to clone the list of methods into a specified object
+ - fix a bug about KM.clone that unexpectedly convert Array to Object
+ - to implement KM.clone use for-in instead of KM.each, so that we can unlink the prototype chain
+ 
  2011-09-10  Kael:
  - add KM.clone to clone an object instead of Object.clone
- 	fix the bug that mootools will exceede maximum call stack size when cloning a recursive object
+ 	fix the bug that mootools will exceed maximum call stack size when cloning a recursive object
  	
  TODO:
  A. test memleak about cached parameter in function clone on ie
