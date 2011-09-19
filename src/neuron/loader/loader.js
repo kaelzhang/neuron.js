@@ -250,7 +250,8 @@ function define(name, dependencies, factory){
 		return;
 	}
 
-	// overload and tidy arguments >>>
+	// overload and tidy arguments 
+	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	if(!K.isString(name)){  				// -> define(dependencies, factory);
 		factory = dependencies;
 		dependencies = name;
@@ -1089,19 +1090,6 @@ function getHost(uri){
 
 
 /**
- * lang
- * ---------------------------------------------------------------------------------- */
-
-function foreach(array, fn){
-	var i = 0,
-		len = array.length;
-		
-	for(; i < len; i ++){
-		fn(array[i], i);
-	}
-};
-
-/**
  * @public
  * ---------------------------------------------------------------------------------- */
 
@@ -1188,20 +1176,25 @@ K.mix(K, {
  
  milestone 4.0 ---------------------------
  
+ 2011-09-17  Kael:
+ - TODO[09-09].B
+ 
  2011-09-12  Kael:
  TODO:
  - A. split the logic about loader constructor and its instances
- - ! B. refractor dependency model with AOP
- 
+ - ? B. refractor dependency model with EventProxy
+ - C. use dev version modules if debug mode on
+ - D. throw no warnings and errors when release mode on
+ - E. add support for preloader
  
  milestone 3.0 ---------------------------
  
  2011-09-09  Kael:
  TODO:
  - ! A. add loader constructor to create more than one configuration about library base, etc.
- 	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); Checkin.define('http://...timeline.js');
+ 	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); KM.define('http://...timeline.js');
  	KM.provide('Checkin:timeline', function(K, timeline){ … });
- - B. optimize isXXX methods for scope chain
+ - √ B. optimize isXXX methods for scope chain
  - C. use native forEach methods for Array
  
  2011-09-07  Kael:
