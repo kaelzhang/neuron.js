@@ -6,6 +6,8 @@
  * @private
  * @param {boolean} ghost inner use
  	if true, setValue will ignore all flags or validators and force to writing the new value
+ 	
+ * @return {boolean} whether the new value has been successfully set
  */
 function setValue(host, attr, value, override, ghost){
 	var pass = true,
@@ -41,6 +43,8 @@ function setValue(host, attr, value, override, ghost){
 			!override && isPlainObject(value) && isPlainObject(v = attr.value) ? K.mix(v, value) : (attr.value = value);
 		}
 	}
+	
+	return pass;
 };
 
 
@@ -73,7 +77,7 @@ function createGetterSetter(host, sandbox, undef){
 	host.set = function(key, value, override){
 		var attr = sandbox[key];
 		
-		attr && setValue(this, attr, value, override);
+		return attr ? setValue(this, attr, value, override) : false;
 	};
 	
 	host.get = function(key){
