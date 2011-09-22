@@ -23,189 +23,194 @@
 /**
  * stack, config or flag for modules
  */
-var	_mods = {},			// map: identifier -> module
-	_script_map = {},	// map: url -> status
-	_config = {},
-	_last_anonymous_mod = NULL,
-	_pending_script = NULL,
-	_define_buffer_on = false,
-	
-	_allow_undefined_mod = true,
-	
-	// fix onload event on script in ie6-9
-	use_interactive = K.UA.ie < 10,
-	interactive_script = NULL,
-	
-	warning,
+var	
+
+_mods = {},			// map: identifier -> module
+_script_map = {},	// map: url -> status
+_apps_map = {},
+
+_config = {},
+_last_anonymous_mod = NULL,
+_pending_script = NULL,
+_define_buffer_on = false,
+
+_allow_undefined_mod = true,
+
+// fix onload event on script in ie6-9
+use_interactive = K.UA.ie < 10,
+interactive_script = NULL,
+
+warning,
 	
 /**
  * @const
  */
-	REGEX_FILE_TYPE = /\.(\w+)$/i,
-	REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
-	REGEX_IS_CSS = /\.css(?:$|#|\?)/i,
-	// REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
-	REGEX_DIR_MATCHER = /.*(?=\/.*$)/,
+	USER_MODULE_PREFIX = '~',
+
+REGEX_FILE_TYPE = /\.(\w+)$/i,
+REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
+REGEX_IS_CSS = /\.css(?:$|#|\?)/i,
+// REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
+REGEX_DIR_MATCHER = /.*(?=\/.*$)/,
+
+NOOP = function(){}, // no operation
+
+WIN = K.__HOST,
+DOC = WIN.document,
+HEAD = DOC.getElementsByTagName('head')[0],
+LOC = K.getLocation(),
+
+/**
+ * module status
+ * @enum {number}
+ * @const
+ */	
+STATUS = {
+	// the module's uri has been specified, 
+	DEFINING	: 1,
+
+	// the module's source uri is downloading or executing
+	LOADING		: 2,
 	
-	NOOP = function(){}, // no operation
+	// the module has been explicitly defined. 
+	DEFINED 	: 3,
 	
-	WIN = K.__HOST,
-	DOC = WIN.document,
-	HEAD = DOC.getElementsByTagName('head')[0],
-	LOC = K.getLocation(),
+	// being analynizing and requiring the module's dependencies 
+	REQUIRING 	: 4,
 	
-	/**
-	 * module status
-	 * @enum {number}
-	 * @const
-	 */	
-	STATUS = {
-		// the module's uri has been specified, 
-		DEFINING	: 1,
+	// the module's factory function are ready to be executed
+	// the module's denpendencies are set as STATUS.READY
+	READY 		: 5 //,
 	
-		// the module's source uri is downloading or executing
-		LOADING		: 2,
-		
-		// the module has been explicitly defined. 
-		DEFINED 	: 3,
-		
-		// being analynizing and requiring the module's dependencies 
-		REQUIRING 	: 4,
-		
-		// the module's factory function are ready to be executed
-		// the module's denpendencies are set as STATUS.READY
-		READY 		: 5 //,
-		
-		// the module already has exports
-		// the module has been initialized, i.e. the module's factory function has been executed
-		// ATTACHED  	: 6
-	},
+	// the module already has exports
+	// the module has been initialized, i.e. the module's factory function has been executed
+	// ATTACHED  	: 6
+},
 	
 /**
  * static resource loader
  * meta functions for assets
  * --------------------------------------------------------------------------------------------------- */
 	
-	asset = {
-		css: function(uri, callback){
-			var node = DOC.createElement('link');
-			
-			node.href = uri;
-			node.rel = 'stylesheet';
-			
-			callback && assetOnload.css(node, callback);
-			
-			// insert new CSS in the end of <head> to maintain priority
-			HEAD.appendChild(node);
-			
-			return node;
-		},
+asset = {
+	css: function(uri, callback){
+		var node = DOC.createElement('link');
 		
-		js: function(uri, callback){
-			var node = DOC.createElement('script');
-			
-			node.src = uri;
-			node.async = true;
-			
-			callback && assetOnload.js(node, callback);
-			
-			_pending_script = uri;
-			HEAD.insertBefore(node, HEAD.firstChild);
-			_pending_script = NULL;
-			
-			return node;
-		},
+		node.href = uri;
+		node.rel = 'stylesheet';
 		
-		img: function(uri, callback){
-			var node = DOC.createElement('img'),
-				delay = setTimeout;
+		callback && assetOnload.css(node, callback);
+		
+		// insert new CSS in the end of <head> to maintain priority
+		HEAD.appendChild(node);
+		
+		return node;
+	},
+	
+	js: function(uri, callback){
+		var node = DOC.createElement('script');
+		
+		node.src = uri;
+		node.async = true;
+		
+		callback && assetOnload.js(node, callback);
+		
+		_pending_script = uri;
+		HEAD.insertBefore(node, HEAD.firstChild);
+		_pending_script = NULL;
+		
+		return node;
+	},
+	
+	img: function(uri, callback){
+		var node = DOC.createElement('img'),
+			delay = setTimeout;
 
-			callback && ['load', 'abort', 'error'].forEach(function(name){
-			
-				node['on' + name] = function(){
-					node = node.onload = node.onabort = node.onerror = NULL;
-					
-					setTimeout(function(){
-						callback.call(node, name);
-					}, 0);
-				};
-			});
-	
-			node.src = uri;
-			
-			if (callback && node.complete){
-				setTimeout( function(){
-					callback.call(node, 'load');
-				}, 0);
-			}
-			
-			return node;
-		}
-	}, // end asset
-	
-	// @this {element}
-	assetOnload = {
-		js: ( DOC.createElement('script').readyState ?
-				function(node, callback){
-			    	node.onreadystatechange = function(){
-			        	var rs = node.readyState;
-			        	if (rs === 'loaded' || rs === 'complete'){
-			            	node.onreadystatechange = NULL;
-			            	
-			            	callback.call(this);
-			        	}
-			    	};
-				} 
-			:
-				function(node, callback){
-					if(callback){
-						node.addEventListener('load', callback, false);
-					}
-				}
-		),
+		callback && ['load', 'abort', 'error'].forEach(function(name){
 		
-		/**
-		 * assert.css from Frank Wang [lifesinger@gmail.com]
-		 */
-		css: ( DOC.createElement('css').attachEvent ?
-				function(node, callback){
-					node.attachEvent('onload', callback);
-				}
-			:	
-				// ECMAScript 3+
-				function CSSPoll(node, callback){
-					var is_loaded = false,
-						sheet = node['sheet'];
-						
-					if(sheet){
-						if(K.UA.webkit){
-							is_loaded = true;
-						
-						}else{
-							try {
-								if(sheet.cssRules) {
-									is_loaded = true;
-								}
-							} catch (ex) {
-								if (ex.name === 'NS_ERROR_DOM_SECURITY_ERR') {
-									is_loaded = true;
-								}
-							}
-						}
-					}
+			node['on' + name] = function(){
+				node = node.onload = node.onabort = node.onerror = NULL;
 				
-				    if (is_loaded) {
-				    	setTimeout(function(){
-				    		callback.call(node);
-				    	}, 0);
-				    }else {
-						setTimeout(function(){
-							CSSPoll(node, callback);
-						}, 10);
-				    }
-	  			}
-  		)
-  	}; // end assetOnload
+				setTimeout(function(){
+					callback.call(node, name);
+				}, 0);
+			};
+		});
+
+		node.src = uri;
+		
+		if (callback && node.complete){
+			setTimeout( function(){
+				callback.call(node, 'load');
+			}, 0);
+		}
+		
+		return node;
+	}
+}, // end asset
+
+// @this {element}
+assetOnload = {
+	js: ( DOC.createElement('script').readyState ?
+		function(node, callback){
+	    	node.onreadystatechange = function(){
+	        	var rs = node.readyState;
+	        	if (rs === 'loaded' || rs === 'complete'){
+	            	node.onreadystatechange = NULL;
+	            	
+	            	callback.call(this);
+	        	}
+	    	};
+		} :
+		
+		function(node, callback){
+			if(callback){
+				node.addEventListener('load', callback, false);
+			}
+		}
+	)
+},
+
+// assert.css from jQuery
+cssOnload = ( DOC.createElement('css').attachEvent ?
+	function(node, callback){
+		node.attachEvent('onload', callback);
+	} :
+	
+	function CSSPoll(node, callback){
+		var is_loaded = false,
+			sheet = node['sheet'];
+			
+		if(sheet){
+			if(K.UA.webkit){
+				is_loaded = true;
+			
+			}else{
+				try {
+					if(sheet.cssRules) {
+						is_loaded = true;
+					}
+				} catch (ex) {
+					if (ex.name === 'NS_ERROR_DOM_SECURITY_ERR') {
+						is_loaded = true;
+					}
+				}
+			}
+		}
+	
+	    if (is_loaded) {
+	    	setTimeout(function(){
+	    		callback.call(node);
+	    	}, 0);
+	    }else {
+			setTimeout(function(){
+				cssOnload(node, callback);
+			}, 10);
+	    }
+	}
+); // end var
+
+assetOnload.css = cssOnload;
 
 
 /**
@@ -239,12 +244,13 @@ function loadSrc(uri, callback, type){
  */
 function define(name, dependencies, factory){
 	var version, info, uri, identifier,
-		last = arguments.length - 1,
+		arg = arguments,
+		last = arg.length - 1,
 		EMPTY = '',
 		_def = _define;
 	
-	if(arguments[last] === true){			// -> define(uri1, uri2, uri3, true);
-		foreach(arguments, function(arg, i, U){
+	if(arg[last] === true){					// -> define(uri1, uri2, uri3, true);
+		foreach(arg, function(arg, i, U){
 			i < last && _def(EMPTY, U, U, U, absolutizeURI(arg));
 		});
 		return;
@@ -264,20 +270,9 @@ function define(name, dependencies, factory){
 		}
 		dependencies = undef;
 	}
-	
-	// @convention:
-	// 1. in this case, KM.define must not be called in a module file
-	// 2. in this case, if you define([name, ] dependencies, uri), dependencies will be no use
-	if(K.isString(factory)){				// -> define(alias, uri);
-		factory = absolutizeURI(factory);
-	}
-	
+		
 	// split name and version
 	if(name){
-		name = name.split('|');
-		version = name[1] || EMPTY;
-		name = name[0];
-	
 		if(arguments.length === 1){			// -> define(uri);
 			factory = absolutizeURI(name);
 			name = EMPTY;
@@ -292,7 +287,7 @@ function define(name, dependencies, factory){
 		name = EMPTY;
 	}
 	
-	_def(name, identifier, version, dependencies, factory, uri);
+	_def(name, identifier, dependencies, factory, uri);
 };
 
 
@@ -305,14 +300,13 @@ function define(name, dependencies, factory){
  			!== '': module identifier 
  		{undefined} anonymous module definition - the module has no explicit identifier
  
- * @param {string=} identifier (optional)
- * @param {number=} version version of the custom module. (optional)
+ * @param {string=} identifier (optional) module identifier
  * @param {(Array.<string>)=} dependencies
  * @param {(function(...[number])|Object|string)=} factory
  		{string} absolute! uri
- * @param {string=} uri
+ * @param {string=} uri module uri, the extra info. for define buffer
  */
-function _define(name, identifier, version, dependencies, factory, uri){
+function _define(name, identifier, dependencies, factory, uri){
 	/**	
 	 * @type {Object}
 	 * restore mod data {
@@ -327,12 +321,12 @@ function _define(name, identifier, version, dependencies, factory, uri){
 		 }
 	 */
 	var mod = {},
-		name_with_ver, ver, path_info,
-		existed, existed_ver,
-		active_script_uri,
+		path_info,
+		existed,
+		active_script_uri; //,
 		
 		// @type {boolean} whether override the existed module
-		override = true;
+		// override = true;
 	
 	/**
 	 * get module object 
@@ -346,12 +340,7 @@ function _define(name, identifier, version, dependencies, factory, uri){
 		//	isImplicit = true;
 		// }
 		
-		name.indexOf('/') !== -1 && !_define_buffer_on && warning('def a path may cause further problems:' + name);
-		
-		if(version){
-			name_with_ver = name + '|' + version;
-			mod.version = version;
-		}
+		name.indexOf('/') !== -1 && !_define_buffer_on && warning(100, name);
 	
 	// anonymous module define
 	// define a module in a module file
@@ -450,60 +439,26 @@ function _define(name, identifier, version, dependencies, factory, uri){
 			break;
 			
 		default:
+			
+			return;
+			
+			/**
 			new loaderError('Unexpected factory type for '
 				+ ( name ? 'module "' + name + '"' : 'anonymous module' ) 
 				+ ': ' + K._type(factory)
 			);
-	}
-	
-	/**
-	 * version comparison only occurs when defining a custom module
-	 * if you directly provide a library module, it will always be the latest version
-	 * but someday, you wanna use a module and its relevant old tagged version simultaniously in ONE page,
-	 * you could do something like this:
-	 
-	 <code>
-	 	KM.define('validator|1.0', 'http://kael.me/lib/form/validator.js');
-	 	KM.define('validator|2.0', 'http://kael.me/lib/2.0/form/validator.js');
-	 	
-	 	KM.provide(['form/validator', 'validator', 'validator|1.0', 'validator|2.0'], function(K, fv, v, v1, v2){
-	 		v === v2; // true
-	 		v === v1; // false
-	 		
-	 		// true, this is important, 'form/validator'(never defined) will point to a lib module. 
-	 		// for a lib module, only the uri that it concerns
-	 		fv === v1;
-	 		
-	 		v1; // validator 1.0
-	 		v2;	// validator 2.0 
-	 	});
-	 </code>
-	 */
-	if(name){
-		name_with_ver && memoizeMod(name_with_ver, mod);
-	
-		override = 
-			// module doesn't exists
-			!(existed = getMod(name)) ||
-
-			// the existed module has no version
-			!(existed_ver = existed.version) ||
-			
-			// current module is newer than the existed one
-			version && versionCompare(version, existed_ver);
+			*/
 	}
 	
 	if(uri){
 		mod.uri = uri;
 	}
 	
-	if(override){
-		name && memoizeMod(name, mod);
-		
-		if(identifier){
-			existed = getMod(identifier);
-			existed ? ( mod = K.mix(existed, mod) ) : memoizeMod(identifier, mod);
-		}
+	name && memoizeMod('~' + name, mod);
+	
+	if(identifier){
+		existed = getMod(identifier);
+		existed ? ( mod = K.mix(existed, mod) ) : memoizeMod(identifier, mod);
 	}
 	
 	// internal use
@@ -592,7 +547,7 @@ function getOrDefine(name, referenceURI, noWarn){
 		
 	if(!referenceURI){
 		// check for explicitly defined module
-		mod = getMod(name);
+		mod = getMod('~' + name);
 		warn = !noWarn && !_allow_undefined_mod && !mod;
 	}
 	
@@ -608,7 +563,7 @@ function getOrDefine(name, referenceURI, noWarn){
 		mod = _define('', undef, undef, undef, uri);
 	}
 	
-	warn && warning('module ' + name + ' has not explicitly defined!');
+	warn && warning(110, name);
 	
 	return mod;
 };
@@ -658,6 +613,7 @@ function provideOne(mod, callback, env){
 			delete mod.i;
 			
 			provideOne(mod, callback, env);
+			callback = null;
 		});
 		
 	}else if(status < STATUS.DEFINED){
@@ -684,9 +640,11 @@ function provideOne(mod, callback, env){
 				tidyModuleData(mod);
 			}
 			
-			provideOne(mod, cb, env);
+			provideOne(mod, callback, env);
 		});
 	}
+	
+	cb = null;
 };
 
 /**
@@ -970,37 +928,6 @@ function parseAllSubMatches(string, regex){
 };
 */
 
-/**
- * simply remove comments from the factory function
- * http://is.gd/qEf8pH
- 
-function removeComments(code){
-	return code
-		.replace(/(?:^|\n|\r)\s*\/\*[\s\S]*?\*\/\s*(?:\r|\n|$)/g, '\n')
-        .replace(/(?:^|\n|\r)\s*\/\/.*(?:\r|\n|$)/g, '\n');
-};
-*/
- 
-/**
- * compare two version, such as a.b.c.d
- * @returns {boolean} whether v1 is newer
- */
-function versionCompare(v1, v2){
-    v1 = v1.split('.');
-    v2 = v2.split('.');
-    
-    var len = Math.max(v1.length, v2.length) - 1,
-    	i = 0,
-    	ret = 0;
-    	
-    do{
-    	ret = ( v1[len] || 0 ) - ( v2[len] || 0 );
-    
-    }while(len -- && ret === 0);
-    
-    return ret >= 0;
-};
-
 
 /**
  * the reference uri for a certain module is the module's uri
@@ -1112,52 +1039,15 @@ K.mix(define, {
 K.mix(K, {
 	'load'			: loadSrc,			// load a static source
 	'define'		: define,			// define a module
-	'provide'		: provide,			// attach a module
-	
-	// define a package
-	// this method will be used by package builder, not developers, except testing cases
-	// '_pkg'			: definePackage,
-	// '_allMods'		: showAllModules,
-	
-	/**
-	 * @param {Object=} conf {
-		 	base: 				{string} root "path" of module library
-		 	allowUndefinedMod: 	{boolean}
-		 	enableCDN:			{boolean}
-		 	CDNHasher: 			{function}
-		 }
-	 */
-	'_loaderConfig' : function(conf){
-		var config = K.mix(_config, conf || {}),
-			page_root,
+	'provide'		: provide			// attach a module
+	'_Loader'		: {
+		prefix: function(){
 			
-			// TODO:
-			// whether should have a default value
-			base = config.base || '/';
+		},
 		
-		// exec only once
-		K['_loaderConfig'] = NOOP;
-		
-		// initialize
-		if(!config.enableCDN || !config.CDNHasher){
-			page_root = getHost(LOC.href);
-			
-			config.CDNHasher = function(){
-				return page_root;
-			};
+		config: function(cfg){
+			_config = cfg;
 		}
-		
-		config.santitizer = config.santitizer || function(s){ return s; };
-		
-		if(isAbsoluteURI(base)){
-			config.defaultDir = base;
-			config.base = getDir( K.getLocation(base).pathname );
-		}else{
-			config.defaultDir = config.CDNHasher() + base;
-			config.base = base;
-		}
-		
-		_allow_undefined_mod = config.allowUndefinedMod;
 	}
 });
 
@@ -1176,8 +1066,19 @@ K.mix(K, {
  
  milestone 4.0 ---------------------------
  
+ 2011-09-21  Kael:
+ - TODO[09-02].B 80%
+ 
+ TODO:
+ - ! A. support pre-loading env modules before anything taking effect
+ - ! B. remove API: define(alias, uri) to improve readability and definition
+ - C. replace all text of errors and warnings with error code
+ - D. treat loaderError and warning as configurations of loader
+ - X E. remove the feature that loader would not initialize the factory function if no callback method passed to KM.provide
+ - F. support base dependency for each loader app and  
+ 
  2011-09-17  Kael:
- - TODO[09-09].B
+ - complete TODO[09-09].B
  
  2011-09-12  Kael:
  TODO:
@@ -1193,7 +1094,7 @@ K.mix(K, {
  TODO:
  - ! A. add loader constructor to create more than one configuration about library base, etc.
  	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); KM.define('http://...timeline.js');
- 	KM.provide('Checkin:timeline', function(K, timeline){ … });
+ 	KM.provide('Checkin::timeline', function(K, timeline){ … });
  - √ B. optimize isXXX methods for scope chain
  - C. use native forEach methods for Array
  
@@ -1207,7 +1108,7 @@ K.mix(K, {
  
  TODO:
  - A. support non-browser environment
- - B. distinguish the identifier for anonymous module and non-anonymous module in the module cache. 
+ - √ B. distinguish the identifier for anonymous module and non-anonymous module in the module cache. 
  	if define('abc', fn), it will be saved as {'~abc': fn}, 
  	completely prevent user from defining a path as the module identifier to override lib modules
  	
