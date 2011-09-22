@@ -44,6 +44,8 @@ K._loaderConfig(K.mix({
 	
 	santitizer: santitizer,
 	
+	warning: 
+	
 	allowUndefinedMod: 	true
 }, window.__loaderConfig));
 
