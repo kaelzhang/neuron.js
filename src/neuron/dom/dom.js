@@ -8,7 +8,13 @@
 
 /**
  nodeType: 
+ ref: https://developer.mozilla.org/en/nodeType
+ 
 	Node.ELEMENT_NODE == 1
+		- document.documentElement
+		- document.body
+		- <head>
+		
 	Node.ATTRIBUTE_NODE == 2
 	Node.TEXT_NODE == 3
 	Node.CDATA_SECTION_NODE == 4
@@ -17,6 +23,8 @@
 	Node.PROCESSING_INSTRUCTION_NODE == 7
 	Node.COMMENT_NODE == 8
 	Node.DOCUMENT_NODE == 9
+		- document
+		
 	Node.DOCUMENT_TYPE_NODE == 10
 	Node.DOCUMENT_FRAGMENT_NODE == 11
 	Node.NOTATION_NODE == 12
@@ -25,18 +33,21 @@
 
 // create element
 function DOM(element, attributes){
-	var self = this;
 
-	if(self === WIN){
-		return new DOM(DOM.create(element, attributes));
+	// use ECMAScript strict
+	var self = this;
 		
-	}else{
+	if(self instanceof DOM){
 	
 		// @type {Array.<DOMElement>}
 		// @private
 		self.context = K.makeArray(element).filter(function(el){
-			return el && el.nodeType;
+			var type;
+			return el && (type = el.nodeType) && (type === 1 || type === 9);
 		});
+		
+	}else{
+		return DOM.one(element);
 	}
 };
 
@@ -143,6 +154,7 @@ DOM.all = function(selector){
 
 // temporary method for dom creation
 // will be override in module DOM/create
+/*
 DOM.create = function(fragment, attributes){
 	var element;
 	
@@ -152,6 +164,7 @@ DOM.create = function(fragment, attributes){
 	
 	return element;
 };
+*/
 
 
 extend({
@@ -167,6 +180,12 @@ extend({
 		var context = this.context;
 	
 		return K.isNumber(index) ? context[index] : context;
+	},
+
+	get: function(index){
+		var el = this.context[index];
+		
+		return new DOM( el );
 	},
 	
 	isEmpty: function(){
