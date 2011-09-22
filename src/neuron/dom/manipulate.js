@@ -132,6 +132,10 @@ function overloadDOMGetterSetter(methods, getterArgLength){
  * @return {DOMElement} native DOMElement(or the first context of DOM instance)
  */
 function getFirstContext(element){
+	if(typeof element === 'string'){
+		element = DOM.one(element);
+	}
+
 	element = (element instanceof DOM) ? element.el(0) : element;
 	return element && element.nodeType ? element : false;
 };
@@ -152,7 +156,9 @@ function disposeElement(){
 
 // @this {DOMElement}
 function emptyElement(){
-	this.childNodes.forEach(disposeElement, this); // bind this
+	array_slice.call(this.childNodes).forEach(function(child){
+		disposeElement.call(child);
+	});
 };
 
 function grabElements(element, elements, where){
@@ -167,10 +173,10 @@ function grabElements(element, elements, where){
 };
 
 
-var DOM = K.DOM,
+var array_slice = Array.prototype.slice,
 
+	DOM = K.DOM,
 	SELECTOR = DOM.SELECTOR,
-	
 	storage = DOM.__storage = {},
 	
 	// @type {Object}
