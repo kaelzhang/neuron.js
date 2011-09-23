@@ -25,40 +25,80 @@
  */
 var	
 
-_mods = {},			// map: identifier -> module
-_script_map = {},	// map: url -> status
+/**
+ * map -> identifier: module
+ */
+_mods = {},			
+
+/**
+ * map -> url: status
+ */
+_script_map = {},
+
+/**
+ * map -> namespace: config
+ */
 _apps_map = {},
 
+/**
+ * configurations:
+ * 	- CDNHasher
+ 	- santitizer
+ 	- allowUndefinedMod
+ */
 _config = {},
+
 _last_anonymous_mod = NULL,
-_pending_script = NULL,
 _define_buffer_on = false,
 
 _allow_undefined_mod = true,
 
-// fix onload event on script in ie6-9
+// fix onload event on script node in ie6-9
 use_interactive = K.UA.ie < 10,
 interactive_script = NULL,
+_pending_script = NULL,
 
+// @type {function()}
 warning,
+error,
 	
 /**
  * @const
  */
-	USER_MODULE_PREFIX = '~',
+// ex: ~myModule
+USER_MODULE_PREFIX = '~',
+APP_HOME_PREFIX = '~/',
+
+// ex: Checkin::index
+APP_NAMESPACE_SPLITTER = '::',
 
 REGEX_FILE_TYPE = /\.(\w+)$/i,
+
+/**
+ * abc 			-> js: abc.js		
+ * abc.js 		-> js: abc.js
+ * abc.css		-> css: abc.css
+ * abc#			-> js: abc
+ * abc?123		-> js: abc?123
+ * abc?123.js	-> js: abc?123.js
+ * abc?123.css	-> css: abc?123.css
+ */
 REGEX_NO_NEED_EXTENSION = /\.(?:js|css)$|#|\?/i,
 REGEX_IS_CSS = /\.css(?:$|#|\?)/i,
-// REGEX_FACTORY_DEPS_PARSER =  /\brequire\b\s*\(\s*['"]([^'"]*)/g,
+
+/**
+ * abc/def		-> abc
+ */
 REGEX_DIR_MATCHER = /.*(?=\/.*$)/,
 
-NOOP = function(){}, // no operation
+// no operation
+NOOP = function(){},
 
-WIN = K.__HOST,
-DOC = WIN.document,
+HOST = K.__HOST,
+DOC = HOST.document,
 HEAD = DOC.getElementsByTagName('head')[0],
-LOC = K.getLocation(),
+
+getLocation = K.getLocation,
 
 /**
  * module status
@@ -67,20 +107,25 @@ LOC = K.getLocation(),
  */	
 STATUS = {
 	// the module's uri has been specified, 
-	DEFINING	: 1,
+	// DI -> DEFINING
+	DI	: 1,
 
 	// the module's source uri is downloading or executing
-	LOADING		: 2,
+	// LD -> LOADING
+	LD	: 2,
 	
 	// the module has been explicitly defined. 
-	DEFINED 	: 3,
+	// DD -> DEFINED
+	DD 	: 3,
 	
-	// being analynizing and requiring the module's dependencies 
-	REQUIRING 	: 4,
+	// being analynizing and requiring the module's dependencies
+	// RQ -> REQUIRING
+	RQ 	: 4,
 	
 	// the module's factory function are ready to be executed
-	// the module's denpendencies are set as STATUS.READY
-	READY 		: 5 //,
+	// the module's denpendencies are set as STATUS.RD
+	// RD -> READY
+	RD 	: 5 //,
 	
 	// the module already has exports
 	// the module has been initialized, i.e. the module's factory function has been executed
@@ -177,7 +222,7 @@ cssOnload = ( DOC.createElement('css').attachEvent ?
 		node.attachEvent('onload', callback);
 	} :
 	
-	function CSSPoll(node, callback){
+	function(node, callback){
 		var is_loaded = false,
 			sheet = node['sheet'];
 			
@@ -228,6 +273,7 @@ function loadSrc(uri, callback, type){
 		: NULL;
 };
 
+
 /**
  * module define
  * --------------------------------------------------------------------------------------------------- */
@@ -250,7 +296,7 @@ function define(name, dependencies, factory){
 		_def = _define;
 	
 	if(arg[last] === true){					// -> define(uri1, uri2, uri3, true);
-		foreach(arg, function(arg, i, U){
+		for_each(arg, function(arg, i, U){
 			i < last && _def(EMPTY, U, U, U, absolutizeURI(arg));
 		});
 		return;
@@ -323,10 +369,7 @@ function _define(name, identifier, dependencies, factory, uri){
 	var mod = {},
 		path_info,
 		existed,
-		active_script_uri; //,
-		
-		// @type {boolean} whether override the existed module
-		// override = true;
+		active_script_uri;
 	
 	/**
 	 * get module object 
@@ -382,7 +425,7 @@ function _define(name, identifier, dependencies, factory, uri){
 	    	// if fetching interactive script failed, so fall back to normal ways
 	    	_last_anonymous_mod = mod;
 	    }else{
-	    	mod = getMod( generateModuleURI_Identifier(active_script_uri).i );
+	    	mod = getModuleByIdentifier( generateModuleURI_Identifier(active_script_uri).i );
 	    }
 	}
 	
@@ -392,7 +435,7 @@ function _define(name, identifier, dependencies, factory, uri){
 		// in this case, this module must not be defined in a module file
 		// # and the uri must be an absolute uri
 		case 'string':
-			mod.status = STATUS.DEFINING;
+			mod.status = STATUS.DI;
 			path_info = generateModuleURI_Identifier(factory);
 			uri = path_info.u;
 			identifier = path_info.i;
@@ -418,14 +461,14 @@ function _define(name, identifier, dependencies, factory, uri){
 			// }
 			
 			if(dependencies && dependencies.length){
-				mod.status = STATUS.DEFINED;
+				mod.status = STATUS.DD;
 				
 				// only if defined with factory function, can a module has dependencies
 				// TODO:
 				// enable dependencies for other types of definitions ?
-				mod.dependencies = dependencies;
+				mod.deps = dependencies;
 			}else{
-				mod.status = STATUS.READY;
+				mod.status = STATUS.RD;
 			}
 			
 			break;
@@ -439,15 +482,8 @@ function _define(name, identifier, dependencies, factory, uri){
 			break;
 			
 		default:
-			
+			// fail silently
 			return;
-			
-			/**
-			new loaderError('Unexpected factory type for '
-				+ ( name ? 'module "' + name + '"' : 'anonymous module' ) 
-				+ ': ' + K._type(factory)
-			);
-			*/
 	}
 	
 	if(uri){
@@ -457,7 +493,7 @@ function _define(name, identifier, dependencies, factory, uri){
 	name && memoizeMod('~' + name, mod);
 	
 	if(identifier){
-		existed = getMod(identifier);
+		existed = getModuleByIdentifier(identifier);
 		existed ? ( mod = K.mix(existed, mod) ) : memoizeMod(identifier, mod);
 	}
 	
@@ -482,12 +518,14 @@ function provide(dependencies, callback){
 	_provide(dependencies, callback, {});
 }; 
 
+
 /**
  * @private
  * @param {Object} env environment for cyclic detecting and generating the uri of child modules
  	{
  		r: {string} the uri that its child dependent modules referring to
  		p: {string} the uri of the parent dependent module
+ 		nc: {string} namespace of the current module
  	}
  * @param {boolean=} noCallbackArgs whether callback method need arguments, for inner use
  */
@@ -502,7 +540,6 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 			callback
 		: 
 			function(){
-				var real_arg = []
 				callback.apply(NULL, args);
 			};
 	}
@@ -510,12 +547,12 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 	if(counter === 0){
 		cb && cb();
 	}else{
-		foreach(dependencies, function(dep, i, undef){
-			var mod = getOrDefine(dep, env.r),
+		for_each(dependencies, function(dep, i, undef){
+			var mod = getOrDefine(dep, env),
 				arg_index = mod.isCSS ? 0 : ++ arg_counter;
 			
 			if(isCyclic(env, mod.uri)){
-				warning('cyclic dependency detected!');
+				warning(120);
 			}
 			
 			provideOne(mod, function(){
@@ -530,31 +567,80 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 						cb();
 					}
 				}
-			}, {r: mod.uri, p: env});
+			}, {r: mod.uri, p: env, n: mod.nc});
 		});
 	}
 };
 
+
 /**
  * @private
  * @param {string} name
- * @param {string=} referenceURI
+ * @param {object=} env
  * @param {boolean=} noWarn
  * @param {undefined=} undef
  */
-function getOrDefine(name, referenceURI, noWarn){
-	var mod, uri, warn, identifier, parent;
-		
-	if(!referenceURI){
-		// check for explicitly defined module
-		mod = getMod('~' + name);
+function getOrDefine(name, env, noWarn){
+	var referenceURI = env.r, 
+		mod, 					// module data
+		namespace, namesplit,	// app data 
+		warn,
+		DEFAULT_NC = '',
+		is_user_module;
+	
+	namesplit = name.split(APP_NAMESPACE_SPLITTER);
+	if(namesplit[1]){
+		name = namesplit[1];
+		namespace = namesplit[0];
+	}else{
+		namespace = DEFAULT_NC;
+	}
+	
+	/**
+	 * referenceURI === switch.js
+	 * 'dom'		-> base top, no user mod
+	 * 'NC::dom'	-> app top, no user mod
+	 * '~/dom'		-> current app top, no user mod
+	 * '/dom'		-> absolute
+	 * './dom'		-> relative
+	 * '../dom'		-> relative
+	
+	 * referenceURI === undefined
+	 * 'dom'		-> top, user mod or lib mod
+	 * 'NC::dom'	-> top, no user mod
+	 */
+	 
+	// Only if the there's no referenceURI, may the module be a user mod
+	// define a user module with a namespace is forbidden
+	// ex: 'dom'
+	if(!referenceURI && !namespace){
+		// get user module
+		mod = getModuleByIdentifier(USER_MODULE_PREFIX + name);
 		warn = !noWarn && !_allow_undefined_mod && !mod;
+		is_user_module = !!mod;
 	}
 	
 	if(!mod){
-		uri = moduleNameToURI(name, referenceURI);
+		var uri, identifier, 
+		app, home_prefix = APP_HOME_PREFIX;
+	
+		// in Checkin::index
+		// ex: '~/dom' -> name: 'dom', namespace: 'Checkin'
+		if(name.indexOf(home_prefix)){
+			name = name.substr(home_prefix.length);
+			namespace = env.n || DEFAULT_NC;
+		}
+		
+		app = _apps_map[namespace];
+		
+		// app must be defined, any configuration error will throw
+		if(!app){
+			error(540, namespace);
+		}
+	
+		uri = moduleNameToURI(name, app.base);
 		identifier = generateModuleURI_Identifier(uri).i
-		mod = getMod(identifier);
+		mod = getModuleByIdentifier(identifier);
 		warn = warn && !mod;
 	}
 	
@@ -563,10 +649,15 @@ function getOrDefine(name, referenceURI, noWarn){
 		mod = _define('', undef, undef, undef, uri);
 	}
 	
+	if(!is_user_module){
+		mod.nc = namespace;
+	}
+	
 	warn && warning(110, name);
 	
 	return mod;
 };
+
 
 /**
  * provideOne(for inner use)
@@ -576,7 +667,7 @@ function provideOne(mod, callback, env){
 	var status = mod.status, parent;
 	
 	function cb(){
-		var ready = STATUS.READY;
+		var ready = STATUS.RD;
 		if(mod.status < ready){
 			mod.status = ready;
 		}
@@ -585,19 +676,19 @@ function provideOne(mod, callback, env){
 	};
 	
 	// provideOne method won't initialize the module or execute the factory function
-	if(mod.exports || status === STATUS.READY){
+	if(mod.exports || status === STATUS.RD){
 		return callback();
 		
-	}else if(status === STATUS.REQUIRING){
+	}else if(status === STATUS.RQ){
 		mod.pending.push(cb);
 	
-	}else if(status === STATUS.DEFINED){
-		mod.status = STATUS.REQUIRING;
+	}else if(status === STATUS.DD){
+		mod.status = STATUS.RQ;
 		mod.pending = [cb];
 		
-		_provide(mod.dependencies, function(){
+		_provide(mod.deps, function(){
 			var m = mod;
-			foreach(m.pending, function(c){
+			for_each(m.pending, function(c){
 				c();
 			});
 			
@@ -607,7 +698,7 @@ function provideOne(mod, callback, env){
 	
 	// package definition may occurs much later than module, so we check the existence when providing a module
 	// if a package exists, and module file has not been loaded.
-	}else if(mod.npc && (parent = getMod(getParentModuleIdentifier(mod.i))) ){
+	}else if(mod.npc && (parent = getModuleByIdentifier(getParentModuleIdentifier(mod.i))) ){
 		return loadModuleSrc(parent, function(){
 			delete mod.npc;
 			delete mod.i;
@@ -616,20 +707,20 @@ function provideOne(mod, callback, env){
 			callback = null;
 		});
 		
-	}else if(status < STATUS.DEFINED){
+	}else if(status < STATUS.DD){
 		loadModuleSrc(mod, function(){
 			var last = _last_anonymous_mod;
 			
 			// CSS dependency
 			if(mod.isCSS){
-				mod.status = STATUS.READY;
+				mod.status = STATUS.RD;
 				delete mod.uri;
 			
 			// handle with anonymous module define
-			}else if(last && mod.status === STATUS.LOADING){
+			}else if(last && mod.status === STATUS.LD){
 				
-				if(last.status < STATUS.DEFINED){
-					new loaderError('mod with no factory detected in a module file');
+				if(last.status < STATUS.DD){
+					loaderError(510);
 				}
 				
 				K.mix(mod, last);
@@ -647,6 +738,7 @@ function provideOne(mod, callback, env){
 	cb = null;
 };
 
+
 /**
  * specify the environment for every id that required in the current module
  * including
@@ -654,11 +746,10 @@ function provideOne(mod, callback, env){
  */
 function createRequire(envMod){
 	function require(id){
-		var mod = getOrDefine(id, envMod.uri, true);
-		
-		// if(!mod || mod.status < STATUS.READY){
-		// 	loaderError('Module "' + id + '" is not defined, or has not attached');
-		// }
+		var mod = getOrDefine(id, {
+			r: envMod.uri,
+			n: envMod.nc
+		}, true);
 		
 		return mod.exports || generateExports(mod);
 	};
@@ -672,10 +763,11 @@ function generateExports(mod){
 		factory,
 		ret;
 		
-	if(mod.status === STATUS.READY && K.isFunction(factory = mod.factory) ){
+	if(mod.status === STATUS.RD && K.isFunction(factory = mod.factory) ){
 	
 		// to keep the object mod away from the executing context of factory,
-		// use factory instead mod.factory
+		// use factory instead mod.factory,
+		// preventing user from fetching runtime data by 'this'
 		ret = factory(K, createRequire(mod), exports);
 		
 		if(ret){
@@ -695,14 +787,15 @@ function tidyModuleData(mod){
 		// free
 		// however, to keep the code clean, 
 		// tidy the data of a module at the final stage instead of at each intermediate process
-		if(mod.dependencies){
-			mod.dependencies.length = 0;
-			delete mod.dependencies;
+		if(mod.deps){
+			mod.deps.length = 0;
+			delete mod.deps;
 		}
 		
 		delete mod.factory;
 		delete mod.uri;
 		delete mod.status;
+		delete mod.nc;
 	}
 	
 	return mod;
@@ -753,12 +846,12 @@ function loadModuleSrc(mod, callback){
         
     if (!script) {
         script = _script_map[uri] = [callback];
-        mod.status = STATUS.LOADING;
+        mod.status = STATUS.LD;
         
         loadScript(uri, function(){
         	var m = mod;
         		
-        	foreach(script, function(s){
+        	for_each(script, function(s){
         		s.call(m);
         	});
         	
@@ -785,24 +878,22 @@ function moduleNameToURI(name, referenceURI){
 	return absolutizeURI(name + (no_need_extension ? '' : '.js'), referenceURI);
 };
 
-// memoize the result of analysisModuleName 
-// analysisModuleName = K._memoize(analysisModuleName);
 
 /**
  * generate the path of a module, the path will be the identifier to determine whether a module is loaded or defined
  * @param {string} uri the absolute uri of a module. no error detection
  */
-function generateModuleURI_Identifier(uri){
+var generateModuleURI_Identifier = K._memoize( function(uri){
 	var path_for_uri = uri,
 		path_for_identifier = uri,
 		EMPTY = '',
 		cfg = _config;
 
 	if(cfg.enableCDN){
-		var loc = K.getLocation(uri),
+		var loc = getLocation(uri),
 			path = loc.pathname + loc.search;
 			
-		path_for_uri = _config.CDNHasher(path) + path;
+		path_for_uri = cfg.CDNHasher(path) + path;
 		path_for_identifier = loc.pathname;
 	}
 
@@ -813,9 +904,7 @@ function generateModuleURI_Identifier(uri){
 		// identifier
 		i: cfg.santitizer(path_for_identifier)
 	};
-};
-
-generateModuleURI_Identifier = K._memoize(generateModuleURI_Identifier);
+});
 
 
 function getParentModuleIdentifier(identifier){
@@ -829,7 +918,7 @@ function getParentModuleIdentifier(identifier){
  * get a module by id
  * @param {string=} version
  */
-function getMod(id, version){
+function getModuleByIdentifier(id, version){
 	return _mods[id + (version ? '|' + version : '' )];
 };
 
@@ -843,16 +932,6 @@ function isCyclic(env, uri) {
 	return uri && ( env.r === uri || env.p && isCyclic(env.p, uri) );
 };
 
-
-/**
- * parse dependencies from a factory function
- */
-
-/*
-function parseDependencies(factory){
-	return parseAllSubMatches(removeComments(String(factory)), REGEX_FACTORY_DEPS_PARSER);
-};
-*/
 
 function getInteractiveScript() {
 	if (interactive_script && interactive_script.readyState === 'interactive') {
@@ -882,79 +961,36 @@ function isDebugMode(){
 
 
 /**
- * custom error type
- * @constructor
- */
-function loaderError(message){
-	throw {
-		message:	message,
-		toString:	function(){
-			return 'KM Loader: ' + message;
-		}
-	};
-};
-
-warning = WIN.console && console.warn ?
-	function(msg){
-		console.warn('KM Loader: ' + msg);
-	}
-:	NOOP;
-
-
-/**
  * data santitizer
  * --------------------------------------------------------------------------------------------------- */
-
-/**
- * parse all sub matches of a string according to a regular expression
- */
- 
-/*
-function parseAllSubMatches(string, regex){
-	var ret = [], match;
-	
-	if(regex.global){
-		while(match = regex.exec(string)){
-			ret = ret.concat( match.slice(1) );
-		}
-	}else{
-		match = string.match(regex);
-		if(match){
-			ret = match.slice(1);
-		}
-	}
-	
-	return ret;
-};
-*/
-
 
 /**
  * the reference uri for a certain module is the module's uri
  * @param {string=} referenceURI
  */
 function absolutizeURI(uri, referenceURI){
-	referenceURI = referenceURI || _config.defaultDir;
+	var ret, base = _config.base;
 
-	var ret;
+	referenceURI = referenceURI || base;
 	
 	// absolute uri
     if (isAbsoluteURI(uri)) {
     	ret = uri;
-    }
+    	
     // relative uri
-    else if (uri.indexOf('./') === 0 || uri.indexOf('../') === 0) {
+    }else if (uri.indexOf('./') === 0 || uri.indexOf('../') === 0) {
 		ret = realpath(getDir(referenceURI) + uri);
-    }
+    
     // root uri
-    else if (uri.indexOf('/') === 0) {
+    // ? never use it
+    }else if (uri.indexOf('/') === 0) {
+    
     	// for inner use, referenceURI is always a absolute uri
     	// so we can get its host
     	ret = getHost(referenceURI) + uri;
-    }
     
-    else {
-    	ret = _config.defaultDir + uri;
+    }else {
+    	ret = base + uri;
     }
 	
 	return ret;	
@@ -982,10 +1018,10 @@ function realpath(path) {
 	var old = path.split('/'),
 		ret = [];
 		
-	foreach(old, function(part, i){
+	for_each(old, function(part, i){
 		if (part === '..') {
 			if (ret.length === 0) {
-			  	new loaderError('Invalid module path: ' + path);
+			  	loaderError(530);
 			}
 			ret.pop();
 			
@@ -1017,6 +1053,22 @@ function getHost(uri){
 
 
 /**
+ * lang
+ * ---------------------------------------------------------------------------------- */
+
+// use for_each instead of foreach
+// prevent compiler(google closure) from treating 'foreach' as a reserved word
+function for_each(array, fn){
+	var i = 0,
+		len = array.length;
+
+	for(; i < len; i ++){
+		fn(array[i], i);
+	}
+};
+
+
+/**
  * @public
  * ---------------------------------------------------------------------------------- */
 
@@ -1029,264 +1081,88 @@ K.mix(define, {
 		_define_buffer_on = false;
 	},
 	
-	'__mods': _mods //,
-	
-	// 'alias': function(){}
+	'__mods': _mods
 });
+
+
+function prefix(name, config){
+	var map = _apps_map;
+
+	if(!map[name]){
+		map[name] = config;
+	}
+};
+
 
 // use extend method to add public methods, 
 // so that google closure will NOT minify Object properties
-K.mix(K, {
-	'load'			: loadSrc,			// load a static source
-	'define'		: define,			// define a module
-	'provide'		: provide			// attach a module
-	'_Loader'		: {
-		prefix: function(){
-			
-		},
+
+// load a static source
+K['load'] 		= loadSrc;
+
+// define a module
+K['define'] 	= define;
+
+// attach a module
+K['provide'] 	= provide;
+
+// semi-private
+// will be destroyed after configuration
+K._Loader		= {
+	'prefix': prefix,
+	
+	// no fault tolerance
+	'config': function(cfg){
+		_config = cfg;
 		
-		config: function(cfg){
-			_config = cfg;
-		}
+		Loader['config'] = NOOP;
+	},
+	
+	'getCfg': function(){
+		return _config;
 	}
-});
+};
+
+
+// part of the initialization
+;(function(){
+
+// get data-base
+// for current business requirement, 
+// data-base is the module version service
+var scripts = HEAD.getElementsByTagName('script'),
+	i = 0,
+	script,
+	len = scripts.length,
+	main,
+	
+	base_require = (_base_req[''] = {});
+	
+for(; i < len; i ++){
+	script = scripts[i];
+	main = script.getAttribute('data-base');
+	if(main){
+		base_require.push(main);
+		break;
+	}
+}
+
+	
+/*
+ debug module is not ready yet
+
+var href = K.getLocation().href,
+	index_marker = href.indexOf('#!/');
+	
+if(index_marker !== -1 && href.indexOf('debug/on') > index_marker){
+	base_require.push('debug');
+	K._debugOn();
+}
+*/
+
+
+})();
+
 
 
 })(KM, null);
-
-/**
- * change log:
- 
- marks:
- - √ complete
- - # deprecated scheme
- - X discarded scheme
- - * unimportant
- - ! important and of high priority
- 
- milestone 4.0 ---------------------------
- 
- 2011-09-21  Kael:
- - TODO[09-02].B 80%
- 
- TODO:
- - ! A. support pre-loading env modules before anything taking effect
- - ! B. remove API: define(alias, uri) to improve readability and definition
- - C. replace all text of errors and warnings with error code
- - D. treat loaderError and warning as configurations of loader
- - X E. remove the feature that loader would not initialize the factory function if no callback method passed to KM.provide
- - F. support base dependency for each loader app and  
- 
- 2011-09-17  Kael:
- - complete TODO[09-09].B
- 
- 2011-09-12  Kael:
- TODO:
- - A. split the logic about loader constructor and its instances
- - ? B. refractor dependency model with EventProxy
- - C. use dev version modules if debug mode on
- - D. throw no warnings and errors when release mode on
- - E. add support for preloader
- 
- milestone 3.0 ---------------------------
- 
- 2011-09-09  Kael:
- TODO:
- - ! A. add loader constructor to create more than one configuration about library base, etc.
- 	Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); KM.define('http://...timeline.js');
- 	KM.provide('Checkin::timeline', function(K, timeline){ … });
- - √ B. optimize isXXX methods for scope chain
- - C. use native forEach methods for Array
- 
- 2011-09-07  Kael:
- TODO:
- - A. [issue] if pkg module is directly defined by define.on(), automatically providing called by a child module will fail
- - B. support fake package module definition: define.on(); define('dom', fn); define.off(); define('dom/dimension', fn)
- 
- 2011-09-02  Kael:
- - remove parseDependencies methods, all reps must be explicitly declared.
- 
- TODO:
- - A. support non-browser environment
- - √ B. distinguish the identifier for anonymous module and non-anonymous module in the module cache. 
- 	if define('abc', fn), it will be saved as {'~abc': fn}, 
- 	completely prevent user from defining a path as the module identifier to override lib modules
- 	
- - C. support the module which could automatically initialize itself when provided
- - D. split the logic of module management and script manipulation, 
- 	so that loader could work on non-browser environment, such as NodeJS
- 
- 2011-09-01  Kael:
- TODO:
- - A. prevent duplicate defining a certain module
- 
- 2011-08-20  Kael:
- TODO:
- - A. improve stability if user provide a package file
- 
- 2011-08-03  Kael:
- - TODO[08-01].[A,E]
- 
- 2011-08-02  Kael:
- - refractor package definition. 
- 	if a relevant package is detected, neuron loader will try to fetch the package instead of the module file itself.
- 	if the id of module A is the parent dirname of module B, A will be treated as the pkg of B 
- - TODO[06-15].[C,I,J,K]
- 
- 2011-08-01  Kael:
- - add config.santitizer, remove path_cleaner out from loader
- 
- TODO:
- - √ A. failure control, if loading the package fails, fallback to normal way to provide modules
- - B. tidy parameters in _define
- - C. lazily manage package association
- - D*. detect if it fails to load a module file
- - √ E. [issue] if define a package after the definition of a certain module, the package association fails
- 
- 2011-06-10  Kael:
- - TODO[06-15].[E, A]
- 
- milestone 2.0 ---------------------------
- 
- 2011-06-07  Kael:
- - fix a bug on regular expressions which could not properly remove the decorators(version and min) from uris
- - fix a bug when defining a module with different versions
- - change the way to determine the implicity of a module which will only relevant to the <name> param; remove the isImplicit flag from the '_define' method
- 
- 2011-05-15  Kael:
- - fix a bug, in ie6 on virtual machine, that the module could not load successfully, 
- 	if onload event fired during insertion of the script node(interactive script fetched) 
- 	
- TODO:
- - √ A. new API: KM.define(uri1, uri1, uri3, uri4, true) to define several module uris
- - B. add loader constructor to create more instances of loader
- 	- 1. association of several instances of loader
- 	- 2. comm definition
- - √ C. package detection: 
- 	- 1. if the uri of a package is already defined, then its children modules will associated with it even before the source file of the package is fetched
- 	# - 2. automatically detect the providing frequency within the modules in one package, in order to automatically use packages
- 
- // never add this feature into module loader
- - X # D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
- - √ E. switcher to turn on define buffer, so we can load module files in traditional ways(directly use <script> to load external files)
- - F. tidy the logic about param factory of string type and param uri in _define method
- - ? G. nested define-provide structure. you can use KM.provide inside the factory function of KM.define to dynamically declare dependencies
- 
- // ._allMods removed
- - X # H. complete ._allMods method
- - √ I. abolish KM._pkg
- - √ J. prevent defining a non-anonymous module with a name like pathname
- - √ ? K. explode the cache object of modules
- - L. optimize the calling chain of define and getOrdefine, use less step to get module idenfitier.
- 
- 2011-05-14  Kael:
- - TODO[05-08].A
- - add more annotations
- 
- 2011-05-12  Kael:
- - TODO[05-08].B
- 
- 2011-05-10  Kael:
- - add assetOnload.css
- - add support for css dependencies: TODO[04-17].H
- - add support for resources with search query
- - if module uri has a location.search and location.hash, it wont be fulfilled width the extension of '.js' any more
- 
- TODO:
- - A?. default configurations
- - B?. Loader Class support: to create various loader instances with different configurations
- 
- 2011-05-08  Kael:
- - tidy the status data of modules
- - modules defined in package files will be treated as library modules
- 
- TODO:
- - √ A. [issue] when no cdn, package modules don't properly saved in {_mods}: 
- 		the module identifier should not be a pathname but absolute uri
- - √ B. tidy the logic about configuration, such as managing default settings, checking.
- 
- 2011-05-07  Kael:
- - fix a syntax exception when defining anonymous module in ie6-9
- 
- 2011-05-05  Kael:
- - TODO[04-27].A
- 
- 2011-04-27  Kael:
- - fix a bug of implicit module definition
- - fix a bug that the callback isn't able to be called when the module is already being providing
- 
- TODO:
- - √ A. [issue] implicitly defined module dont properly saved as absolute uri
- 
- 2011-04-26  Kael:
- - TODO[04-17].C
- 
- 2011-04-25  Kael: 95%!
- - optimize call chain. create private methods with no type-detecting for arguments
- - module path will include location.search
- - config.enableCDN will affect module path
- - support modules with multiple versions
- - complete cdn auto delivery TODO[04-17].E2
- - remove analysisModuleName method
- - complete all functionalities relevant with package definition TODO[05-17].G
- 
- 2011-04-24  Kael:
- - require and define methods in inline docs and in module file will be different
- - TODO[04-17]['A', 'D', 'E1', 'B']
- - adjust annotations for advanced mode of closure compiler
- 
- TODO:
- - √ optimize and cache dependent modules and module infos
- - test TODO[04-17].B
- 
- 2011-04-20  Kael:
- - redesign the realization of modules, 
-   distinguish the 2 different ways to define a module - on page or in a module file
- - redesign require method
- - add config for CDNHasher
- 
- milestone 1.0 ---------------------------
- 
- 2011-04-19  Kael:
- - # remove lazy quantifier from the regexp to match comments
- 	choose lazy match afterwards
- 
- 2011-04-18  Kael:
- - remove comments before parsing dependencies from factory function
- 
- 2011-04-17  Kael:
- - memoize the result of analysisModuleName
- - santitize the logic of providing a module, split provideOne off from provide
- - complete basic work flow
- 
- TODO:
- - √ B. cyclic dependency detection
- - √ A. reference path for the inside of each module
- - √ C. fix scriptonload on ie6-9
- - √ D. tidy module data, remove no-more unnecessary properties
- - √ E. enable the support to cdn
- 		- √ avoid duplicate request
- 		- √ cdn frequency adjustion ?
- - # F. detecting potential invocation errors
- 		- change 'exports' object
- 		- define non-anonymous module in a module file
- - √ H. support css dependencies
- - √ Z. debug-release mode switching
- 		- debug: 
- 			- √ maintain the script nodes which attached into the document
- 			- X print dependency tree
- 		- release: 
- 			- √ remove script nodes
- 			- √ warn, if a module's uri has not been specified
- - √ G. package association
- 
- 2011-04-10  Kael:
- - create main function of provide
- - add a new api, KM.pkg to define a package
- 
- 2011-04-05  Kael:
- - create main function of define
- 
- 2011-04-03  Kael: basic api design
- 
- */

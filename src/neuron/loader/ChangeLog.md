@@ -11,9 +11,17 @@ marks:
 milestone 4.0
 ===
 
+2011-09-23  Kael:
+	- complete TODO[09-09].A  
+	- complete TODO[09-12].A
+	- complete TODO[09-21].[B,C,D]
+
 2011-09-22  Kael:
 	- loader will have no fault tolarence on initialization configuration
-	- 
+
+TODO:
+	- A. split implementations of browser and non-browser environment
+	- B. optimize absolutizeURI method, put the last condition ahead. speed test
 
 2011-09-21  Kael:
 	- TODO[09-02].B 80%
@@ -22,31 +30,29 @@ TODO:
 	- ! A. support pre-loading env modules before anything taking effect
 	- ! B. remove API: define(alias, uri) to improve readability and definition
 	- C. replace all text of errors and warnings with error code
-	- D. treat loaderError and warning as configurations of loader
+	- √ D. treat loaderError and warning as configurations of loader
 	- X E. remove the feature that loader would not initialize the factory function if no callback method passed to KM.provide
-	- F. support base dependency for each loader app and
 
 2011-09-17  Kael:
 	- complete TODO[09-09].B
 
 2011-09-12  Kael:
 TODO:
-	- A. split the logic about loader constructor and its instances
+	- √ A. split the logic about loader constructor and its instances
 	- ? B. refractor dependency model with EventProxy
 	- C. use dev version modules if debug mode on
-	- D. throw no warnings and errors when release mode on
-	- E. add support for preloader
+	- √ D. throw no warnings and errors when release mode on
 
 milestone 3.0
 ===
 
 2011-09-09  Kael:
 TODO:
-	- ! A. add loader constructor to create more than one configuration about library base, etc.
+	- √ ! A. add loader constructor to create more than one configuration about library base, etc.
 		Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); KM.define('http://...timeline.js');
 		KM.provide('Checkin::timeline', function(K, timeline){ … });
 	- √ B. optimize isXXX methods for scope chain
-	- C. use native forEach methods for Array
+	- X C. use native forEach methods for Array: too much arguments
 
 2011-09-07  Kael:
 TODO:
