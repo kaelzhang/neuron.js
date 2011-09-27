@@ -25,6 +25,16 @@ K = host[K] = host && host[K] || {};
 
 
 /**
+ * host of global runtime environment
+ 
+ * @type {Object}
+ 	exports, if NodeJS
+	DOMWindow, if browsers 	
+ */
+K.__HOST = host = K.__HOST || host;
+
+
+/**
  * isXXX method - basic javascript type detecting
  
  * NEVER use KM._type to test for a certain type in your javascript for business, 
@@ -39,7 +49,13 @@ K = host[K] = host && host[K] || {};
 K._type = function(){
 	
 	function _type(obj){
-		return type_map[ toString.call(obj) ];
+		
+		/** 
+		 * if include in type_map, return the type
+		 * for undefined/null, use obj === undefined / obj === null instead
+		 * for host objects, always return 'object'
+		 */
+		return type_map[ toString.call(obj) ] || obj && 'object';
 	};
 
 	var toString = Object.prototype.toString,
@@ -65,7 +81,15 @@ K._type = function(){
 		}(name_lower);
 	}
 	
-	
+	/**
+	 * whether an object is created by '{}', new Object, or new myClass()
+	 * to put the first priority on performance, just make a simple method to detect plainObject.
+	 * so it's imprecise in many aspects, which will fail with:
+	 * 	- DOMElement
+	 *	- location
+	 * 	- window
+	 *	- other obtrusive changes of global objects which is forbidden
+	 */
 	_K.isPlainObject = function(obj){
 		return obj && _K.isObject(obj) && 'isPrototypeOf' in obj;
 	};
@@ -85,16 +109,6 @@ K._type = function(){
 
 	return _type;
 }();
-
-
-/**
- * host of global runtime environment
- 
- * @type {Object}
- 	exports, if NodeJS
-	DOMWindow, if browsers 	
- */
-K.__HOST = K.__HOST || host;
 
 
 /**
