@@ -11,6 +11,9 @@ marks:
 milestone 4.0
 ===
 
+2011-09-27  Kael:
+	- complete configuration for the new APIs of Loader
+
 2011-09-23  Kael:
 	- complete TODO[09-09].A  
 	- complete TODO[09-12].A
@@ -22,6 +25,7 @@ milestone 4.0
 TODO:
 	- A. split implementations of browser and non-browser environment
 	- B. optimize absolutizeURI method, put the last condition ahead. speed test
+	- C. optimize mod.uri, if enableCDN is true, mod.uri will no more be applied CDNHasher
 
 2011-09-21  Kael:
 	- TODO[09-02].B 80%
