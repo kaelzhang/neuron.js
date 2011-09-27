@@ -40,7 +40,7 @@ function checkRelatedTarget(event){
 			related = related.parentNode;
 		}
 
-		if ( related !== this ) {
+		if ( related !== el ) {
 			// handle event if we actually just moused on to a non sub-element
 			return true;
 		}

@@ -12,14 +12,29 @@ KM.DOM.feature = function(){
 	var DOC = document,
 		defaultView = DOC.defaultView,
 		element_test = DOC.createElement('div'),
+		input_test,
+		
 		ADD_EVENT_LISTENER = 'addEventListener',
 		REMOVE_EVENT_LISTENER = 'removeEventListener',
+		
+		create_element_accepts_html,
+		escapeQuotes,
 		
 		a;
 	
 	element_test.innerHTML = ' <link/><table></table><a href="/a" style="top:1px;float:left;opacity:.7;">a</a><input type="checkbox"/>';
 	
 	a = elementsByTagName(element_test, 'a')[0];
+	
+	try {
+		input_test = DOC.createElement('<input name=x>');
+		create_element_accepts_html = input_test.name == 'x';
+		
+		escapeQuotes = function(html){
+			return ('' + html).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+		};
+		
+	} catch(e){}
 	
 	return {
 		
@@ -39,7 +54,34 @@ KM.DOM.feature = function(){
 		
 		removeEvent: element_test[REMOVE_EVENT_LISTENER] ?
 			  function(el, type, fn){ el[REMOVE_EVENT_LISTENER](type, fn, false); }
-			: function(el, type, fn){ el.detachEvent('on' + type, fn); }
+			: function(el, type, fn){ el.detachEvent('on' + type, fn); },
+			
+		fragment: create_element_accepts_html ? 
+		
+			// Fix for readonly name and type properties in IE < 8
+			function(tag, attrs){
+				var name = attrs.name,
+					type = attrs.type;
+				
+				tag = '<' + tag;
+				if (name){
+					tag += ' name="' + escapeQuotes(name) + '"';
+				}
+				
+				if (type){
+					tag += ' type="' + escapeQuotes(type) + '"';
+				}
+				
+				tag += '>';
+				
+				delete attrs.name;
+				delete attrs.type;
+				
+			} : 
+			
+			function(tag){
+				return tag;
+			}
 			
 	};
 
