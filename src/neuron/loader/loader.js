@@ -1,4 +1,4 @@
-/*! Neuron core:loader v4.1.1 * All rights reserved * author i@kael.me */
+/*! Neuron core:loader v4.1.5 * All rights reserved * author i@kael.me */
 
 ; // fix layout of UglifyJS
 
@@ -61,6 +61,8 @@ _pending_script = NULL,
 // @type {function()}
 warning,
 error,
+
+Loader,
 	
 /**
  * @const
@@ -621,8 +623,8 @@ function getOrDefine(name, env, noWarn){
 	}
 	
 	if(!mod){
-		var uri, identifier, 
-		app, home_prefix = APP_HOME_PREFIX;
+		var uri, identifier, app, 
+			home_prefix = APP_HOME_PREFIX;
 	
 		// in Checkin::index
 		// ex: '~/dom' -> name: 'dom', namespace: 'Checkin'
@@ -650,6 +652,8 @@ function getOrDefine(name, env, noWarn){
 	}
 	
 	if(!is_user_module){
+	
+		// store namespace to mod object
 		mod.nc = namespace;
 	}
 	
@@ -934,7 +938,9 @@ function isCyclic(env, uri) {
 
 
 function getInteractiveScript() {
-	if (interactive_script && interactive_script.readyState === 'interactive') {
+	var INTERACTIVE = 'interactive';
+
+	if (interactive_script && interactive_script.readyState === INTERACTIVE) {
 		return interactive_script;
 	}
 	
@@ -946,8 +952,8 @@ function getInteractiveScript() {
 	
 	for (; i < len; i++) {
 		script = scripts[i];
-			if (script.readyState === 'interactive') {
-			return (interactive_script = script);
+			if (script.readyState === INTERACTIVE) {
+			return interactive_script = script;
 		}
 	}
 	
@@ -1098,22 +1104,25 @@ function prefix(name, config){
 // so that google closure will NOT minify Object properties
 
 // load a static source
-K['load'] 		= loadSrc;
+K['load'] = loadSrc;
 
 // define a module
-K['define'] 	= define;
+K['define'] = define;
 
 // attach a module
-K['provide'] 	= provide;
+K['provide'] = provide;
 
 // semi-private
 // will be destroyed after configuration
-K._Loader		= {
+K._Loader = Loader = {
 	'prefix': prefix,
 	
 	// no fault tolerance
 	'config': function(cfg){
 		_config = cfg;
+		
+		warning = cfg.warning;
+		error = cfg.error;
 		
 		Loader['config'] = NOOP;
 	},
@@ -1126,6 +1135,8 @@ K._Loader		= {
 
 // part of the initialization
 ;(function(){
+
+return;
 
 // get data-base
 // for current business requirement, 
@@ -1150,7 +1161,9 @@ for(; i < len; i ++){
 	
 /*
  debug module is not ready yet
-
+ */
+ 
+// you can set current href as http://abc.com/#!/debug/on to switch debug-mode on
 var href = K.getLocation().href,
 	index_marker = href.indexOf('#!/');
 	
@@ -1158,7 +1171,6 @@ if(index_marker !== -1 && href.indexOf('debug/on') > index_marker){
 	base_require.push('debug');
 	K._debugOn();
 }
-*/
 
 
 })();
