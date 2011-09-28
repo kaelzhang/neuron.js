@@ -48,14 +48,14 @@ K.__HOST = host = K.__HOST || host;
  * ------------------------------------------------------------------------------------ */
 K._type = function(){
 	
-	function _type(obj){
+	function _type(obj, strict){
 		
 		/** 
 		 * if include in type_map, return the type
 		 * for undefined/null, use obj === undefined / obj === null instead
 		 * for host objects, always return 'object'
 		 */
-		return type_map[ toString.call(obj) ] || obj && 'object';
+		return type_map[ toString.call(obj) ] || !strict && obj && 'object' || undef;
 	};
 
 	var toString = Object.prototype.toString,
@@ -103,6 +103,7 @@ K._type = function(){
 	 * http://es5.github.com/#x15.1.2.4
 	 * https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/isNaN
 	 */
+	// TODO
 	// _K.isNaN = function(obj){
 	//	return obj == null || !/\d/.test( obj ) || isNaN( obj );
 	// };

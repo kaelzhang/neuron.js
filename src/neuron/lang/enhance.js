@@ -53,7 +53,9 @@ function overloadSetter(fn){
 	// for the sake of potential chain-style invocations
 	return function(key, value){
 	
-		// this must
+		// @this
+		// for instance method, 'this' is the context
+		// for normal functions, if use ecma strict, 'this' is undefined
 		var self = this;
 	
 		// set(0, 123); -> { '0': 123 }
@@ -84,6 +86,20 @@ function memoizeMethod(fn){
 	
 		return (arg in stack) ? stack[arg] : (stack[arg] = fn.apply(null, arguments));
 	}
+};
+
+
+/**
+ * clone an object as a pure array, and ignore non-number properties
+ */
+function clonePureArray(array){
+	var ret = [], i = array.length;
+		
+	while(i --){
+		ret[i] = array[i];
+	}
+	
+	return ret;
 };
 
 
@@ -132,7 +148,7 @@ function clone(o, marked, filter, host, cached, depth){
 	cached || (cached = {});
 	depth || (depth = 1);
 	
-	switch(K._type(o)){
+	switch(K._type(o, true)){
 		case 'date':
 			return new Date(o);
 			
@@ -159,6 +175,9 @@ function clone(o, marked, filter, host, cached, depth){
 			// cache the tidy clone of the marked object
 			cached[id] = host;
 			
+			// always use for-in loop
+			// 'coz on many situation, o is not a pure object or array, eg.
+			// var a = []; a.a = 123;
 			for(key in o){
 				value = o[key];
 				
@@ -312,14 +331,50 @@ K.delay = function(fn, delay, isInterval){
 	return ret;
 };
 
+ 
 // TODO:
-// improve stability
-K.makeArray = function(obj){
-	return K.isArray(obj) ? obj : [obj];
+// test the collection type on IE
+K.makeArray = function(array){
+	var ret,
+		NULL = null;
+	
+	// if is already an array, do nothing to improve performance	
+	if(K.isArray(array)){
+		ret = array;
+		
+	// false -> [false]
+	// undefined -> K.makeArray() -> []
+	}else if(array != NULL){
+		if(
+			!K.isObject(array) ||
+			
+			// window also has 'length' property
+			'setInterval' in array
+		){
+			ret = [array];
+			
+		}else{
+		
+			// ie fails on collections and <select>.options (refers to <select>)
+			// use array clone instead of Array.prototype.slice
+			ret = clonePureArray(array);
+		}
+	}
+
+	return ret || [];
 };
 
+
 K.toQueryString = function(obj, splitter){
-	return K.isObject(obj) ? toQueryString(obj, splitter) : obj;
+	return K.isObject(obj) ? 
+		toQueryString( K.clone(obj, function(v, k, d){
+		
+				// copy depth: 1
+				return d < 2;
+			}
+		), splitter) : 
+		
+		obj;
 };
 
 
@@ -388,6 +443,9 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
 /**
  change log:
+ 
+ 2011-09-28  Kael:
+ - improve the stability of KM.makeArray and KM.toQueryString
  
  2011-09-17  Kael:
  - add receiver to KM.clone to clone the list of methods into a specified object
