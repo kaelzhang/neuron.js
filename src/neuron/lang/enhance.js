@@ -121,12 +121,12 @@ function toQueryString(obj, splitter){
  * @param {mixed} o
  * @param {Object} marked stack for marked objects
  * @param {function=} filter
- * @param {Object=} host, for both inner and external use
+ * @param {Object=} host, the receiver of the cloned menbers, for both inner and external use
  * @param {Object=} cached stack for cached objects which are the clones of marked objects
  * @param {number=} depth, for inner use
  */
 function clone(o, marked, filter, host, cached, depth){
-	var cloned = {}, m, id, key, value;
+	var m, id, key, value;
 	
 	// internal use
 	cached || (cached = {});
@@ -137,12 +137,12 @@ function clone(o, marked, filter, host, cached, depth){
 			return new Date(o);
 			
 		case 'array':
-			cloned = [];
+			host = [];
 			
 		// object, plainObject, instance
 		case 'object':
 			m = CLONE_MARKER;
-			host || (host = cloned);
+			host || (host = {});
 		
 			if(o[m]){
 				return cached[o[m]];
@@ -152,17 +152,21 @@ function clone(o, marked, filter, host, cached, depth){
 			
 			// mark copied object to prevent duplicately cloning
 			o[m] = id;
+			
+			// store the marked object in order to santitize the markers after cloning
 			marked[id] = o;
-			cached[id] = cloned;
+			
+			// cache the tidy clone of the marked object
+			cached[id] = host;
 			
 			for(key in o){
 				value = o[key];
-
+				
 				if(
 					// !CLONE_MARKER
 					key !== m &&
 					
-					// pass the filter
+					// checking filter
 					(!filter || filter(value, key, depth))
 				){
 					host[key] = clone(value, marked, filter, null, cached, depth + 1);
@@ -205,6 +209,7 @@ K.guid = function(){
 
 /**
  * forEach method for Object
+ * which will not look for the prototype chain
  */
 K.each = function(obj, fn, context){
 	if(K.isFunction(fn)){
@@ -228,7 +233,7 @@ K.each = function(obj, fn, context){
  
 
 /**
- * deep clone an object, excluding properties on prototype chain.
+ * deep clone an object, including properties on prototype chain.()
  * is able to deal with recursive object, unlike the poor Object.clone of mootools
  
  * @param {Object|Array} o
@@ -238,7 +243,7 @@ K.each = function(obj, fn, context){
  
  usage:
  <code>
-	 var a = {}, b = {}, c; a.a = a; 
+	 var a = {}, b = {b: 1}, c; a.a = a; 
 	 KM.clone(a, false, b);	// clone a to b
 	 c = KM.clone(a); 		// clone a to c
  </code>
@@ -253,7 +258,7 @@ K.clone = function(o, filter, receiver) {
 		try{
 			delete v[m];
 		}catch(e){
-			K.log('del CLONE_MARKER err', e);
+			K.log('del clone m err', e);
 			v[m] = undefined;
 		}
 	});
