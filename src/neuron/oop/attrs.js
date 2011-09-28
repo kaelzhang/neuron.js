@@ -147,6 +147,9 @@ K.Class.EXTS.attrs = {
 
 
 /**
+ 2011-09-20  Kael:
+ - attr setter will return true or false to tell whether the new value has been successfully set
+
  2011-09-17  Kael:
  - TODO[09-15].A
 

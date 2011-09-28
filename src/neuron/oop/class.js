@@ -11,7 +11,7 @@
 ;(function(K){
 
 /**
- javascript reserved words
+ relevant javascript reserved words:
 
  extends
  implements
@@ -27,7 +27,6 @@
  
  Extends: 
 	X - destructor methods will be collected
-	- 
 
 var Class = KM.Class,
 
