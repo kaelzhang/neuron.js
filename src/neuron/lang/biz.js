@@ -16,7 +16,7 @@ function setData(data){
 };
 
 function cloneData(){
-	return K.merge({}, stored_data);
+	return K.clone(stored_data);
 };
 
 function getData(name){
