@@ -9,4 +9,5 @@ readme.html
 combo
 reference
 old
-*.php
+# *.php
+index.php
