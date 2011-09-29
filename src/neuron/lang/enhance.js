@@ -418,9 +418,12 @@ K._onceBefore = function(real_method_name, init_method_name, belong){
 		
 	belong[real_method_name] = function(){
 		init.call(this);
-		real.apply(this, arguments);
+		
+		var ret = real.apply(this, arguments);
 		
 		belong[real_method_name] = real;
+		
+		return ret;
 	};
 	
 	// delete belong[init_method_name];
