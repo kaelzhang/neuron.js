@@ -117,12 +117,34 @@ function setAttrs(class_, attr){
 };
 
 
+/**
+ * unlink the reference to the prototype and maintain prototype chain
+ */
+function resetPrototypeChain(instance){
+	var value, key, type, reset;
+	
+	for(key in instance){
+		value = instance[key];
+		type = K._type(value, true);
+		
+		if(type === 'object'){
+			var F = function(){};
+			F.prototype = value;
+			reset = resetPrototypeChain(new F);
+		}else{
+			reset = K.clone(value);
+		}
+		
+		instance[key] = reset;
+	}
+	
+	return instance;
+};
+
 
 var INITIALIZE 		= 'initialize',
 	__DESTRUCT 		= '__destruct',
 	__SUPER_CLASS 	= '__super',
-	// __PRIVATE 		= '__private',
-	// PRIVATE_MEMBERS = [__SUPER_CLASS, __DESTRUCT],
 	EXTS			= {};
 
 
@@ -156,12 +178,14 @@ function _Class(base, proto){
 		var self = this,
 			init = initialize;
 		
-		// clean and unlink the reference relationship between the instance and its prototype
-		// K.clone(self, isPublicMember, self);
-		K.clone(self, false, self);
+		/**
+		 * clean and unlink the reference relationship of the first depth between the instance and its prototype
+		 * and maintain prototype chain
+		 */
+		resetPrototypeChain(self);
 	
 		if(init){
-			return initialize.apply(this, arguments);
+			return init.apply(self, arguments);
 		}
 	};
 	
