@@ -36,7 +36,8 @@ function setValue(host, attr, value, override, ghost){
 		setter = getMethod(host, attr, SETTER);
 		
 		if(setter){
-			setter.call(host, value); 
+			// if setter is defined, always set the return value of setter to attr.value
+			attr.value = setter.call(host, value);
 		}else{
 		
 			// mix object values
