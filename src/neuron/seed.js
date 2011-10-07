@@ -1,6 +1,7 @@
 /*! 
  * @preserve
- * Neuron Framwork & Library * author i@kael.me 
+ * Neuron Framwork & Library * author i@kael.me
+ * build %buildtime%
  */
 
 "use strict";
@@ -50,7 +51,8 @@ K._type = function(){
 	
 	function _type(obj, strict){
 		
-		/** 
+		/**
+		 * no strict:
 		 * if include in type_map, return the type
 		 * for undefined/null, use obj === undefined / obj === null instead
 		 * for host objects, always return 'object'
@@ -74,11 +76,22 @@ K._type = function(){
 		
 		type_map[ '[object ' + name + ']' ] = name_lower;
 		
-		_K['is' + name] = function(nl){
-			return function(o){
-				return _type(o) === nl;
-			}
-		}(name_lower);
+		_K['is' + name] = name === 'Object' ?
+		
+			// Object.prototype.toString in IE:
+			// undefined 	-> [object Object]
+			// null 		-> [object Object]
+			function(nl){
+				return function(o){
+					return !!o && _type(o) === nl;
+				}
+			}(name_lower)
+		:
+			function(nl){
+				return function(o){
+					return _type(o) === nl;
+				}
+			}(name_lower);
 	}
 	
 	/**
@@ -91,7 +104,11 @@ K._type = function(){
 	 *	- other obtrusive changes of global objects which is forbidden
 	 */
 	_K.isPlainObject = function(obj){
-		return obj && _K.isObject(obj) && 'isPrototypeOf' in obj;
+	
+		// undefined 	-> false
+		// null			-> false
+		// !! to make sure the returnValue is always a boolean
+		return !!obj && _K.isObject(obj) && 'isPrototypeOf' in obj;
 	};
 	
 	/**
