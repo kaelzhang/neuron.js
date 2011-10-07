@@ -95,12 +95,10 @@ K._type = function(){
 	}
 	
 	/**
-	 * whether an object is created by '{}', new Object, or new myClass()
+	 * whether an object is created by '{}', new Object(), or new myClass() [1]
 	 * to put the first priority on performance, just make a simple method to detect plainObject.
-	 * so it's imprecise in many aspects, which will fail with:
-	 * 	- DOMElement
+	 * so it's imprecise in many aspects, which might fail with:
 	 *	- location
-	 * 	- window
 	 *	- other obtrusive changes of global objects which is forbidden
 	 */
 	_K.isPlainObject = function(obj){
@@ -145,10 +143,27 @@ K._Cfg = {};
 );
 
 
-
 /**
  
+ --------------------------------------------------
+ [1] KM.isPlainObject will accept instances created by new myClass, but some libs don't, such as jQuery of whose strategy is dangerous, I thought.
+ for example:
+ suppose somebody, a newbie, wrote something like this:
+ <code>
+ 	Object.prototype.destroyTheWorld = true;
+ 	KM.isPlainObject({}); // true
+ </code>
+ 
+ if use jQuery: (at least up to 1.6.4)
+ <code>
+ 	jQuery.isPlainObject({}); // false
+ </code>
+ 
+ 
  milestone 2.0 ------------------------------------
+ 
+ 2011-10-04  Kael:
+ - fix a but that KM.isObject(undefined/null) -> true in IE
  
  2011-09-04  Kael:
  - add global support for CommonJS(NodeJS)
@@ -156,7 +171,7 @@ K._Cfg = {};
  Global TODO:
  A. make Slick Selector Engine slim
  B. remove setAttribute opponent from Slick
- C. move inline script for header searching back after the header
+ C. [business] move inline script for header searching after the HTML structure of header
  
  2011-09-02  Kael:
  - rename core.js as seed.js

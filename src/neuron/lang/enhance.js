@@ -142,21 +142,27 @@ function toQueryString(obj, splitter){
  * @param {number=} depth, for inner use
  */
 function clone(o, marked, filter, host, cached, depth){
-	var m, id, key, value;
+	var m, id, key, value, is_array;
 	
 	// internal use
 	cached || (cached = {});
 	depth || (depth = 1);
 	
 	switch(K._type(o, true)){
-		case 'date':
-			return new Date(o);
-			
 		case 'array':
 			host = [];
+			is_array = true;
+			// |
+			// v
 			
 		// object, plainObject, instance
 		case 'object':
+			if( !( K.isPlainObject(o) || is_array) ){
+			
+				// in IE, when o is undefined or null or host objects
+				return o;
+			}
+		
 			m = CLONE_MARKER;
 			host || (host = {});
 		
@@ -196,6 +202,17 @@ function clone(o, marked, filter, host, cached, depth){
 			marked = cached = null;
 		
 			return host;
+			
+		case 'date':
+			return new Date(o);
+		
+		// ECMAScript5+
+		
+		// in ECMAScript3 standard, regexps can't be cloned, because
+		// a regular expression literal returns a shared object each time the literal is evaluated
+		// such as Firefox(<4), but former IEs betray the rules
+		case 'regexp':
+			return new RegExp(o);
 			
 		// number, boolean, element(DOMElement, HTMLWindow, HTMLDocument, HTMLhtmlElement), collections
 		// arguments?
@@ -287,11 +304,6 @@ K.clone = function(o, filter, receiver) {
 	return cloned;
 };
 
-// random: Number.random, // Number.random
-
-// K.now = function(){
-//	return + new Date;
-// };
 
 /**
  * bind 'this' pointer for a function
@@ -310,6 +322,7 @@ K.bind = function(fn, bind){
 	:
 		(bind[fn] = bind_method(bind[fn], bind));
 };
+
 
 /**
  * method to encapsulate the delayed function
@@ -366,9 +379,10 @@ K.makeArray = function(array){
 
 
 K.toQueryString = function(obj, splitter){
-	return K.isObject(obj) ? 
+	return K.isObject(obj) ?
 		toQueryString( K.clone(obj, function(v, k, d){
-		
+				
+				// abandon deep object members
 				// copy depth: 1
 				return d < 2;
 			}
@@ -446,6 +460,10 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
 /**
  change log:
+ 
+ 2011-10-04  Kael:
+ - fix a bug about KM.clone that IE fails when cloning a NodeList or DOMElement
+ - KM.clone will clone RegExp Objects
  
  2011-09-28  Kael:
  - improve the stability of KM.makeArray and KM.toQueryString
