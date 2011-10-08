@@ -10,8 +10,9 @@
 		<path path="loader/loader.js" />
 		<path path="loader/instances.js" />
 		
-		<path path="class/class.js" />
-		<path path="class/tools.js" />
+		<path path="oop/class.js" />
+		<path path="oop/attrs.js" />
+		<path path="oop/super.js" />
 		
 		<path path="selector/finder.js" />
 		<path path="selector/parser.js" />
@@ -28,7 +29,6 @@
 		<path path="dom/manipulate.js" />
 		<path path="dom/create.js" />
 		<path path="dom/domready.js" />
-		<path path="dom/fix.js" />
 		<path path="dom/clean.js" />
 	</package>
 </project>
