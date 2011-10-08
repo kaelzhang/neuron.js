@@ -42,8 +42,6 @@ function fire_domready(){
 
 function bind_domready(){
 
-	// X <del>use conditional function declaration, poll_scroll will not be declared in firefox, that it will save memory</del>
-	// use strict
 	function poll_scroll(){
 		try {
 			// doScroll technique by Diego Perini http://javascript.nwbox.com/IEContentLoaded/

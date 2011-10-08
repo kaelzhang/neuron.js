@@ -209,9 +209,16 @@ WIN.$ = K.DOM = DOM;
 
 // create basic methods and hooks
 DOM.__storage = {};
-DOM.methods = {};
+
+// method for extension
 DOM.extend = extend;
+
+// adaptor of selector engine
 DOM.SELECTOR = SELECTOR;
+
+// traits
+DOM.methods = {};
+
 
 
 })(KM, null);

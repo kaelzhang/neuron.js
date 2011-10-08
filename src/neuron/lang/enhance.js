@@ -136,7 +136,12 @@ function toQueryString(obj, splitter){
  * @private
  * @param {mixed} o
  * @param {Object} marked stack for marked objects
- * @param {function=} filter
+ * @param {function()=} filter filter function
+ 		function(value, key, depth)
+ 			value {mixed}
+ 			key {string}
+ 			depth {number} using depth parameter with a recursive object is DANGEROUS[1], make sure you really wanna do this
+ 			
  * @param {Object=} host, the receiver of the cloned menbers, for both inner and external use
  * @param {Object=} cached stack for cached objects which are the clones of marked objects
  * @param {number=} depth, for inner use
@@ -210,7 +215,7 @@ function clone(o, marked, filter, host, cached, depth){
 		
 		// in ECMAScript3 standard, regexps can't be cloned, because
 		// a regular expression literal returns a shared object each time the literal is evaluated
-		// such as Firefox(<4), but former IEs betray the rules
+		// such as Firefox(<4), but IEs betray the rules of ECMA3
 		case 'regexp':
 			return new RegExp(o);
 			
@@ -459,6 +464,9 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
 
 /**
+ ---------------------------------------------------------
+ [1] why dangerous? you could find out.
+ 
  change log:
  
  2011-10-04  Kael:

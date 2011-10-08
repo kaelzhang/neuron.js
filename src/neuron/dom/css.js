@@ -34,11 +34,6 @@ function filterCSSType(name){
 };
 
 
-// function santitizeColorData(color){
-//	return [];
-// };
-
-
 // from jQuery
 function swap(element, styles, callback){
 	var old = {}, name;
@@ -118,8 +113,8 @@ var DOM = K.DOM,
 	REGEX_HYHPENATE = /[A-Z]/g,
 	REGEX_OPACITY = /opacity=([^)]*)/,
 	REGEX_FILTER_ALPHA = /alpha\([^)]*\)/i,
-	REGEX_NUM_PX = /^-?\d+(?:px)?$/i,
-	REGEX_NUM = /^-?\d/,
+	// REGEX_NUM_PX = /^-?\d+(?:px)?$/i,
+	// REGEX_NUM = /^-?\d+/,
 	
 	// 0.123
 	// .23
@@ -143,9 +138,16 @@ var DOM = K.DOM,
 	CSS_methods = {},
 	
 	CSS_CAN_BE_SINGLE_PX = {
+		// offset
 		left: TRUE, top: TRUE, bottom: TRUE, right: TRUE,
+		
+		// size
 		width: TRUE, height: TRUE, maxWidth: TRUE, maxHeight: TRUE, minWidth: TRUE, minHeight: TRUE, textIndent: TRUE,
+		
+		// text
 		fontSize: TRUE, letterSpacing: TRUE, lineHeight: TRUE,
+		
+		// box
 		margin: TRUE, padding: TRUE, borderWidth: TRUE
 	};
 
