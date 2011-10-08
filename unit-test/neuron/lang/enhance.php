@@ -7,7 +7,7 @@
 var r = + new Date;
 </script>
 </head>
-<body><div class="neuron"><h1 class="title">Neuron: lang/enhance <span>unit testing cases</span></h1></div>
+<body><div class="neuron"><h1 class="title">Neuron: lang/enhance <span>unit test cases</span></h1></div>
 
 <p></p>
 <p></p>
