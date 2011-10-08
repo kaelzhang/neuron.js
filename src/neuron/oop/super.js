@@ -22,7 +22,9 @@ KM.Class.EXTS['super'] = {
 				
 				// temporarily change the current superclass as parent superclass
 				self[__SUPER_CLASS] = superX2;
-				ret = superMethod.apply(self, args);
+				
+				// for IE, args mustn't be undefined but an array
+				ret = superMethod.apply(self, args || []);
 				
 				// then return it back
 				self[__SUPER_CLASS] = super_;
