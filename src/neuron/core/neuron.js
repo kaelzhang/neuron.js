@@ -1,11 +1,7 @@
 ;(function(K){
 
-var console = K.__HOST.console;
-
-
-// if debug mode is off, KM.log will do nothing
-K.log = console ? console.log : function(){};
-
+// by default, KM.log will do nothing
+K.log = function(){};
 
 /**
  * Creates specified namespace if it doesn't exist 
