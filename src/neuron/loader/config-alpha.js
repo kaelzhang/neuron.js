@@ -128,7 +128,8 @@ K.app = function(name, config){
 	prefix(name, config);
 };
 
-prefix('', {
+
+prefix('~', {
 	base: '/src/'
 });
 

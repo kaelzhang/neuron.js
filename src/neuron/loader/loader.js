@@ -588,8 +588,11 @@ function getOrDefine(name, env, noWarn){
 		mod, 					// module data
 		namespace, namesplit,	// app data 
 		warn,
-		DEFAULT_NC = '',
-		is_user_module;
+		
+		// if key is '', objects will be treated as arrays
+		DEFAULT_NC = '~',
+		is_user_module,
+		is_home_module;
 	
 	namesplit = name.split(APP_NAMESPACE_SPLITTER);
 	if(namesplit[1]){
@@ -627,11 +630,19 @@ function getOrDefine(name, env, noWarn){
 		var uri, identifier, app, 
 			home_prefix = APP_HOME_PREFIX;
 	
-		// in Checkin::index
-		// ex: '~/dom' -> name: 'dom', namespace: 'Checkin'
-		if(name.indexOf(home_prefix) === 0){
+		// in [Checkin::index].js
+		// ex: '~/dom' 
+		//     -> name: 'dom', namespace: 'Checkin'
+		if(is_home_module = name.indexOf(home_prefix) === 0){
 			name = name.substr(home_prefix.length);
-			namespace = env.n || DEFAULT_NC;
+		}
+		
+		// these below are treated as modules within the same namespace
+		// '~/dom'
+		// './dom'
+		// '../dom'
+		if(is_home_module || name.indexOf('./') === 0 || name.indexOf('../') === 0){
+			namespace = env.n;
 		}
 		
 		app = _apps_map[namespace];
@@ -641,7 +652,7 @@ function getOrDefine(name, env, noWarn){
 			error(540, namespace);
 		}
 	
-		uri = moduleNameToURI(name, app.base);
+		uri = moduleNameToURI(name, referenceURI, app.base);
 		identifier = generateModuleURI_Identifier(uri).i
 		mod = getModuleByIdentifier(identifier);
 		warn = warn && !mod;
@@ -703,7 +714,13 @@ function provideOne(mod, callback, env){
 	
 	// package definition may occurs much later than module, so we check the existence when providing a module
 	// if a package exists, and module file has not been loaded.
-	}else if(mod.npc && (parent = getModuleByIdentifier(getParentModuleIdentifier(mod.i))) ){
+	}else if(
+		mod.npc && 
+		(parent = getModuleByIdentifier( getParentModuleIdentifier(mod.i) )) && 
+		
+		// prevent fake packages from being defined again
+		parent.status < STATUS.DD 
+	){
 		return loadModuleSrc(parent, function(){
 			delete mod.npc;
 			delete mod.i;
@@ -740,6 +757,7 @@ function provideOne(mod, callback, env){
 		});
 	}
 	
+	// free
 	cb = null;
 };
 
@@ -860,14 +878,14 @@ function loadModuleSrc(mod, callback){
         		s.call(m);
         	});
         	
+        	// TODO:
+        	// test
         	// _script_map[uri] = LOADED;
         	
         	// the logic of loader ensures that, once a uri completes loading, it will never be requested 
         	// delete _script_map[uri];
         }, mod.isCSS ? 'css' : 'js');
         
-    // } else if (script === LOADED) {
-    //    callback.call(mod);  
     } else {
         script.push(callback);
     }	
@@ -878,9 +896,9 @@ function loadModuleSrc(mod, callback){
  * module tools
  * --------------------------------------------------------------------------------------------------- */
 
-function moduleNameToURI(name, referenceURI){
+function moduleNameToURI(name, referenceURI, base){
 	var no_need_extension = REGEX_NO_NEED_EXTENSION.test(name);
-	return absolutizeURI(name + (no_need_extension ? '' : '.js'), referenceURI);
+	return absolutizeURI(name + (no_need_extension ? '' : '.js'), referenceURI, base);
 };
 
 
@@ -975,10 +993,11 @@ function isDebugMode(){
  * the reference uri for a certain module is the module's uri
  * @param {string=} referenceURI
  */
-function absolutizeURI(uri, referenceURI){
+function absolutizeURI(uri, referenceURI, base){
 	var ret;
-
-	referenceURI = referenceURI || _config.base;
+	
+	base || (base = _config.base);
+	referenceURI || (referenceURI = base);
 	
 	// absolute uri
     if (isAbsoluteURI(uri)) {
@@ -996,7 +1015,7 @@ function absolutizeURI(uri, referenceURI){
     	// ret = getHost(referenceURI) + uri;
     
     }else {
-    	ret = referenceURI + uri;
+    	ret = base + uri;
     }
 	
 	return ret;
