@@ -488,6 +488,7 @@ function _define(name, identifier, dependencies, factory, uri){
 			return;
 	}
 	
+	// define buffer or string type factory
 	if(uri){
 		mod.uri = uri;
 	}
@@ -628,7 +629,7 @@ function getOrDefine(name, env, noWarn){
 	
 		// in Checkin::index
 		// ex: '~/dom' -> name: 'dom', namespace: 'Checkin'
-		if(name.indexOf(home_prefix)){
+		if(name.indexOf(home_prefix) === 0){
 			name = name.substr(home_prefix.length);
 			namespace = env.n || DEFAULT_NC;
 		}
@@ -648,7 +649,7 @@ function getOrDefine(name, env, noWarn){
 	
 	if(!mod){
 		// always define the module url when providing
-		mod = _define('', undef, undef, undef, uri);
+		mod = _define('', undef, undef, uri);
 	}
 	
 	if(!is_user_module){
@@ -975,9 +976,9 @@ function isDebugMode(){
  * @param {string=} referenceURI
  */
 function absolutizeURI(uri, referenceURI){
-	var ret, base = _config.base;
+	var ret;
 
-	referenceURI = referenceURI || base;
+	referenceURI = referenceURI || _config.base;
 	
 	// absolute uri
     if (isAbsoluteURI(uri)) {
@@ -988,18 +989,17 @@ function absolutizeURI(uri, referenceURI){
 		ret = realpath(getDir(referenceURI) + uri);
     
     // root uri
-    // ? never use it
-    }else if (uri.indexOf('/') === 0) {
-    
+    // never use it
+    // }else if (uri.indexOf('/') === 0) {
     	// for inner use, referenceURI is always a absolute uri
     	// so we can get its host
-    	ret = getHost(referenceURI) + uri;
+    	// ret = getHost(referenceURI) + uri;
     
     }else {
-    	ret = base + uri;
+    	ret = referenceURI + uri;
     }
 	
-	return ret;	
+	return ret;
 };
 
 
@@ -1015,7 +1015,7 @@ function isAbsoluteURI(uri){
  * realpath('a/b/../c') ==> 'a/c'
  * realpath('a/b/./c') ==> '/a/b/c'
  * realpath('a/b/c/') ==> 'a/b/c/'
- * # realpath('a//b/c') ==> 'a/b/c' ?
+ * #X realpath('a//b/c') ==> 'a/b/c' ?
  * realpath('a//b/c') ==> 'a//b/c'   - for 'a//b/c' is a valid uri
  * by Frank Wang [lifesinger@gmail.com] 
      -> http://jsperf.com/memoize
@@ -1052,10 +1052,10 @@ function getDir(uri){
 };
 
 
-function getHost(uri){
-	var m = uri.match(/^\w+:\/\/[^/]+/); /* coda highlight error */ 
-	return m[0];
-};
+// function getHost(uri){
+//	var m = uri.match(/^\w+:\/\/[^/]+/); /* coda highlight error */ 
+//	return m[0];
+// };
 
 
 /**
