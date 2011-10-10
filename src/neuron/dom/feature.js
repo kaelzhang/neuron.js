@@ -42,7 +42,7 @@ KM.DOM.feature = function(){
 		
 		// in some old webkit(including chrome), a.style.opacity === '0,7', so use regexp instead
 		// ref: 
-		opacity: /^0.7$/.test(a.style.opacity),
+		opacity: /^0?.7$/.test(a.style.opacity),
 		
 		compactEl: !DOC.compatMode || DOC.compatMode === 'CSS1Compat' ?
 			  function(doc){ return doc.documentElement; } 
