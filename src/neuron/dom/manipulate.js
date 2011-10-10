@@ -103,8 +103,11 @@ function overloadDOMGetterSetter(methods, getterArgLength){
 			// value() || get('value')
 			( no_getter_args || K.isString(first_arg) )
 		){
-			// getter always only get the value of the first element
-			return methods.GET.call(context[0], first_arg)
+			// getter always only deal with the value of the first element
+			var first = context[0];
+			
+			// if no element found, return null
+			return first ? methods.GET.call(context[0], first_arg) : null;
 		
 		// setter
 		}else if(
