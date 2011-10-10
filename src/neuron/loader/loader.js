@@ -1133,7 +1133,7 @@ K['provide'] = provide;
 
 // semi-private
 // will be destroyed after configuration
-K._Loader = Loader = {
+K.__Loader = Loader = {
 	'prefix': prefix,
 	
 	// no fault tolerance
@@ -1144,56 +1144,8 @@ K._Loader = Loader = {
 		error = cfg.error;
 		
 		Loader['config'] = NOOP;
-	},
-	
-	'getCfg': function(){
-		return _config;
 	}
 };
-
-
-// part of the initialization
-;(function(){
-
-return;
-
-// get data-base
-// for current business requirement, 
-// data-base is the module version service
-var scripts = HEAD.getElementsByTagName('script'),
-	i = 0,
-	script,
-	len = scripts.length,
-	main,
-	
-	base_require = (_base_req[''] = {});
-	
-for(; i < len; i ++){
-	script = scripts[i];
-	main = script.getAttribute('data-base');
-	if(main){
-		base_require.push(main);
-		break;
-	}
-}
-
-	
-/*
- debug module is not ready yet
- */
- 
-// you can set current href as http://abc.com/#!/debug/on to switch debug-mode on
-var href = K.getLocation().href,
-	index_marker = href.indexOf('#!/');
-	
-if(index_marker !== -1 && href.indexOf('debug/on') > index_marker){
-	base_require.push('debug');
-	K._debugOn();
-}
-
-
-})();
-
 
 
 })(KM, null);
