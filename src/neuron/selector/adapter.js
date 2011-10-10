@@ -36,6 +36,7 @@
 
 // Store Slick in closure
 var S = Slick;
+
  
 // adapter for Slick
 K.__SELECTOR = {

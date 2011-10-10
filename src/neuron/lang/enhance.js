@@ -364,6 +364,7 @@ K.makeArray = function(array){
 	// undefined -> K.makeArray() -> []
 	}else if(array != NULL){
 		if(
+			array.length == null ||
 			!K.isObject(array) ||
 			
 			// window also has 'length' property
@@ -468,6 +469,9 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
  [1] why dangerous? you could find out.
  
  change log:
+ 
+ 2011-10-10  Kael:
+ - fix a bug about KM.makeArray who fails to deal with document
  
  2011-10-04  Kael:
  - fix a bug about KM.clone that IE fails when cloning a NodeList or DOMElement
