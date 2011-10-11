@@ -1,6 +1,20 @@
 <script>
 // fake jasmine
 
+if(!window.console){
+	var console = {
+		log: log
+	}
+}
+
+function log(msg){
+	var div = document.createElement('div');
+	
+	div.innerHTML = msg;
+		
+	body.appendChild(div);
+};
+
 function describe(des, cb){
 	var old_des = _des;
 
@@ -35,19 +49,22 @@ function expect(result){
 
 
 function _expect(result, exp){
-	var div = document.createElement('div');
-	
 	des = _des;
-	
-	div.innerHTML = result === exp ? 
-		des + ' >> <span style="color:green">passed</span>' :
-		des + ' >> <span style="color:red">failed</span>: expect ' + result + ' to be ' + exp;
-		
-	body.appendChild(div);
+
+	log(
+		result === exp ? 
+			des + ' >> <span style="color:green">passed</span>' :
+			des + ' >> <span style="color:red">failed</span>: expect ' + result + ' to be ' + exp
+	);
 };
 
+function runs(fn){
+	fn();
+};
 
-var _des = '', it = describe,
+var _des = '', 
+	it = describe,
+	waitsFor = runs,
 	body = document.getElementsByTagName('body')[0];
 
 
