@@ -179,7 +179,7 @@ currentCSS = feature.computedStyle ?
 	
 /*
 	
-	// convert all other unit to pixel
+	// convert all other units to pixel
 	function(element, property){
 		var left,
 			ret = element.currentStyle && element.currentStyle[ property ],
@@ -249,6 +249,22 @@ if(!feature.opacity){
 		}
 	};
 }
+
+
+/**
+ * never use .css('margin'), but .css('margin-*') instead, as well as:
+ * border, border-color, border-width, padding, etc.
+ 
+ * it's useless that you get values like '100px 20px 10px 5px' which is hardly operated.
+ 
+ * for a better control structure, do something like below:
+ <code>
+	if( parseInt($('#container').css('margin-right')) === 100){
+		// code...
+	}
+ </code>
+ */
+// CSS_methods.margin
 
 
 // When an element is temporarily not displayed, the height and width might be 0
@@ -329,6 +345,7 @@ DOM.methods.css = {
  	http://lists.w3.org/Archives/Public/www-style/2009Oct/0060.html
  	http://msdn.microsoft.com/en-us/library/ms535889(v=vs.85).aspx
  - B. computedStyle for width and height
+ - C. test margin-right
  
  2011-09-09  Kael:
  - complete basic css methods
