@@ -1,4 +1,4 @@
-/*! Neuron core:loader v4.1.5 * All rights reserved * author i@kael.me */
+/*! Neuron core:loader v4.2.1 * All rights reserved * author i@kael.me */
 
 ; // fix layout of UglifyJS
 
@@ -467,7 +467,7 @@ function _define(name, identifier, dependencies, factory, uri){
 				
 				// only if defined with factory function, can a module has dependencies
 				// TODO:
-				// enable dependencies for other types of definitions ?
+				// X enable dependencies for other types of definitions
 				mod.deps = dependencies;
 			}else{
 				mod.status = STATUS.RD;
@@ -493,7 +493,13 @@ function _define(name, identifier, dependencies, factory, uri){
 		mod.uri = uri;
 	}
 	
-	name && memoizeMod('~' + name, mod);
+	// give user module a special prefix
+	// so that user could never override the library module by defining with:
+	// <code:pseudo>
+	// 		KM.define('http://myurl', function(){…});
+	// </code>
+	// it will be saved as '~http://myurl';
+	name && memoizeMod(USER_MODULE_PREFIX + name, mod);
 	
 	if(identifier){
 		existed = getModuleByIdentifier(identifier);
@@ -570,7 +576,7 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 						cb();
 					}
 				}
-			}, {r: mod.uri, p: env, n: mod.nc});
+			}, {r: mod.uri, p: env, n: mod.ns});
 		});
 	}
 };
@@ -590,7 +596,7 @@ function getOrDefine(name, env, noWarn){
 		warn,
 		
 		// if key is '', objects will be treated as arrays
-		DEFAULT_NC = '~',
+		DEFAULT_NS = '~',
 		is_user_module,
 		is_home_module;
 	
@@ -599,7 +605,7 @@ function getOrDefine(name, env, noWarn){
 		name = namesplit[1];
 		namespace = namesplit[0];
 	}else{
-		namespace = DEFAULT_NC;
+		namespace = DEFAULT_NS;
 	}
 	
 	/**
@@ -641,7 +647,7 @@ function getOrDefine(name, env, noWarn){
 		// '~/dom'
 		// './dom'
 		// '../dom'
-		if(is_home_module || name.indexOf('./') === 0 || name.indexOf('../') === 0){
+		if(is_home_module || isRelativeURI(name)){
 			namespace = env.n;
 		}
 		
@@ -666,7 +672,7 @@ function getOrDefine(name, env, noWarn){
 	if(!is_user_module){
 	
 		// store namespace to mod object
-		mod.nc = namespace;
+		mod.ns = namespace;
 	}
 	
 	warn && warning(110, name);
@@ -680,37 +686,53 @@ function getOrDefine(name, env, noWarn){
  * method to provide a module, push its status to at least STATUS.ready
  */
 function provideOne(mod, callback, env){
-	var status = mod.status, parent;
+	var status = mod.status, 
+		parent, cb,
+		_STATUS = STATUS;
 	
-	function cb(){
-		var ready = STATUS.RD;
-		if(mod.status < ready){
-			mod.status = ready;
-		}
-		
-		callback();
-	};
-	
+	// Ready -> 5
 	// provideOne method won't initialize the module or execute the factory function
-	if(mod.exports || status === STATUS.RD){
-		return callback();
-		
-	}else if(status === STATUS.RQ){
-		mod.pending.push(cb);
+	if(mod.exports || status === _STATUS.RD){
+		callback();
 	
-	}else if(status === STATUS.DD){
-		mod.status = STATUS.RQ;
-		mod.pending = [cb];
-		
-		_provide(mod.deps, function(){
-			var m = mod;
-			for_each(m.pending, function(c){
-				c();
-			});
+	}else if(status >= _STATUS.DD){
+		cb = function(){
+			var ready = _STATUS.RD;
 			
-			m.pending.length = 0;
-			delete m.pending;
-		}, env, true);
+			// function cb may be executed more than once,
+			// because a single module might be being required by many other modules simultainously.
+			// after a certain intermediate process, maybe the module has been initialized and attached(has 'exports') 
+			// and its status has been deleted.
+			// so, mod.status must be checked before we set it as 'ready'
+			
+			// undefined < ready => false
+			if(mod.status < ready){
+				mod.status = ready;
+			}
+			
+			callback();
+		};
+	
+		// Defined -> 3
+		if(status === _STATUS.DD){
+			mod.status = _STATUS.RQ;
+			mod.pending = [cb];
+			
+			// recursively loading dependencies
+			_provide(mod.deps, function(){
+				var m = mod;
+				for_each(m.pending, function(c){
+					c();
+				});
+				
+				m.pending.length = 0;
+				delete m.pending;
+			}, env, true);
+			
+		// Requiring -> 4
+		}else{
+			mod.pending.push(cb);
+		}
 	
 	// package definition may occurs much later than module, so we check the existence when providing a module
 	// if a package exists, and module file has not been loaded.
@@ -719,29 +741,30 @@ function provideOne(mod, callback, env){
 		(parent = getModuleByIdentifier( getParentModuleIdentifier(mod.i) )) && 
 		
 		// prevent fake packages from being defined again
-		parent.status < STATUS.DD 
+		parent.status < _STATUS.DD
 	){
-		return loadModuleSrc(parent, function(){
+		loadModuleSrc(parent, function(){
 			delete mod.npc;
 			delete mod.i;
 			
 			provideOne(mod, callback, env);
 			callback = null;
 		});
-		
-	}else if(status < STATUS.DD){
+	
+	}else if(status < _STATUS.DD){
 		loadModuleSrc(mod, function(){
 			var last = _last_anonymous_mod;
 			
 			// CSS dependency
 			if(mod.isCSS){
-				mod.status = STATUS.RD;
+				mod.status = _STATUS.RD;
 				delete mod.uri;
 			
+			// Loading -> 2
 			// handle with anonymous module define
-			}else if(last && mod.status === STATUS.LD){
+			}else if(last && mod.status === _STATUS.LD){
 				
-				if(last.status < STATUS.DD){
+				if(last.status < _STATUS.DD){
 					loaderError(510);
 				}
 				
@@ -756,9 +779,6 @@ function provideOne(mod, callback, env){
 			provideOne(mod, callback, env);
 		});
 	}
-	
-	// free
-	cb = null;
 };
 
 
@@ -768,16 +788,14 @@ function provideOne(mod, callback, env){
  * - reference uri which will be set as the current module's uri 
  */
 function createRequire(envMod){
-	function require(id){
+	return function(id){
 		var mod = getOrDefine(id, {
 			r: envMod.uri,
-			n: envMod.nc
+			n: envMod.ns
 		}, true);
 		
 		return mod.exports || generateExports(mod);
 	};
-	
-	return require;
 };
 
 
@@ -818,7 +836,7 @@ function tidyModuleData(mod){
 		delete mod.factory;
 		delete mod.uri;
 		delete mod.status;
-		delete mod.nc;
+		delete mod.ns;
 	}
 	
 	return mod;
@@ -1004,7 +1022,7 @@ function absolutizeURI(uri, referenceURI, base){
     	ret = uri;
     	
     // relative uri
-    }else if (uri.indexOf('./') === 0 || uri.indexOf('../') === 0) {
+    }else if (isRelativeURI(uri)) {
 		ret = realpath(getDir(referenceURI) + uri);
     
     // root uri
@@ -1024,6 +1042,11 @@ function absolutizeURI(uri, referenceURI, base){
 
 function isAbsoluteURI(uri){
 	return uri && uri.indexOf('://') !== -1;
+};
+
+
+function isRelativeURI(uri){
+	return uri.indexOf('./') === 0 || uri.indexOf('../') === 0;
 };
 
 
