@@ -5,7 +5,6 @@
  */
 
 "use strict";
-
  
 /**
  * corek
@@ -45,7 +44,7 @@ K.__HOST = host = K.__HOST || host;
   	- typeof is unreliable and imprecise
   	- the best method to detect whether the passed object matches a specified type is ever changing
   	
-   in the future, KM.isXXX method may support Object.is(obj, type) of ECMA6		
+   in the future, KM.isXXX method may support Object.is(obj, type) of ECMAScript6		
  * ------------------------------------------------------------------------------------ */
 K._type = function(){
 	
@@ -67,9 +66,9 @@ K._type = function(){
 		
 		type_map = {},
 		name,
-		name_lower;
+		name_lower, 
+		isObject;
 		
-
 	while( i -- ){
 		name = type_list[i];
 		name_lower = name.toLowerCase();
@@ -81,7 +80,7 @@ K._type = function(){
 			// Object.prototype.toString in IE:
 			// undefined 	-> [object Object]
 			// null 		-> [object Object]
-			function(nl){
+			isObject = function(nl){
 				return function(o){
 					return !!o && _type(o) === nl;
 				}
@@ -93,6 +92,7 @@ K._type = function(){
 				}
 			}(name_lower);
 	}
+	
 	
 	/**
 	 * whether an object is created by '{}', new Object(), or new myClass() [1]
@@ -106,8 +106,17 @@ K._type = function(){
 		// undefined 	-> false
 		// null			-> false
 		// !! to make sure the returnValue is always a boolean
-		return !!obj && _K.isObject(obj) && 'isPrototypeOf' in obj;
+		return isObject(obj) && 'isPrototypeOf' in obj;
 	};
+	
+	
+	/**
+	 * simple method to detect DOMWindow in a clean world that has not been destroyed
+	 */
+	_K.isWindow = function(obj){
+		return isObject(obj) && 'setInterval' in obj; 
+	};
+	
 	
 	/**
 	 * never use isNaN function, use KM.isNaN instead.  NaN === NaN // false
@@ -132,7 +141,16 @@ K._type = function(){
  */
 K.build = '%buildtime%';
 
-K._Cfg = {};
+
+/**
+ * atom to identify the Neuron Object
+ * @temp
+ * @const
+ */
+K.__ = {};
+
+K._env = {};
+
 
 })( 
 	typeof exports !== 'undefined' ? 
@@ -161,6 +179,10 @@ K._Cfg = {};
  
  
  milestone 2.0 ------------------------------------
+ 
+ 2011-10-11  Kael:
+ - add KM.isWindow method
+ - add an atom to identify the Neuron Object
  
  2011-10-04  Kael:
  - fix a but that KM.isObject(undefined/null) -> true in IE
