@@ -5,22 +5,14 @@
 
 ;(function(K){
 
-var DOM = K.DOM;
-
 // remove public members
 delete K.DOM;
 delete K.__SELECTOR;
+delete K.__;
 delete DOM.methods;
 delete DOM.feature;
 
-K.define.on();
-
-// fake package module
-K.define('dom', function(){ return DOM; });
-K.define.off();
-
 })(KM);
-
 
 /**
  change log:
