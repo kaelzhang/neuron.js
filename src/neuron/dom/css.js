@@ -39,19 +39,18 @@ function swap(element, styles, callback){
 	var old = {}, name;
 
 	// Remember the old values, and insert the new ones
-	for(name in options){
+	for(name in styles){
 		old[name] = element.style[name];
-		element.style[name] = options[name];
+		element.style[name] = styles[name];
 	}
 
 	callback.call(element);
 
 	// Revert the old values
-	for(name in options){
+	for(name in styles){
 		element.style[name] = old[name];
 	}
 };
-
 
 
 /**
@@ -88,13 +87,16 @@ function getCSS(name){
 };
 
 
+/**
+ * get width and height of an element
+ */
 function getWH(element, property){
 	var minus = property === 'width' ? ['left', 'right'] : ['top', 'bottom'], 
 		ret = element[camelCase('offset-' + property)];
 		
 	minus.forEach(function(v){
-		ret -= parseFloat(getCSS.call(this, 'border-' + v + '-width')) 
-			  + parseFloat(getCSS.call(this, 'padding-' + v));
+		ret -= ( parseFloat(getCSS.call(this, 'border-' + v + '-width')) || 0 )
+			  + ( parseFloat(getCSS.call(this, 'padding-' + v)) || 0 );
 	}, element);
 	
 	return ret;
@@ -152,7 +154,6 @@ var DOM = K.DOM,
 	};
 
 
-
 // @private
 // get computed styles
 currentCSS = feature.computedStyle ? 
@@ -178,6 +179,7 @@ currentCSS = feature.computedStyle ?
 	
 /*
 	
+	// convert all other unit to pixel
 	function(element, property){
 		var left,
 			ret = element.currentStyle && element.currentStyle[ property ],
@@ -239,9 +241,11 @@ if(!feature.opacity){
 		
 		// @return {number}
 		GET: function(element){
-			return REGEX_OPACITY.test( currentCSS(element, 'filter') || '' ) ?
-				  parseFloat( RegExp.$1 ) / 100
-				: 1;
+			return '' + (
+				REGEX_OPACITY.test( currentCSS(element, 'filter') || '' ) ?
+				  	parseFloat( RegExp.$1 ) / 100
+					: 1
+			);
 		}
 	};
 }
@@ -261,6 +265,7 @@ if(!feature.opacity){
 				swap(element, STYLE_INVISIBLE_SHOW, function(){
 					ret = getWH(element, property);
 				});
+				
 			}else{
 				ret = getWH(element, property);
 			}
