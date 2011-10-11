@@ -31,12 +31,12 @@ TODO:
 	- complete TODO[09-21].[B,C,D]
 
 2011-09-22  Kael:
-	- loader will have no fault tolarence on initialization configuration
+	- loader will have no fault tolarence on initialization of configuration
 
 TODO:
 	- A. split implementations of browser and non-browser environment
 	- B. optimize absolutizeURI method, put the last condition ahead. speed test
-	- C. optimize mod.uri, if enableCDN is true, mod.uri will no more be applied CDNHasher
+	- C. optimize mod.uri, if enableCDN is true, mod.uri will no more be applied with CDNHasher
 
 2011-09-21  Kael:
 	- TODO[09-02].B 80%
@@ -54,7 +54,7 @@ TODO:
 2011-09-12  Kael:
 TODO:
 	- √ A. split the logic about loader constructor and its instances
-	- ? B. refractor dependency model with EventProxy
+	- ?X B. refractor dependency model with EventProxy
 	- C. use dev version modules if debug mode on
 	- √ D. throw no warnings and errors when release mode on
 
@@ -75,7 +75,7 @@ TODO:
 	- B. support fake package module definition: define.on(); define('dom', fn); define.off(); define('dom/dimension', fn)
 
 2011-09-02  Kael:
-- remove parseDependencies methods, all reps must be explicitly declared.
+	- remove parseDependencies methods, all dependencies must be explicitly declared.
 
 TODO:
 	- A. support non-browser environment
