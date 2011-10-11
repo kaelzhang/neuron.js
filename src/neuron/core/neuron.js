@@ -39,7 +39,7 @@ K.namespace = function(){
 // load 'log' module to switch debug-mode on
 K._debugOn = function(){
     // K.provide('log', function(K){ K.log('debug module attached') });
-    K._Cfg.debug = true;
+    K._env.debug = true;
 };
 
 

@@ -999,7 +999,7 @@ function getInteractiveScript() {
 
 
 function isDebugMode(){
-	return K._Cfg.debug;
+	return K._env.debug;
 };
 
 
