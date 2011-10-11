@@ -1,20 +1,6 @@
 <script>
 // fake jasmine
 
-if(!window.console){
-	var console = {
-		log: log
-	}
-}
-
-function log(msg){
-	var div = document.createElement('div');
-	
-	div.innerHTML = msg;
-		
-	body.appendChild(div);
-};
-
 function describe(des, cb){
 	var old_des = _des;
 
