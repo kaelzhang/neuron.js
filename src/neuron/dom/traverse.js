@@ -8,7 +8,7 @@
 function createSelectorObject(expression, combinator){
 	if (!expression) return combinator;
 
-	expression = Slick.parse(expression);
+	expression = SELECTOR.parse(expression);
 
 	var expressions = expression.expressions;
 	for (var i = expressions.length; i--;)
@@ -26,11 +26,11 @@ TRAVERSING_CONFIG = {
 
 	/**
 	 * @type {string} op selector operator
-	 * @type {boolean=} first whether only get the first
+	 * @type {boolean=} f whether only get the first
 	 */
 	prev: {
 		op: '!~',
-		first: true
+		f: true
 	},
 	
 	prevAll: {
@@ -39,11 +39,16 @@ TRAVERSING_CONFIG = {
 	
 	next: {
 		op: '~',
-		first: true
+		f: true
 	},
 	
 	nextAll: {
 		op: '~'
+	},
+	
+	child: {
+		op: '>',
+		f: true
 	},
 	
 	// different with .all, return the direct offsprings
@@ -53,7 +58,7 @@ TRAVERSING_CONFIG = {
 	
 	parent: {
 		op: '!',
-		first: true
+		f: true
 	},
 	
 	parents: {
@@ -69,7 +74,7 @@ K.each(TRAVERSING_CONFIG, function(cfg, key){
 				
 				// these accessors only traverse the first element of current matches
 				this.context.slice(0, 1), 
-				cfg.first
+				cfg.f
 			) 
 		);
 	}
@@ -105,3 +110,14 @@ DOM.extend(TRAVERSING_CONFIG).extend({
 
 
 })(KM);
+
+
+/**
+ change log:
+ 
+ 2011-10-11  Kael:
+ - optimize for compression
+ - fix a syntax error
+ 
+ 
+ */

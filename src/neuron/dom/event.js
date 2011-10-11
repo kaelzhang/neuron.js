@@ -347,6 +347,11 @@ DOM.Events = Events;
 /**
  change log:
  
+ 2011-10-11  Kael:
+ - improve stability when there's no event object
+ - fix a bug about no-event object events
+ - add method .fire()
+ 
  2011-10-06  Kael:
  TODO:
  - A. refractor event module
