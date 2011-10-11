@@ -177,14 +177,14 @@ DOMEvent.prototype = {
 
 	stopBubble: function(){
 		var e = this.event, m = 'stopPropagation';
-		e[m] ? e[m]() : (e.cancelBubble = true);
+		e && ( e[m] ? e[m]() : (e.cancelBubble = true) );
 		
 		return this;
 	},
 
 	prevent: function(){
 		var e = this.event, m = 'preventDefault';
-		e[m] ? e[m]() : (e.returnValue = false);
+		e && ( e[m] ? e[m]() : (e.returnValue = false) );
 		
 		return this;
 	}
@@ -220,7 +220,17 @@ var DOM = K.DOM,
 		}
 	},
 	
-	NO_EVENTS = 'unload beforeunload resize move DOMContentLoaded readystatechange error abort scroll'.split(' ');
+	NO_EVENTS = {
+		unload: TRUE,
+		beforeunload: TRUE,
+		resize: TRUE,
+		move: TRUE,
+		DOMContentLoaded: TRUE,
+		readystatechange: TRUE,
+		error: TRUE,
+		abort: TRUE,
+		scroll: TRUE
+	};
 
 
 // cleaner
@@ -238,14 +248,27 @@ event_storage._clean = function(id){
 
 DOM.extend({
 
-	// inspired by: Dean Edwards's addEvent lib
+	/**
+	 * inspired by: Dean Edwards's addEvent lib
+	 * bind an event
+	 * @param {string} type
+	 * @param {function()} fn
+	 * @param {useOrigin} 
+	 */
 	on: K._overloadSetter(function(type, fn){
 		var el = this,
 			storage = getStorage(el),
 			fns;
 			
 		if(!storage[type]){
-			storage[type] = {fns: [], vals: []};
+			storage[type] = {
+				
+				// store the original fn use passed in
+				fns: [], 
+				
+				// store the wrapped function
+				vals: []
+			};
 		}
 		
 		fns = storage[type].fns;
@@ -270,14 +293,18 @@ DOM.extend({
 			real_type = custom.base || real_type;
 		}
 		
-		eventFn = NO_EVENTS[real_type] ? 
+		console.log('real_type', real_type, 'element', $(el).attr('data-depth'));
+		
+		eventFn = NO_EVENTS[real_type] ?
 			function(){
 				return fn.call(el);
 			} :
 			
-			function(event){
+			function(event){ console.log('event trying to fire')
 				event = new DOMEvent(event, getWindow(el)); // TODO: getWindow
-				if (condition.call(el, event) === false) event.stop();
+				if (condition.call(el, event) === false){
+					event.stop();
+				}
 			};
 			
 		storage[type].vals.push(eventFn);
@@ -286,13 +313,27 @@ DOM.extend({
 	
 	
 	/**
-	 * .detach()			-> remove all
-	 * .detach('click')		-> remove all click
-	 * .detach('click', fn)	-> remove click method fn
+	 * .detach()								-> remove all
+	 * .detach('click')							-> remove all click
+	 * .detach('click', fn)						-> remove click method fn
+	 * .detach({ click: fn, mouseenter: fn2 })	-> remove several events
 	 */
-	detach: K._overloadSetter(removeDOMEvent) // ,
+	detach: K._overloadSetter(removeDOMEvent),
 	
-	// fire: function(type){}
+	
+	/**
+	 * fire an event
+	 */
+	fire: function(type){
+		var el = this,
+			storage = getStorage(el);
+			
+		if(storage[type]){
+			storage[type].vals.forEach(function(fn){
+				fn();
+			});
+		}
+	}
 
 }, 'iterator');
 
@@ -306,16 +347,15 @@ DOM.Events = Events;
 /**
  change log:
  
- 2011-09-12  Kael:
+ 2011-10-06  Kael:
  TODO:
- - A. 
+ - A. refractor event module
  
  2011-09-10  Kael:
  - basic functionalities
  
  TODO:
- A. refractor Events
- B. fix onchange event of input elements
+ A. fix onchange event of input elements
 
 
  */
