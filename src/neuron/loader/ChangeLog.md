@@ -11,6 +11,17 @@ marks:
 milestone 4.0
 ===
 
+2011-10-11  Kael:
+	- optimize calling chain for provideOne; 
+	- optimize scope chain for STATUS enum;
+
+2011-10-05  Kael:
+	- fix the bug that module dependencies will lose namespace information when providing; 
+	- set the identifier of home modules as '~'
+	
+TODO:
+	- A. use loader constructor instead of singleton
+
 2011-09-27  Kael:
 	- complete configuration for the new APIs of Loader
 
