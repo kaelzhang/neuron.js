@@ -3,7 +3,7 @@
  * module  DOM/core
  * author  Kael Zhang
  */
-;(function(K, NULL){
+;(function(K){
 
 
 /**
@@ -29,10 +29,31 @@
 	Node.DOCUMENT_FRAGMENT_NODE == 11
 	Node.NOTATION_NODE == 12
  */
+ 
+ 
+/**
+ *
+ */
+function isDOMSubject(el){
+	var type;
+	return K.isWindow(el) || el && (type = el.nodeType) && (type === 1 || type === 9);
+};
 
 
-// create element
-function DOM(element, attributes){
+function getContext(el){
+	// window 		-> window
+	// body 		-> body
+	// [null]		-> [null]
+	// $(window)	-> window
+	return !el || isDOMSubject(el) ? el : el._ === atom && el.context; 
+};
+
+
+/**
+ * @param {string|DOMElement} element
+ * @param {(DOM|NodeList|DOMElement)=} context
+ */
+function DOM(element, context){
 
 	// use ECMAScript strict
 	var self = this;
@@ -41,13 +62,11 @@ function DOM(element, attributes){
 	
 		// @type {Array.<DOMElement>}
 		// @private
-		self.context = K.makeArray(element).filter(function(el){
-			var type;
-			return el && (type = el.nodeType) && (type === 1 || type === 9);
-		});
+		self.context = K.makeArray(element).filter(isDOMSubject);
 		
 	}else{
-		return DOM.one(element);
+	
+		return one(element, context);
 	}
 };
 
@@ -86,6 +105,9 @@ _$ = WIN.$,
 SELECTOR = K.__SELECTOR,
 	
 DOC = WIN.document,
+
+atom = K.__,
+
 
 /**
  'mutator'	:   the method modify the current context({Object} this.context, as the same as below), 
@@ -140,16 +162,48 @@ IMPLEMENT_GENERATOR = {
 	def: function(host, name, method){
 		host[name] = method;
 	}
+},
+
+
+one = function(selector, context){
+	var el;
+	
+	// $(undefined) ->
+	// 	- [null]
+	
+	// $(el) ->
+	//  - window
+	//  - document
+	//  - DOMElement
+	if(!K.isString(selector)){
+		el = selector;
+	
+	// $('body')
+	// $('body', document)
+	// $('.container', document.body)
+	}else{
+		el = SELECTOR.find(selector, getContext(context), true);
+	}
+	
+	return new DOM( el );
 };
 
 
-DOM.one = function(selector){
-	return new DOM( SELECTOR.find(selector, NULL, true) );
+DOM.all = function(selector, context){
+	return K.isString(selector) ?
+		
+		  // $.all('body', document)
+		  // $.all('li', container)
+		  new DOM( SELECTOR.find(selector, getContext(context)) )
+		  
+		  // $.all(el, document)
+		  // $.all(el)
+		: one(selector);
 };
 
-DOM.all = function(selector){
-	return new DOM( SELECTOR.find(selector) );
-};
+
+// identifier to mark Neuron DOM
+DOM.prototype._ = atom;
 
 
 // temporary method for dom creation
@@ -188,8 +242,8 @@ extend({
 		return new DOM( el );
 	},
 	
-	isEmpty: function(){
-		return !!this.context.length;
+	count: function(){
+		return this.context.length;
 	},
 	
 	forEach: function(fn, wrap){
@@ -207,6 +261,12 @@ extend({
 WIN.$ = K.DOM = DOM;
 
 
+// traits
+// @private
+DOM.methods = {};
+
+
+// @public
 // create basic methods and hooks
 DOM.__storage = {};
 
@@ -216,15 +276,27 @@ DOM.extend = extend;
 // adaptor of selector engine
 DOM.SELECTOR = SELECTOR;
 
-// traits
-DOM.methods = {};
 
+K.define.on();
+
+// fake package module
+K.define('dom', function(){ return DOM; });
+K.define.off();
 
 
 })(KM, null);
 
+
 /**
  change log:
+ 
+ 2011-10-11  Kael:
+ - define fake package here
+ - improve stability for DOM and DOM.all when fetching elements
+ - fix $(window), $(document), $(el, context)
+ - DOM no longer create elements. please use DOM.create instead
+ - DOM and DOM.all could accept an instance of DOM as the context parameter
+ - add an atom to identify Neuron DOM instance
  
  2011-09-09  Kael:
  - add .forEach method
