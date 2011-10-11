@@ -623,8 +623,6 @@ describe('Neuron:lang/enhance', function(){
 			});
 		});
 	});
-
-
 });
 
 </script>

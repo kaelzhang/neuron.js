@@ -31,7 +31,9 @@ require('seed-slice.php');
 ?>
 
 
-<script>jasmine.getEnv().addReporter(new jasmine.TrivialReporter());jasmine.getEnv().execute();</script>
+<script>
+
+jasmine.getEnv().addReporter(new jasmine.TrivialReporter());jasmine.getEnv().execute();</script>
 
 </body>
 </html>

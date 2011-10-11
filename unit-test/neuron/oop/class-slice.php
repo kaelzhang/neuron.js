@@ -1,6 +1,6 @@
 <script>
 
-describe('Neuron:lang/enhance', function(){
+describe('Neuron:oop', function(){
 	describe('DP', function(){
 		var Class = KM.Class,
 			
