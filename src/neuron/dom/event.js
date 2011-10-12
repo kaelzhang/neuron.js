@@ -293,14 +293,12 @@ DOM.extend({
 			real_type = custom.base || real_type;
 		}
 		
-		console.log('real_type', real_type, 'element', $(el).attr('data-depth'));
-		
 		eventFn = NO_EVENTS[real_type] ?
 			function(){
 				return fn.call(el);
 			} :
 			
-			function(event){ console.log('event trying to fire')
+			function(event){
 				event = new DOMEvent(event, getWindow(el)); // TODO: getWindow
 				if (condition.call(el, event) === false){
 					event.stop();
