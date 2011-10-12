@@ -1,5 +1,5 @@
 <style>
-.box{border:1px solid gray; padding:10px; background:white}
+.box{border:1px solid gray; padding:10px; background:white; zoom:1;}
 .box-container{width:500px;}
 
 </style>
@@ -36,10 +36,12 @@ $('#dom-event .click-prevent').on('click', function(e){
 	console.log('click event fired ', this)
 });
 
-$('#dom-event').child('.box').child('.box').on('mouseenter', function(e){
+
+var child = $('#dom-event');
+
+child.child('.box').on('mouseenter', function(e){
 	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
-}).css('background', '#f00')
-.child('.box').on('mouseenter', function(e){
+}).css('background', '#f00').child('.box').on('mouseenter', function(e){
 	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
 }).child('.box').on('mouseenter', function(e){
 	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
@@ -48,16 +50,55 @@ $('#dom-event').child('.box').child('.box').on('mouseenter', function(e){
 });
 
 
-console.log( $('#dom-event').child('.box').child('.box').attr('data-depth') );
+KM.ready(function(K){
+	console.log('dom ready', K)
+});
+
 
 /*
-$('#dom-event').child('.box').child('.box').el(0).attachEvent('onmouseover', function(){
-	console.log('mouseover', $(this).attr('data-depth'));
+
+child = child.child('.box');
+
+console.log(1, 'before on', child.context.length);
+
+child.on('mouseenter', function(e){
+	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
+}).css('background', '#f00');
+
+console.log(1, 'after on', child.context.length);
+
+
+child = child.child('.box');
+
+console.log(2, 'before on', child.context.length);
+
+child.on('mouseenter', function(e){
+	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
 });
 
-$('#dom-event').child('.box').el(0).attachEvent('onclick', function(){
-	console.log('click', $(this).attr('data-depth'), this);
+console.log(2, 'after on', child.context.length);
+
+
+child = child.child('.box');
+
+console.log(3, 'before on', child.context.length);
+
+child.on('mouseenter', function(e){
+	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
 });
+
+console.log(3, 'after on', child.context.length);
+
+child = child.child('.box');
+
+console.log(4, 'before on', child.context.length);
+
+child.on('mouseenter', function(e){
+	console.log( 'enter ', $(this).attr('data-depth'), ' from ', $(e.relatedTarget).attr('data-depth') );
+});
+
+console.log(4, 'after on', child.context.length);
 */
+
 
 </script>
