@@ -145,7 +145,7 @@ function getFirstContext(element){
 
 
 function getAllContexts(element){
-	return (element instanceof DOM) ? element.context : K.makeArray(element).filter(function(el){
+	return (element instanceof DOM) ? element.context : makeArray(element).filter(function(el){
 		return el && el.nodeType;
 	});
 };
@@ -159,10 +159,14 @@ function disposeElement(){
 
 // @this {DOMElement}
 function emptyElement(){
-	array_slice.call(this.childNodes).forEach(function(child){
+
+	// IE6-7 fail to call Array.prototype.slice with NodeLists
+	// use KM.makeArray instead
+	makeArray(this.childNodes).forEach(function(child){
 		disposeElement.call(child);
 	});
 };
+
 
 function grabElements(element, elements, where){
 	elements = getAllContexts(elements);
@@ -176,11 +180,21 @@ function grabElements(element, elements, where){
 };
 
 
-var array_slice = Array.prototype.slice,
+function getOptionValue(el){
+	var valueNode = el.getAttributeNode('value');
+	return !valueNode || valueNode.specified ? el.value : el.text;
+};
 
-	DOM = K.DOM,
+
+function santitizeValue(value){
+	return value == null ? '' : value + '';
+};
+
+
+var DOM = K.DOM,
 	SELECTOR = DOM.SELECTOR,
 	storage = DOM.__storage = {},
+	makeArray = K.makeArray,
 	
 	// @type {Object}
 	// list of methods for both getter and setter
@@ -243,6 +257,32 @@ var array_slice = Array.prototype.slice,
 	
 		top: function(context, element){
 			element.insertBefore(context, element.firstChild);
+		}
+	},
+	
+	val_traits = {
+		option: {
+			GET: getOptionValue 
+		},
+		
+		select: {
+			GET: function(el){
+				var selected = el.options[el.selectedIndex];
+				
+				return selected ? getOptionValue(selected) : '';
+			},
+			
+			SET: function(el, value){
+				var values = makeArray(value);
+
+				makeArray(el.options).forEach(function(option, i){
+					option.selected = values.indexOf( getOptionValue(option) ) !== -1;
+				});
+
+				if (!values.length) {
+					el.selectedIndex = -1;
+				}
+			}
 		}
 	};
 	
@@ -383,14 +423,33 @@ METHODS.text = {
 };
 
 
-// TODO
 // .val() methods
 METHODS.val = {
 	SET: function(value){
-		//
+		// prevent set window or document
+		if(this.nodeType !== 1){
+			return;
+		}
+	
+		var el = this,
+			tag = this.nodeName.toLowerCase(),
+			method = val_traits[tag];
+			
+		method && ( method = method.SET );
+			
+		value = K.isArray(value) ? value.map(santitizeValue) : santitizeValue(value);
+			
+		method ? method(el, value) : (el.value = value);
 	},
 	
 	GET: function(){
+		var el = this,
+			tag = el.nodeName.toLowerCase(),
+			method = val_traits[tag];
+			
+		method && ( method = method.GET );
+			
+		return method ? method(el) : el.value;
 	}
 };
 
@@ -481,6 +540,14 @@ DOM._overload = overloadDOMGetterSetter;
 
 /**
  change log:
+ 
+ 2011-10-12  Kael:
+ - fix a bug that ie fails on collections, use KM.makeArray instead of Array.prototype.slice
+ - complete .val() method
+ - optimize KM.makeArray invocations
+ 
+ TODO:
+ A. santitize element value
  
  2011-09-12  Kael:
  TODO:
