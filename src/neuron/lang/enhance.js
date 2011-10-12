@@ -360,8 +360,9 @@ K.makeArray = function(array){
 	if(K.isArray(array)){
 		ret = array;
 		
-	// false -> [false]
-	// undefined -> K.makeArray() -> []
+	// false 		-> [false]
+	// null 		-> []
+	// undefined 	-> K.makeArray() -> []
 	}else if(array != NULL){
 		if(
 			array.length == null ||
