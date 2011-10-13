@@ -92,14 +92,15 @@ function memoizeMethod(fn){
 /**
  * clone an object as a pure array, and ignore non-number properties
  */
-function clonePureArray(array){
-	var ret = [], i = array.length;
+function clonePureArray(array, host){
+	var i = array.length,
+		start = host.length;
 		
 	while(i --){
-		ret[i] = array[i];
+		host[start + i] = array[i];
 	}
 	
-	return ret;
+	return host;
 };
 
 
@@ -350,36 +351,43 @@ K.delay = function(fn, delay, isInterval){
 };
 
 
-K.makeArray = function(array){
-	var ret,
-		NULL = null;
+/**
+ * @param {Array} array
+ * @param {Array} host
+ */
+K.makeArray = function(array, host){
+	var NULL = null;
+	
+	host || (host = []);
 	
 	// if is already an array, do nothing to improve performance	
 	if(K.isArray(array)){
-		ret = array;
+		host = host.length ? host.concat(array) : array;
 		
 	// false 		-> [false]
 	// null 		-> []
 	// undefined 	-> K.makeArray() -> []
 	}else if(array != NULL){
 		if(
-			array.length == null ||
+			array.length == NULL ||
+			
+			// KM.isObject(arguments) -> true
 			!K.isObject(array) ||
 			
 			// window also has 'length' property
 			'setInterval' in array
 		){
-			ret = [array];
+			host.push(array)
 			
 		}else{
 		
 			// ie fails on collections and <select>.options (refers to <select>)
 			// use array clone instead of Array.prototype.slice
-			ret = clonePureArray(array);
+			clonePureArray(array, host);
 		}
 	}
 
-	return ret || [];
+	return host;
 };
 
 
@@ -468,6 +476,9 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
  [1] why dangerous? you could find out.
  
  change log:
+ 
+ 2011-10-13  Kael:
+ - KM.makeArray could has an array receiver to be merged to
  
  2011-10-10  Kael:
  - fix a bug about KM.makeArray who fails to deal with document
