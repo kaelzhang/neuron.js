@@ -349,9 +349,7 @@ K.delay = function(fn, delay, isInterval){
 	return ret;
 };
 
- 
-// TODO:
-// test the collection type on IE
+
 K.makeArray = function(array){
 	var ret,
 		NULL = null;

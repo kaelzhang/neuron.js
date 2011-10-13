@@ -157,7 +157,7 @@ implement(Array, {
 				}
 				
 				// if array contains no values, no initial value to return
-				if (++i >= len) {
+				if (++ i >= len) {
 					throw new TypeError('reduce of empty array with on initial value');
 				}
 			}while(true);
@@ -192,7 +192,7 @@ implement(Array, {
 					break;
 				}
 				// if array contains no values, no initial value to return
-				if (--i < 0){
+				if (-- i < 0){
 					throw new TypeError('reduce of empty array with on initial value');
 				}
 			

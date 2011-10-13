@@ -100,6 +100,7 @@ function extend(name, method, type){
 // save the current $ in window, for the future we need to return it back
 var WIN = K.__HOST,
 
+// store the original value of $
 _$ = WIN.$,
 	
 SELECTOR = K.__SELECTOR,
@@ -276,6 +277,12 @@ DOM.extend = extend;
 // adaptor of selector engine
 DOM.SELECTOR = SELECTOR;
 
+// returns the $ object back to its original value
+DOM.noConflict = function(){
+	WIN.$ = _$;
+	return DOM;
+};
+
 
 K.define.on();
 
@@ -289,6 +296,9 @@ K.define.off();
 
 /**
  change log:
+ 
+ 2011-10-13  Kael:
+ - add $.noConflict() method
  
  2011-10-11  Kael:
  - define fake package here
