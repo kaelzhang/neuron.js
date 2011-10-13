@@ -89,11 +89,13 @@ K.bizRequire = function(){
 
 // initialize all biz mods after domready
 K.ready(function(K, U){
+	var stack = biz_modules;
+	
 	applyBusinessModules.call(stack);
 	
 	// destroy stack
 	stack.length = 0;
-	stack = U;
+	biz_modules = U;
 });
 
 
