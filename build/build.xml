@@ -8,7 +8,8 @@
 		<path path="ua/ua.js" />
 		
 		<path path="loader/loader.js" />
-		<path path="loader/instances.js" />
+		
+		<path path="config/alpha.js" />
 		
 		<path path="oop/class.js" />
 		<path path="oop/attrs.js" />
@@ -19,7 +20,6 @@
 		<path path="selector/adapter.js" />
 		
 		<path path="core/neuron.js" />
-		<path path="core/config.js" />
 		
 		<path path="dom/dom.js" />
 		<path path="dom/feature.js" />
@@ -29,6 +29,7 @@
 		<path path="dom/manipulate.js" />
 		<path path="dom/create.js" />
 		<path path="dom/domready.js" />
-		<path path="dom/clean.js" />
+		
+		<path path="cleaner.js" />
 	</package>
 </project>
