@@ -3,7 +3,7 @@
 		<path path="seed.js" />
 		<path path="lang/native.js" />
 		<path path="lang/enhance.js" />
-		<path path="lang/biz.js" />
+		<path path="lang/web.js" />
 		
 		<path path="ua/ua.js" />
 		
@@ -19,8 +19,6 @@
 		<path path="selector/parser.js" />
 		<path path="selector/adapter.js" />
 		
-		<path path="core/neuron.js" />
-		
 		<path path="dom/dom.js" />
 		<path path="dom/feature.js" />
 		<path path="dom/event.js" />
@@ -29,6 +27,10 @@
 		<path path="dom/manipulate.js" />
 		<path path="dom/create.js" />
 		<path path="dom/domready.js" />
+		
+		<path path="biz/biz.js" />
+		<path path="biz/neuron.js" />
+		<path path="biz/faker.js" />
 		
 		<path path="cleaner.js" />
 	</package>
