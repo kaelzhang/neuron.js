@@ -298,6 +298,14 @@ DOM.extend({
 				return fn.call(el);
 			} :
 			
+			/**
+			 <code>
+				$('abc').on('click', function(e){
+					// e && e.prevent(); 	// you never need to write any code like this
+					e.prevent(); 			// but directly use 'e'
+				});
+			 </code>
+			 */
 			function(event){
 				event = new DOMEvent(event, getWindow(el)); // TODO: getWindow
 				if (condition.call(el, event) === false){
