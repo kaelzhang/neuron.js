@@ -287,7 +287,7 @@ DOM.noConflict = function(){
 K.define.on();
 
 // fake package module
-K.define('dom', function(){ return DOM; });
+K.define('_dom', function(){ return DOM; });
 K.define.off();
 
 
