@@ -258,6 +258,15 @@ Class.implement = implement;
 
 Class.setAttrs = setAttrs;
 
+
+
+K.define.on();
+K.define('_class', function(){
+	return K.Class;
+});
+K.define.off();
+
+
 })(KM);
 
 
