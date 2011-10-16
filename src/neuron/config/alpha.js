@@ -17,12 +17,17 @@
 var REGEX_PATH_CLEANER_MIN = /\.min/i,
 	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i,
 	
-	LOADER = '__Loader',
+	STR_LOADER = '__Loader',
+	STR_PROVIDE = 'provide',
+	
 	NOOP = function(){},
 	
-	Loader = K[LOADER],
+	Loader = K[STR_LOADER],
+	provide = K[STR_PROVIDE],
 	
 	prefix = Loader.prefix,
+	
+	pendingQueue = [],
 	
 	host = K.__HOST,
 	
@@ -134,27 +139,37 @@ prefix('~', {
 });
 
 
-
-// part of the initialization
-;(function(){
-
-return;
-	
-/*
- debug module is not ready yet
+/**
+ * before module-version.js is downloaded and executed,
+ * KM.provide temporarily does nothing but push the action into a pending queue
  */
+K.provide = function(){
+	pendingQueue.push(arguments);
+};
+
+/**
+ * Loader.init will be called at the end of module-version.js
+ */
+Loader.init = function(){
+	var _provide = provide;
+
+	K[STR_PROVIDE] = _provide;
+	
+	pendingQueue.forEach(function(args){
+		_provide.apply(null, args);
+	});
+	
+	delete K[STR_LOADER];
+};
+
  
 // you can set current href as http://abc.com/#!/debug/on to switch debug-mode on
 var href = K.getLocation().href,
 	index_marker = href.indexOf('#!/');
 	
 if(index_marker !== -1 && href.indexOf('debug/on') > index_marker){
-	base_require.push('debug');
 	K._debugOn();
 }
-
-
-})();
 
 
 })(KM);

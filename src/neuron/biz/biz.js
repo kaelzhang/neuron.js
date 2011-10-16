@@ -77,7 +77,7 @@ K.data = function(name, value){
 
 /**
  * attach a module for business requirement, for configurations of inline scripts
- * if wanna a certain biz module auto initialize, the module's exports should contain a method named 'init'
+ * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
  */
 K.bizRequire = function(){
 	var stack = biz_modules,
@@ -108,5 +108,8 @@ K.ready(function(K, U){
  2011-10-13  Kael:
  - move KM.data to biz.js
  - add KM.bizRequire method to automatically provide a batch of specified modules
+ 
+ TODO:
+ A. add a method to fake a global function to put its invocations into a queue until the real implementation attached
  
  */
