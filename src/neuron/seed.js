@@ -8,7 +8,7 @@
  
 /**
  * corek
- * seed.js -> lang/ -> ua/ -> loader/ -> class/ -> selector/ -> core/ -> dom/
+ * seed.js -> lang/ -> ua/ -> loader/ -> config/ -> class/ -> selector/ -> dom/ -> biz/
  */
 
 /**
@@ -151,6 +151,7 @@ K.__ = {};
 
 K._env = {};
 
+K.log = function(){};
 
 })( 
 	typeof exports !== 'undefined' ? 
