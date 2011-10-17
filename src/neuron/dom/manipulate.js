@@ -23,7 +23,7 @@ function addClass(cls){
 };
 
 function removeClass(cls){
-	this.className = this.className.replace(new RegExp('(^|\\s)' + className + '(?:\\s|$)'), '$1');
+	this.className = this.className.replace(new RegExp('(^|\\s)' + cls + '(?:\\s|$)'), '$1');
 };
 
 
