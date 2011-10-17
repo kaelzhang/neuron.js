@@ -11,3 +11,4 @@ reference
 old
 # *.php
 index.php
+build/*.js
