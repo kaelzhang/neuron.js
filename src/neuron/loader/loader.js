@@ -914,6 +914,11 @@ function loadModuleSrc(mod, callback){
  * module tools
  * --------------------------------------------------------------------------------------------------- */
 
+/**
+ * @param {string} name
+ * @param {string} referenceURI
+ * @param {string} base
+ */
 function moduleNameToURI(name, referenceURI, base){
 	var no_need_extension = REGEX_NO_NEED_EXTENSION.test(name);
 	return absolutizeURI(name + (no_need_extension ? '' : '.js'), referenceURI, base);
@@ -928,14 +933,14 @@ var generateModuleURI_Identifier = K._memoize( function(uri){
 	var path_for_uri = uri,
 		path_for_identifier = uri,
 		EMPTY = '',
-		cfg = _config;
+		cfg = _config,
+		path;
 
 	if(cfg.enableCDN){
-		var loc = getLocation(uri),
-			path = loc.pathname + loc.search;
+		path = isAbsoluteURI(uri) ? getLocation(uri).pathname : uri;
 			
 		path_for_uri = cfg.CDNHasher(path) + path;
-		path_for_identifier = loc.pathname;
+		path_for_identifier = path;
 	}
 
 	return {
