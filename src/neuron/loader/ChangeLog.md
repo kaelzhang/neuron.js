@@ -11,6 +11,10 @@ marks:
 milestone 4.0
 ===
 
+2011-10-17  Kael:
+	- adjust the logic about uri generation
+	- improve generateModuleURI_Identifier method to make sure it works even if the uri is not an absolute uri
+
 2011-10-11  Kael:
 	- optimize calling chain for provideOne; 
 	- optimize scope chain for STATUS enum;
@@ -43,8 +47,8 @@ TODO:
 
 TODO:
 	- ! A. support pre-loading env modules before anything taking effect
-	- ! B. remove API: define(alias, uri) to improve readability and definition
-	- C. replace all text of errors and warnings with error code
+	- √ ! B. remove API: define(alias, uri) to improve readability and definition
+	- √ C. replace all text of errors and warnings with error code
 	- √ D. treat loaderError and warning as configurations of loader
 	- X E. remove the feature that loader would not initialize the factory function if no callback method passed to KM.provide
 
@@ -72,7 +76,7 @@ TODO:
 2011-09-07  Kael:
 TODO:
 	- A. [issue] if pkg module is directly defined by define.on(), automatically providing called by a child module will fail
-	- B. support fake package module definition: define.on(); define('dom', fn); define.off(); define('dom/dimension', fn)
+	- ? B. support fake package module definition: define.on(); define('dom', fn); define.off(); define('dom/dimension', fn)
 
 2011-09-02  Kael:
 	- remove parseDependencies methods, all dependencies must be explicitly declared.
@@ -83,7 +87,7 @@ TODO:
 		if define('abc', fn), it will be saved as {'~abc': fn}, 
 		completely prevent user from defining a path as the module identifier to override lib modules
 		
-	- C. support the module which could automatically initialize itself when provided
+	- X C. support the module which could automatically initialize itself when provided
 	- D. split the logic of module management and script manipulation, 
 		so that loader could work on non-browser environment, such as NodeJS
 
@@ -109,7 +113,7 @@ TODO:
 
 TODO:
 	- √ A. failure control, if loading the package fails, fallback to normal way to provide modules
-	- B. tidy parameters in _define
+	- √ B. tidy parameters in _define
 	- C. lazily manage package association
 	- D*. detect if it fails to load a module file
 	- √ E. [issue] if define a package after the definition of a certain module, the package association fails

@@ -513,8 +513,9 @@ DOM.extend({
 		var context = this.context;
 		
 		context.forEach(function(el){
-			var elements = el.getElementsByTagName('*').push(el);
-		
+			var children = K.makeArray( el.getElementsByTagName('*') );
+			
+			children.push(el);
 			children.forEach(cleanElement);
 			disposeElement.call(el);
 		});
@@ -540,6 +541,9 @@ DOM._overload = overloadDOMGetterSetter;
 
 /**
  change log:
+ 
+ 2011-10-17  Kael:
+ - fix a but about DOM.destroy
  
  2011-10-12  Kael:
  - fix a bug that ie fails on collections, use KM.makeArray instead of Array.prototype.slice
