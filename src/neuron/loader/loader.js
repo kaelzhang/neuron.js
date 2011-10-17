@@ -744,9 +744,6 @@ function provideOne(mod, callback, env){
 		parent.status < _STATUS.DD
 	){
 		loadModuleSrc(parent, function(){
-			delete mod.npc;
-			delete mod.i;
-			
 			provideOne(mod, callback, env);
 			callback = null;
 		});
@@ -836,7 +833,9 @@ function tidyModuleData(mod){
 		delete mod.factory;
 		delete mod.uri;
 		delete mod.status;
-		delete mod.ns;
+		delete mod.ns;		
+		delete mod.npc;
+		delete mod.i;
 	}
 	
 	return mod;
