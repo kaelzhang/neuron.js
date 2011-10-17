@@ -10,6 +10,7 @@ function Faker(name, config){
 		mod = config.mod,
 		f;
 		
+	self._q = config.noQueue;
 	self._queue = [];
 	self._host = config.host || K.__HOST;
 	self._name = name;
@@ -28,7 +29,7 @@ function Faker(name, config){
 
 Faker.prototype = {
 	queue: function(args, methodName){
-		this._queue.push({
+		!this._q && this._queue.push({
 			args: args,
 			name: methodName
 		});
