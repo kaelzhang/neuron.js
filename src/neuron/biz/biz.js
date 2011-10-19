@@ -32,7 +32,8 @@ function applyBusinessModules(){
 	// @type {Object}
 var stored_data = {},
 	biz_modules = [],
-	makeArray = K.makeArray;
+	makeArray = K.makeArray,
+	undef;
 
 
 /**
