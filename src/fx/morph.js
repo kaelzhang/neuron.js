@@ -1,39 +1,57 @@
 KM.define(['./css'], function(K, require){
 
-var FxCSS = require('./css');
+var FxCSS = require('./css'),
+	FxCSS_proto = FxCSS.prototype;
 
 
-return new Class({
-
+return K.Class({
 	Extends: FxCSS,
 
 	initialize: function(element, options){
-		this.element = this.subject = document.id(element);
-		this.parent(options);
+		this.element = this.subject = $(element);
+		FxCSS.call(this, options);
 	},
 
-	set: function(now){
-		if (typeof now == 'string') now = this.search(now);
-		for (var p in now) this.render(this.element, p, now[p], this.options.unit);
-		return this;
+	_set: function(now){
+		var self = this;
+		
+		for (var p in now){
+			self.render(self.element, p, now[p], self.options.unit);
+		}
+		
+		return self;
 	},
 
-	compute: function(from, to, delta){
-		var now = {};
-		for (var p in from) now[p] = this.parent(from[p], to[p], delta);
+	_compute: function(from, to, delta){
+		var now = {},
+			p;
+			
+		for (p in from){
+			now[p] = FxCSS_proto._compute.call(this, from[p], to[p], delta);
+		}
+		
 		return now;
 	},
 
 	start: function(properties){
-		if (!this.check(properties)) return this;
-		if (typeof properties == 'string') properties = this.search(properties);
-		var from = {}, to = {};
-		for (var p in properties){
-			var parsed = this.prepare(this.element, p, properties[p]);
+		var self = this;
+	
+		if (!self._check(properties)){
+			return self;
+		}
+		
+		var from = {}, to = {},
+			p,
+			parsed;
+		
+		for (p in properties){
+			parsed = self._prepare(self.element, p, properties[p]);
+			
 			from[p] = parsed.from;
 			to[p] = parsed.to;
 		}
-		return this.parent(from, to);
+		
+		return FxCSS_proto.start.call(self, from, to);
 	}
 
 });

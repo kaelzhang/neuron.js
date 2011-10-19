@@ -8,9 +8,9 @@
 
 KM.define([], function(K){
 
-return new Class({
+return K.Class({
 	
-	Implements: [Options, Events],
+	Implements: 'events options',
 	
 	options: {
 		

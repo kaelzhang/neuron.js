@@ -1,102 +1,107 @@
-KM.define([], function(){
+KM.define([], function(K){
 
-var Fx, instances = {}, timers = {};
-
-function loop(){
-	var now = Date.now();
-	for (var i = this.length; i--;){
-		var instance = this[i];
-		if (instance) instance.step(now);
-	}
-};
-
-function pushInstance(fps){
-	var list = instances[fps] || (instances[fps] = []);
-	list.push(this);
-	if (!timers[fps]){
-		timers[fps] = setInterval(function(){
-			loop.call(list);
-		}, Math.round(1000 / fps));
-	}
-};
-
-function pullInstance(fps){
-	var list = instances[fps];
-	if (list){
-		list.erase(this);
-		if (!list.length && timers[fps]){
-			delete instances[fps];
-			timers[fps] = clearInterval(timers[fps]);
+function loop(list){
+	var now = + new Date,
+		len = list.length,
+		instance;
+		
+	while(len --){
+		if (instance = list[len]){
+			instance._step(now);
 		}
 	}
 };
 
 
-Fx = new Class({
-
-	Implements: [Chain, Events, Options],
-
-	options: {
-		/*
-		onStart: nil,
-		onCancel: nil,
-		onComplete: nil,
-		onStep: nil,
-		*/
-		fps: 60,
-		unit: false,
-		duration: 500,
-		frames: null,
-		frameSkip: true,
-		link: 'ignore'
-	},
-
-	initialize: function(options){
-		this.subject = this.subject || this;
-		this.setOptions(options);
-	},
-
-	getTransition: function(){
-		return function(p){
-			return -(Math.cos(Math.PI * p) - 1) / 2;
-		};
-	},
-
-	step: function(now){
-		if (this.options.frameSkip){
-			var diff = (this.time != null) ? (now - this.time) : 0, frames = diff / this.frameInterval;
-			this.time = now;
-			this.frame += frames;
-		} else {
-			this.frame++;
+function addOrRemoveClockTicking(instance, fps, toAdd){
+	var list = _instances[fps] || (_instances[fps] = []),
+		timers = _timers,
+		timer = timers[fps],
+		i = 0,
+		len = list.length;
+		
+	if(toAdd){
+		list.push(instance);
+		
+		if(!timer){
+			timers[fps] = setInterval(function(){ console.log('loop', fps)
+				loop(list);
+			}, Math.round(1000 / fps));
+		}
+	}else{
+		for(; i < len; i ++){
+			if(list[i] === instance){
+				list.splice(i, 1);
+			}
 		}
 		
-		if (this.frame < this.frames){
-			var delta = this.transition(this.frame / this.frames),
-				now = this.compute(this.from, this.to, delta);
-				
-			this.set(now);
-			this.fireEvent('step', [now]);
+		if(!list.length && timer){
+			timers[fps] = clearInterval(timer);
+		}
+	}
+};
+
+
+var
+
+_instances = {},
+
+_timers = {},
+
+Fx = K.Class({
+
+	Implements: 'events attrs',
+
+	initialize: function(options){ console.log('fx init called', options, this.subject)
+		var self = this;
+	
+		self.subject = self.subject || self;
+		self.setAttrs(options);
+		
+		self.frameSkip = self.get('frameSkip');
+	},
+
+	_step: function(now){
+		var self = this;
+	
+		if (self.frameSkip){
+			var diff = (this.time != null) ? (now - this.time) : 0, frames = diff / this.frameInterval;
+			
+			self.time = now;
+			self.frame += frames;
+			
 		} else {
-			this.frame = this.frames;
-			this.set(this.compute(this.from, this.to, 1));
-			this.stop();
+			self.frame ++;
+		}
+		
+		if (self.frame < self.frames){
+			var delta = self._transition(self.frame / self.frames),
+				now = self._compute(self.from, self.to, delta);
+				
+			self._set(now);
+			self.fire('step', [now]);
+			
+		} else {
+			self.frame = self.frames;
+			self._set(self._compute(self.from, self.to, 1));
+			
+			self.stop();
 		}
 	},
 
-	set: function(now){
+	_set: function(now){
 		return now;
 	},
 
-	compute: function(from, to, delta){
+	_compute: function(from, to, delta){
 		return Fx.compute(from, to, delta);
 	},
 
-	check: function(){
+	_check: function(){
 		var self = this, args = arguments;
 	
-		if (!self.isRunning()) return true;
-		switch (self.options.link){
+		if (!self._isRunning()) return true;
+		switch (self.get('link')){
 			case 'cancel': self.cancel(); return true;
 			case 'chain': self.chain(function(){
 				return self.caller.apply(self, args);
@@ -105,71 +110,135 @@ Fx = new Class({
 		return false;
 	},
 
+	_isRunning: function(){
+		var list = _instances[this.get('fps')];
+		return list && list.indexOf(this) !== -1;
+	},
+
 	start: function(from, to){
-		if (!this.check(from, to)) return this;
-		this.from = from;
-		this.to = to;
-		this.frame = (this.options.frameSkip) ? 0 : -1;
-		this.time = null;
-		this.transition = this.getTransition();
-		var frames = this.options.frames, fps = this.options.fps, duration = this.options.duration;
-		this.duration = Fx.Durations[duration] || duration.toInt();
-		this.frameInterval = 1000 / fps;
-		this.frames = frames || Math.round(this.duration / this.frameInterval);
-		this.fireEvent('start', this.subject);
-		pushInstance.call(this, fps);
+		var self = this;
+	
+		if (self._check(from, to)){
+			self.from = from;
+			self.to = to;
+			self.frame = self.frameSkip ? 0 : -1;
+			self.time = null;
+			self._transition = self.get('transition');
+			
+			var frames = self.get('frames'),
+				fps = self.get('fps'),
+				duration = self.get('duration');
+			
+			self.duration = duration;
+			self.frameInterval = 1000 / fps;
+			self.frames = frames || Math.round( duration / self.frameInterval);
+			self.fire('start', self.subject);
+			
+			addOrRemoveClockTicking.call(self, fps, true);
+		}
+		
 		return this;
 	},
 	
 	stop: function(){
-		if (this.isRunning()){
-			this.time = null;
-			pullInstance.call(this, this.options.fps);
-			if (this.frames == this.frame){
-				this.fireEvent('complete', this.subject);
-				if (!this.callChain()) this.fireEvent('chainComplete', this.subject);
+		var self = this;
+		
+		if (self._isRunning()){
+			self.time = null;
+			
+			addOrRemoveClockTicking.call(self, self.get('fps'));
+			
+			if (self.frames === self.frame){
+				self.fire('complete', self.subject);
+				
 			} else {
-				this.fireEvent('stop', this.subject);
+				self.fire('stop', self.subject);
 			}
 		}
-		return this;
+		
+		return self;
 	},
 	
 	cancel: function(){
-		if (this.isRunning()){
-			this.time = null;
-			pullInstance.call(this, this.options.fps);
-			this.frame = this.frames;
-			this.fireEvent('cancel', this.subject).clearChain();
+		if (self._isRunning()){
+			self.time = null;
+			
+			addOrRemoveClockTicking.call(self, self.get('fps'));
+			
+			self.frame = self.frames;
+			
+			self.fire('cancel', self.subject).clearChain();
 		}
-		return this;
+		
+		return self;
 	},
 	
 	pause: function(){
-		if (this.isRunning()){
-			this.time = null;
-			pullInstance.call(this, this.options.fps);
+		var self = this;
+	
+		if (self._isRunning()){
+			self.time = null;
+			addOrRemoveClockTicking(self, self.get('fps'));
 		}
-		return this;
+		
+		return self;
 	},
 	
 	resume: function(){
-		if ((this.frame < this.frames) && !this.isRunning()) pushInstance.call(this, this.options.fps);
-		return this;
-	},
-	
-	isRunning: function(){
-		var list = instances[this.options.fps];
-		return list && list.contains(this);
+		var self = this;
+
+		self.frame < self.frames && !self._isRunning() && addOrRemoveClockTicking(self, self.get('fps'), true);
+		return self;
 	}
 
 });
+
+
+K.Class.setAttrs(Fx, {
+	fps: {
+		writeOnce: true,
+		value: 60
+	},
+	
+	unit: {
+		value: false
+	},
+	
+	duration: {
+		value: 500
+	},
+	
+	frames: {
+		writeOnce: true,
+		value: null
+	},
+	
+	frameSkip: {
+		value: true
+	},
+	
+	link: {
+		value: 'ignore'
+	},
+	
+	property: {
+		setter: function(v){
+			this.property = v;
+		}
+	},
+	
+	transition: {
+		value: function(p){
+			return - ( Math.cos( Math.PI * p ) - 1) / 2;
+		}
+	}
+});
+
 
 Fx.compute = function(from, to, delta){
 	return (to - from) * delta + from;
 };
 
-Fx.Durations = {'short': 250, 'normal': 500, 'long': 1000};
 
 return Fx;
 
