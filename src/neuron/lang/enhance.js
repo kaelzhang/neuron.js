@@ -84,7 +84,7 @@ function memoizeMethod(fn){
 	return function(){
 		var arg = array_join.call(arguments, MEMOIZE_JOINER);
 	
-		return (arg in stack) ? stack[arg] : (stack[arg] = fn.apply(null, arguments));
+		return (arg in stack) ? stack[arg] : (stack[arg] = fn.apply(this, arguments));
 	}
 };
 
@@ -147,8 +147,8 @@ function toQueryString(obj, splitter){
  * @param {Object=} cached stack for cached objects which are the clones of marked objects
  * @param {number=} depth, for inner use
  */
-function clone(o, marked, filter, host, cached, depth){
-	var m, id, key, value, is_array;
+function clone(o, filter, marked, cached, depth){
+	var marker, id, key, value, is_array, host;
 	
 	// internal use
 	cached || (cached = {});
@@ -169,17 +169,17 @@ function clone(o, marked, filter, host, cached, depth){
 				return o;
 			}
 		
-			m = CLONE_MARKER;
+			marker = CLONE_MARKER;
 			host || (host = {});
 		
-			if(o[m]){
-				return cached[o[m]];
+			if(o[marker]){
+				return cached[o[marker]];
 			}
 			
 			id = _guid ++;
 			
 			// mark copied object to prevent duplicately cloning
-			o[m] = id;
+			o[marker] = id;
 			
 			// store the marked object in order to santitize the markers after cloning
 			marked[id] = o;
@@ -195,12 +195,12 @@ function clone(o, marked, filter, host, cached, depth){
 				
 				if(
 					// !CLONE_MARKER
-					key !== m &&
+					key !== marker &&
 					
 					// checking filter
-					(!filter || filter(value, key, depth))
+					(!filter || filter.call(o, value, key, depth))
 				){
-					host[key] = clone(value, marked, filter, null, cached, depth + 1);
+					host[key] = clone(value, filter, marked, cached, depth + 1);
 				}
 			}
 			
@@ -245,9 +245,11 @@ var	NOOP 			= function(){},
 	
 K.mix = mix;
 	
+
 K.guid = function(){
 	return _guid ++;
 };
+
 
 /**
  * forEach method for Object
@@ -268,7 +270,6 @@ K.each = function(obj, fn, context){
 			
 		}else if(K.isArray(obj)){
 			obj.forEach(fn, context);
-			
 		}
 	}
 };
@@ -280,20 +281,18 @@ K.each = function(obj, fn, context){
  
  * @param {Object|Array} o
  * @param {?function()} filter filter function(value, key, depth)
- * @param {Object=} receiver
  * @return {Object} the cloned object
  
  usage:
  <code>
-	 var a = {}, b = {b: 1}, c; a.a = a; 
-	 KM.clone(a, false, b);	// clone a to b
+	 var a = {}, b = {b: 1}, c; a.a = a;
 	 c = KM.clone(a); 		// clone a to c
  </code>
  */
-K.clone = function(o, filter, receiver) {
+K.clone = function(o, filter) {
 	var marked = {},
 		m = CLONE_MARKER,
-		cloned = clone(o, marked, filter, receiver);
+		cloned = clone(o, filter, marked);
 	
 	// remove CLONE_MARKER
 	K.each(marked, function(v){
@@ -473,7 +472,7 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
 /**
  ---------------------------------------------------------
- [1] why dangerous? you could find out.
+ [1] why dangerous? you could find out. the order of the old keys and new created keys between various browsers is different
  
  change log:
  
