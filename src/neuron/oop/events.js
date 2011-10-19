@@ -23,12 +23,7 @@ function addOrRemoveEvent(host, type, fn, toAdd){
 	if(toAdd){
 		// add an event
 		if(K.isFunction(fn)){
-			for(; i <= len; i ++){
-				if(!storage[i]){
-					storage[i] = fn;
-					break;
-				}
-			}
+			storage.push(fn);
 		}
 		
 	}else{
@@ -36,7 +31,7 @@ function addOrRemoveEvent(host, type, fn, toAdd){
 		if(K.isFunction(fn)){
 			for(; i < len; i ++){
 				if(storage[i] === fn){
-					delete storage[i];
+					storage.splice(i, 1);
 				}
 			}
 			
@@ -61,6 +56,8 @@ K.Class.EXTS.events = {
 	
 	fire: function(type, args){
 		var self = this;
+		
+		args = K.makeArray(args);
 		
 		getStorage(self, type).forEach(function(fn){
 			fn.apply(self, args);

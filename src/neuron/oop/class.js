@@ -31,8 +31,8 @@
 var Class = KM.Class,
 
 	myClass = Class( baseClass, {
-		Extends: [ Interface1, Interface2, 'options' ],
-		// Extends: 'options events',
+		Implements: [ Interface1, Interface2, 'options' ],
+		// Implements: 'options events',
 		
 		initialize: function(){},
 		
@@ -101,19 +101,11 @@ function setAttrs(class_, attr){
 
 	while(cls = cls.prototype[__SUPER_CLASS]){
 		if(parent_attr = cls.ATTRS){
-			attrs.push(parent_attr);
+			break;
 		}
 	}
 	
-	attrs.forEach(function(a){
-		K.each(a, function(v, key){
-			if(!attr[key]){
-				attr[key] = K.clone(v);
-			}
-		});
-	});
-	
-	class_.ATTRS = attr;
+	class_.ATTRS = K.mix(attr || {}, K.clone(parent_attr));
 };
 
 
@@ -261,7 +253,7 @@ Class.setAttrs = setAttrs;
 
 
 K.define.on();
-K.define('_class', function(){
+K.define('class', function(){
 	return K.Class;
 });
 K.define.off();

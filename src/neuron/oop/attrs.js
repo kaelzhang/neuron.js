@@ -75,18 +75,37 @@ function getMethod(host, attr, name){
  * @private
  */
 function createGetterSetter(host, sandbox, undef){
-	host.set = function(key, value, override){
+	host.set = K._overloadSetter( function(key, value, override){ console.log(sandbox)
 		var attr = sandbox[key];
 		
 		return attr ? setValue(this, attr, value, override) : false;
-	};
+	});
 	
 	host.get = function(key){
 		var attr = sandbox[key];
 		
 		return attr ? getValue(this, attr) : undef;
 	};
+	
+	host.addAttr = function(key, setting){
+		sandbox[key] = setting;
+	}
 };
+
+
+function createSandBox(host){
+	var class_ = host.constructor,
+		sandbox;
+	
+	do{
+		if(sandbox = class_.ATTRS){
+			break;
+		}
+	} while(class_ = class_.prototype[__SUPER_CLASS]);
+	
+	return sandbox ? K.clone(sandbox) : {};
+};
+
 
 var TRUE = true,
 	GETTER = 'getter',
@@ -96,6 +115,8 @@ var TRUE = true,
 	WRITE_ONCE = 'writeOnce',
 	
 	__SUPER_CLASS = '__super',
+	
+	NOOP = function(){},
 	
 	isPlainObject = K.isPlainObject;
 
@@ -129,10 +150,11 @@ K.Class.EXTS.attrs = {
 	setAttrs: function(options, force){
 		var self = this,
 		
-			// private members
-			sandbox = K.clone(self.constructor.ATTRS);
+			// @private
+			// sandbox
+			sandbox = createSandBox(self);
 		
-		// .set and .get methods won't be available util .setOptions method excuted
+		// .set and .get methods won't be available util .setAttrs method excuted
 		createGetterSetter(self, sandbox);
 		
 		K.each(options, function(v, k){
@@ -140,6 +162,8 @@ K.Class.EXTS.attrs = {
 			
 			attr && setValue(this, attr, v, false, force);
 		}, self);
+		
+		self.setAttrs = NOOP;
 	}
 };
 
@@ -148,6 +172,10 @@ K.Class.EXTS.attrs = {
 
 
 /**
+ 2011-10-18  Kael:
+ TODO:
+ - ? A. optimize setAttrs method, lazily initialize presets after they are called
+ 
  2011-09-20  Kael:
  - attr setter will return true or false to tell whether the new value has been successfully set
 
