@@ -247,13 +247,7 @@ extend({
 		return this.context.length;
 	},
 	
-	forEach: function(fn, wrap){
-		var $;
-		
-		fn = wrap ? 
-			( $ = DOM, function(el){ fn(new $(el)); } )
-			: fn;
-			
+	forEach: function(fn){
 		this.context.forEach(fn);
 	}
 });
@@ -287,7 +281,7 @@ DOM.noConflict = function(){
 K.define.on();
 
 // fake package module
-K.define('_dom', function(){ return DOM; });
+K.define('dom', function(){ return DOM; });
 K.define.off();
 
 
