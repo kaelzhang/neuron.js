@@ -35,17 +35,17 @@ KM.define({
 			autoPlayTimer.start();
 		};
 		    
-		self.addEvent(EVENTS.__CONSTRUCT, function(){
+		self.on(EVENTS.__CONSTRUCT, function(){
 			K.mix(self, {
 				pause: pause,
 				resume: resume
 			})
 		});
 
-        self.addEvent(EVENTS.AFTER_INIT, function(){
+        self.on(EVENTS.AFTER_INIT, function(){
             var t = self;
 
-            o.hoverStop && t.container.addEvents({
+            o.hoverStop && t.container.ons({
                 mouseenter: function(){
                     t.paused = true;
                 },
@@ -60,11 +60,11 @@ KM.define({
         });
 
         // 
-        self.addEvent(EVENTS.BEFORE_SWITCH, function(){
+        self.on(EVENTS.BEFORE_SWITCH, function(){
             autoPlayTimer.cancel();
         });
             
-        self.addEvent(EVENTS.COMPLETE_SWITCH, function(){
+        self.on(EVENTS.COMPLETE_SWITCH, function(){
             !paused && autoPlayTimer.start();
         });
     }

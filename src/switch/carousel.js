@@ -61,15 +61,15 @@ return {
         };
 
         fx.onComplete = function(){
-            self.fireEvent(EVENTS.COMPLETE_SWITCH);
+            self.fire(EVENTS.COMPLETE_SWITCH);
         };
 
-        self.addEvent(EVENTS.BEFORE_INIT, function(){
+        self.on(EVENTS.BEFORE_INIT, function(){
             self.effect = new Tween(self.container, fx);
             delete self.options.fx;
         });
 
-        self.addEvent(EVENTS.AFTER_INIT, function(){
+        self.on(EVENTS.AFTER_INIT, function(){
             checkStage(self);
 
             var t = self,
@@ -81,11 +81,11 @@ return {
             t._dealNavs();
         });
 
-        self.addEvent(EVENTS.BEFORE_SWITCH, function(){
+        self.on(EVENTS.BEFORE_SWITCH, function(){
             currentTriggerClass(true);
         });
 
-        self.addEvent(EVENTS.ON_SWITCH, function(){
+        self.on(EVENTS.ON_SWITCH, function(){
             var t = self,
                 active = t.activePage = t.expectPage;
 

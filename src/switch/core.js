@@ -9,14 +9,11 @@
                         |   |
                         |   |
  plugin host -----------|   |-------- prototype inheritance: 
-                                      only allowd for methods about life cycle
+                                      only allowed for methods about life cycle
  */
  
-KM.define(['util/asqueue' /* , 'event/multi' */ ], function(K, require){
+KM.define(['util/queue' /* , 'event/multi' */ ], function(K, require){
 
-
-// the event name of __CONSTRUCT begins with 2 underscores, 
-// preventing user from configuring __CONSTRUCT event by Switch options
 var __CONSTRUCT = '__construct',
 	EVENT_BEFORE_INIT = 'beforeInit',
     EVENT_AFTER_INIT = 'afterInit',
@@ -28,6 +25,7 @@ var __CONSTRUCT = '__construct',
     
     PLUGIN_PREFIX = 'switch/plugin/',
     
+    // style presets
     NAVITATOR_DISABLE_STYLE = {
         opacity	: .3,
         cursor	: 'default'
@@ -40,22 +38,23 @@ var __CONSTRUCT = '__construct',
 
     NOOP = function(){},
     EMPTY = '',
+    
+    PREV = 'prev',
+    NEXT = 'next',
 
     Switch,
+    
     // MultiEvent = require('event/multi'),
-    ASQueue = require('util/asqueue');
-
-  
-function getNoEmptyElements(CS){
-	var elements = $$(CS);
-	
-	return elements.length ? elements : null;
-};
+    Queue = require('util/queue');
+    
 
 function limit(num, min, max){
 	return Math.min(max, Math.max(min, num));
 };
-    
+
+function atLeastOne(num){
+	return !num || num < 1 ? 1 : num;
+};
 
 /**
  * @constructor
@@ -67,53 +66,13 @@ function limit(num, min, max){
  * if no plugin is specified, the items will plainly switched with no effect
  */
 Switch = new Class({
-    Implements: [Options, Events],
-
-    options: {
-        // stage {int} the number of items in one viewport
-        stage: 1,
-
-        // move {int} the number of items a single switch will move
-        move: 1,
-
-        triggerType: 	'click',
-
-        // CSPre {string} prefix of selectors
-        // if CSPre === '#switch', then we will get previous button with $$('#switch ' + options.prev)[0]
-        CSPre: 			EMPTY,
-
-        // triggerS {dom selector $$ || Mootools Elements} trigger selector of switch tabs, such as 1,2,3,4
-        triggerCS: 		EMPTY, 		// '.trigger',
-        triggerOnCls: 	EMPTY, 		// 'Jtrigger-on',
-
-        countCS: 		EMPTY, 		// '.page-count',
-
-        // container, prev, next {dom selector $$[0] || Mootools Element} 
-        containerCS: 	EMPTY, 		// '.switch-track',
-        prevCS: 		EMPTY, 		// '.prev',
-        nextCS: 		EMPTY, 		// '.next',
-
-        // items will be fetched by container.getElements()
-        itemCS: 		EMPTY, 		// 'li',
-        itemOnCls: 		EMPTY, 		// 'J_cont-on',
-
-        // the index of the first items activated when initializing
-        activePage: 	0,
-        
-        onNavEnable:	function(btn, which){
-        	btn.setStyles(NAVITATOR_ENABLE_STYLE);
-        },
-        
-        onNavDisable:	function(btn, which){
-        	btn.setStyles(NAVITATOR_DISABLE_STYLE);
-        }
-    },
+    Implements: 'attrs events',
     
     initialize: function(){
     	var self = this,
     		bind = K.bind;
     	
-    	self.fireEvent(__CONSTRUCT);
+    	self.fire(__CONSTRUCT);
     	
     	bind('prev', self);
     	bind('next', self);
@@ -121,7 +80,7 @@ Switch = new Class({
     	bind('init', self);
     	
     	// initialization queue for dynamicly loading plugins
-    	self._initializer = new ASQueue.Converter([
+    	self._initializer = new Queue.Converter([
     		{
 	    		method: 'plugin',
 	    		
@@ -141,7 +100,7 @@ Switch = new Class({
     	], self).on();
     	
     	// processing queue for switch life cycle
-    	self._lifeCycle = new ASQueue.Runner(self._lifeCycle, self);
+    	self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
     },
 
     // @private
@@ -158,6 +117,7 @@ Switch = new Class({
 	 * you could override this setting, according to the api of util/asqueue
 	 */
 	_lifeCycle: ['_before', '_on', '_after'],
+	
 	
 	/**
 	 * filter plugins to get the ones which need to be provided
@@ -273,13 +233,8 @@ Switch = new Class({
 
 		self._initializer.off();
 
-        // we can override plugin options here
-        self.setOptions(options);
-        o = self.options;
-
-        if(o.CSPre){
-            o.CSPre = String(o.CSPre).trim() + ' ';
-        }
+        // initialize extension: attrs
+        self.setAttrs();
 
         // apply plugin initialization method
         plugins.each(function(plugin){
@@ -288,55 +243,37 @@ Switch = new Class({
             }
         });
 
-        self._initEvent();
+		['CSpre', 'containerCS', 'activePage'].forEach(function(key){
+			var setting = options[key];
+			
+			setting && self.set(key, setting);
+			delete options[key];
+		});
 
-        // however, the container should be found first
-        self.container = $$(o.CSPre + o.containerCS)[0];
+        self.nav = {};
                 
         if(self.container){
-            activePage = self.activePage = o.activePage || 0;
+            self.fire(EVENT_BEFORE_INIT);
+            
+            self.set(options);
 
-            self.fireEvent(EVENT_BEFORE_INIT);
-
-            self._initDom();
-            self._bindNav();
-            self.fireEvent(EVENT_AFTER_INIT);
+            self._itemData();
+            self.fire(EVENT_AFTER_INIT);
 
             currentItem = self.items[activePage];
 
             if(currentItem && !currentItem.hasClass(o.itemOnCls)){
-                self.switchTo(activePage, true);
+                self.switchTo(self.activePage, true);
             }
         }
 
         return self;
     },
 
-    /**
-     * initialize DOM
-     *
-     */
-    _initDom: function(){
-        var self = this,
-            o = self.options,
-            pre = o.CSPre,
-            nav = self.nav = {};
-
-        self.items = self.container.getElements(o.itemCS);
-        self.triggers = o.triggerCS ? $$(pre + o.triggerCS) : [];
-        self.pageCounters = o.countCS ? getNoEmptyElements(pre + o.countCS) : null;
-
-		
-        o.prevCS && (nav.prev = getNoEmptyElements(pre + o.prevCS));
-        o.nextCS && (nav.next = getNoEmptyElements(pre + o.nextCS));
-        
-        self._itemData();
-    },
-
 	_itemData: function(){
-		var self = this, o = self.options;
+		var self = this;
 	
-		self.length = self.items.length;
+		self.length = self.items.count();
 		
 		/**
          calculate how many pages the Switcher has:
@@ -364,65 +301,8 @@ Switch = new Class({
          -> 1 + (length - stage)/move <= page < 2 + (length - stage)/move
          -> page = {1 + (length - stage)/move}
         */
-        self.pages = 1 + Math.ceil( (self.length - o.stage) / (o.move || 1) );
+        self.pages = 1 + Math.ceil( (self.length - self.get('stage')) / self.get('move') );
 	},
-
-	// _checkPages: function(){
-	//	if(self.pages < 2){
-    //        self.noprev = self.rightEnd = true;
-    //    }
-	// },
-
-    // bind navgators and triggers
-    _bindNav: function(){
-        var self = this,
-            o = self.options,
-            nav = self.nav,
-            type = o.triggerType,
-            i = 0,
-            len = self.triggers.length,
-            trigger;
-            
-        nav.prev && nav.prev.addEvent(type, self.prev);
-        nav.next && nav.next.addEvent(type, self.next);
-
-        for(; i < len; ++ i){
-
-            // use closure to store i
-            (function(index){
-                var t = self;
-
-                trigger = t.triggers[index];
-
-                trigger.addEvent(type, function(e){
-                    e && e.preventDefault();
-                    t.switchTo(index);
-
-                }).addEvents({
-                    mouseenter: function(){ t._onEnterTrigger(index); },
-                    mouseleave: function(){ t._onLeaveTrigger(index); }
-                });
-
-            })(i);
-        };
-
-//        self.container.addEvents({
-//            mouse enter: function(){ self.hoverOn = true; },
-//            mouse leave: function(){ self.hoverOn = false; }
-//        });
-    },
-
-    _initEvent: function(){
-        this.addEvents(this.options.events);
-    },
-
-    _onEnterTrigger: function(index){
-        this.triggerOn = true;
-    },
-
-    _onLeaveTrigger: function(index){
-        this.triggerOn = false;
-    },
 
     // switch to a certain item
     // @param {number} index the index of the item to be switched on
@@ -438,30 +318,8 @@ Switch = new Class({
         return self;
     },
     
-    //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
-    _before: function(){
-    	var self = this, index = self.expectPage;
-    	
-    	if(self.force || self.activePage !== index){
-    		self.fireEvent(EVENT_BEFORE_SWITCH, [self.activePage, index]);
-    	}else{
-    		self._lifeCycle.stop();
-    	}
-    },
-    
-    _on: function(){
-    	this.fireEvent(EVENT_ON_SWITCH);
-    },
-    
-    _after: function(){
-    	var self = this;
-    	
-    	self.pageCounters && self.pageCounters.set('text', self.activePage + 1);
-    },
-    //////// life cycle end ///////////////////////////////////////////////////////////////////////////////
-
     prev: function(e){
-        e && e.preventDefault();
+        e && e.prevent();
         var self = this;
 
         // 限制 activePage 的范围
@@ -469,12 +327,45 @@ Switch = new Class({
     },
 
     next: function(e){
-        e && e.preventDefault();
+        e && e.prevent();
         var self = this;
 
         !self.rightEnd && self.switchTo( limit(self.activePage + 1, 0, self.pages - 1) );
     },
     
+    //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
+    _before: function(){
+    	var self = this, index = self.expectPage;
+    	
+    	if(self.force || self.activePage !== index){
+    		self.fire(EVENT_BEFORE_SWITCH, [self.activePage, index]);
+    	}else{
+    		self._lifeCycle.stop();
+    	}
+    },
+    
+    _on: function(){
+    	this.fire(EVENT_ON_SWITCH);
+    },
+    
+    _after: function(){
+    	var counters = this.pageCounters;
+    	
+    	counters && counters.text(this.activePage + 1);
+    },
+    //////// life cycle end ///////////////////////////////////////////////////////////////////////////////
+  
+  
+  	/**
+  	 * @private
+  	 --------------------------------------------------------------------------------------------------- */
+  	_onEnterTrigger: function(index){
+        this.triggerOn = true;
+    },
+
+    _onLeaveTrigger: function(index){
+        this.triggerOn = false;
+    },
     
     /**
 	 * method to check the number of pages to determine whether the Switch instance meet either of the 2 ends
@@ -509,13 +400,126 @@ Switch = new Class({
     	if(nav){
     		isEnd = self['_isNo' + type]();
     		
-    		self.fireEvent((isEnd ? EVENT_NAV_DISABLE : EVENT_NAV_ENABLE), [nav, type]);
+    		self.fire((isEnd ? EVENT_NAV_DISABLE : EVENT_NAV_ENABLE), [nav, type]);
     	}
-    },
-    
-    get: function(key){
-    	return this.constructor[key];
     }
+});
+
+
+Class.setAttrs(Switch, {
+
+	// stage {int} the number of items in one viewport
+	stage: {
+		value: 1,
+		setter: atLeastOne
+	},
+	
+	// move {int} the number of items a single switch will move
+	move: {
+		value: 1,
+		setter: atLeastOne
+	},
+	
+	triggerType: {
+		value: 'click'
+	}
+	
+	// CSPre {string} prefix of selectors
+	// if CSPre === '#switch', then we will get previous button with $$('#switch ' + options.prev)[0]
+	CSPre: {
+		writeOnce: true,
+		setter: function(v){
+			this.CSPre = v + ' ';
+		}
+	},
+	
+	// triggerS {dom selector $$ || Mootools Elements} trigger selector of switch tabs, such as 1,2,3,4
+	triggerCS: {
+		setter: function(v){
+			var self = this;
+				
+			self.triggers = $.all(self.CSPre + v).forEach(function(trigger, index){
+	        	var t = self;
+	        
+	        	$(trigger).on(type, function(e){
+	                e && e.prevent();
+	                t.switchTo(index);
+	
+	            }).on({
+	                mouseenter: function(){ t._onEnterTrigger(index); },
+	                mouseleave: function(){ t._onLeaveTrigger(index); }
+	            });
+	        
+	        }, true);
+		}
+	},
+	 		
+	triggerOnCls: {
+		value: EMPTY
+	},
+	
+	countCS: {
+		setter: function(v){
+			this.pageCounters = $.all(this.CSPre + v);
+		}
+	},
+	
+	// container, prev, next {dom selector $$[0] || Mootools Element} 
+	containerCS: {
+		setter: function(v){
+			this.container = $(this.CSPre + v);
+		}
+	},
+	
+	prevCS: {
+		setter: function(v){
+			var self = this, PREV = 'prev';
+			
+			self.nav[PREV] = $.all(self.CSPre + v).on(self.triggerType, self[PREV]);
+		}
+	},
+	
+	nextCS: {
+		setter: function(v){
+			var self = this, NEXT = 'next';
+			
+			self.nav[NEXT] = $.all(self.CSPre + v).on(self.triggerType, self[NEXT]);
+		}
+	},
+	
+	// items will be fetched by container.getElements()
+	itemCS: {
+		setter: function(v){
+			var self = this;
+			
+			self.items = self.container.all(self.CSPre + v);
+		}
+	},
+	
+	itemOnCls: {
+		value: EMPTY
+	},
+	
+	// the index of the first items activated when initializing
+	activePage: {
+		value: 0,
+		setter: function(v){
+			this.activePage = !v || v < 0 ? 0 : v;
+		}
+	},
+	
+	onNavEnable: {
+		value: function(btn, which){
+			btn && btn.css(NAVITATOR_ENABLE_STYLE);
+		}
+	},
+	
+	onNavDisable: {
+		value: function(btn, which){
+			btn && btn.css(NAVITATOR_DISABLE_STYLE);
+		}
+	}
+
 });
 
 

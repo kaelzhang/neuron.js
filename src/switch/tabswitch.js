@@ -11,7 +11,7 @@ KM.define({
     init: function(self){
     	var EVENTS = self.get('EVENTS');
     
-        self.addEvent(EVENTS.BEFORE_SWITCH, function(){
+        self.on(EVENTS.BEFORE_SWITCH, function(){
             var t = self;
                 o = t.options,
                 activePage = t.activePage;
@@ -20,7 +20,7 @@ KM.define({
 			t.items[activePage] && t.items[activePage].removeClass(o.itemOnCls);
         });
 
-        self.addEvent(EVENTS.ON_SWITCH, function(){
+        self.on(EVENTS.ON_SWITCH, function(){
             var t = self;
                 o = t.options,
                 activePage = t.activePage = t.expectPage;

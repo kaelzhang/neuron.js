@@ -42,7 +42,7 @@ return {
         
         var EVENTS = self.get('EVENTS');
 
-        self.addEvent(EVENTS.BEFORE_INIT, renderData);
+        self.on(EVENTS.BEFORE_INIT, renderData);
     }
 };
 

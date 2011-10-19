@@ -66,13 +66,13 @@ return {
     	
     		on_complete[active] = function(){
     			self.items[active].removeClass(active_cls);
-    			self.fireEvent(EVENT_ON_ITEM_DEACTIVE, [active]);
+    			self.fire(EVENT_ON_ITEM_DEACTIVE, [active]);
     		}
     		
     		on_complete[expect] = function(){
     			self.items[expect].addClass(active_cls);
-    			self.fireEvent(EVENT_ON_ITEM_ACTIVE, [expect]);
-    			self.fireEvent(EVENTS.COMPLETE_SWITCH);
+    			self.fire(EVENT_ON_ITEM_ACTIVE, [expect]);
+    			self.fire(EVENTS.COMPLETE_SWITCH);
     		}
     	};
     	
@@ -84,7 +84,7 @@ return {
             fx.property = o.property;
         };
 
-        self.addEvent(EVENTS.AFTER_INIT, function(){
+        self.on(EVENTS.AFTER_INIT, function(){
             var t = self,
                 active = t.activePage;
                 
@@ -97,7 +97,7 @@ return {
           	}
         });
 
-        self.addEvent(EVENTS.ON_SWITCH, function(){
+        self.on(EVENTS.ON_SWITCH, function(){
             var t = self,
                 active = t.activePage,
                 expect = t.expectPage;
