@@ -48,6 +48,9 @@ Class.destroy(instance);
 */
 
 
+/**
+ * @return {Object}
+ */
 function getPrototype(obj){
 	var ret, type = K._type(obj);
 	
@@ -63,7 +66,8 @@ function getPrototype(obj){
 };
 
 
-function implementOne(host, alien){
+function implementOne(host, alien, override){
+	// prototype Object for mixin 
 	var proto = getPrototype(alien);
 
 	proto && K.mix(
@@ -73,21 +77,23 @@ function implementOne(host, alien){
 		//	return PRIVATE_MEMBERS.indexOf(key) === -1;
 		// }),
 		
-		// methods of an interface have lowest priorities
-		false
+		// methods of an interface have second lowest priority
+		override
 	);
 };
 
 
-// implement a class with interfaces
-function implement(host, extensions){
+/**
+ * implement a class with interfaces
+ */
+function implement(proto, extensions, override){
 	if(typeof extensions === 'string'){
 		extensions = extensions.trim().split(/\s+/);
 	}
 
 	K.makeArray(extensions).forEach(function(alien){
-		implementOne(this, alien);
-	}, host.prototype);
+		implementOne(this, alien, override);
+	}, proto);
 };
 
 
@@ -199,24 +205,27 @@ function _Class(base, proto){
 		
 		// discard the parent constructor
 		F.prototype = base.prototype;
-		newClass.prototype = new F;
+		newProto = new F;
 		
-		// argument proto has the highest priority
-		newProto = K.mix(newClass.prototype, proto);
+		// priority high to low
+		// user prototype > ext > super class prototype
+		exts && implement(newProto, exts, true);
+		
+		newProto[__SUPER_CLASS] = base;
+		K.mix(newProto, proto);
+		
 	}else{
-		newProto = newClass.prototype = proto;
+	
+		// no super class, direct assign user prototype for performance
+		newProto = proto;
+		exts && implement(newProto, exts, false);
 	}
 	
-	// no override
-	// Implements have the lowest priority
-	exts && implement(newClass, exts);
-		
-	if(base){
-		newProto[__SUPER_CLASS] = base;
-	}
+	newClass.prototype = newProto;
 	
 	// fix constructor
 	newProto.constructor = newClass;
+	
 	
 	return newClass;
 };
@@ -246,17 +255,7 @@ Class.destroy = function(instance){
 	destructor && destructor();
 };
 
-Class.implement = implement;
-
 Class.setAttrs = setAttrs;
-
-
-
-K.define.on();
-K.define('class', function(){
-	return K.Class;
-});
-K.define.off();
 
 
 })(KM);
@@ -264,6 +263,9 @@ K.define.off();
 
 /**
  change log:
+ 
+ 2011-10-19  Kael:
+ - adjust the priority of inheritance chain as: user prototype > ext > super class prototype
  
  2011-09-19  Kael:
  - fix a bug the instance fail to clear the reference off its prototype
