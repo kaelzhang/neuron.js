@@ -5,7 +5,16 @@
  
 KM.define(['./accordion'], function(K, require){
 
-var accordion = require('./accordion');
+var accordion = require('./accordion'),
+	fade = K.mix({}, accordion),
+	
+	fade_fx = fade.options = K.clone(accordion.options);
+	
+fade_fx.duration = 1000;
+
+
+
+
 
 return K.merge({}, accordion, {
 	options: {
