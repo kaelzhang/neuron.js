@@ -1,53 +1,59 @@
 KM.define(['./core'], function(K, require){
 
-var Fx = require('./core'),
-	FxCSS,
+var 
+
+Fx = require('./core'),
 	
-	// atom
-	ATOM = {},
-	makeArray = K.makeArray,
-	
-	PARSERS = {
-		Color: {
-			parse: function(value){
-				if (value.match(/^#[0-9a-f]{3,6}$/i)) return value.hexToRgb(true);
-				return ((value = value.match(/(\d+),\s*(\d+),\s*(\d+)/))) ? [value[1], value[2], value[3]] : false;
-			},
-			compute: function(from, to, delta){
-				return from.map(function(value, i){
-					return Math.round(Fx.compute(from[i], to[i], delta));
-				});
-			},
-			serve: function(value){
-				return value.map(Number);
-			}
+// atom
+ATOM_ALREADY_COMPUTED = {},
+makeArray = K.makeArray,
+
+PARSERS = {
+	Color: {
+		parse: function(value){
+			if (value.match(/^#[0-9a-f]{3,6}$/i)) return value.hexToRgb(true);
+			return ((value = value.match(/(\d+),\s*(\d+),\s*(\d+)/))) ? [value[1], value[2], value[3]] : false;
 		},
-	
-		Number: {
-			parse: parseFloat,
-			compute: Fx.compute,
-			serve: function(value, unit){
-				return (unit) ? value + unit : value;
-			}
+		compute: function(from, to, progress){
+			return from.map(function(value, i){
+				return Math.round(Fx.compute(from[i], to[i], progress));
+			});
 		},
-	
-		String: {
-			parse: function(){
-				return false; 
-			},
-			compute: function(zero, one){
-				return one;
-			},
-			serve: function(zero){
-				return zero;
-			}
+		serve: function(value){
+			return value.map(Number);
 		}
-	
-	};
+	},
 
-FxCSS = K.Class({
+	Number: {
+		parse: parseFloat,
+		compute: Fx.compute,
+		serve: function(value, unit){
+			return (unit) ? value + unit : value;
+		}
+	},
 
-	Extends: Fx,
+	String: {
+		parse: function(){
+			return false; 
+		},
+		compute: function(zero, one){
+			return one;
+		},
+		serve: function(zero){
+			return zero;
+		}
+	}
+
+},
+
+
+/**
+ * @interface
+ * @private
+ 
+ * FxCSS could not be used alone. please implement it
+ */
+FxCSS = {
 
 	// prepares the base from/to object
 	_prepare: function(element, property, args){
@@ -67,88 +73,79 @@ FxCSS = K.Class({
 		parsed = args.map(this._parse);
 		
 		return {
-			from: parsed[0], 
+			from: parsed[0],
 			to: parsed[1]
 		};
 	},
 
 	// parses a value into an array
 	_parse: function(value){
-		value = K.isFunction(value) ? value() : value;
-		
-		value = typeof value == 'string' ? value.split(' ') : makeArray(value);
-		
-		return value.map(function(val){
-			val = String(val);
+		value = String( K.isFunction(value) ? value() : value );
 			
-			var found = false,
-				parsers = PARSERS,
-				parser,
-				key,
-				parsed;
+		var found,
+			parsers = PARSERS,
+			parser,
+			key,
+			parsed;
+			
+		for(key in parsers){
+			parser = parsers[key];
+			
+			parsed = parser.parse(value);
+			if (parsed || parsed === 0){
+				found = {
+					value: parsed, 
+					parser: parser
+				};
 				
-			for(key in parsers){
-				parser = parsers[key];
-				
-				parsed = parser.parse(val);
-				if (parsed || parsed === 0){
-					found = {
-						value: parsed, 
-						parser: parser
-					};
-					
-					break;
-				}
+				break;
 			}
-			
-			found = found || {
-				value: val, 
-				parser: PARSERS.String
-			};
-			
-			return found;
-		});
+		}
+		
+		found = found || {
+			value: value,
+			parser: PARSERS.String
+		};
+		
+		return found;
 	},
 
 	// computes by a from and to prepared objects, using their parsers.
-	_compute: function(from, to, delta){
-		var computed = [], i = 0, len = Math.min(from.length, to.length);
-		
-		for(; i < len; i ++){
-			computed.push({
-				value: from[i].parser.compute(from[i].value, to[i].value, delta), 
-				parser: from[i].parser
-			});
-		}
-		
-		computed._ = ATOM;
-		
-		return computed;
+	_compute: function(from, to, progress){
+		return {
+			_: 		ATOM_ALREADY_COMPUTED,
+			value:  from.parser.compute(from.value, to.value, progress),
+			parser: from.parser
+		};
 	},
 
 	// serves the value as settable
-	_serve: function(value, unit){
-		if (value._ !== ATOM){
-			value = this._parse(value);
+	_serve: function(sprite, unit){
+		if (sprite._ !== ATOM_ALREADY_COMPUTED){
+			sprite = this._parse(sprite);
 		}
 		
-		var returned = [];
-		value.each(function(bit){
-			returned = returned.concat(bit.parser.serve(bit.value, unit));
-		});
-		
-		return returned;
+		return sprite.parser.serve(sprite.value, unit);
 	},
 
 	// renders the change to an element
 	_render: function(element, property, value, unit){
 		element.css(property, this._serve(value, unit));
 	}
-});
-
-
-FxCSS.Parsers = PARSERS;
+};
 
 return FxCSS;
 
 });
+
+
+/**
+ change log:
+ 
+ 2011-10-19  Kael:
+ - refractor Fx.CSS. Fx.CSS is now a extension of Fx.Tween or Fx.Morph
+ 
+ 
+ 
+ 
+ */
