@@ -12,7 +12,7 @@
                                       only allowed for methods about life cycle
  */
  
-KM.define(['util/queue' /* , 'event/multi' */ ], function(K, require){
+KM.define(['./conf', 'util/queue' /* , 'event/multi' */ ], function(K, require){
 
 var __CONSTRUCT = '__construct',
 	EVENT_BEFORE_INIT = 'beforeInit',
@@ -23,7 +23,7 @@ var __CONSTRUCT = '__construct',
     EVENT_NAV_ENABLE = 'navEnable',
     EVENT_NAV_DISABLE = 'navDisable',
     
-    PLUGIN_PREFIX = 'switch/plugin/',
+    // PLUGIN_PREFIX = 'switch/plugin/',
     
     // style presets
     NAVITATOR_DISABLE_STYLE = {
@@ -45,7 +45,8 @@ var __CONSTRUCT = '__construct',
     Switch,
     
     // MultiEvent = require('event/multi'),
-    Queue = require('util/queue');
+    Queue = require('util/queue'),
+    SwitchConfig = require('./conf');
     
 
 function limit(num, min, max){
@@ -73,6 +74,7 @@ Switch = new Class({
     		bind = K.bind;
     	
     	self.fire(__CONSTRUCT);
+    	self.setAttrs();
     	
     	bind('prev', self);
     	bind('next', self);
@@ -97,7 +99,7 @@ Switch = new Class({
 	    	},
 	    	
 	    	'switchTo', 'prev', 'next'
-    	], self).on();
+    	], self ).on();
     	
     	// processing queue for switch life cycle
     	self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
@@ -124,20 +126,46 @@ Switch = new Class({
 	 * @param {Array.<string, Object>} plugins
 	 */
 	_pendingPlugins: function(plugins){
-		var plugin, i = 0, len = plugins.length,
+		var self = this,
+			plugin, 
+			i = 0, 
+			len = plugins.length,
 			pending_plugins = [],
-			prefix = PLUGIN_PREFIX;
+			pending_indexs = [],
 			
-		
+			// switch configuration getter
+			config = SwitchConfig;
+			
 		for(; i < len; i ++){
 			plugin = plugins[i];
 			
 			if(K.isString(plugin)){
-				pending_plugins.push(prefix + plugin.toLowerCase());
+				pending_plugins.push(config.modName(plugin));
+				pending_indexs.push(i);
 			}
 		}
 		
-		return pending_plugins;
+		// before executing ._addPlugin, make sure every plugin is provided
+		K.provide(pending_plugins, function(){
+			var provided = K.makeArray(arguments),
+				_plugins = plugins;
+			
+			// shift KM
+			provided.shift();
+			
+			pending_indexs.forEach(function(index, i){
+				_plugins[index] = provided[i];
+			});
+			
+			self._plugin.apply(self, _plugins);
+			_plugins.length = pending_plugins.length 
+							= pending_indexs.length
+							= 0;
+			
+			self._initializer.resume();
+		});
+		
+		return self;
 	},
 	
 	/**
@@ -146,18 +174,7 @@ Switch = new Class({
 	 * @param {string|Object} arguments
 	 */
 	plugin: function(){
-		var self = this,
-			arg = arguments,
-    		pending = self._pendingPlugins(arg);
-    	
-    	// before executing ._addPlugin, make sure every plugin is provided
-		K.provide(pending, function(){
-			self._plugin.apply(self, arg);
-			
-			self._initializer.resume();
-		});
-		
-		return self;
+    	return this._pendingPlugins(arguments);
 	},
 	
 	// register plugins
@@ -167,21 +184,14 @@ Switch = new Class({
             var i = 0,
                 len = arguments.length,
                 plugin,
-                self = this;
+                self = this,
+                config = SwitchConfig;
 
             for(; i < len; ++ i){
                 plugin = arguments[i]; 
 
                 if(!plugin){
                     continue;
-                }
-
-                if(K.isString(plugin)){
-                
-                	// synchronous providing, for all plugins have been loaded
-                    K.provide(PLUGIN_PREFIX + plugin.toLowerCase(), function(K, p){
-                    	plugin = p;
-                    });
                 }
 
                 // add plugin,
@@ -202,7 +212,7 @@ Switch = new Class({
 		var self = this;
 
         // you can add a plugin only once
-        if(!plugin || !plugin.name || self._plugin_names.contains(plugin.name) || self.pluginFinal){
+        if(!plugin || !plugin.name || self._plugin_names.indexOf(plugin.name) !== -1 || self.pluginFinal){
             return;
         }
 		
@@ -214,7 +224,7 @@ Switch = new Class({
 
         // set plugin options before method Switch.init, so that we can override plugin options before plugin.init
         if(plugin.options){
-            self.setOptions(plugin.options);
+            self.set(plugin.options);
         }
 
         self._plugins.push(plugin);
@@ -233,22 +243,21 @@ Switch = new Class({
 
 		self._initializer.off();
 
-        // initialize extension: attrs
-        self.setAttrs();
-
         // apply plugin initialization method
-        plugins.each(function(plugin){
+        plugins.forEach(function(plugin){
             if(plugin.init){
                 plugin.init(self);
             }
         });
 
-		['CSpre', 'containerCS', 'activePage'].forEach(function(key){
+		['CSPre', 'containerCS', 'activePage', 'triggerType'].forEach(function(key){
 			var setting = options[key];
 			
-			setting && self.set(key, setting);
+			self.set(key, setting || '');
 			delete options[key];
 		});
+		
+		activePage = self.activePage;
 
         self.nav = {};
                 
@@ -256,13 +265,15 @@ Switch = new Class({
             self.fire(EVENT_BEFORE_INIT);
             
             self.set(options);
+            
+            console.log(self, activePage, self.get('itemOnCls'));
 
             self._itemData();
             self.fire(EVENT_AFTER_INIT);
-
+			
             currentItem = self.items[activePage];
 
-            if(currentItem && !currentItem.hasClass(o.itemOnCls)){
+            if(currentItem && !currentItem.hasClass(self.get('itemOnCls'))){
                 self.switchTo(self.activePage, true);
             }
         }
@@ -273,7 +284,7 @@ Switch = new Class({
 	_itemData: function(){
 		var self = this;
 	
-		self.length = self.items.count();
+		self.length = self.items.length;
 		
 		/**
          calculate how many pages the Switcher has:
@@ -421,8 +432,11 @@ Class.setAttrs(Switch, {
 	},
 	
 	triggerType: {
-		value: 'click'
-	}
+		value: 'click',
+		validator: function(v){
+			return !!v;
+		}
+	},
 	
 	// CSPre {string} prefix of selectors
 	// if CSPre === '#switch', then we will get previous button with $$('#switch ' + options.prev)[0]
@@ -436,21 +450,23 @@ Class.setAttrs(Switch, {
 	// triggerS {dom selector $$ || Mootools Elements} trigger selector of switch tabs, such as 1,2,3,4
 	triggerCS: {
 		setter: function(v){
-			var self = this;
+			var self = this,
+				type = self.get('triggerType');
 				
-			self.triggers = $.all(self.CSPre + v).forEach(function(trigger, index){
+			self.triggers = $.all(self.CSPre + v).el().map(function(trigger, index){
 	        	var t = self;
 	        
-	        	$(trigger).on(type, function(e){
-	                e && e.prevent();
-	                t.switchTo(index);
-	
-	            }).on({
-	                mouseenter: function(){ t._onEnterTrigger(index); },
-	                mouseleave: function(){ t._onLeaveTrigger(index); }
-	            });
+	        	return $(trigger)
+	        		.on(type, function(e){
+		                e && e.prevent();
+		                t.switchTo(index);
+		
+		            }).on({
+		                mouseenter: function(){ t._onEnterTrigger(index); },
+		                mouseleave: function(){ t._onLeaveTrigger(index); }
+		            });
 	        
-	        }, true);
+	        });
 		}
 	},
 	 		
@@ -492,7 +508,9 @@ Class.setAttrs(Switch, {
 		setter: function(v){
 			var self = this;
 			
-			self.items = self.container.all(self.CSPre + v);
+			self.items = self.container.all(v).el().map(function(el){ console.log(el)
+				return $(el);
+			});
 		}
 	},
 	
@@ -503,8 +521,14 @@ Class.setAttrs(Switch, {
 	// the index of the first items activated when initializing
 	activePage: {
 		value: 0,
-		setter: function(v){
+		setter: function(v){ console.log('activepage', v);
 			this.activePage = !v || v < 0 ? 0 : v;
+		}
+	},
+	
+	fx: {
+		setter: function(v){
+			return K.mix(this.get('fx') || {}, v);
 		}
 	},
 	
@@ -518,8 +542,14 @@ Class.setAttrs(Switch, {
 		value: function(btn, which){
 			btn && btn.css(NAVITATOR_DISABLE_STYLE);
 		}
+	},
+	
+	EVENTS: {
+		readOnly: true,
+		getter: function(){
+			return this.constructor.EVENTS;
+		}
 	}
-
 });
 
 

@@ -4,20 +4,23 @@
 KM.define(function(K){
 
 function setPrefix(prefix, items){
-	if(K.isString(prefix)){
-		K.makeArray(items).forEach(function(name){
-			alias[name] = prefix + '/' + name;
-		});
-	}
+	K.makeArray(items).forEach(function(name){
+		alias[name] = prefix + '/' + name;
+	});
 };
 
-var alias = {};
+var alias = {},
+	PLUGIN_BASE = 'switch/';
+
+setPrefix('more', ['fade', 'accordion']);
 
 return {
 	prefix: setPrefix,
 	
-	getName: function(name){
-		return alias[name] || name;
+	modName: function(name){
+		name = name.toLowerCase();
+	
+		return PLUGIN_BASE + (alias[name] || name);
 	}
 }
 
