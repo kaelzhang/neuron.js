@@ -1,28 +1,28 @@
-KM.define(['./css'], function(K, require){
+KM.define(['./css', './core'], function(K, require){
 
-var FxCSS = require('./css'),
-	FxCSS_start = FxCSS.prototype.start;
+var Fx = require('./core'),
+	FxCSS = require('./css');
+
 
 return K.Class({
 
-	Extends: FxCSS,
+	Extends: Fx,
+	
+	Implements: FxCSS,
 
 	initialize: function(element, options){
 		var self = this;
 		
+		// @type {KM.DOM}
 		self.element = self.subject = $(element);
-		FxCSS.call(self, options);
+		
+		Fx.call(self, options);
 	},
 
-	_set: function(property, now){
+	_set: function(now){
 		var self = this;
-	
-		if (arguments.length == 1){
-			now = property;
-			property = self.property;
-		}
 		
-		self._render(self.element, property, now, self.get('unit'));
+		self._render(self.element, self.property, now, self.get('unit'));
 		return self;
 	},
 
@@ -31,21 +31,30 @@ return K.Class({
 			args,
 			parsed;
 	
-		if (!self._check(property, from, to)){
-			return self;
+		if (self._check(property, from, to)){
+			args = K.makeArray(arguments);
+			
+			if(!self.property){
+				self.property = args.shift();
+			}
+			
+			parsed = this._prepare(self.element, self.property, args);
 		}
 		
-		args = K.makeArray(arguments);
-		
-		if(!self.get('property')){
-			self.property = args.shift();
-		}
-		
-		parsed = this._prepare(self.element, self.property, args);
-		
-		return FxCSS_start.call(self, parsed.from, parsed.to);
+		return Fx.prototype.start.call(self, parsed.from, parsed.to);
 	}
 
 });
 
 });
+
+/**
+ change log:
+ 
+ 2011-10-19  Kael:
+ - refractor Fx.Tween, no longer inherit from Fx.CSS
+ 
+ 
+ 
+ 
+ */
