@@ -2,11 +2,11 @@ KM.define(['./core'], function(K, require){
 
 
 function Transition(transition, params){
-	params = Array.from(params);
+	params = K.makeArray(params);
 	var easeIn = function(pos){
 		return transition(pos, params);
 	};
-	return Object.append(easeIn, {
+	return K.mix(easeIn, {
 		easeIn: easeIn,
 		easeOut: function(pos){
 			return 1 - transition(1 - pos, params);
