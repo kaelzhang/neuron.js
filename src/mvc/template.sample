@@ -1,0 +1,21 @@
+/**
+ * JavaScript template sample
+ */
+<script type="text/plain" id="test-tpl">
+<?js
+	var i = 0,
+		len = it.length,
+		list,
+		cls,
+		txt;
+		
+	for(; i < len; i ++){
+		list = it[i];
+		cls = list.cls;
+		txt = list.txt;
+	 
+		?><div class="@{cls}">@{txt}</div><?js
+	
+	}
+?>
+</script>
