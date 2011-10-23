@@ -110,7 +110,7 @@ function DOMEvent(event, win){
 	
 	var self 	= this,
 		type 	= self.type = event.type,
-		target 	= self.type = event.target || event.srcElement,
+		target 	= event.target || event.srcElement,
 		page 	= self.page = {},
 		client 	= self.client = {},
 		NULL	= null,
