@@ -9,7 +9,7 @@ function getStorage(host, type){
 	var ATTR_EVENTS = '__ev',
 		storage;
 		
-	host[ATTR_EVENTS] || (storage = host[ATTR_EVENTS] = {});
+	storage = host[ATTR_EVENTS] || (host[ATTR_EVENTS] = {});
 	
 	return storage[type] || (storage[type] = []);
 };

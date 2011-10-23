@@ -75,7 +75,7 @@ function getMethod(host, attr, name){
  * @private
  */
 function createGetterSetter(host, sandbox, undef){
-	host.set = K._overloadSetter( function(key, value, override){ console.log(sandbox)
+	host.set = K._overloadSetter( function(key, value, override){
 		var attr = sandbox[key];
 		
 		return attr ? setValue(this, attr, value, override) : false;
