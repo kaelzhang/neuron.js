@@ -23,13 +23,13 @@
  	 asq_r,
  	 module = {
  	 	a: function(){
- 	 		console.log('a');
+ 	 		log('a');
  	 	},
  	 	
  	 	b: function(){
- 	 		console.log('b');
+ 	 		log('b');
  	 		asyncMethod(function(){
- 	 			console.log('b callback');
+ 	 			log('b callback');
  	 			asq_r.resume();
  	 		});
  	 	}
@@ -59,11 +59,14 @@ KM.define([], function(K){
 
 var NOOP = function(){},
 
-ASQueue = {},
+Class = K.Class,
+
+Queue = {},
     
 // meta prototypes
-ASQ_meta = {
+Queue_meta = {
 	Runner: {
+	
 		/**
 	     * run the list of configured methods
 	     */
@@ -184,7 +187,7 @@ ASQ_meta = {
 	}
 },
 
-ASQ_proto = {
+Queue_proto = {
     _stack: [],
     
     /**
@@ -257,7 +260,6 @@ ASQ_proto = {
 
     	if(!self.processing && (current = self._stack.shift()) && (fn = current.method)){
     		self.processing = true;
-    	
     		fn.apply(current.bind || null, current.args || []);
     		
     		return current.auto && self.resume();
@@ -265,15 +267,14 @@ ASQ_proto = {
     }
 };
 
-// ASQueue.Runner
-// ASQueue.Converter
-['Runner', 'Converter'].each(function(type){
-	var ASQ = ASQueue[type] = new Class(ASQ_proto);
 
-	K.mix(ASQ.prototype, ASQ_meta[type]);
+// Queue.Runner
+// Queue.Converter
+['Runner', 'Converter'].forEach(function(type){
+	Queue[type] = Class( K.mix(Queue_meta[type], Queue_proto) );
 });
 
-return ASQueue;
+return Queue;
 
 });
 
