@@ -1,5 +1,9 @@
 KM.define([], function(K){
 
+
+/**
+ * @param {Array.<Fx>} list list of Fx instances
+ */
 function loop(list){
 	var now = + new Date,
 		len = list.length,
@@ -13,10 +17,15 @@ function loop(list){
 };
 
 
+/**
+ * add system clock frequency
+ * @param {Fx} instance
+ * @param {number} fps
+ * @param {boolean=} fps 
+ */
 function addOrRemoveClockTicking(instance, fps, toAdd){
 	var list = _instances[fps] || (_instances[fps] = []),
-		timers = _timers,
-		timer = timers[fps],
+		timer = _timers[fps],
 		i = 0,
 		len = list.length;
 		
@@ -24,7 +33,7 @@ function addOrRemoveClockTicking(instance, fps, toAdd){
 		list.push(instance);
 		
 		if(!timer){
-			timers[fps] = setInterval(function(){ console.log('loop', fps)
+			_timers[fps] = setInterval(function(){
 				loop(list);
 			}, Math.round(1000 / fps));
 		}
@@ -36,7 +45,7 @@ function addOrRemoveClockTicking(instance, fps, toAdd){
 		}
 		
 		if(!list.length && timer){
-			timers[fps] = clearInterval(timer);
+			_timers[fps] = clearInterval(timer);
 		}
 	}
 };
@@ -44,15 +53,17 @@ function addOrRemoveClockTicking(instance, fps, toAdd){
 
 var
 
+// map:  fps -> Array.<Fx instance> 
 _instances = {},
 
+// map:  fps -> timer
 _timers = {},
 
-Fx = K.Class({
 
+Fx = K.Class({
 	Implements: 'events attrs',
 
-	initialize: function(options){ console.log('fx init called', options, this.subject)
+	initialize: function(options){
 		var self = this;
 	
 		self.subject = self.subject || self;
@@ -75,10 +86,11 @@ Fx = K.Class({
 		}
 		
 		if (self.frame < self.frames){
-			var delta = self._transition(self.frame / self.frames),
-				now = self._compute(self.from, self.to, delta);
+			var progress = self._transition(self.frame / self.frames),
+				now = self._compute(self.from, self.to, progress);
 				
 			self._set(now);
+			
 			self.fire('step', [now]);
 			
 		} else {
@@ -93,11 +105,15 @@ Fx = K.Class({
 		return now;
 	},
 
-	_compute: function(from, to, delta){
-		return Fx.compute(from, to, delta);
+	_compute: function(from, to, progress){
+		return Fx.compute(from, to, progress);
 	},
 
 	_check: function(){
+	
+		// TEMP
+		return true;
+	
 		var self = this, args = arguments;
 	
 		if (!self._isRunning()) return true;
@@ -134,10 +150,10 @@ Fx = K.Class({
 			self.frames = frames || Math.round( duration / self.frameInterval);
 			self.fire('start', self.subject);
 			
-			addOrRemoveClockTicking.call(self, fps, true);
+			addOrRemoveClockTicking(self, fps, true);
 		}
 		
-		return this;
+		return self;
 	},
 	
 	stop: function(){
@@ -146,7 +162,7 @@ Fx = K.Class({
 		if (self._isRunning()){
 			self.time = null;
 			
-			addOrRemoveClockTicking.call(self, self.get('fps'));
+			addOrRemoveClockTicking(self, self.get('fps'));
 			
 			if (self.frames === self.frame){
 				self.fire('complete', self.subject);
@@ -163,7 +179,7 @@ Fx = K.Class({
 		if (self._isRunning()){
 			self.time = null;
 			
-			addOrRemoveClockTicking.call(self, self.get('fps'));
+			addOrRemoveClockTicking(self, self.get('fps'));
 			
 			self.frame = self.frames;
 			
@@ -235,8 +251,8 @@ K.Class.setAttrs(Fx, {
 });
 
 
-Fx.compute = function(from, to, delta){
-	return (to - from) * delta + from;
+Fx.compute = function(from, to, progress){
+	return (to - from) * progress + from;
 };
 
 
