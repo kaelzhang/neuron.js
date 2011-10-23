@@ -7,18 +7,19 @@
 ;(function(K, NULL, undef){
 
 function cleanClass(str){
-	return str.replace(/\s+/g, ' ');
+	return str.replace(/\s+/g, WHITE_SPACE);
 };
 
 function hasClass(el, cls){
-	return el.className.indexOf(cls) !== -1;
+	var whitespace = WHITE_SPACE; 
+	return (whitespace + el.className + whitespace).indexOf(whitespace + cls + whitespace) !== -1;
 };
 
 function addClass(cls){
 	var el = this;
 	
 	if(!hasClass(el, cls)){
-		el.className = cleanClass( el.className + ' ' + cls );
+		el.className = cleanClass( el.className + WHITE_SPACE + cls );
 	}
 };
 
@@ -195,6 +196,8 @@ var DOM = K.DOM,
 	SELECTOR = DOM.SELECTOR,
 	storage = DOM.__storage = {},
 	makeArray = K.makeArray,
+	
+	WHITE_SPACE = ' ',
 	
 	// @type {Object}
 	// list of methods for both getter and setter
