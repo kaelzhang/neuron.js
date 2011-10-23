@@ -57,8 +57,11 @@ function DOM(element, context){
 
 	// use ECMAScript strict
 	var self = this;
+	
+	if(element instanceof DOM){
+		return element;
 		
-	if(self instanceof DOM){
+	}else if(self instanceof DOM){
 	
 		// @type {Array.<DOMElement>}
 		// @private
@@ -231,6 +234,11 @@ extend({
 		return new DOM( SELECTOR.find(selector, this.context) ); 
 	},
 	
+	/**
+	 * @param {number=} index
+	 *		if index is a number, returns the element of the specified index
+	 *		if index is undefined, returns the array of all matched elements
+	 */
 	el: function(index){
 		var context = this.context;
 	
@@ -247,8 +255,12 @@ extend({
 		return this.context.length;
 	},
 	
+	/**
+	 * iterator
+	 */
 	forEach: function(fn){
 		this.context.forEach(fn);
+		return this;
 	}
 });
 
@@ -278,18 +290,15 @@ DOM.noConflict = function(){
 };
 
 
-K.define.on();
-
-// fake package module
-K.define('dom', function(){ return DOM; });
-K.define.off();
-
-
 })(KM, null);
 
 
 /**
  change log:
+ 
+ 2011-10-20  Kael:
+ - fix a bug that if we dollar a dollared object(KM.DOM Object), we will loose matched elements
+ - new DOM.forEach() now will return this
  
  2011-10-13  Kael:
  - add $.noConflict() method
