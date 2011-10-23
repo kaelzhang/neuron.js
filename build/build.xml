@@ -9,11 +9,12 @@
 		
 		<path path="loader/loader.js" />
 		
-		<path path="config/alpha.js" />
+		<path path="loader/config/alpha.js" />
 		
 		<path path="oop/class.js" />
 		<path path="oop/attrs.js" />
 		<path path="oop/super.js" />
+		<path path="oop/events.js" />
 		
 		<path path="selector/finder.js" />
 		<path path="selector/parser.js" />
