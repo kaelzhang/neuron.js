@@ -12,7 +12,7 @@ function ajax(data, callback, options){
 	var self = this, len = arguments.length;
 	
 	// KM.ajax('/hander/?a=avatar&email=i@kael.me', function(rt){...});
-	if(self === WIN && callback && len > 1){
+	if(self instanceof ajax && callback && len > 1){
 		options = options || {};
 		// options.method = 'GET';
 		// options.url = data;
@@ -20,13 +20,11 @@ function ajax(data, callback, options){
 		
 		return new _Ajax(options).send(data);
 	
-	// var ajax = new KM.ajax(options);
 	// ajax.send({a:1});
 	// ajax.send({a:2});
 	}else{
 		return new _Ajax(data);
 	}
-	
 };
 
 function standardXMLHttpRequest(){
@@ -71,7 +69,6 @@ function extendQueryString(query, extra){
 	const unsigned short DONE = 4;
 	readonly attribute unsigned short readyState;
  */
-
 var JSON = require('util/json'),
 
 DONE = 4,
@@ -124,6 +121,8 @@ response_filter = {
 	text: 'responseText'
 },
 
+STR_OPTIONS = 'opt',
+
 default_options = {
 	url				: EMPTY,
 	method			: GET, // GET is recommended
@@ -141,10 +140,6 @@ default_options = {
 	async			: true,
 	timeout			: 0,
 	cache			: true,
-	
-	onSuccess		: NOOP,
-	onError			: NOOP,
-	onRequest		: NOOP,
 	
 	user			: EMPTY,
 	password		: EMPTY,
@@ -180,20 +175,20 @@ is_credentials_supported = WITH_CREDENTIALS in xhr_tester,
 
 // @private
 _Ajax = K.Class({
-	Implements: ['attrs', 'events'],
-	
-	options: default_options,
+	Implements: 'attrs events',
 	
 	initialize: function(options){
-	
-		var self = this, 
-			o = self.setAttrs(options),
+		var self = this,
 			bind = K.bind;
+			
+		self.setAttrs({opt: options});
+		
+		console.log(self, self.get(STR_OPTIONS))
 		
 		self.xhr = Xhr();
 		self.headers = self._makeHeaders();
 		
-		self.timer = K.delay(function(){ self.cancel(); }, o.timeout);
+		self.timer = K.delay(function(){ self.cancel(); }, self.get('timeout'));
 		
 		bind('_stateChange', self);
 		
@@ -205,7 +200,7 @@ _Ajax = K.Class({
 	
 	_makeHeaders: function(){
 		var self = this,
-			o = self.options,
+			o = self.get(STR_OPTIONS),
 			data_type = o.dataType || '*',
 			headers = o.headers,
 			presets = header_presets;
@@ -213,8 +208,8 @@ _Ajax = K.Class({
 		K.each(presets, function(preset, key){
 			var header = preset[data_type]; 
 		
-			if(value){
-				headers[key] = value;
+			if(preset){
+				headers[key] = preset;
 			}
 		});
 			
@@ -223,7 +218,7 @@ _Ajax = K.Class({
 	
 	_stateChange: function(){
 		var self = this,
-			o = self.options,
+			o = self.get(STR_OPTIONS),
 			xhr = self.xhr,
 			response,
 			isResponseSuccess = o.isSuccess || returnTrue;
@@ -239,6 +234,8 @@ _Ajax = K.Class({
 			response = self._parseResponse(xhr);
 			callback_args = [ response, xhr ];
 			
+			console.log(callback_args, !self.parseError && isXHRSuccess(xhr) && isResponseSuccess(response));
+			
 			self.fire( !self.parseError && isXHRSuccess(xhr) && isResponseSuccess(response) ?
 				'success' : 'error', callback_args);
 		}
@@ -246,7 +243,7 @@ _Ajax = K.Class({
 	
 	_parseResponse: function(xhr){
 		var self = this,
-			o = self.options,
+			o = self.get(STR_OPTIONS),
 			
 			// to prevent santitizer method changing the Ajax options,
 			// assign o.santitizer to santitizer
@@ -273,7 +270,7 @@ _Ajax = K.Class({
 	
 	send: function(data){
 		var self = this,
-			o = self.options,
+			o = self.get(STR_OPTIONS),
 			
 			method = (o.method || GET).toUpperCase(),
 			url = String(o.url).replace(REGEX_TRIM_HASH, EMPTY) || K.getLocation().pathname,
@@ -312,7 +309,7 @@ _Ajax = K.Class({
 		}
 		
 		/**
-		 * for firefox 3.5 + and other xmlhttprequest2 supported browsers
+		 * for firefox 3.5+ and other xmlhttprequest2 supported browsers
 		 * ref:
 		 * https://developer.mozilla.org/en/HTTP_access_control#Requests_with_credentials
 		 * http://www.w3.org/TR/XMLHttpRequest2/#dom-xmlhttprequest-withcredentials
@@ -322,7 +319,6 @@ _Ajax = K.Class({
 		xhr.onreadystatechange = self._stateChange;
 		
 		K.each(headers, function(header, key){
-		
 			// for cross domain requests, try/catch is needed
 			try {
 				xhr.setRequestHeader(key, header);
@@ -340,7 +336,7 @@ _Ajax = K.Class({
 	},
 	
 	_tidyRequest: function(data){
-		data = (data === undefined ? this.options.data : data) || EMPTY;
+		data = (data === undefined ? this.get(STR_OPTIONS).data : data) || EMPTY;
 		
 		if (K.isObject(data)){
 			data = K.toQueryString(data);
@@ -383,6 +379,16 @@ _Ajax = K.Class({
 
 });
 
+K.Class.setAttrs(_Ajax, {
+	opt: {
+		value: default_options,
+		setter: function(v){
+			return K.mix(this.get('opt'), v);
+		}
+	}
+});
+
+
 xhr_tester = null;
 
 return ajax;
@@ -390,6 +396,9 @@ return ajax;
 });
 
 /**
+
+ 2011-10-24  Kael:
+ - migrate to Neuron
 
  2011-08-27  Kael:
  - complete main functionalities
