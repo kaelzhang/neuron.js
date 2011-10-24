@@ -46,9 +46,9 @@ function addOrRemoveEvent(host, type, fn, toAdd){
 
 
 K.Class.EXTS.events = {
-	on: function(type, fn){
+	on: K._overloadSetter(function(type, fn){
 		return addOrRemoveEvent(this, type, fn, true);
-	},
+	}),
 	
 	detach: function(type, fn){
 		return addOrRemoveEvent(this, type, fn);
