@@ -164,6 +164,7 @@ K.Class.EXTS.attrs = {
 		}, self);
 		
 		self.setAttrs = NOOP;
+		return self;
 	}
 };
 
