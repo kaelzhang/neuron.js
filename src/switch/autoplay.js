@@ -6,7 +6,6 @@
 KM.define({
     name: 'autoPlay',
     options: {
-        // autoPlay: true,
         interval: 3000,
         hoverStop: true
     },
@@ -19,8 +18,7 @@ KM.define({
             }
         };
 
-        var o = self.options,
-            autoPlayTimer = KM.delay(autoplay, o.interval),
+        var autoPlayTimer = KM.delay(autoplay, self.get('interval')),
             paused = false,
             
             EVENTS = self.get('EVENTS');
@@ -34,18 +32,17 @@ KM.define({
 			paused = false;
 			autoPlayTimer.start();
 		};
-		    
-		self.on(EVENTS.__CONSTRUCT, function(){
-			K.mix(self, {
-				pause: pause,
-				resume: resume
-			})
-		});
+		
 
         self.on(EVENTS.AFTER_INIT, function(){
             var t = self;
-
-            o.hoverStop && t.container.ons({
+            
+            KM.mix(t, {
+				pause: pause,
+				resume: resume
+			});
+			
+            t.get('hoverStop') && t.container.on({
                 mouseenter: function(){
                     t.paused = true;
                 },

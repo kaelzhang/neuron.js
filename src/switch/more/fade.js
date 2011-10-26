@@ -6,25 +6,22 @@
 KM.define(['./accordion'], function(K, require){
 
 var accordion = require('./accordion'),
-	fade = K.mix({}, accordion),
+	fade = {
+		options: {
+			property: 'opacity',
+			activeValue: 1, 
+			normalValue: 0,
+			
+			fx: {
+				duration: 1000
+			}
+		}
+	};
 	
-	fade_fx = fade.options = K.clone(accordion.options);
-	
-fade_fx.duration = 1000;
+K.mix(fade, accordion, false);
+K.mix(fade.options, accordion.options, false);
+K.mix(fade.options.fx, accordion.options.fx, false);
 
-
-
-
-
-return K.merge({}, accordion, {
-	options: {
-		fx: {
-			duration: 1000
-		},
-		property: 'opacity',
-		activeValue: 1, 
-		normalValue: 0
-	}
-});
+return fade;
 
 });

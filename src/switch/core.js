@@ -12,7 +12,7 @@
                                       only allowed for methods about life cycle
  */
  
-KM.define(['./conf', 'util/queue' /* , 'event/multi' */ ], function(K, require){
+KM.define(['./conf', 'util/queue'], function(K, require){
 
 var __CONSTRUCT = '__construct',
 	EVENT_BEFORE_INIT = 'beforeInit',
@@ -22,19 +22,6 @@ var __CONSTRUCT = '__construct',
     EVENT_COMPLETE_SWITCH = 'completeSwitch',
     EVENT_NAV_ENABLE = 'navEnable',
     EVENT_NAV_DISABLE = 'navDisable',
-    
-    // PLUGIN_PREFIX = 'switch/plugin/',
-    
-    // style presets
-    NAVITATOR_DISABLE_STYLE = {
-        opacity	: .3,
-        cursor	: 'default'
-    },
-
-    NAVITATOR_ENABLE_STYLE = {
-        opacity	: 1,
-        cursor	: ''
-    },
 
     NOOP = function(){},
     EMPTY = '',
@@ -43,6 +30,7 @@ var __CONSTRUCT = '__construct',
     NEXT = 'next',
 
     Switch,
+    Class = K.Class,
     
     // MultiEvent = require('event/multi'),
     Queue = require('util/queue'),
@@ -66,7 +54,7 @@ function atLeastOne(num){
  *
  * if no plugin is specified, the items will plainly switched with no effect
  */
-Switch = new Class({
+Switch = Class({
     Implements: 'attrs events',
     
     initialize: function(){
@@ -76,6 +64,7 @@ Switch = new Class({
     	self.fire(__CONSTRUCT);
     	self.setAttrs();
     	
+    	// bind public methods
     	bind('prev', self);
     	bind('next', self);
     	bind('plugin', self);
@@ -217,16 +206,17 @@ Switch = new Class({
         }
 		
 		// removed: dependency detection will be assigned to loader
-        // if has required plugin, register that plugin first
+        // X if has required plugin, register that plugin first
         // if(plugin.require && arguments.callee(D.Switch.Plugins[_plugin.require]) ){
         //    return t.pluginFinal = true;
         // }
 
         // set plugin options before method Switch.init, so that we can override plugin options before plugin.init
-        if(plugin.options){
-            self.set(plugin.options);
-        }
-
+        K.each(plugin.options, function(value, key){
+        	this.addAttr(key);
+        	this.set(key, value);
+        }, self);
+        
         self._plugins.push(plugin);
         self._plugin_names.push(plugin.name);
         
@@ -242,14 +232,16 @@ Switch = new Class({
             plugins = self._plugins;
 
 		self._initializer.off();
-
-        // apply plugin initialization method
+		self.nav = {};
+		
+		// apply plugin initialization method
         plugins.forEach(function(plugin){
             if(plugin.init){
                 plugin.init(self);
             }
         });
-
+		
+		// some essential data should be initialized ahead
 		['CSPre', 'containerCS', 'activePage', 'triggerType'].forEach(function(key){
 			var setting = options[key];
 			
@@ -257,20 +249,15 @@ Switch = new Class({
 			delete options[key];
 		});
 		
-		activePage = self.activePage;
-
-        self.nav = {};
-                
+		self.fire(EVENT_BEFORE_INIT);
+		
+        self.set(options);
+          
         if(self.container){
-            self.fire(EVENT_BEFORE_INIT);
-            
-            self.set(options);
-            
-            console.log(self, activePage, self.get('itemOnCls'));
-
             self._itemData();
             self.fire(EVENT_AFTER_INIT);
-			
+            
+            activePage = self.activePage;
             currentItem = self.items[activePage];
 
             if(currentItem && !currentItem.hasClass(self.get('itemOnCls'))){
@@ -491,7 +478,7 @@ Class.setAttrs(Switch, {
 		setter: function(v){
 			var self = this, PREV = 'prev';
 			
-			self.nav[PREV] = $.all(self.CSPre + v).on(self.triggerType, self[PREV]);
+			self.nav[PREV] = $.all(self.CSPre + v).on(self.get('triggerType'), self[PREV]);
 		}
 	},
 	
@@ -499,7 +486,7 @@ Class.setAttrs(Switch, {
 		setter: function(v){
 			var self = this, NEXT = 'next';
 			
-			self.nav[NEXT] = $.all(self.CSPre + v).on(self.triggerType, self[NEXT]);
+			self.nav[NEXT] = $.all(self.CSPre + v).on(self.get('triggerType'), self[NEXT]);
 		}
 	},
 	
@@ -508,7 +495,7 @@ Class.setAttrs(Switch, {
 		setter: function(v){
 			var self = this;
 			
-			self.items = self.container.all(v).el().map(function(el){ console.log(el)
+			self.items = self.container.all(v).el().map(function(el){
 				return $(el);
 			});
 		}
@@ -521,7 +508,7 @@ Class.setAttrs(Switch, {
 	// the index of the first items activated when initializing
 	activePage: {
 		value: 0,
-		setter: function(v){ console.log('activepage', v);
+		setter: function(v){
 			this.activePage = !v || v < 0 ? 0 : v;
 		}
 	},
@@ -529,18 +516,6 @@ Class.setAttrs(Switch, {
 	fx: {
 		setter: function(v){
 			return K.mix(this.get('fx') || {}, v);
-		}
-	},
-	
-	onNavEnable: {
-		value: function(btn, which){
-			btn && btn.css(NAVITATOR_ENABLE_STYLE);
-		}
-	},
-	
-	onNavDisable: {
-		value: function(btn, which){
-			btn && btn.css(NAVITATOR_DISABLE_STYLE);
 		}
 	},
 	
@@ -559,7 +534,9 @@ Switch.EVENTS = {
     AFTER_INIT		: EVENT_AFTER_INIT,
     BEFORE_SWITCH	: EVENT_BEFORE_SWITCH,
     ON_SWITCH		: EVENT_ON_SWITCH,
-    COMPLETE_SWITCH	: EVENT_COMPLETE_SWITCH
+    COMPLETE_SWITCH	: EVENT_COMPLETE_SWITCH,
+    NAV_DISABLE		: EVENT_NAV_DISABLE,
+    NAV_ENABLE		: EVENT_NAV_ENABLE
 };
 
 
@@ -569,6 +546,14 @@ return Switch;
 
 /**
  change log:
+ 
+ 2011-10-25  Kael:
+ - migrate to Neuron
+ - switch/core will no longer deal with disable style of navigation buttons
+ 
+ TODO:
+ A. refractor: split the logic about on-switching effects, so we could accomplish random switcher
+ 
  2011-08-15  Kael:
  
  TODO:

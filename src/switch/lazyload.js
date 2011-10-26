@@ -2,16 +2,16 @@ KM.define([], function(){
 
 function getLazyData(container){
 	var data,
-		tagName = container.tagName;
-		
+		tagName = container.el(0).tagName;
+	
 	if(/textarea/i.test(tagName)){
-		data = container.value.trim();
+		data = container.val();
 		
 	}else if(/script/i.test(tagName)){
-		data = container.innerHTML.trim();
+		data = container.html();
 	}
 
-	return data || '';
+	return (data || '').trim();
 };
 
 return {
@@ -25,24 +25,18 @@ return {
 
     // @param switchInstance {object} new instance of DP.Switch, as the same as below
     init: function(self){
-        function renderData(){
-            var o = self.options,
-                lazyLoadTextarea,
-                tmp_parent;
-                    
-            lazyLoadTextarea = $$(o.CSPre + o.lazyLoadCS)[0];
-
-            if(lazyLoadTextarea){
-                tmp_parent = new Element('div', {html: getLazyData(lazyLoadTextarea)});
-                tmp_parent.getChildren().addClass('J_switch-lazy-item').inject(self.container);
-
-                lazyLoadTextarea.dispose();
-            }
-        };
-        
-        var EVENTS = self.get('EVENTS');
-
-        self.on(EVENTS.BEFORE_INIT, renderData);
+    	self.on(self.get('EVENTS').BEFORE_INIT, function(){
+	        var lazyLoadTextarea,
+	            tmp_parent;
+	            
+	        lazyLoadTextarea = $(self.CSPre + self.get('lazyLoadCS'));
+	        
+	        if(lazyLoadTextarea.count()){
+	            tmp_parent = $.create('div').html(getLazyData(lazyLoadTextarea));
+	            tmp_parent.children().addClass('J_switch-lazy-item').inject(self.container);
+	            lazyLoadTextarea.dispose();
+	        }
+	    });
     }
 };
 

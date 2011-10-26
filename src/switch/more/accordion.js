@@ -30,32 +30,20 @@ return {
     },
     
     init: function(self){
-    	var EFFECT_KEY = '_s_accordion',
-    		EVENTS = self.get('EVENTS'),
-    		o = self.options,
-    		fx = o.fx,
-    		on_complete = [],
-    		active_cls = o.itemOnCls;
-    	
-    	delete o.fx;
     
     	// get the fx of the items, 
     	// create new fx if not exists
     	function getFx(element, offset){
-    		var effect = element.retrieve(EFFECT_KEY);
+    		var effect = element.data(EFFECT_KEY);
     		
     		if(!effect){
-    			effect = new Tween(
-    				element, 
-    				K.mix({
-    					onComplete: function(){
-    						var cb = on_complete[offset];
-    						cb && cb();
-    					}
-    				}, fx)
-    			);
-    			element.store(EFFECT_KEY, effect);
-    		}	
+    			effect = new Tween(element, fx).on('complete', function(){
+    				var cb = on_complete[offset];
+    				cb && cb();
+    			});
+    			
+    			element.data(EFFECT_KEY, effect);
+    		}
     		
     		return effect;
     	};
@@ -63,38 +51,66 @@ return {
     	function setFxCallback(active, expect){
     		delete on_complete[active];
     		delete on_complete[expect];
+    		
+    		var t = self;
     	
     		on_complete[active] = function(){
-    			self.items[active].removeClass(active_cls);
-    			self.fire(EVENT_ON_ITEM_DEACTIVE, [active]);
-    		}
+    			t.items[active].removeClass(active_cls);
+    			t.fire(EVENT_ON_ITEM_DEACTIVE, [active]);
+    		};
     		
     		on_complete[expect] = function(){
-    			self.items[expect].addClass(active_cls);
-    			self.fire(EVENT_ON_ITEM_ACTIVE, [expect]);
-    			self.fire(EVENTS.COMPLETE_SWITCH);
-    		}
+    			t.items[expect].addClass(active_cls);
+    			t.fire(EVENT_ON_ITEM_ACTIVE, [expect]);
+    			t.fire(EVENTS.COMPLETE_SWITCH);
+    		};
     	};
     	
-    	function chk(a){
-    		return a || a === 0;
-    	};
-    	
-    	if(!fx.property){
-            fx.property = o.property;
+    	function currentTriggerClass(remove, index){
+            var t = self,
+                currentTrigger = t.triggers[index || t.activePage],
+                TRIGGER_ON_CLS = t.get('triggerOnCls');
+                
+            remove ? 
+            	currentTrigger.removeClass(TRIGGER_ON_CLS) : 
+            	currentTrigger.addClass(TRIGGER_ON_CLS);
         };
+    	
+    	function chk(o){
+    		return o || o === 0;
+    	};
+    	
+    	var EFFECT_KEY = '_s_accordion',
+    		EVENTS = self.get('EVENTS'),
+    		on_complete = [],
+    		fx,
+    		active_cls,
+    		active_value,
+    		normal_value;
+    		
 
         self.on(EVENTS.AFTER_INIT, function(){
             var t = self,
-                active = t.activePage;
-                
-          	if(!chk(o.activeValue)){
-          		o.activeValue = t.items[active].getStyle(fx.property);
-          	}
-          	
-          	if(!chk(o.normalValue)){
-          		o.normalValue = t.items[(active + 1) % t.items.length].getStyle(fx.property);
-          	}
+                active = t.activePage,
+                property,
+                _active_value = t.get('activeValue'),
+                _normal_value = t.get('normalValue');
+
+            fx = t.get('fx');
+            active_cls = t.get('itemOnCls');
+                                
+            if(!fx.property){
+	            fx.property = t.get('property');
+	        };
+	        
+	        property = fx.property;
+	        
+	        active_value = chk(_active_value) ? _active_value : t.items[active].css(property);
+	        normal_value = chk(_normal_value) ? _normal_value : t.items[(active + 1) % t.items.length].css(property);
+        });
+        
+        self.on(EVENTS.BEFORE_SWITCH, function(){
+            currentTriggerClass(true);
         });
 
         self.on(EVENTS.ON_SWITCH, function(){
@@ -102,9 +118,9 @@ return {
                 active = t.activePage,
                 expect = t.expectPage;
                 
-            setFxCallback(active, expect);    
-            getFx(t.items[active], active).start(o.normalValue);
-            getFx(t.items[expect], expect).start(o.activeValue);
+            setFxCallback(active, expect);
+            getFx(t.items[active], active).start(normal_value);
+            getFx(t.items[expect], expect).start(active_value);
             
             
 /**
@@ -132,6 +148,9 @@ return {
  */
  			// so, as it explained above, set expectPage as activePage immediately after fx started
             t.activePage = expect;
+            t._dealNavs();
+            
+            currentTriggerClass(false, expect);
         });
     }
 }
@@ -139,6 +158,9 @@ return {
 });
 
 /**
+ 2011-10-26  Kael:
+ - migrate to Neuron
+
  TODO:
  A. html santitizer for horizontal accordion, making the content of each item stable and no deformation during switching
  
