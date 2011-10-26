@@ -3,7 +3,7 @@
  */
 KM.define(function(K){
 
-var NODE_PARSER = K.__PARSER,
+var NODE_PARSER = K.DOM.SELECTOR,
 	HOST = K.__HOST;
 
 
@@ -51,13 +51,8 @@ return {
 	parse: parseXML,
 	
 	// find the first element matches the expression
-	find: function(context, expression){
-		return NODE_PARSER.find(makeXML(context), expression);
-	},
-	
-	// search all elements match the expression
-	search: function(context, expression){
-		return NODE_PARSER.search(makeXML(context), expression);
+	find: function(selector, context, first){
+		return NODE_PARSER.find(selector, makeXML(context), first);
 	}
 };
 
