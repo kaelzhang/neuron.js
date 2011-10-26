@@ -10,25 +10,27 @@ function inc($path){
 };
 
 // use strict mode
-?><script>'use strict';</script><?
+?><script>'use strict';</script>
+<!-- <script src="http://i1.static.dp:1337/trunk/lib/neuron.js"></script> -->
+
+<?
 
 inc("neuron/seed.js");
 
 inc("neuron/lang/native.js");
 inc("neuron/lang/enhance.js");
-inc("neuron/lang/biz.js");
+inc("neuron/lang/web.js");
 
 inc("neuron/ua/ua.js");
 
 inc("neuron/loader/loader.js");
 
-inc("neuron/config/alpha.js");
+inc("neuron/loader/config/alpha.js");
 
 inc("neuron/oop/class.js");
 inc("neuron/oop/attrs.js");
 inc("neuron/oop/super.js");
-
-inc("neuron/core/neuron.js");
+inc("neuron/oop/events.js");
 
 inc("neuron/selector/finder.js");
 inc("neuron/selector/parser.js");
@@ -43,10 +45,16 @@ inc("neuron/dom/manipulate.js");
 inc("neuron/dom/create.js");
 inc("neuron/dom/domready.js");
 
+inc("neuron/biz/biz.js");
+inc("neuron/biz/neuron.js");
+inc("neuron/biz/faker.js");
+
 inc("neuron/cleaner.js");
 
 ?>
 <script>
+KM.__Loader.init();
+
 
 function log(msg){
 	var div = document.createElement('div');

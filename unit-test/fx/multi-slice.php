@@ -163,87 +163,134 @@ h2{margin-bottom:5px; font-family: }
 <script>
 
 KM.provide('switch/core', function(K, Switch){
-	new Switch().plugin('tabSwitch').init({
-		CSPre: 			'.tab-switch', 
-		triggerCS: 		'.tab', 
-		triggerOnCls:	'on', 
-		containerCS:	'.contents', 
-		itemCS:			'.cont', 
-		itemOnCls:		'on'
-	});
-	/*
 
-	new Switch().plugin('lazyLoad', 'carousel', 'autoPlay').init({
-		CSPre: 			'.carousel-simple',
-		triggerCS: 		'.tab', 
-		triggerOnCls:	'on', 
-		containerCS:	'.track', 
-		itemCS:			'.cont', 
-		itemOnCls:		'on',
-		prevCS:			'.prev',
-		nextCS:			'.next'
-	});
+var NAVITATOR_DISABLE_STYLE = {
+        opacity	: .3,
+        cursor	: 'default'
+    },
+
+    NAVITATOR_ENABLE_STYLE = {
+        opacity	: 1,
+        cursor	: ''
+    };
+
+
+
+new Switch().plugin('tabSwitch').init({
+	CSPre: 			'.tab-switch', 
+	triggerCS: 		'.tab', 
+	triggerOnCls:	'on', 
+	containerCS:	'.contents', 
+	itemCS:			'.cont', 
+	itemOnCls:		'on'
+});
+
+
+
+new Switch().plugin('lazyLoad', 'carousel', 'autoPlay').on({
+	navEnable: function(btn, which){
+		btn && btn.css(NAVITATOR_ENABLE_STYLE);
+	},
 	
-	new Switch().plugin('accordion', 'autoPlay').init({
-		triggerType:	'mouseenter',
-		CSPre: 			'.accordion-simple',
-		triggerCS: 		'.item', 
-		triggerOnCls:	'on', 
-		containerCS:	'.items',
-		itemCS:			'.item', 
-		itemOnCls:		'on',
-		
-		onItemActive: function(i){
-		},
-		
-		onItemDeactive: function(i){
-		}
-		
-	});
+	navDisable: function(btn, which){
+		btn && btn.css(NAVITATOR_DISABLE_STYLE);
+	}
 	
-	new Switch().plugin('lazyload', 'carousel', 'autoPlay').init({
-		CSPre: 			'.carousel-complex',
-		triggerCS: 		'.tab', 
-		triggerOnCls:	'on', 
-		containerCS:	'.track', 
-		itemCS:			'.items', 
-		itemOnCls:		'on',
-		prevCS:			'.prev',
-		nextCS:			'.next',
-		onAfterInit: 	function(){
-			$$('.carousel-complex .items').each(function(wrap, i){
-				wrap.addClass('items-' + i);
-				
-				new Switch().plugin('accordion').init({
-					triggerType:	'mouseenter',
-					CSPre: 			'.items-' + i,
-					triggerCS: 		'.item', 
-					triggerOnCls:	'on', 
-					containerCS:	'',
-					itemCS:			'.item', 
-					itemOnCls:		'on'
-				});
+}).init({
+	CSPre: 			'.carousel-simple',
+	triggerCS: 		'.tab', 
+	triggerOnCls:	'on', 
+	containerCS:	'.track', 
+	itemCS:			'.cont', 
+	itemOnCls:		'on',
+	prevCS:			'.prev',
+	nextCS:			'.next'
+});
+
+new Switch().plugin('accordion', 'autoPlay').on({
+	itemActive: function(i){
+	},
+	
+	itemDeactive: function(i){
+	}
+}).init({
+	triggerType:	'mouseenter',
+	CSPre: 			'.accordion-simple',
+	triggerCS: 		'.item', 
+	// triggerOnCls:	'on', 
+	containerCS:	'.items',
+	itemCS:			'.item', 
+	itemOnCls:		'on'
+});
+
+
+new Switch().plugin('lazyload', 'carousel', 'autoPlay').on({
+	navEnable: function(btn, which){
+		btn && btn.css(NAVITATOR_ENABLE_STYLE);
+	},
+	
+	navDisable: function(btn, which){
+		btn && btn.css(NAVITATOR_DISABLE_STYLE);
+	},
+	
+	afterInit: 	function(){
+		$.all('.carousel-complex .items').forEach(function(wrap, i){
+			$(wrap).addClass('items-' + i);
+			
+			new Switch().plugin('accordion').init({
+				triggerType:	'mouseenter',
+				CSPre: 			'.items-' + i,
+				triggerCS: 		'.item', 
+				triggerOnCls:	'on', 
+				containerCS:	'',
+				itemCS:			'.item', 
+				itemOnCls:		'on'
 			});
-		}
-	});
+		});
+	}
 	
-	new Switch().plugin('lazyload', 'fade', 'autoPlay').init({
-		triggerType:	'mouseenter',
-		CSPre: 			'.fade-simple',
-		triggerCS: 		'.tab', 
-		triggerOnCls:	'on', 
-		containerCS:	'.track',
-		itemCS:			'.cont', 
-		itemOnCls:		'on',
-		
-		onItemActive: 	function(i){
-		},
-		
-		onItemDeactive: function(i){
-		}
-		
-	});
-*/
+}).init({
+	CSPre: 			'.carousel-complex',
+	triggerCS: 		'.tab', 
+	triggerOnCls:	'on', 
+	containerCS:	'.track', 
+	itemCS:			'.items', 
+	itemOnCls:		'on',
+	prevCS:			'.prev',
+	nextCS:			'.next'
+});
+
+
+new Switch().plugin('lazyload', 'fade', 'autoPlay').on({
+	navEnable: function(btn, which){
+		btn && btn.css(NAVITATOR_ENABLE_STYLE);
+	},
+	
+	navDisable: function(btn, which){
+		btn && btn.css(NAVITATOR_DISABLE_STYLE);
+	}
+	
+}).init({
+	triggerType:	'click',
+	CSPre: 			'.fade-simple',
+	triggerCS: 		'.tab', 
+	triggerOnCls:	'on', 
+	containerCS:	'.track',
+	itemCS:			'.cont', 
+	itemOnCls:		'on',
+	prevCS:			'.prev',
+	nextCS:			'.next',
+	
+	onItemActive: 	function(i){
+	},
+	
+	onItemDeactive: function(i){
+	}
+	
+});
+
+
+
 });
 
 </script>
