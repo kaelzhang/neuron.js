@@ -1,0 +1,9 @@
+<IfModule mod_rewrite.c>
+
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ([a-z0-9]+(?:\/[a-z0-9]+)+)\.php$ handler.php?mod=$1 [NC,L]
+
+
+</IfModule>

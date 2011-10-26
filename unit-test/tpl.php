@@ -29,11 +29,13 @@ var r = + new Date,
 
 	}
 
-	preg_match('/[-a-z\d]+$/i', $name, $brief_name);
+	/*
+preg_match('/[-a-z\d]+$/i', $name, $brief_name);
 	
 	if($brief_name){
 		$brief_name = $brief_name[0];
 	}
+*/
 	
 	require( $root . '/js.php');
 	
@@ -44,7 +46,7 @@ var r = + new Date,
 	}
 	
 	
-	require( $brief_name . '-slice.php');
+	require( $name . '-slice.php');
 	
 	
 	if(!$integration){
