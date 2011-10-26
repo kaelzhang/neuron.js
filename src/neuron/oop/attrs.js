@@ -88,7 +88,7 @@ function createGetterSetter(host, sandbox, undef){
 	};
 	
 	host.addAttr = function(key, setting){
-		sandbox[key] = setting;
+		sandbox[key] || (sandbox[key] = setting || {});
 	}
 };
 
@@ -173,6 +173,10 @@ K.Class.EXTS.attrs = {
 
 
 /**
+ 2011-10-24  Kael:
+ - setAttrs method will return this
+ - prevent addAttr method from affecting the existing attr object
+
  2011-10-18  Kael:
  TODO:
  - ? A. optimize setAttrs method, lazily initialize presets after they are called
