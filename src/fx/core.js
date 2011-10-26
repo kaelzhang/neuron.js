@@ -1,4 +1,4 @@
-KM.define([], function(K){
+KM.define(function(K, require){
 
 
 /**
@@ -59,18 +59,69 @@ _instances = {},
 // map:  fps -> timer
 _timers = {},
 
+META_LINK_WRAPPER = {
+	cancel: function(fn){
+		return function(){
+			this.cancel();
+			fn.apply(this, arguments);
+		};
+	},
+	
+	chain: function(fn){
+		var self = this,
+			queue = self.__queue,
+			running;
+			
+		function next(){
+			var args = queue.shift();
+			
+			running = false;
+			if(args){
+				running = true;
+				run(args);
+			}
+		};
+		
+		function run(args){
+			fn.apply(args);
+		};
+		
+		function add(args){
+			running ? queue.push(args) : run(args);
+		};
+	
+		this.on('complete', next);
+	
+		return function(){
+			add(arguments);
+			return self;
+		};
+	},
+	
+	ignore: function(fn){
+		return function(){
+			!this._isRunning() && fn.apply(this, arguments);
+		}
+	}
+},
+
 
 Fx = K.Class({
 	Implements: 'events attrs',
 
 	initialize: function(options){
-		var self = this;
+		var self = this,
+			start = self.start;
 	
 		self.subject = self.subject || self;
 		self.setAttrs(options);
 		
 		self.frameSkip = self.get('frameSkip');
+		
+		self.start = META_LINK_WRAPPER[self.get('link')].call(this, start);
 	},
+	
+	__queue: [],
 
 	_step: function(now){
 		var self = this;
@@ -109,23 +160,6 @@ Fx = K.Class({
 		return Fx.compute(from, to, progress);
 	},
 
-	_check: function(){
-	
-		// TEMP
-		return true;
-	
-		var self = this, args = arguments;
-	
-		if (!self._isRunning()) return true;
-		switch (self.get('link')){
-			case 'cancel': self.cancel(); return true;
-			case 'chain': self.chain(function(){
-				return self.caller.apply(self, args);
-			}); return false;
-		}
-		return false;
-	},
-
 	_isRunning: function(){
 		var list = _instances[this.get('fps')];
 		return list && list.indexOf(this) !== -1;
@@ -133,25 +167,23 @@ Fx = K.Class({
 
 	start: function(from, to){
 		var self = this;
-	
-		if (self._check(from, to)){
-			self.from = from;
-			self.to = to;
-			self.frame = self.frameSkip ? 0 : -1;
-			self.time = null;
-			self._transition = self.get('transition');
-			
-			var frames = self.get('frames'),
-				fps = self.get('fps'),
-				duration = self.get('duration');
-			
-			self.duration = duration;
-			self.frameInterval = 1000 / fps;
-			self.frames = frames || Math.round( duration / self.frameInterval);
-			self.fire('start', self.subject);
-			
-			addOrRemoveClockTicking(self, fps, true);
-		}
+		
+		self.from = from;
+		self.to = to;
+		self.frame = self.frameSkip ? 0 : -1;
+		self.time = null;
+		self._transition = self.get('transition');
+		
+		var frames = self.get('frames'),
+			fps = self.get('fps'),
+			duration = self.get('duration');
+		
+		self.duration = duration;
+		self.frameInterval = 1000 / fps;
+		self.frames = frames || Math.round( duration / self.frameInterval);
+		self.fire('start', self.subject);
+		
+		addOrRemoveClockTicking(self, fps, true);
 		
 		return self;
 	},
@@ -161,6 +193,8 @@ Fx = K.Class({
 		
 		if (self._isRunning()){
 			self.time = null;
+			
+			self.__queue.length = 0;
 			
 			addOrRemoveClockTicking(self, self.get('fps'));
 			
@@ -176,6 +210,8 @@ Fx = K.Class({
 	},
 	
 	cancel: function(){
+		var self = this;
+	
 		if (self._isRunning()){
 			self.time = null;
 			
@@ -183,7 +219,7 @@ Fx = K.Class({
 			
 			self.frame = self.frames;
 			
-			self.fire('cancel', self.subject).clearChain();
+			self.fire('cancel', self.subject);
 		}
 		
 		return self;
@@ -261,8 +297,11 @@ return Fx;
 });
 
 /**
+ 2011-10-09  Kael
+ - migrate to Neuron
+
  TODO:
  A. CSS3 transition support
- 
+ B. chain support
  
  */

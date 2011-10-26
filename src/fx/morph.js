@@ -35,10 +35,6 @@ return K.Class({
 
 	start: function(properties){
 		var self = this;
-	
-		if (!self._check(properties)){
-			return self;
-		}
 		
 		var from = {}, to = {},
 			p,
@@ -57,3 +53,13 @@ return K.Class({
 });
 
 });
+
+/**
+ change log:
+
+ 2011-10-26  Kael
+ - migrate to Neuron
+ - remove chain methods of mootools
+ 
+ 
+ */

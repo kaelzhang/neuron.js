@@ -30,16 +30,14 @@ return K.Class({
 		var self = this,
 			args,
 			parsed;
-	
-		if (self._check(property, from, to)){
-			args = K.makeArray(arguments);
 			
-			if(!self.property){
-				self.property = args.shift();
-			}
-			
-			parsed = this._prepare(self.element, self.property, args);
+		args = K.makeArray(arguments);
+		
+		if(!self.property){
+			self.property = args.shift();
 		}
+		
+		parsed = this._prepare(self.element, self.property, args);
 		
 		return Fx.prototype.start.call(self, parsed.from, parsed.to);
 	}
@@ -50,6 +48,10 @@ return K.Class({
 
 /**
  change log:
+ 
+ 2011-10-26  Kael
+ - migrate to Neuron
+ - remove chain methods of mootools
  
  2011-10-19  Kael:
  - refractor Fx.Tween, no longer inherit from Fx.CSS
