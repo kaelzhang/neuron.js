@@ -8,22 +8,21 @@ KM.define(['util/json'], function(K, require){
 /**
  * entrance of ajax method
  */	
-function ajax(data, callback, options){
+function ajax(url, callback, options){
 	var self = this, len = arguments.length;
 	
 	// KM.ajax('/hander/?a=avatar&email=i@kael.me', function(rt){...});
 	if(self instanceof ajax && callback && len > 1){
 		options = options || {};
-		// options.method = 'GET';
-		// options.url = data;
-		options.onSuccess = callback;
+		options.method = 'GET';
+		options.url = data;
 		
-		return new _Ajax(options).send(data);
+		return new _Ajax(options).on('success', callback).send(data);
 	
 	// ajax.send({a:1});
 	// ajax.send({a:2});
 	}else{
-		return new _Ajax(data);
+		return new _Ajax(url);
 	}
 };
 
@@ -183,8 +182,6 @@ _Ajax = K.Class({
 			
 		self.setAttrs({opt: options});
 		
-		console.log(self, self.get(STR_OPTIONS))
-		
 		self.xhr = Xhr();
 		self.headers = self._makeHeaders();
 		
@@ -221,8 +218,9 @@ _Ajax = K.Class({
 			o = self.get(STR_OPTIONS),
 			xhr = self.xhr,
 			response,
-			isResponseSuccess = o.isSuccess || returnTrue;
-			isXHRSuccess = o.isXHRSuccess || isXHRSuccess;
+			_isResponseSuccess = o.isSuccess || returnTrue,
+			_isXHRSuccess = o.isXHRSuccess || isXHRSuccess,
+			callback_args;
 
 		if (xhr.readyState === DONE && self.running){
 			self.running = false;
@@ -234,9 +232,7 @@ _Ajax = K.Class({
 			response = self._parseResponse(xhr);
 			callback_args = [ response, xhr ];
 			
-			console.log(callback_args, !self.parseError && isXHRSuccess(xhr) && isResponseSuccess(response));
-			
-			self.fire( !self.parseError && isXHRSuccess(xhr) && isResponseSuccess(response) ?
+			self.fire( !self.parseError && _isXHRSuccess(xhr) && _isResponseSuccess(response) ?
 				'success' : 'error', callback_args);
 		}
 	},
