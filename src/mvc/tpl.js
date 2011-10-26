@@ -66,6 +66,12 @@ function compile(template){
 
 	compiled += compilers[last].end + 'return o;';
  
+ 
+ 	/**
+ 	 * 'it' is the entrance parameter of the template function
+ 	 * all JavaScript template should contains the 'it' parameter,
+ 	 * if you expect the template function could accept values
+ 	 */
 	return new Function('it', compiled);
 };
 
@@ -133,6 +139,9 @@ return {
 		return parse(template)(data);
 	},
 	
+	/**
+	 * @return {function()} the compiled template function
+	 */
 	parse: parse
 }
 

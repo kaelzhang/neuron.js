@@ -312,7 +312,6 @@ DOM.methods.css = {
 			specified.SET(el, value);
 			
 		}else{
-		
 			if( CSS_CAN_BE_SINGLE_PX[name] && (
 					   // is number string and the current style type need 'px' suffix
 					   // -> .css('margin', '20')
