@@ -174,7 +174,9 @@ currentCSS = feature.computedStyle ?
 	// http://msdn.microsoft.com/en-us/library/ms535231%28v=vs.85%29.aspx
 	// http://www.quirksmode.org/dom/w3c_html.html
 	function(element, property){
-		return element.currentStyle[camelCase(property)];
+		var currentStyle = element.currentStyle;
+	
+		return currentStyle && currentStyle[camelCase(property)] || '';
 	};
 	
 /*
@@ -223,7 +225,7 @@ if(!feature.opacity){
 		SET: function(element, opacity){
 			var style = element.style,
 				currentStyle = element.currentStyle,
-				filter = currentStyle && currentStyle.filter || style.filter || "";
+				filter = currentStyle && currentStyle.filter || style.filter || '';
 
 			// IE has trouble with opacity if it does not have layout
 			// Force it by setting the zoom level
@@ -336,6 +338,9 @@ DOM.methods.css = {
 
 /**
  change log:
+ 
+ 2011-10-27  Kael:
+ - fix the getter of css when getting 'height' of an element which it's not in the DOM
  
  2011-09-10  Kael:
  
