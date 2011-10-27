@@ -4,7 +4,7 @@
  * build %buildtime%
  */
 
-"use strict";
+// "use strict";
  
 /**
  * corek
