@@ -124,7 +124,11 @@ function overloadDOMGetterSetter(methods, getterArgLength){
 				m.apply(el, args);
 			});
 		}
-		// else do nothing
+		// else {
+		// 		ex: 
+		//			.attr() -> getter_len = 1, len = 0
+		// 		do nothing
+		// }
 		
 		return this;
 	};

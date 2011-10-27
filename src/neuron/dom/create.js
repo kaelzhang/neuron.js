@@ -9,11 +9,15 @@ var DOM = K.DOM,
 
 
 DOM.create = function(fragment, attributes){
-	if (attributes && attributes.checked != null){
-		attributes.defaultChecked = attributes.checked;
+	if (attributes){
+		if(attributes.checked != null){
+			attributes.defaultChecked = attributes.checked;
+		}
+	}else{
+		attributes = {};
 	}
 	
-	fragment = generateFragment(fragment);
+	fragment = generateFragment(fragment, attributes);
 	
 	return new DOM(DOC.createElement(fragment)).attr(attributes);
 };
