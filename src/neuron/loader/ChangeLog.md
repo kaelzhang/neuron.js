@@ -11,6 +11,9 @@ marks:
 milestone 4.0
 ===
 
+2011-10-27  Kael:
+	- bug fixes: if the base location of an app is not empty, IE will fail
+
 2011-10-17  Kael:
 	- adjust the logic about uri generation
 	- improve generateModuleURI_Identifier method to make sure it works even if the uri is not an absolute uri

@@ -1137,11 +1137,22 @@ K.mix(define, {
 });
 
 
+/**
+ * Configure the prefix of modules
+ * @param {string} name
+ * @param {object} config {
+ 		base: {string} if not empty, it should include a left slash and exclude the right slash
+ 			'/lib';  // RIGHT!
+ 			'/lib/'; // WRONG!
+ 			'lib/';	 // WRONG!
+   }
+ */
 function prefix(name, config){
 	var map = _apps_map;
 
 	if(!map[name]){
 		map[name] = config;
+		config.base = _config.base + config.base + '/';
 	}
 };
 
@@ -1161,8 +1172,7 @@ K['provide'] = provide;
 // semi-private
 // will be destroyed after configuration
 K.__Loader = Loader = {
-	'prefix': prefix,
-	
+
 	// no fault tolerance
 	'config': function(cfg){
 		_config = cfg;
@@ -1171,8 +1181,18 @@ K.__Loader = Loader = {
 		error = cfg.error;
 		
 		Loader['config'] = NOOP;
-	}
+	},
+	
+	// no fault tolerance
+	'prefix': prefix
 };
 
 
 })(KM, null);
+
+/**
+ change log:
+ 
+ import ./ChangeLog.md;
+ 
+ */

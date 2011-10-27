@@ -39,7 +39,8 @@ function CDNHasher(evidence){
 		return (s || '').length % 3 + 1;
 	};
 	
-	return 'http://i' + hashToNumber(evidence) + '.dpfile.com';
+	// return 'http://i' + hashToNumber(evidence) + '.dpfile.com';
+	return 'http://neuron.lc:80';
 };
 
 
@@ -58,9 +59,9 @@ function santitizer(identifier){
  */
 Loader.config(K.mix({
 	// root path of module files
-	base: 		'/src/',
+	base: 		'/src',
 	
-	enableCDN:	false,
+	enableCDN:	true,
 	
 	// @return: the domain of either cdn server
 	CDNHasher:	CDNHasher,
@@ -135,7 +136,11 @@ K.app = function(name, config){
 
 
 prefix('~', {
-	base: '/src/'
+	base: '/src'
+});
+
+prefix('Main', {
+	base: '/s/j/app/main'
 });
 
 
