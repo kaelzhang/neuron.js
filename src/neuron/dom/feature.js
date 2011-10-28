@@ -77,6 +77,7 @@ KM.DOM.feature = function(){
 				delete attrs.name;
 				delete attrs.type;
 				
+				return tag;
 			} : 
 			
 			function(tag){
