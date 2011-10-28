@@ -8,7 +8,7 @@
 var DOM = K.DOM;
 
 // remove public members
-delete K.DOM;
+// delete K.DOM;
 delete K.__SELECTOR;
 delete K.__;
 delete DOM.methods;
