@@ -187,7 +187,7 @@ new Switch().plugin('tabSwitch').init({
 
 
 
-new Switch().plugin('lazyLoad', 'carousel', 'autoPlay').on({
+new Switch().plugin('lazyLoad', 'carousel', 'endless', 'autoPlay').on({
 	navEnable: function(btn, which){
 		btn && btn.css(NAVITATOR_ENABLE_STYLE);
 	},
@@ -207,6 +207,7 @@ new Switch().plugin('lazyLoad', 'carousel', 'autoPlay').on({
 	nextCS:			'.next'
 });
 
+
 new Switch().plugin('accordion', 'autoPlay').on({
 	itemActive: function(i){
 	},
@@ -224,7 +225,7 @@ new Switch().plugin('accordion', 'autoPlay').on({
 });
 
 
-new Switch().plugin('lazyload', 'carousel', 'autoPlay').on({
+new Switch().plugin('lazyload', 'carousel', 'endless', 'autoPlay').on({
 	navEnable: function(btn, which){
 		btn && btn.css(NAVITATOR_ENABLE_STYLE);
 	},
@@ -288,8 +289,6 @@ new Switch().plugin('lazyload', 'fade', 'autoPlay').on({
 	}
 	
 });
-
-
 
 });
 
