@@ -108,8 +108,8 @@ K.getLocation = function(href){
 
 /**
  TODO:
- - add more user-agent datas.
  - add constructor for DP.data 
+ - syntax checking for uri
 
  change log:
  2011-07-05  Kael:

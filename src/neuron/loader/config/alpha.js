@@ -59,7 +59,7 @@ function santitizer(identifier){
  */
 Loader.config(K.mix({
 	// root path of module files
-	base: 		'/src',
+	base: 		'',
 	
 	enableCDN:	true,
 	

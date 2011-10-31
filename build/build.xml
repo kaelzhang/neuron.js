@@ -8,7 +8,6 @@
 		<path path="ua/ua.js" />
 		
 		<path path="loader/loader.js" />
-		
 		<path path="loader/config/alpha.js" />
 		
 		<path path="oop/class.js" />
@@ -31,7 +30,6 @@
 		
 		<path path="biz/biz.js" />
 		<path path="biz/neuron.js" />
-		<path path="biz/faker.js" />
 		
 		<path path="cleaner.js" />
 	</package>

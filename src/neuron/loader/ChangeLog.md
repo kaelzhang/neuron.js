@@ -27,7 +27,7 @@ milestone 4.0
 	- set the identifier of home modules as '~'
 	
 TODO:
-	- A. use loader constructor instead of singleton
+	- X A. use loader constructor instead of singleton
 
 2011-09-27  Kael:
 	- complete configuration for the new APIs of Loader

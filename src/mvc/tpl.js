@@ -1,3 +1,7 @@
+/**
+ * module  javascript template engine
+ */
+ 
 KM.define(function(K, require){
 
 
@@ -26,7 +30,7 @@ function compile(template){
 	 		'1': ' mycode ',
 	 		index: {number},
 	 		input: {string}
-	   } 
+	   }
 	 */
 	while((reader = regex_scope.exec(template)) !== null){
 		matched_tpl = reader[0];
@@ -129,6 +133,7 @@ COMPILERS = {
 
 
 return {
+
 	/**
 	 * @param {string} template JavaScript template
 	 * @param {Object} data module
@@ -143,7 +148,8 @@ return {
 	 * @return {function()} the compiled template function
 	 */
 	parse: parse
-}
+};
+
 
 });
 

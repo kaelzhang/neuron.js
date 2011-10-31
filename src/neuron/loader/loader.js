@@ -534,7 +534,7 @@ function provide(dependencies, callback){
  	{
  		r: {string} the uri that its child dependent modules referring to
  		p: {string} the uri of the parent dependent module
- 		nc: {string} namespace of the current module
+ 		n: {string} namespace of the current module
  	}
  * @param {boolean=} noCallbackArgs whether callback method need arguments, for inner use
  */
@@ -684,6 +684,13 @@ function getOrDefine(name, env, noWarn){
 /**
  * provideOne(for inner use)
  * method to provide a module, push its status to at least STATUS.ready
+ * @param {Object} mod
+ * @param {function()} callback
+ * @param {!Object} env sandbox of environment {
+ 		r: {string} relative uri,
+ 		p: {Object} environment of the parent module(caller module which depends on the current 'mod' ),
+ 		n: {string} namespace of the caller module
+   }
  */
 function provideOne(mod, callback, env){
 	var status = mod.status, 
@@ -736,6 +743,9 @@ function provideOne(mod, callback, env){
 	
 	// package definition may occurs much later than module, so we check the existence when providing a module
 	// if a package exists, and module file has not been loaded.
+	// example:
+	// before we load module 'fx/tween', we would check if package 'fx' had been defined
+	// if had, loader will request fx.js first
 	}else if(
 		mod.npc && 
 		(parent = getModuleByIdentifier( getParentModuleIdentifier(mod.i) )) && 
@@ -783,6 +793,8 @@ function provideOne(mod, callback, env){
  * specify the environment for every id that required in the current module
  * including
  * - reference uri which will be set as the current module's uri 
+ 
+ * @param {Object} envMod mod
  */
 function createRequire(envMod){
 	return function(id){
@@ -796,6 +808,9 @@ function createRequire(envMod){
 };
 
 
+/**
+ * generate the exports if the module status is 'ready'
+ */
 function generateExports(mod){
 	var exports = {},
 		factory,
@@ -808,6 +823,19 @@ function generateExports(mod){
 		// preventing user from fetching runtime data by 'this'
 		ret = factory(K, createRequire(mod), exports);
 		
+		// exports:
+		// TWO ways to define the exports of a module
+		// 1. 
+		// exports.method1 = method1;
+		// exports.method2 = method2;
+		
+		// 2.
+		// return {
+		//		method1: method1,
+		//		method2: method2
+		// }
+		
+		// {2} has higher priority
 		if(ret){
 			exports = ret;
 		}
@@ -1109,7 +1137,7 @@ function getDir(uri){
  * ---------------------------------------------------------------------------------- */
 
 // use for_each instead of foreach
-// prevent compiler(google closure) from treating 'foreach' as a reserved word
+// prevent compiler(such as google closure) from treating 'foreach' as a reserved word
 function for_each(array, fn){
 	var i = 0,
 		len = array.length;
@@ -1142,7 +1170,9 @@ K.mix(define, {
  * @param {string} name
  * @param {object} config {
  		base: {string} if not empty, it should include a left slash and exclude the right slash
+ 			
  			'/lib';  // RIGHT!
+ 			
  			'/lib/'; // WRONG!
  			'lib/';	 // WRONG!
    }
@@ -1189,6 +1219,7 @@ K.__Loader = Loader = {
 
 
 })(KM, null);
+
 
 /**
  change log:

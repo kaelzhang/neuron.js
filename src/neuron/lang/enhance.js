@@ -34,7 +34,11 @@ function mix(r, s, or, cl) {
 };
 	
 	
-// bind the this pointer of a function	
+/**
+ * bind the this pointer of a function	
+ * @param {function()} fn
+ * @param {Object} bind
+ */
 function bind_method(fn, bind){
 	return function(){
 		return fn.apply(bind, arguments);
@@ -45,7 +49,8 @@ function bind_method(fn, bind){
  * transform functions that have the signature fn(key, value)
  * to 
  * functions that could accept object arguments
- * @adapter
+ * // @adapter
+ * @param {function()} fn
  */
 function overloadSetter(fn){
 
@@ -77,6 +82,7 @@ function overloadSetter(fn){
 
 /**
  * memoize static result of a complicated method to save time
+ * @param {function(string...)} fn method which only accepts string parameters
  */
 function memoizeMethod(fn){
 	var stack = {};
@@ -91,6 +97,8 @@ function memoizeMethod(fn){
 
 /**
  * clone an object as a pure array, and ignore non-number properties
+ * @param {Array} array
+ * @param {Array|Object} host required, receiver which the array be cloned to
  */
 function clonePureArray(array, host){
 	var i = array.length,
@@ -299,8 +307,9 @@ K.clone = function(o, filter) {
 		try{
 			delete v[m];
 		}catch(e){
+			var U;
 			K.log('del clone m err', e);
-			v[m] = undefined;
+			v[m] = U;
 		}
 	});
 	
@@ -351,7 +360,10 @@ K.delay = function(fn, delay, isInterval){
 
 
 /**
- * @param {Array} array
+ * @param {all} array
+ 		if nodelist, returns an array which generated from the nodelist
+ 		if Array, returns the array itself
+ 		otherwise, returns an array contains the subject
  * @param {Array} host
  */
 K.makeArray = function(array, host){
@@ -380,7 +392,7 @@ K.makeArray = function(array, host){
 			
 		}else{
 		
-			// ie fails on collections and <select>.options (refers to <select>)
+			// IE fails on collections and <select>.options (refers to <select>)
 			// use array clone instead of Array.prototype.slice
 			clonePureArray(array, host);
 		}

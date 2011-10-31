@@ -61,7 +61,7 @@ implement(Array, {
 			from = Math.max(from + len, 0);
 		}
 		
-		for (; from < len; from++) {
+		for (; from < len; from ++) {
 			if (from in this && this[from] === value) {
 				return from;
 			}

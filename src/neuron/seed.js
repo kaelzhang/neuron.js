@@ -8,7 +8,7 @@
  
 /**
  * corek
- * seed.js -> lang/ -> ua/ -> loader/ -> config/ -> class/ -> selector/ -> dom/ -> biz/
+ * seed.js -> lang/ -> ua/ -> loader/ -> oop/ -> selector/ -> dom/ -> biz/
  */
 
 /**
@@ -17,6 +17,8 @@
 
 /**
  * @param {undefined=} undef
+ *
+ * REMEMBER: NEVER use undefined, because writing 'undefined = true;' will bring mass catastrophe
  */ 
 ;(function(host, K, undef){
 
@@ -48,14 +50,17 @@ K.__HOST = host = K.__HOST || host;
  * ------------------------------------------------------------------------------------ */
 K._type = function(){
 	
+	/**
+	 * @param {all} obj
+	 * @param {boolean=} strict, 
+	 	if true, method _type will only return a certain type from the type_list
+	 
+	 * NEVER use K._type(undefined)
+	 * for undefined/null, use obj === undefined / obj === null instead
+	 
+	 * for host objects, always return 'object'
+	 */
 	function _type(obj, strict){
-		
-		/**
-		 * no strict:
-		 * if include in type_map, return the type
-		 * for undefined/null, use obj === undefined / obj === null instead
-		 * for host objects, always return 'object'
-		 */
 		return type_map[ toString.call(obj) ] || !strict && obj && 'object' || undef;
 	};
 
@@ -154,7 +159,7 @@ K._env = {};
 K.log = function(){};
 
 
-// load 'log' module to switch debug-mode on
+// switch debug-mode on, and load 'log' module
 K._debugOn = function(){
     // K.provide('log', function(K){ K.log('debug module attached') });
     KM._env.debug = true;
