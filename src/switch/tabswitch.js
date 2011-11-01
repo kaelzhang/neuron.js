@@ -11,23 +11,31 @@ KM.define({
 
     init: function(self){
     	var EVENTS = self.get('EVENTS'),
-    		TRIGGER_ON_CLS = 'triggerOnCls',
     		ITEM_ON_CLS = 'itemOnCls';
     
         self.on(EVENTS.BEFORE_SWITCH, function(){
-            var t = self,
+            var t = this,
                 activePage = t.activePage;
                 
-            t.triggers[activePage].removeClass(t.get(TRIGGER_ON_CLS)); 
-            t.items[activePage].removeClass(t.get(ITEM_ON_CLS));
+            t._getItem(activePage).removeClass(t.get(ITEM_ON_CLS));
+            t._dealTriggerCls(true);
         });
 
         self.on(EVENTS.ON_SWITCH, function(){
-            var t = self,
+            var t = this,
                 activePage = t.activePage = t.expectPage;
-			
-			t.triggers[activePage].addClass(t.get(TRIGGER_ON_CLS));
-            t.items[activePage].addClass(t.get(ITEM_ON_CLS));
+                
+            t._getItem(activePage).addClass(t.get(ITEM_ON_CLS));
+            t._dealTriggerCls(false, activePage);
         });
     }
 });
+
+
+/**
+ change log
+ 
+ 2011-10-31  Kael:
+ - use _dealTriggerCls and _getItem instead of old methods
+ 
+ */
