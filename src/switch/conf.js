@@ -12,7 +12,7 @@ function setPrefix(prefix, items){
 var alias = {},
 	PLUGIN_BASE = 'switch/';
 
-setPrefix('more', ['fade', 'accordion']);
+setPrefix('more', []);
 
 return {
 	prefix: setPrefix,
@@ -22,6 +22,7 @@ return {
 	
 		return PLUGIN_BASE + (alias[name] || name);
 	}
-}
+};
+
 
 });

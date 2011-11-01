@@ -45,13 +45,30 @@ function atLeastOne(num){
 	return !num || num < 1 ? 1 : num;
 };
 
+
+/**
+ * move or add the class of triggers
+ */
+function currentTriggerClass(remove, index){
+    var self = this
+    	currentTrigger = self.triggers[index || self.activePage],
+        TRIGGER_ON_CLS = self.get('triggerOnCls');
+        
+    currentTrigger && (
+    remove ? 
+    	currentTrigger.removeClass(TRIGGER_ON_CLS) : 
+    	currentTrigger.addClass(TRIGGER_ON_CLS)
+    );
+};
+
 /**
  * @constructor
  *
  * @usage 
- *
- * new Switch().plugin('lazyLoad', 'autoPlay'[, …]).init(options);
- *
+ <code>
+ 	new Switch().plugin('lazyLoad', 'autoPlay'[, ...]).init(options);
+ </code>
+ 
  * if no plugin is specified, the items will plainly switched with no effect
  */
 Switch = Class({
@@ -89,9 +106,6 @@ Switch = Class({
 	    	
 	    	'switchTo', 'prev', 'next'
     	], self ).on();
-    	
-    	// processing queue for switch life cycle
-    	self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
     },
 
     // @private
@@ -105,7 +119,19 @@ Switch = Class({
 	 * Life Cycle
 	 * key feature of switch module
 	 * to extend the Switch Class into a much more complex switcher,
-	 * you could override this setting, according to the api of util/asqueue
+	 * you could override this setting, according to the api of util/queue
+	 
+	 * syntax:
+	 * Array.<item>
+	 * item
+	 	{string} method name to be execute by sequence
+	 	{Object} queue object
+	 		{
+	 			auto: 	{boolean}, default to true
+	 			once: 	{boolean}, default to false
+	 			method: {function()|string}
+	 			args: 	{Array} arguments
+	 		}
 	 */
 	_lifeCycle: ['_before', '_on', '_after'],
 	
@@ -160,6 +186,8 @@ Switch = Class({
 	/**
 	 * attach a plugin or plugins to the switch instance
 	 * .plugin might be an asynchronous method which will be added to the end of the pending queue of Initializer
+	 
+	 * @public
 	 * @param {string|Object} arguments
 	 */
 	plugin: function(){
@@ -250,7 +278,6 @@ Switch = Class({
 		});
 		
 		self.fire(EVENT_BEFORE_INIT);
-		
         self.set(options);
           
         if(self.container){
@@ -258,7 +285,10 @@ Switch = Class({
             self.fire(EVENT_AFTER_INIT);
             
             activePage = self.activePage;
-            currentItem = self.items[activePage];
+            currentItem = self._getItem(activePage);
+            
+             // processing queue for switch life cycle
+    		self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
 
             if(currentItem && !currentItem.hasClass(self.get('itemOnCls'))){
                 self.switchTo(self.activePage, true);
@@ -268,10 +298,10 @@ Switch = Class({
         return self;
     },
 
-	_itemData: function(){
+	_itemData: function(length){
 		var self = this;
 	
-		self.length = self.items.length;
+		self.length = length || self.items.length;
 		
 		/**
          calculate how many pages the Switcher has:
@@ -316,19 +346,32 @@ Switch = Class({
         return self;
     },
     
+    /**
+     * go to the previous position
+     */
     prev: function(e){
         e && e.prevent();
         var self = this;
-
-        // 限制 activePage 的范围
-        !self.noprev && self.switchTo( limit(self.activePage - 1, 0, self.pages - 1) );
+		
+		self.fire(PREV);
+		
+        // limit the range of activePage
+        !self.noprev && self.switchTo( self._limit(self.activePage - 1) );
+        
+        return self;
     },
-
+	
+	/**
+     * go to the next position
+     */
     next: function(e){
         e && e.prevent();
         var self = this;
-
-        !self.rightEnd && self.switchTo( limit(self.activePage + 1, 0, self.pages - 1) );
+		
+		self.fire(NEXT);
+        !self.nonext && self.switchTo( self._limit(self.activePage + 1) );
+        
+        return self;
     },
     
     //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
@@ -352,7 +395,14 @@ Switch = Class({
     	counters && counters.text(this.activePage + 1);
     },
     //////// life cycle end ///////////////////////////////////////////////////////////////////////////////
-  
+  	
+  	
+  	/**
+  	 * method to get items
+  	 */
+  	_getItem: function(index){
+  		return this.items[index];
+  	},
   
   	/**
   	 * @private
@@ -363,6 +413,15 @@ Switch = Class({
 
     _onLeaveTrigger: function(index){
         this.triggerOn = false;
+    },
+    
+    /**
+     * do nothing by default
+     */
+    _dealTriggerCls: NOOP,
+    
+    _limit: function(index){
+    	return limit(index, 0, this.pages - 1);
     },
     
     /**
@@ -452,8 +511,9 @@ Class.setAttrs(Switch, {
 		                mouseenter: function(){ t._onEnterTrigger(index); },
 		                mouseleave: function(){ t._onLeaveTrigger(index); }
 		            });
-	        
 	        });
+	        
+	        self._dealTriggerCls = currentTriggerClass;
 		}
 	},
 	 		
@@ -536,7 +596,9 @@ Switch.EVENTS = {
     ON_SWITCH		: EVENT_ON_SWITCH,
     COMPLETE_SWITCH	: EVENT_COMPLETE_SWITCH,
     NAV_DISABLE		: EVENT_NAV_DISABLE,
-    NAV_ENABLE		: EVENT_NAV_ENABLE
+    NAV_ENABLE		: EVENT_NAV_ENABLE,
+    PREV			: PREV,
+    NEXT			: NEXT
 };
 
 
@@ -546,6 +608,9 @@ return Switch;
 
 /**
  change log:
+ 
+ 2011-10-31  Kael:
+ - lazily initialize the controller of lifeCycle, so that plugins could be involved in.
  
  2011-10-25  Kael:
  - migrate to Neuron

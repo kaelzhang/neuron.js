@@ -5,6 +5,8 @@
 
 KM.define({
     name: 'autoPlay',
+    final_: true,
+    
     options: {
         interval: 3000,
         hoverStop: true
@@ -14,7 +16,7 @@ KM.define({
         function autoplay(){
             var t = self;
             if(!t.triggerOn && !t.paused){
-                t.switchTo( (t.activePage + 1) % t.pages );
+                t.next();
             }
         };
 
@@ -37,12 +39,16 @@ KM.define({
         self.on(EVENTS.AFTER_INIT, function(){
             var t = self;
             
+            // TODO
+            // add queue support
             KM.mix(t, {
 				pause: pause,
 				resume: resume
 			});
 			
             t.get('hoverStop') && t.container.on({
+            
+            	// when mouse hovers over the container, stop autoplaying
                 mouseenter: function(){
                     t.paused = true;
                 },
@@ -56,7 +62,6 @@ KM.define({
             autoPlayTimer.start();
         });
 
-        // 
         self.on(EVENTS.BEFORE_SWITCH, function(){
             autoPlayTimer.cancel();
         });
@@ -68,6 +73,10 @@ KM.define({
 });
 
 /**
+ 
+ 2011-10-31  Kael:
+ - use .next() method
+
  2011-08-19  Kael:
  - fix a bug calculating activePage when auto playing
 
