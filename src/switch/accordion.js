@@ -55,26 +55,16 @@ return {
     		var t = self;
     	
     		on_complete[active] = function(){
-    			t.items[active].removeClass(active_cls);
+    			t._getItem(active).removeClass(active_cls);
     			t.fire(EVENT_ON_ITEM_DEACTIVE, [active]);
     		};
     		
     		on_complete[expect] = function(){
-    			t.items[expect].addClass(active_cls);
+    			t._getItem(expect).addClass(active_cls);
     			t.fire(EVENT_ON_ITEM_ACTIVE, [expect]);
     			t.fire(EVENTS.COMPLETE_SWITCH);
     		};
     	};
-    	
-    	function currentTriggerClass(remove, index){
-            var t = self,
-                currentTrigger = t.triggers[index || t.activePage],
-                TRIGGER_ON_CLS = t.get('triggerOnCls');
-                
-            remove ? 
-            	currentTrigger.removeClass(TRIGGER_ON_CLS) : 
-            	currentTrigger.addClass(TRIGGER_ON_CLS);
-        };
     	
     	function chk(o){
     		return o || o === 0;
@@ -105,22 +95,22 @@ return {
 	        
 	        property = fx.property;
 	        
-	        active_value = chk(_active_value) ? _active_value : t.items[active].css(property);
-	        normal_value = chk(_normal_value) ? _normal_value : t.items[(active + 1) % t.items.length].css(property);
+	        active_value = chk(_active_value) ? _active_value : t._getItem(active).css(property);
+	        normal_value = chk(_normal_value) ? _normal_value : t._getItem((active + 1) % t.items.length).css(property);
         });
         
         self.on(EVENTS.BEFORE_SWITCH, function(){
-            currentTriggerClass(true);
+            this._dealTriggerCls(true);
         });
 
         self.on(EVENTS.ON_SWITCH, function(){
-            var t = self,
+            var t = this,
                 active = t.activePage,
                 expect = t.expectPage;
                 
             setFxCallback(active, expect);
-            getFx(t.items[active], active).start(normal_value);
-            getFx(t.items[expect], expect).start(active_value);
+            getFx(t._getItem(active), active).start(normal_value);
+            getFx(t._getItem(expect), expect).start(active_value);
             
             
 /**
@@ -150,7 +140,7 @@ return {
             t.activePage = expect;
             t._dealNavs();
             
-            currentTriggerClass(false, expect);
+            t._dealTriggerCls(false, expect);
         });
     }
 }
