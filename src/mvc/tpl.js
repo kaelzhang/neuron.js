@@ -2,7 +2,7 @@
  * module  javascript template engine
  */
  
-KM.define(function(K, require){
+KM.define(function(){
 
 
 /**
@@ -11,6 +11,7 @@ KM.define(function(K, require){
 function compile(template){
 		
 		// @type {string} set initial value of o as "", so o won't be 'undefined'
+		// 'o' -> 'output'
 	var compiled = 'var o="";',
 		
 		// @type {Object} reader object of the compiler
@@ -74,7 +75,7 @@ function compile(template){
  	/**
  	 * 'it' is the entrance parameter of the template function
  	 * all JavaScript template should contains the 'it' parameter,
- 	 * if you expect the template function could accept values
+ 	 * if you expect your template function to be able to accept values
  	 */
 	return new Function('it', compiled);
 };
@@ -96,7 +97,9 @@ EMPTY = '',
 
 /**
  * JavaScript Template scope
- * <?js //code… ?>
+ * match criteria like <?js //code... ?>
+ * or,
+ * @{variable}
  */
 REGEX_JSTL_SCOPE = /<\?js(.+?)\?>|@\{(.+?)\}/g, // lazy match
 
@@ -108,6 +111,7 @@ COMPILERS = {
 		addParam: 	'o+='
 	},
 	
+	// string between code snippets and variables
 	string: {
 		addString: 	EMPTY, 
 		addCode: 	'";', 
@@ -115,6 +119,7 @@ COMPILERS = {
 		end: 		'";'
 	},
 	
+	// JavaScript code between '<?js' and its corresponding '?>'
 	code: {
 		addString: 	'o+="', 
 		addCode: 	EMPTY,
@@ -122,6 +127,7 @@ COMPILERS = {
 		end: 		EMPTY
 	},
 	
+	// JavaScript variable between '@{' and '}'
 	param: {
 		addString: 	'+"',
 		addCode: 	';', 
@@ -145,6 +151,7 @@ return {
 	},
 	
 	/**
+	 * method to compile a template into a function
 	 * @return {function()} the compiled template function
 	 */
 	parse: parse
