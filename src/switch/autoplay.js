@@ -7,9 +7,14 @@ KM.define({
     name: 'autoPlay',
     final_: true,
     
-    options: {
-        interval: 3000,
-        hoverStop: true
+    ATTRS: {
+        interval: {
+        	value: 3000
+        },
+        
+        hoverStop: {
+        	value: true
+        }
     },
 
     init: function(self){

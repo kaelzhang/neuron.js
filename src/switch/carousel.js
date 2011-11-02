@@ -40,15 +40,20 @@ var Tween = require('fx/tween'),
 
 return {
     name: 'carousel',
-    options: {
+    
+    ATTRS: {
         fx: {
-            link: 'cancel',
-            transition: Easing.Cubic.easeOut,
-            duration:300
+            value: {
+            	link: 'cancel',
+	            transition: Easing.Cubic.easeOut,
+	            duration: 300
+	        }
         },
 
         // only support 'left' || 'top'
-        direction: 'left'
+        direction: {
+        	value: 'left'
+        }
     },
 
     init: function(self){

@@ -5,22 +5,45 @@
  
 KM.define(['./accordion'], function(K, require){
 
-var accordion = require('./accordion'),
-	fade = {
-		options: {
-			property: 'opacity',
-			activeValue: 1, 
-			normalValue: 0,
-			
-			fx: {
-				duration: 1000
-			}
-		}
-	};
+var 
+
+accordion = require('./accordion'),
+fade = {},
+
+STR_ATTRS = 'ATTRS',
+
+ACCORDION_ATTRS = accordion[STR_ATTRS],	
 	
+ATTRS = {
+	property: {
+		value: 'opacity'
+	},
+	
+	activeValue: {
+		value: 1
+	},
+	
+	normalValue: {
+		value: 0
+	},
+	
+	fx: {
+		value: {
+			duration: 1000
+		}
+	}
+};
+
+fade[STR_ATTRS] = ATTRS;
+
+// mix attributes
+K.mix(ATTRS, ACCORDION_ATTRS, false);
+
+// mix value of fx
+K.mix(ATTRS.fx.value, ACCORDION_ATTRS.fx.value, false);
+
+// mix plugin members
 K.mix(fade, accordion, false);
-K.mix(fade.options, accordion.options, false);
-K.mix(fade.options.fx, accordion.options.fx, false);
 
 return fade;
 

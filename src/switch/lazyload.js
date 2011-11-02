@@ -19,8 +19,10 @@ return {
     name: 'lazyLoad',
 
     // 这里的options会被合并到新的Switch实例的options中
-    options: {
-        lazyLoadCS: '.J_lazy-load'
+    ATTRS: {
+        lazyLoadCS: {
+        	value: '.J_lazy-load'
+        }
     },
 
     // @param switchInstance {object} new instance of DP.Switch, as the same as below

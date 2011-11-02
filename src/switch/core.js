@@ -14,8 +14,7 @@
  
 KM.define(['./conf', 'util/queue'], function(K, require){
 
-var __CONSTRUCT = '__construct',
-	EVENT_BEFORE_INIT = 'beforeInit',
+var EVENT_BEFORE_INIT = 'beforeInit',
     EVENT_AFTER_INIT = 'afterInit',
     EVENT_BEFORE_SWITCH = 'beforeSwitch',
     EVENT_ON_SWITCH = 'switching',
@@ -77,8 +76,7 @@ Switch = Class({
     initialize: function(){
     	var self = this,
     		bind = K.bind;
-    	
-    	self.fire(__CONSTRUCT);
+    		
     	self.setAttrs();
     	
     	// bind public methods
@@ -106,6 +104,9 @@ Switch = Class({
 	    	
 	    	'switchTo', 'prev', 'next'
     	], self ).on();
+    	
+    	// processing queue for switch life cycle
+    	self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
     },
 
     // @private
@@ -239,10 +240,12 @@ Switch = Class({
         //    return t.pluginFinal = true;
         // }
 
-        // set plugin options before method Switch.init, so that we can override plugin options before plugin.init
-        K.each(plugin.options, function(value, key){
-        	this.addAttr(key);
-        	this.set(key, value);
+        // set plugin attributes before method Switch.init, so that we can override plugin options before plugin.init
+        K.each(plugin.ATTRS, function(setting, key){
+        	var undef, value;
+        	
+        	this.addAttr(key, setting);
+        	setting && (value = setting.value) !== undef && this.set(key, value);
         }, self);
         
         self._plugins.push(plugin);
@@ -286,9 +289,6 @@ Switch = Class({
             
             activePage = self.activePage;
             currentItem = self._getItem(activePage);
-            
-             // processing queue for switch life cycle
-    		self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
 
             if(currentItem && !currentItem.hasClass(self.get('itemOnCls'))){
                 self.switchTo(self.activePage, true);
@@ -573,12 +573,6 @@ Class.setAttrs(Switch, {
 		}
 	},
 	
-	fx: {
-		setter: function(v){
-			return K.mix(this.get('fx') || {}, v);
-		}
-	},
-	
 	EVENTS: {
 		readOnly: true,
 		getter: function(){
@@ -589,7 +583,6 @@ Class.setAttrs(Switch, {
 
 
 Switch.EVENTS = {
-	__CONSTRUCT		: __CONSTRUCT,
 	BEFORE_INIT		: EVENT_BEFORE_INIT,
     AFTER_INIT		: EVENT_AFTER_INIT,
     BEFORE_SWITCH	: EVENT_BEFORE_SWITCH,

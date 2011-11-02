@@ -16,14 +16,18 @@ var Tween = require('fx/tween'),
 return {
 	name: 'accordion',
 	
-	options: {
+	ATTRS: {
         fx: {
-            link: 'cancel',
-            transition: Easing.Cubic.easeOut,
-            duration:200
+        	value: {
+	            link: 'cancel',
+	            transition: Easing.Cubic.easeOut,
+	            duration:200
+	        }
         },
         
-        property: 'height',
+        property: {
+        	value: 'height'
+        },
         
         activeValue: NULL,
         normalValue: NULL
