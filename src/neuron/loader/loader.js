@@ -199,6 +199,11 @@ asset = {
 // @this {element}
 assetOnload = {
 	js: ( DOC.createElement('script').readyState ?
+	
+		/**
+		 * @param {DOMElement} node
+		 * @param {!function()} callback asset.js makes sure callback is not null
+		 */
 		function(node, callback){
 	    	node.onreadystatechange = function(){
 	        	var rs = node.readyState;
@@ -211,9 +216,7 @@ assetOnload = {
 		} :
 		
 		function(node, callback){
-			if(callback){
-				node.addEventListener('load', callback, false);
-			}
+			node.addEventListener('load', callback, false);
 		}
 	)
 },
