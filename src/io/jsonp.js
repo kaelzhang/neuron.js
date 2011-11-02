@@ -7,20 +7,22 @@
 // JSONP Request
 KM.define(function (K) {
 
-// @private
-// clean/check the symbol of empersand('&') on the end/beginning of a query
+/**
+ * @private
+ * clean/check the symbol of empersand('&') on the end/beginning of a query
 
-// @param query {query} the string to be tidied
-// @param hasFirst {Boolean}
-//      if true, will check whether there is a '&' at first. if there isn't, one '&' will be added
-//      if false, 
-function _tidyEmpersand(str, hasFirst, hasLast) {
-    var e = '&',
-	    len = str.length - 1,
-	    f = str[0] === e,
-	    l = str[len] === e;
-
+ * @param query {query} the string to be tidied
+ * @param hasFirst {Boolean}
+ *      if true, will check whether there is a '&' at first. if there isn't, one '&' will be added
+ *      if false, 
+ */
+function _tidyEmpersand(str, hasFirst, hasLast) { console.log(arguments)
     if (str) {
+    	var e = '&',
+		    len = str.length - 1,
+		    f = str[0] === e,
+		    l = str[len] === e;
+    
         if (!hasFirst) {
             str = f ? str.substr(1) : str;
         } else {
@@ -39,8 +41,10 @@ function _tidyEmpersand(str, hasFirst, hasLast) {
     return str || '';
 };
 
-// @private
-// generate a query url
+/**
+ * @private
+ * generate a query url
+ */
 function _getQuestURL(options, query, index) {
     var url = options.url.split('?'),
     	tidy = _tidyEmpersand;
@@ -49,37 +53,20 @@ function _getQuestURL(options, query, index) {
 };
 
 
-var _counter = 0, JSONP,
+var 
+
+_counter = 0,
+
 KM_STR = 'KM',
-JSONP_CALLBACK_PUBLIC_PREFIX = '_JSONPRequest';
 
+JSONP_CALLBACK_PUBLIC_PREFIX = '_JSONPRequest',
 
-JSONP = new Class({
+JSONP = K.Class({
 
-    Implements: [Events, Options],
-
-    options: {
-        //		onSuccess: function(data){},
-        //		onCancel: function(){},
-        //		onTimeout: function(){},
-        onRequest: function (src) {
-            K.log('JSONP retrieving script with url:' + src);
-        },
-        onError: function (src) {
-            K.error('JSONP ' + src + ' will fail in IE, which enforces a 2083b uri length limit');
-        },
-
-        // @type {string} JSONP request uri
-        url: '',
-
-        callbackKey: 'callback',
-        //		inject: {Element} default to document.head,
-        data: '',
-        timeout: 0
-    },
+    Implements: 'events attrs',
 
     initialize: function (options) {
-        this.setOptions(options);
+        this.setAttrs({opt: options});
     },
 
     // @param options 
@@ -94,78 +81,103 @@ JSONP = new Class({
 	        script,
 	
 	        // generate a unique, non-zero jsonp request id
-	        index = ++ _counter,
-	        k = K,
-	        request = k[JSONP_CALLBACK_PUBLIC_PREFIX];
-	        
-        // self.running = true;
+	        uid = ++ _counter,
+	        _K = K,
+	        request = _K[JSONP_CALLBACK_PUBLIC_PREFIX];
 
-        // formatting data ------------------------------------------------------- *\
-
-        // never override old options
+        // formatting data ------------------------------------------------------- 
         
-        if(k.isString(options)){
-        	options = {};
+        // never override old options
+        options || (options = {});
+        
+        if(_K.isString(options)){
         	query = options;
-        }else{
-        	query = k.toQueryString(options.data);
+        	options = {};
         }
         
-        k.mix(options, self.options, false);
+        _K.mix(options, self.get('opt'), false);
         
-        src = _getQuestURL(options, query, index);
+        if(!_K.isString(query)){
+        	query = _K.toQueryString(options.data);
+        }
+        
+        src = _getQuestURL(options, query, uid);
 
-        if (src.length > 2083) self.fireEvent('error', src);
+        if (src.length > 2083){
+        	return self.fire('error', src);
+        }
 
         // JSONP request start
-        request['_' + index] = function () {
-            if (self.running)
+        request['_' + uid] = function () {
+            self.__success.apply(self, arguments);
 
-                self.__success.apply(self, arguments);
-
-            delete request['_' + index];
+            delete request['_' + uid];
         }
+        
+        self._clear();
+        self.script = $( _K.load(src, false, 'js') );
 
-        script = self.script = _create_script(src).inject(options.inject || document.head);
-
-        self.fireEvent('request', [options.url, script]);
-
+        self.fire('request');
 
         if (options.timeout) {
-            (function () {
-                if (self.running) {
-                    self.fireEvent('timeout', [script.get('src'), script])
-					.fireEvent('failure')
-					.cancel();
-                }
-            }).delay(options.timeout);
+            setTimeout(function(){
+            	self.fire('timeout').fire('failure').cancel();
+                
+            }, options.timeout);
         }
 
-        return this;
+        return uid;
     },
 
     // @private
-    __success: function () {
-        // if (!this.running) return false;
-        this.fireEvent('success', arguments);
+    __success: function() {
+        this.fire('success', arguments);
     },
 
-    cancel: function () {
-        return this.running ? this.clear().fireEvent('cancel') : this;
+    cancel: function() {
+        return this._clear().fire('cancel');
     },
 
-    clear: function () {
-        var self = this;
-
-        self.script && self.script.destroy();
-        self.running = false;
-        return self;
+    _clear: function(){
+    	var script = this.script;
+        script && script.destroy();
+        
+        this.script = null;
+        return this;
     }
 
 });
+
+K.Class.setAttrs(JSONP, {
+	opt: {
+		value: {
+			// @type {string} JSONP request uri
+			url: '',
+			
+			callbackKey: 'callback',
+			
+			data: '',
+			
+			timeout: 0
+		},
+		
+		setter: function(v){
+			return K.mix(this.get('opt'), v);
+		}
+	}
+});
+
 
 K[JSONP_CALLBACK_PUBLIC_PREFIX] = {};
 
 return JSONP;
 
 });
+
+
+/**
+ change log
+ 2011-11-01  Kael
+ - migrate to Neuron
+ 
+ */
