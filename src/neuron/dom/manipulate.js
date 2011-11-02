@@ -24,7 +24,7 @@ function addClass(cls){
 };
 
 function removeClass(cls){
-	this.className = this.className.replace(new RegExp('(^|\\s)' + cls + '(?:\\s|$)'), '$1');
+	this.className = this.className.replace(new RegExp('(?:^|\\s+)' + cls + '(?:\\s+|$)'), ' ').trim();
 };
 
 
@@ -548,6 +548,9 @@ DOM._overload = overloadDOMGetterSetter;
 
 /**
  change log:
+ 
+ 2011-11-02  Kael:
+ - change implementation of removeClass to eliminate unexpected whitespace
  
  2011-10-17  Kael:
  - fix a but about DOM.destroy
