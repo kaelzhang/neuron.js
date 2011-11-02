@@ -88,7 +88,7 @@ function createGetterSetter(host, sandbox, undef){
 	};
 	
 	host.addAttr = function(key, setting){
-		sandbox[key] || (sandbox[key] = setting || {});
+		sandbox[key] || (sandbox[key] = K.isObject(setting) ? setting : {});
 	}
 };
 
