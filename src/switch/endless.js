@@ -11,11 +11,15 @@ function returnFalse(){
 
 /**
  * generate a circlewize result of numbers by the range(length) and passed value(value)
+ * offset relative to initial pos -> index relative to items
+ * circlewizeInt is much more usefull than operator '%' when dealing negative numbers
+ 
  * suppose:
-  
- * length: 3
- * values:	-4	-3	-2	-1	0	1	2	3	4
- * returns:	2	0	1	2	0	1	2	0	1	2
+ * 		length: 3
+ 
+ * cases:
+ * 		values:		-4	-3	-2	-1	0	1	2	3	4	5
+ * 		returns:	2	0	1	2	0	1	2	0	1	2
  
  * @param {number} (int)value
  * @param {number} (int)length
@@ -32,35 +36,52 @@ function realInit(self, EVENTS){
 		direction = self.get('direction'),
 		offset_direction = self.offsetDirection;
 	
-	// get pixel spaces between items
-	self.itemSpace = self.get('itemSpace') || self._getItem(1).el(0)[offset_direction] - self._getItem(0).el(0)[offset_direction];
+	/**
+	 * deal with the situation data
+	 
+	/////////////////////////////////////////////////////////////////////////////
 	
-	// deal with the situation activePage is not zero
-	self.leftItems = self.curOffset = self.activeIndex = self.activePage * move;
+	 		  |    curOffset     |               
+	                 | leftItems | stage |    rightItems     |
+	 
+	 stage:                      ---------
+	 train:          -----------------------------------------
+	 initial: |
+	 
+	 /////////////////////////////////////////////////////////////////////////////
+	 
+	 after the initialization, the order of the items might be changed
+	
+	 */
+	 
+	// @type {number} this.leftItems items aside on the left of the 'stage'
+	self.leftItems = 
+	
+	// @type {number} this.curOffset real offset relative to the initial position of the 'container'
+	self.curOffset = 
+	
+	// @type {number} this.activeIndex current activated index of the items relative to the index of 'items'
+	self.activeIndex = self.activePage * move;
+	
+	// @type {number} this.leftItems items aside on the right of the stage
 	self.rightItems = self.length - stage - self.leftItems;
-
-	// if it's an endless carousel, there must be no 'triggers'
-	// self.triggers.forEach(function(trigger){
-	//		trigger.destroy();
-	// });
 	
+	// override methods
 	K.mix(self, METHODS_OVERRIDEN);
 	
 	self.on(EVENTS.NEXT, function(){
-		var self = this;
+		var self = this,
+			move_needed = move - self.rightItems;
 		
-		if(self.leftItems >= move){
-			self._moveItems(move);
-		}
+		move_needed > 0 && self._moveItems(move_needed);
 		self._dealOffset(move);
 	});
 	
 	self.on(EVENTS.PREV, function(){
-		var self = this;
+		var self = this,
+			move_needed = move - self.leftItems;
 		
-		if(self.rightItems >= move){
-			self._moveItems(- move);
-		}
+		move_needed > 0 && self._moveItems(- move_needed);
 		self._dealOffset(- move);
 	});
 };
@@ -81,7 +102,7 @@ METHODS_OVERRIDEN = {
 	},
 
 	/**
-	 * if plugin:endless attached,
+	 * if plugin::endless attached,
 	 * there will be no left end or right end
 	 */
 	_isNoprev: returnFalse,
@@ -99,6 +120,7 @@ METHODS_OVERRIDEN = {
 			where,
 			stage = self.get('stage'),
 			direction = self.get('direction'),
+			space = self.get('itemSpace'),
 			length = self.length,
 			offset = self.curOffset,
 			lastOffset = offset + stage + self.rightItems - 1,
@@ -106,9 +128,8 @@ METHODS_OVERRIDEN = {
 			step,
 			check,
 			
-			// relative offset of 
-			relative,
-			space = self.itemSpace;
+			// relative offset for the value of start
+			relative;
 		
 		if(amount > 0){
 			start = 1;
@@ -127,9 +148,13 @@ METHODS_OVERRIDEN = {
 		}
 		
 		for(; check(); start += step){
-			self._getItem(circlewizeInt(lastOffset + start, length)).css(direction, (relative + start) * space);
+		
+			// when moving items,
+			// we don't change any data relevant to position
+			self._getItem( circlewizeInt(lastOffset + start, length), true).css(direction, (relative + start) * space);
 		}
 		
+		// change position data at the end
 		self.leftItems -= amount;
 		self.rightItems += amount;
 	},
@@ -140,10 +165,40 @@ METHODS_OVERRIDEN = {
 	_dealOffset: function(move){
 		var self = this;
 		self.curOffset += move;
+		self.activeIndex = self.curOffset % self.length;
 		self.rightItems -= move;
 		self.leftItems += move;
 		
 		return self;
+	},
+	
+	/**
+	 * method to get the real offset relative to the container
+	 * after plugin::endless attached, the index of items and the offset to the initial pos might be different
+	 * 
+	 * @param {number} index
+	 */
+	_getOffset: function(index){
+		var self = this,
+			active = self.activeIndex,
+			delta = index - active,
+			max_right,
+			max_left; 
+			
+		if(delta !== 0){
+			max_right = stage + self.rightItems - 1;
+			max_left = - self.leftItems;
+			
+			if(delta > 0 && delta > max_right){
+				delta += max_left - max_right;
+				
+			}else if(delta < 0 && delta < max_left){
+				delta += max_right - max_left;
+			}
+			
+		}
+
+		return self.curOffset + delta;
 	}
 };
 
@@ -151,7 +206,7 @@ METHODS_OVERRIDEN = {
 return {
 	name: 'endless',
 	
-	options: {
+	ATTRS: {
 		itemSpace: null
 	},
 	
@@ -163,7 +218,8 @@ return {
 			
 			/**
 			 if it doesn't meet the condition, there would be blanks 
-			 	when moving the items during switching. Thus, the Switcher
+			 	when moving the items during switching. Thus, 
+			 	plugin::endless will dothing, and the Switcher
 			 	will fallback to normal carousel
 			 */
 			if(t.items.length >= t.get('stage') + t.get('move')){
@@ -177,6 +233,9 @@ return {
 
 /**
  change log:
+ 
+ 2011-11-02  Kael:
+ - add ._getOffset method to 
  
  2011-10-30  Kael:
  [issue]: blanks may occur during switching

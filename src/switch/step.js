@@ -81,3 +81,10 @@ return {
 
 
 });
+
+/**
+ 2011-11-02  Kael:
+ - complete plugin::step
+ - refractor _getItem method, so it could authentically create new items and apply them to precise positions
+
+ */
