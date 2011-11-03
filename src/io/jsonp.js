@@ -16,7 +16,7 @@ KM.define(function (K) {
  *      if true, will check whether there is a '&' at first. if there isn't, one '&' will be added
  *      if false, 
  */
-function _tidyEmpersand(str, hasFirst, hasLast) { console.log(arguments)
+function _tidyEmpersand(str, hasFirst, hasLast) {
     if (str) {
     	var e = '&',
 		    len = str.length - 1,
