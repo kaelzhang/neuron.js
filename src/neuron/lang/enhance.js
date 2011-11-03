@@ -49,10 +49,11 @@ function bind_method(fn, bind){
  * transform functions that have the signature fn(key, value)
  * to 
  * functions that could accept object arguments
- * // @adapter
+
  * @param {function()} fn
+ * @param {boolean} noStrict if true, overloadSetter will not check the type of parameter 'key'
  */
-function overloadSetter(fn){
+function overloadSetter(fn, noStrict){
 
 	// @return {undefined} setter method will always return this, 
 	// for the sake of potential chain-style invocations
@@ -62,17 +63,13 @@ function overloadSetter(fn){
 		// for instance method, 'this' is the context
 		// for normal functions, if use ecma strict, 'this' is undefined
 		var self = this;
-	
-		// set(0, 123); -> { '0': 123 }
-		if (key || key === 0){
-			if (K.isString(key)){
-				fn.call(self, key, value);
-			
-			}else if (K.isObject(key)){	
-				K.each(key, function(v, k){
-					fn.call(self, k, v);
-				});
-			}
+		
+		if (K.isObject(key)){	
+			K.each(key, function(v, k){
+				fn.call(self, k, v);
+			});
+		}else if(noStrict || K.isString(key)){
+			fn.call(self, key, value);
 		}
 		
 		return self;
@@ -382,8 +379,16 @@ K.makeArray = function(array, host){
 		if(
 			array.length == NULL ||
 			
-			// KM.isObject(arguments) -> true
+			// KM.isObject(arguments) -> true(all browsers)
+			
+			// Object.prototype.toString.call(arguments);
+			// -> [object Arguments]  	if Chrome, IE >= 9, Firefox >= 4
+			// -> [object Object]		if Firefox < 4, IE < 9
 			!K.isObject(array) ||
+			
+			// if is DOM subject
+			// <select>.length === <select>.options.length
+			array.nodeType ||
 			
 			// window also has 'length' property
 			'setInterval' in array
