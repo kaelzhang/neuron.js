@@ -205,8 +205,8 @@ _Ajax = K.Class({
 		K.each(presets, function(preset, key){
 			var header = preset[data_type]; 
 		
-			if(preset){
-				headers[key] = preset;
+			if(header){
+				headers[key] = header;
 			}
 		});
 			
@@ -392,6 +392,9 @@ return ajax;
 });
 
 /**
+
+ 2011-11-03  Kael:
+ - fix a bug about request headers
 
  2011-10-24  Kael:
  - migrate to Neuron
