@@ -62,9 +62,9 @@ return {
         	offset_direction;
 
         self.on(EVENTS.AFTER_INIT, function(){
-            checkStage(self);
+            checkStage(this);
 
-            var t = self,
+            var t = this,
                 active = t.activePage,
                 fx = t.get('fx');
                 

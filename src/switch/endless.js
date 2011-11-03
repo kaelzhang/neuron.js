@@ -180,6 +180,7 @@ METHODS_OVERRIDEN = {
 	 */
 	_getOffset: function(index){
 		var self = this,
+			stage = self.get('stage'),
 			active = self.activeIndex,
 			delta = index - active,
 			max_right,
@@ -222,7 +223,7 @@ return {
 			 	plugin::endless will dothing, and the Switcher
 			 	will fallback to normal carousel
 			 */
-			if(t.items.length >= t.get('stage') + t.get('move')){
+			if(t.length >= t.get('stage') + t.get('move')){
 				realInit(t, EVENTS);
 			}
 		});
@@ -235,7 +236,8 @@ return {
  change log:
  
  2011-11-02  Kael:
- - add ._getOffset method to 
+ - add ._getOffset method to get the real offset relative to the container
+ - refractor, so it could work well with plugin::step
  
  2011-10-30  Kael:
  [issue]: blanks may occur during switching

@@ -48,7 +48,10 @@ return {
 		itemRenderer: {
 		
 			// type {function(index, callback)}
-			// validator: K.isFunction
+			validator: K.isFunction,
+			setter: function(v){
+				return this[ITEM_RENDERER] = v;
+			}
 		},
 		
 		dataLength: {
@@ -64,17 +67,35 @@ return {
 	init: function(self){
 		var EVENTS = self.get('EVENTS');
 		
+		// check the existance of the items in the expected page which the switche is switching to
+		self.on(EVENTS.BEFORE_SWITCH, function(){
+			var self = this,
+				move = self.get('move'),
+				length = self.length,
+				
+				now = self.expectPage * move,
+				end = now + move,
+				index;
+				
+			while(now < end){
+				index = now ++ % length;
+				
+				index >= self.originLength && self._getItem(index);
+			}
+		});
+		
 		self.on(EVENTS.BEFORE_INIT, function(){
+		
+			// override
 			K.mix(this, METHODS_OVERRIDEN);
 		});
 	
 		self.on(EVENTS.AFTER_INIT, function(){
-			var self = this;
-			
-			self[ITEM_RENDERER] = self.get(ITEM_RENDERER);
+			var self = this,
+				length = self.originLength = self.length;
 			
 			// set fake length value
-			self._itemData(self.length + self.get('dataLength')); console.log(self.get('dataLength'))
+			self._itemData(length + self.get('dataLength'));
 		});
 	}
 };
