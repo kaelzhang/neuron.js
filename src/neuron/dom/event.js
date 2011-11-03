@@ -71,6 +71,8 @@ function removeDOMEvent(type, fn){
 	}else{
 		var types = type ?
 				  storage[type] ? [type] : []
+				  
+				  // if type is undefined, get all types
 				: Object.keys(storage),
 				
 			len = types.length,
@@ -324,7 +326,7 @@ DOM.extend({
 	 * .detach('click', fn)						-> remove click method fn
 	 * .detach({ click: fn, mouseenter: fn2 })	-> remove several events
 	 */
-	detach: K._overloadSetter(removeDOMEvent),
+	detach: K._overloadSetter(removeDOMEvent, true),
 	
 	
 	/**
