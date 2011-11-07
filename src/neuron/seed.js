@@ -162,7 +162,7 @@ K.log = function(){};
 // switch debug-mode on, and load 'log' module
 K._debugOn = function(){
     // K.provide('log', function(K){ K.log('debug module attached') });
-    KM._env.debug = true;
+    K._env.debug = true;
 };
 
 
