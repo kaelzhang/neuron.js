@@ -59,7 +59,7 @@ function santitizer(identifier){
  */
 Loader.config(K.mix({
 	// root path of module files
-	base: 		'',
+	base: 		'/',
 	
 	enableCDN:	true,
 	
@@ -136,11 +136,11 @@ K.app = function(name, config){
 
 
 prefix('~', {
-	base: '/src'
+	base: 'src/'
 });
 
 prefix('Main', {
-	base: '/s/j/app/main'
+	base: 's/j/app/main/'
 });
 
 
