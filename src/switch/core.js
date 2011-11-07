@@ -49,7 +49,7 @@ function atLeastOne(num){
  * move or add the class of triggers
  */
 function currentTriggerClass(remove, index){
-    var self = this
+    var self = this,
     	currentTrigger = self.triggers[index || self.activePage],
         TRIGGER_ON_CLS = self.get('triggerOnCls');
         
@@ -259,7 +259,8 @@ Switch = Class({
     init: function(options){
         var self = this,
             o,
-            currentTrigger, activePage,
+            currentItem, 
+            activePage,
             plugins = self._plugins;
 
 		self._initializer.off();

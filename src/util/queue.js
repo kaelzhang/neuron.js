@@ -196,8 +196,8 @@ Queue_proto = {
      	{string}
      	{Object} detail configuration for each method
      		{
-     			auto: {Boolean},
-     			once: {Boolean},
+     			auto: {boolean}, default to true
+     			once: {boolean}, default to false
      			method: {function()|string}
      			args: {Array} arguments
      		}
@@ -279,9 +279,10 @@ return Queue;
 });
 
 /**
+ change log:
  
  TODO:
  A. add judger instead of property 'once', and also improve it. 
- 
+ B. refractor, splitting basic functionalities of queue
  
  */
