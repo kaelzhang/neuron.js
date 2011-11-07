@@ -302,7 +302,7 @@ function define(name, dependencies, factory){
 	
 	if(arg[last] === true){					// -> define(uri1, uri2, uri3, true);
 		for_each(arg, function(arg, i, U){
-			i < last && _def(EMPTY, U, U, U, absolutizeURI(arg));
+			i < last && _def(EMPTY, U, U, absolutizeURI(arg));
 		});
 		return;
 	}
@@ -1066,9 +1066,13 @@ function absolutizeURI(uri, referenceURI, base){
     	// for inner use, referenceURI is always a absolute uri
     	// so we can get its host
     	// ret = getHost(referenceURI) + uri;
-    
+    	
+    /**
+     * Neuron Loader will never apply the root base of current location.href to current modules
+     * module base must be configured
+     */
     }else {
-    	ret = base + uri;
+    	ret = base + uri.replace(/^\/+/, '');
     }
 	
 	return ret;
@@ -1185,7 +1189,7 @@ function prefix(name, config){
 
 	if(!map[name]){
 		map[name] = config;
-		config.base = _config.base + config.base + '/';
+		config.base = _config.base + config.base;
 	}
 };
 
