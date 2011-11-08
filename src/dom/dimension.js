@@ -10,32 +10,33 @@
   - Viewport dimensions based on [YUI](http://developer.yahoo.com/yui/) code, [BSD License](http://developer.yahoo.com/yui/license.html).
  */
 
-KM.define(['dom'], function(K, require){
+KM.define(function(K, require){
 
 // ---------- mootools.dimensions start ----------
 
-var DOC = document,
-	HTML = DOC.documentElement,
-	WIN = window,
-	DOM = require('dom'),
-	
-	COMPACT_ELEMENT = !DOC.compatMode || DOC.compatMode == 'CSS1Compat' ? HTML : DOC.body,
-	
-	FIXED = 'fixed', STATIC = 'static', SCROLL = 'scroll',
+var 
 
-	brokenOffsetParent = function(){
-		var element = document.createElement('div'),
-			child = document.createElement('div'),
-			ret;
-		element.style.height = '0';
-		element.appendChild(child);
-		ret = child.offsetParent === element;
-		element = child = null;
-		
-		return ret;
-	}(),
+DOC = document,
+HTML = DOC.documentElement,
+WIN = K.__HOST,
+
+COMPACT_ELEMENT = !DOC.compatMode || DOC.compatMode == 'CSS1Compat' ? HTML : DOC.body,
+
+FIXED = 'fixed', STATIC = 'static', SCROLL = 'scroll',
+
+brokenOffsetParent = function(){
+	var element = document.createElement('div'),
+		child = document.createElement('div'),
+		ret;
+	element.style.height = '0';
+	element.appendChild(child);
+	ret = child.offsetParent === element;
+	element = child = null;
 	
-	styleString = Element.getComputedStyle;
+	return ret;
+}(),
+
+styleString = Element.getComputedStyle;
 
 
 function styleNumber(element, style){
