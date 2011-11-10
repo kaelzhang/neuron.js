@@ -144,7 +144,7 @@ METHODS_OVERRIDEN = {
 			check = function(){
 				return start > amount;
 			};
-			relative = offset - self.leftItems;
+			relative = offset - self.leftItems - 1;
 		}
 		
 		for(; check(); start += step){
