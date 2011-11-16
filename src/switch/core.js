@@ -105,8 +105,7 @@ Switch = Class({
 	    	'switchTo', 'prev', 'next'
     	], self ).on();
     	
-    	// processing queue for switch life cycle
-    	self._lifeCycle = new Queue.Runner(self._lifeCycle, self);
+    	K._onceBefore('_runLC', '_initLC', self);
     },
 
     // @private
@@ -333,16 +332,18 @@ Switch = Class({
         self.pages = 1 + Math.ceil( (self.length - self.get('stage')) / self.get('move') );
 	},
 
-    // switch to a certain item
-    // @param {number} index the index of the item to be switched on
-    // @param {boolean} force force to switching
+    /**
+     * switch to a certain item
+     * @param {number} index the index of the item to be switched on
+     * @param {boolean} force force to switching
+     */
     switchTo: function(index, force){
         var self = this;
         
         self.force = force;
         self.expectPage = index;
         
-        self._lifeCycle.run();
+        self._runLC();
 
         return self;
     },
@@ -373,6 +374,23 @@ Switch = Class({
         !self.nonext && self.switchTo( self._limit(self.activePage + 1) );
         
         return self;
+    },
+    
+    /**
+     * run life cycle
+     */
+    _runLC: function(){
+    	this._lifeCycle.run();
+    },
+    
+    /**
+     * initialize life cycle
+     * @onceBefore _runLC
+     */
+    _initLC: function(){
+    
+    	// processing queue for switch life cycle
+    	this._lifeCycle = new Queue.Runner(this._lifeCycle, this);
     },
     
     //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
@@ -415,31 +433,6 @@ Switch = Class({
     _onLeaveTrigger: function(index){
         this.triggerOn = false;
     },
-    
-    /**
-     * do nothing by default
-     */
-    _dealTriggerCls: NOOP,
-    
-    _limit: function(index){
-    	return limit(index, 0, this.pages - 1);
-    },
-    
-    /**
-	 * method to check the number of pages to determine whether the Switch instance meet either of the 2 ends
-	 * which could be overridden for infinite carousel and step loading
-	 */
-    _isNoprev: function(){
-    	var self = this;
-    
-    	return self.noprev = !self.activePage;
-    },
-    
-    _isNonext: function(){
-    	var self = this;
-    	
-    	return self.nonext = (self.activePage >= self.pages - 1);
-    },
 
     // disable or enable navigation buttons
  
@@ -460,6 +453,39 @@ Switch = Class({
     		
     		self.fire((isEnd ? EVENT_NAV_DISABLE : EVENT_NAV_ENABLE), [nav, type]);
     	}
+    },
+    
+    /**
+     * do nothing by default
+     */
+    _dealTriggerCls: NOOP,
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    // methods for overriding
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    /**
+     * method to limit the given index
+     */
+    _limit: function(index){
+    	return limit(index, 0, this.pages - 1);
+    },
+    
+    /**
+	 * method to check the number of pages to determine whether the Switch instance meet either of the 2 ends
+	 * which could be overridden for infinite carousel and step loading
+	 */
+    _isNoprev: function(){
+    	var self = this;
+    
+    	return self.noprev = !self.activePage;
+    },
+    
+    _isNonext: function(){
+    	var self = this;
+    	
+    	return self.nonext = (self.activePage >= self.pages - 1);
     }
 });
 
@@ -494,7 +520,7 @@ Class.setAttrs(Switch, {
 		}
 	},
 	
-	// triggerS {dom selector $$ || Mootools Elements} trigger selector of switch tabs, such as 1,2,3,4
+	// triggerCS {string} trigger selector of switch tabs, such as 1,2,3,4
 	triggerCS: {
 		setter: function(v){
 			var self = this,
@@ -528,7 +554,7 @@ Class.setAttrs(Switch, {
 		}
 	},
 	
-	// container, prev, next {dom selector $$[0] || Mootools Element} 
+	// container, prev, next {string} 
 	containerCS: {
 		setter: function(v){
 			this.container = $(this.CSPre + v);
@@ -603,8 +629,11 @@ return Switch;
 /**
  change log:
  
- 2011-10-31  Kael:
+ 2011-11-15  Kael:
  - lazily initialize the controller of lifeCycle, so that plugins could be involved in.
+ 
+ TODO:
+ A. refractor lifeCycle with interrupt action
  
  2011-10-25  Kael:
  - migrate to Neuron
