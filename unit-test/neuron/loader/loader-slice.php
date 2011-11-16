@@ -1,5 +1,27 @@
 <script>
 
+KM.app('Math', {
+	base: '/unit-test/neuron/loader/app-test/math/'
+	// base: 'http://i1.static.dp:1337/branch/newheader/s/j/app/main/'
+});
+
+KM.provide('Math::header', function(K, compare){
+	console.log(compare);
+});
+
+/*
+
+KM.provide('Math::filter', function(K, filter){
+	console.log(filter);
+});
+
+KM.provide('Math::md', function(K, md){
+	console.log(md);
+});
+*/
+
+/*
+
 describe('Neuron/loader:', function(){
 	describe('DP', function(){
 		describe('.app()', function(){
@@ -50,6 +72,7 @@ describe('Neuron/loader:', function(){
 					expect(KM.isFunction(dimension.offset)).toBeTruthy();
 				});
 			});
+
 			
 			// math/filter.js
 			// require('~/compare')
@@ -99,5 +122,6 @@ describe('Neuron/loader:', function(){
 		});
 	});
 });
+*/
 
 </script>

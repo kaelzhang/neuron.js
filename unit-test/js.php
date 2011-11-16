@@ -47,7 +47,7 @@ inc("neuron/dom/domready.js");
 
 inc("neuron/biz/biz.js");
 inc("neuron/biz/neuron.js");
-inc("neuron/biz/faker.js");
+// inc("neuron/biz/faker.js");
 
 inc("neuron/cleaner.js");
 
@@ -71,14 +71,16 @@ function log(msg){
 		return '' + i;
 	}).join(' ');
 		
-	body.appendChild(div);
+	document.body.appendChild(div);
 };
 
+/*
 
 if(!window.console){
 	var console = {
 		log: log
 	}
 }
+*/
 
 </script>

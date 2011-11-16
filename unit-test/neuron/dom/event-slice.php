@@ -17,19 +17,32 @@
 			</div>
 		</div>
 	</div>
+	
+	<select id="test-select">
+		<option value="1">1</option>
+		<option value="2">2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+		<option value="5">5</option>
+	</select>
 </div>
 
 <script>
 
-describe('Neuron:dom/event', function(){
-	describe('new DOM', function(){
-		describe('.on()', function(){
-			it('could bind a specified event', function(){
-				
-			});
-		});
-	});
+$('#test-select').on('change', function(){
+	var t = $(this);
+	
+	console.log('change', t, t.val());
 });
+
+$('#test-select').on('click', function(){
+	console.log('click', $(this));
+});
+
+// $('#test-select').detach('click');
+// $('#test-select').detach();
+
+/*
 
 $('#dom-event .click-prevent').on('click', function(e){
 	e.prevent();
@@ -54,6 +67,7 @@ KM.ready(function(K){
 	console.log('dom ready', K)
 });
 
+*/
 
 /*
 

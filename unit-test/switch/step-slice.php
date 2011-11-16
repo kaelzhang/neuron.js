@@ -3,6 +3,8 @@
 
 body{padding:30px;}
 .wrap{margin-bottom:30px; margin-right:30px; width:300px; float:left;}
+.wide-wrap{width:1000px;}
+
 h2{margin-bottom:5px; font-family: }
 
 .J_lazy-load{display:none;}
@@ -33,6 +35,10 @@ h2{margin-bottom:5px; font-family: }
 
 .carousel-complex .stage{height:131px;}
 .carousel-complex .items{border:none; border-right:1px solid #aaa; width:298px; position:absolute;}
+.carousel-complex .first-items, .carousel-complex .first-items li{background:yellow;}
+
+.wide-wrap .carousel-complex .items{width:198px;}
+
 .carousel-complex .accordion li{position:relative; border-left:none; border-bottom:none; border-right:none;}
 .carousel-complex .accordion .first{border-top:none;}
 
@@ -43,7 +49,7 @@ h2{margin-bottom:5px; font-family: }
 <div class="container">
 
 
-<div class="wrap">
+<div class="wrap wide-wrap">
 <h2>Complex Demo</h2>
 <div class="carousel switch carousel-complex">
 	<ul class="tabs">
@@ -56,11 +62,39 @@ h2{margin-bottom:5px; font-family: }
 	<div class="stage accordion">
 		<div class="track">
 		
-		<ul class="items">
+		<ul class="items first-items">
 			<li class="item on first">item1-1</li>
 			<li class="item">item1-2</li>
 			<li class="item">item1-3</li>
 			<li class="item">item1-4</li>
+		</ul>
+		
+		<ul class="items" style="left:200px;">
+			<li class="item on first">item2-1</li>
+			<li class="item">item2-2</li>
+			<li class="item">item2-3</li>
+			<li class="item">item2-4</li>
+		</ul>
+		
+		<ul class="items" style="left:400px;">
+			<li class="item on first">item3-1</li>
+			<li class="item">item3-2</li>
+			<li class="item">item3-3</li>
+			<li class="item">item3-4</li>
+		</ul>
+		
+		<ul class="items" style="left:600px;">
+			<li class="item on first">item4-1</li>
+			<li class="item">item4-2</li>
+			<li class="item">item4-3</li>
+			<li class="item">item4-4</li>
+		</ul>
+		
+		<ul class="items" style="left:800px;">
+			<li class="item on first">item5-1</li>
+			<li class="item">item5-2</li>
+			<li class="item">item5-3</li>
+			<li class="item">item5-4</li>
 		</ul>
 		
 		</div>
@@ -102,23 +136,49 @@ var NAVITATOR_DISABLE_STYLE = {
     template = tpl.parse($('#J_tpl-complex').html()),
     data = [
     	{
-    		index: 2,
+    		index: 6,
     		list: [1,2,3,4]
     	},
     	
     	{
-    		index: 3,
+    		index: 7,
     		list: [1,2,3,4]
     	},
     	
     	{
-    		index: 4,
+    		index: 8,
+    		list: [1,2,3,4]
+    	},
+    	
+    	{
+    		index: 9,
+    		list: [1,2,3,4]
+    	},
+    	
+    	{
+    		index: 10,
+    		list: [1,2,3,4]
+    	},
+    	
+    	// 11 +
+    	{
+    		index: 11,
+    		list: [1,2,3,4]
+    	},
+    	
+    	{
+    		index: 12,
+    		list: [1,2,3,4]
+    	},
+    	
+    	{
+    		index: 13,
     		list: [1,2,3,4]
     	}
     ];
 
 
-new Switch().plugin('step', 'carousel', 'endless', 'autoPlay').on({
+new Switch().plugin('step', 'carousel', 'endless'/* , 'autoPlay' */).on({
 	navEnable: function(btn, which){
 		btn && btn.css(NAVITATOR_ENABLE_STYLE);
 	},
@@ -128,6 +188,8 @@ new Switch().plugin('step', 'carousel', 'endless', 'autoPlay').on({
 	},
 	
 	afterInit: function(){
+	/*
+
 		$.all('.carousel-complex .items').forEach(function(wrap, i){
 			$(wrap).addClass('items-' + i);
 			
@@ -141,6 +203,7 @@ new Switch().plugin('step', 'carousel', 'endless', 'autoPlay').on({
 				itemOnCls:		'on'
 			});
 		});
+*/
 	}
 	
 }).init({
@@ -152,11 +215,13 @@ new Switch().plugin('step', 'carousel', 'endless', 'autoPlay').on({
 	itemOnCls:		'on',
 	prevCS:			'.prev',
 	nextCS:			'.next',
+	stage:			5,
+	move:			5,
 	
-	itemSpace:		300,
+	itemSpace:		200,
 	dataLength:		data.length,
 	itemRenderer:	function(index){
-		var html = template(data[index - 1]),
+		var html = template(data[index - 5]),
 			item = $.create('div').html(html).child();
 		
 		return item;
