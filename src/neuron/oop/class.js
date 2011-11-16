@@ -66,6 +66,11 @@ function getPrototype(obj){
 };
 
 
+/**
+ * @param {function()|Object} KM.Class instance or prototype of KM.Class instance
+ * @param {Object} alien new prototype methods to be mixed in
+ * @param {boolean} override whether new methods/props should override old methods/props
+ */
 function implementOne(host, alien, override){
 	// prototype Object for mixin 
 	var proto = getPrototype(alien);
@@ -102,6 +107,9 @@ function isPublicMember(key){
 };
 
 
+/**
+ * method to set new attributes and inherit from super class simultaniously
+ */
 function setAttrs(class_, attr){
 	var attrs = [], parent_attr, cls = class_;
 
@@ -216,7 +224,7 @@ function _Class(base, proto){
 		
 	}else{
 	
-		// no super class, direct assign user prototype for performance
+		// no super class, directly assign user prototype for performance
 		newProto = proto;
 		exts && implement(newProto, exts, false);
 	}
@@ -225,7 +233,6 @@ function _Class(base, proto){
 	
 	// fix constructor
 	newProto.constructor = newClass;
-	
 	
 	return newClass;
 };
@@ -239,7 +246,7 @@ function _Class(base, proto){
 // @deprecated
 // use KM.Class instead
 // for backwards compact
-K.__HOST.Class =
+// K.__HOST.Class =
 
 // KM.Class
 K.Class = Class;
@@ -263,6 +270,9 @@ Class.setAttrs = setAttrs;
 
 /**
  change log:
+ 
+ 2011-11-16  Kael:
+ - remove Class from the host(window)
  
  2011-10-19  Kael:
  - adjust the priority of inheritance chain as: user prototype > ext > super class prototype
