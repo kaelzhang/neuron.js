@@ -17,8 +17,7 @@ METHODS_OVERRIDEN = {
 			item = self.items[index];
 			
 		if(!item){
-			item = 
-			self.items[index] = self[ITEM_RENDERER].call(self, index).inject(self.container);
+			item = self.items[index] = self[ITEM_RENDERER].call(self, index).inject(self.container);
 			
 			dontSetPos || item.css(self.get('direction'), self._getOffset(index) * self.get('itemSpace'));
 		}
@@ -104,6 +103,10 @@ return {
 });
 
 /**
+ 2011-11-09  Kael:
+ issue:
+ - A. if items don't exist, _getItem will fail 
+
  2011-11-02  Kael:
  - complete plugin::step
  - refractor _getItem method, so it could authentically create new items and apply them to precise positions

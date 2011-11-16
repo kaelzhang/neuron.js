@@ -19,7 +19,7 @@ function returnFalse(){
  
  * cases:
  * 		values:		-4	-3	-2	-1	0	1	2	3	4	5
- * 		returns:	2	0	1	2	0	1	2	0	1	2
+ * 		returns:	 2	 0	 1	 2	0	1	2	0	1	2
  
  * @param {number} (int)value
  * @param {number} (int)length
@@ -229,8 +229,10 @@ return {
 		});
 	}	
 };
-	
+
+
 });
+
 
 /**
  change log:
