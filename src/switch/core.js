@@ -34,11 +34,7 @@ var EVENT_BEFORE_INIT = 'beforeInit',
     // MultiEvent = require('event/multi'),
     Queue = require('util/queue'),
     SwitchConfig = require('./conf');
-    
 
-function limit(num, min, max){
-	return Math.min(max, Math.max(min, num));
-};
 
 function atLeastOne(num){
 	return !num || num < 1 ? 1 : num;
@@ -50,7 +46,7 @@ function atLeastOne(num){
  */
 function currentTriggerClass(remove, index){
     var self = this,
-    	currentTrigger = self.triggers[index || self.activePage],
+    	currentTrigger = self.triggers[index || self.activeIndex],
         TRIGGER_ON_CLS = self.get('triggerOnCls');
         
     currentTrigger && (
@@ -136,6 +132,8 @@ Switch = Class({
 	_lifeCycle: ['_before', '_on', '_after'],
 	
 	
+	// plugin host start ////////////////////////////////////////////////////////////////////////////////////
+	
 	/**
 	 * filter plugins to get the ones which need to be provided
 	 * @param {Array.<string, Object>} plugins
@@ -181,17 +179,6 @@ Switch = Class({
 		});
 		
 		return self;
-	},
-	
-	/**
-	 * attach a plugin or plugins to the switch instance
-	 * .plugin might be an asynchronous method which will be added to the end of the pending queue of Initializer
-	 
-	 * @public
-	 * @param {string|Object} arguments
-	 */
-	plugin: function(){
-    	return this._pendingPlugins(arguments);
 	},
 	
 	// register plugins
@@ -252,14 +239,30 @@ Switch = Class({
         
         return plugin.final_ ? (self.pluginFinal = true) : false;
 	},
+	 
+    // plugin hosting end ////////////////////////////////////////////////////////////////////////////////////
 
-   	// initialization of Switch and Switch plugins
-    // @param options {object} DP.Switch options and DP.Switch.Plugins options
+	
+	/**
+	 * attach a plugin or plugins to the switch instance
+	 * .plugin might be an asynchronous method which will be added to the end of the pending queue of Initializer
+	 
+	 * @public
+	 * @param {string|Object} arguments
+	 */
+	plugin: function(){
+    	return this._pendingPlugins(arguments);
+	},
+	
+	/** 
+	 * initialization of Switch and Switch plugins
+     * @param options {object} DP.Switch options and DP.Switch.Plugins options
+     */
     init: function(options){
         var self = this,
             o,
             currentItem, 
-            activePage,
+            activeIndex,
             plugins = self._plugins;
 
 		self._initializer.off();
@@ -273,7 +276,7 @@ Switch = Class({
         });
 		
 		// some essential data should be initialized ahead
-		['CSPre', 'containerCS', 'activePage', 'triggerType'].forEach(function(key){
+		['CSPre', 'containerCS', 'activeIndex', 'triggerType'].forEach(function(key){
 			var setting = options[key];
 			
 			self.set(key, setting || '');
@@ -287,18 +290,65 @@ Switch = Class({
             self._itemData();
             self.fire(EVENT_AFTER_INIT);
             
-            activePage = self.activePage;
-            currentItem = self._getItem(activePage);
+            activeIndex = self.expectIndex = self.activeIndex;
+            currentItem = self._getItem(activeIndex);
 
             if(currentItem && !currentItem.hasClass(self.get('itemOnCls'))){
-                self.switchTo(self.activePage, true);
+                self.switchTo(self.activeIndex, true);
             }
         }
 
         return self;
     },
+	
+    /**
+     * switch to a certain item
+     * @param {number} index the index of the item to be switched on
+     * @param {boolean} force force to switching
+     */
+    switchTo: function(index, force){
+        var self = this;
+        
+        self.force = force;
+        self.expectIndex = self._limit(index);
+        
+        self._runLC();
 
-	_itemData: function(length){
+        return self;
+    },
+    
+    /**
+     * go to the previous position
+     */
+    prev: function(e){
+        e && e.prevent();
+        var self = this;
+		
+		self.fire(PREV);
+		
+        // limit the range of activeIndex
+        !self.noprev && self.switchTo( self.activeIndex - self.get('move') );
+        
+        return self;
+    },
+	
+	/**
+     * go to the next position
+     */
+    next: function(e){
+        e && e.prevent();
+        var self = this;
+		
+		self.fire(NEXT);
+        !self.nonext && self.switchTo( self.activeIndex + self.get('move') );
+        
+        return self;
+    },
+    
+   	/**
+   	 * set item length data andcalculate pages
+   	 */
+    _itemData: function(length){
 		var self = this;
 	
 		self.length = length || self.items.length;
@@ -331,50 +381,7 @@ Switch = Class({
         */
         self.pages = 1 + Math.ceil( (self.length - self.get('stage')) / self.get('move') );
 	},
-
-    /**
-     * switch to a certain item
-     * @param {number} index the index of the item to be switched on
-     * @param {boolean} force force to switching
-     */
-    switchTo: function(index, force){
-        var self = this;
-        
-        self.force = force;
-        self.expectPage = index;
-        
-        self._runLC();
-
-        return self;
-    },
     
-    /**
-     * go to the previous position
-     */
-    prev: function(e){
-        e && e.prevent();
-        var self = this;
-		
-		self.fire(PREV);
-		
-        // limit the range of activePage
-        !self.noprev && self.switchTo( self._limit(self.activePage - 1) );
-        
-        return self;
-    },
-	
-	/**
-     * go to the next position
-     */
-    next: function(e){
-        e && e.prevent();
-        var self = this;
-		
-		self.fire(NEXT);
-        !self.nonext && self.switchTo( self._limit(self.activePage + 1) );
-        
-        return self;
-    },
     
     /**
      * run life cycle
@@ -395,10 +402,10 @@ Switch = Class({
     
     //////// life cycle start ///////////////////////////////////////////////////////////////////////////////
     _before: function(){
-    	var self = this, index = self.expectPage;
+    	var self = this, index = self.expectIndex;
     	
-    	if(self.force || self.activePage !== index){
-    		self.fire(EVENT_BEFORE_SWITCH, [self.activePage, index]);
+    	if(self.force || self.activeIndex !== index){
+    		self.fire(EVENT_BEFORE_SWITCH);
     	}else{
     		self._lifeCycle.stop();
     	}
@@ -411,7 +418,7 @@ Switch = Class({
     _after: function(){
     	var counters = this.pageCounters;
     	
-    	counters && counters.text(this.activePage + 1);
+    	counters && counters.text(this._getPage() + 1);
     },
     //////// life cycle end ///////////////////////////////////////////////////////////////////////////////
   	
@@ -469,7 +476,11 @@ Switch = Class({
      * method to limit the given index
      */
     _limit: function(index){
-    	return limit(index, 0, this.pages - 1);
+    	return index % this.length;
+    },
+    
+    _getPage: function(){
+    	return parseInt(this.activeIndex / this.get('stage'));
     },
     
     /**
@@ -479,13 +490,13 @@ Switch = Class({
     _isNoprev: function(){
     	var self = this;
     
-    	return self.noprev = !self.activePage;
+    	return self.noprev = !self._getPage();
     },
     
     _isNonext: function(){
     	var self = this;
     	
-    	return self.nonext = (self.activePage >= self.pages - 1);
+    	return self.nonext = (self._getPage() >= self.pages - 1);
     }
 });
 
@@ -593,10 +604,10 @@ Class.setAttrs(Switch, {
 	},
 	
 	// the index of the first items activated when initializing
-	activePage: {
+	activeIndex: {
 		value: 0,
 		setter: function(v){
-			this.activePage = !v || v < 0 ? 0 : v;
+			this.activeIndex = !v || v < 0 ? 0 : v;
 		}
 	},
 	
@@ -634,6 +645,7 @@ return Switch;
  
  TODO:
  A. refractor lifeCycle with interrupt action
+ B. deal with situation of various move range
  
  2011-10-25  Kael:
  - migrate to Neuron
@@ -689,11 +701,11 @@ return Switch;
  √ B. hirachical plugin
  C. split methods of utilities
  D. if the 'before' property is defined, the method will be emptied after the terminator executed
- E. Initializer: allow parallelly executing many methods of the same type
- F. deal with the letter case of plugin names
+ √ E. Initializer: allow parallelly executing many methods of the same type
+ √ F. deal with the letter case of plugin names
  
  2010-02-23  Kael:
- - 处理activePage属性的一个问题，将其的初始化从插件里移动到本体中进行
+ - 处理activeIndex属性的一个问题，将其的初始化从插件里移动到本体中进行
  - 优化了plugin的调用链，优化部分性能
  - 加入autoplay
  - 修正本体中，一个计算分页值的算法错误

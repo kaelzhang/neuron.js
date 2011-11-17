@@ -176,6 +176,7 @@ var NAVITATOR_DISABLE_STYLE = {
 
 
 
+/*
 new Switch().plugin('tabSwitch').init({
 	CSPre: 			'.tab-switch', 
 	triggerCS: 		'.tab', 
@@ -223,6 +224,7 @@ new Switch().plugin('accordion', 'autoPlay').on({
 	itemCS:			'.item', 
 	itemOnCls:		'on'
 });
+*/
 
 
 new Switch().plugin('lazyload', 'carousel', 'endless', 'autoPlay').on({
@@ -258,7 +260,8 @@ new Switch().plugin('lazyload', 'carousel', 'endless', 'autoPlay').on({
 	itemCS:			'.items', 
 	itemOnCls:		'on',
 	prevCS:			'.prev',
-	nextCS:			'.next'
+	nextCS:			'.next',
+	itemSpace:		300
 });
 
 

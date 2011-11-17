@@ -72,7 +72,7 @@ return {
 				move = self.get('move'),
 				length = self.length,
 				
-				now = self.expectPage * move,
+				now = self.expectIndex,
 				end = now + move,
 				index;
 				

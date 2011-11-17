@@ -85,7 +85,7 @@ return {
 
         self.on(EVENTS.AFTER_INIT, function(){
             var t = self,
-                active = t.activePage,
+                active = t.activeIndex,
                 property,
                 _active_value = t.get('activeValue'),
                 _normal_value = t.get('normalValue');
@@ -99,8 +99,10 @@ return {
 	        
 	        property = fx.property;
 	        
+	       	// if active_value and normal_value is not specified
+	       	// fetch them by the computed styles of the origin items
 	        active_value = chk(_active_value) ? _active_value : t._getItem(active).css(property);
-	        normal_value = chk(_normal_value) ? _normal_value : t._getItem((active + 1) % t.items.length).css(property);
+	        normal_value = chk(_normal_value) ? _normal_value : t._getItem( t._limit(active + 1) ).css(property);
         });
         
         self.on(EVENTS.BEFORE_SWITCH, function(){
@@ -109,8 +111,8 @@ return {
 
         self.on(EVENTS.ON_SWITCH, function(){
             var t = this,
-                active = t.activePage,
-                expect = t.expectPage;
+                active = t.activeIndex,
+                expect = t.expectIndex;
                 
             setFxCallback(active, expect);
             getFx(t._getItem(active), active).start(normal_value);
@@ -140,8 +142,8 @@ return {
 
  ////////////////////////////////////////////////////////////////////////////////////////////
  */
- 			// so, as it explained above, set expectPage as activePage immediately after fx started
-            t.activePage = expect;
+ 			// so, as it explained above, set expectIndex as activeIndex immediately after fx started
+            t.activeIndex = expect;
             t._dealNavs();
             
             t._dealTriggerCls(false, expect);

@@ -65,7 +65,7 @@ return {
             checkStage(this);
 
             var t = this,
-                active = t.activePage,
+                active = t.activeIndex,
                 fx = t.get('fx');
                 
             direction = t.get('direction');
@@ -82,7 +82,7 @@ return {
 
             // there's a bug about moo tools Fx: the container's position must be specified before you use Fx,
             // or the first Fx will have no animation
-            t.container.css(direction, - t._getItem(active * t.get('move')).el(0)[offset_direction] );
+            t.container.css(direction, - t._getItem(active).el(0)[offset_direction] );
             t._dealNavs();
         });
 
@@ -92,12 +92,12 @@ return {
 
         self.on(EVENTS.ON_SWITCH, function(){
             var t = this,
-                active = t.activePage = t.expectPage;
+                active = t.activeIndex = t.expectIndex;
 
             t._dealNavs();
 			
 			// start animation
-            t.effect.start( - ( t._getItem(active * t.get('move')) ).el(0)[offset_direction] );
+            t.effect.start( - ( t._getItem(active) ).el(0)[offset_direction] );
 
             t._dealTriggerCls(false, active);
         });

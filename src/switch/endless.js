@@ -58,10 +58,7 @@ function realInit(self, EVENTS){
 	self.leftItems = 
 	
 	// @type {number} this.curOffset real offset relative to the initial position of the 'container'
-	self.curOffset = 
-	
-	// @type {number} this.activeIndex current activated index of the items relative to the index of 'items'
-	self.activeIndex = self.activePage * move;
+	self.curOffset = self.activeIndex;
 	
 	// @type {number} this.leftItems items aside on the right of the stage
 	self.rightItems = self.length - stage - self.leftItems;
@@ -95,10 +92,10 @@ METHODS_OVERRIDEN = {
 	nonext: false,
 	
 	/**
-	 * limit the range of this.activePage
+	 * limit the range of this.activeIndex
 	 */
 	_limit: function(index){
-		return circlewizeInt(index, this.pages);
+		return circlewizeInt(index, this.length);
 	},
 
 	/**
@@ -165,7 +162,6 @@ METHODS_OVERRIDEN = {
 	_dealOffset: function(move){
 		var self = this;
 		self.curOffset += move;
-		self.activeIndex = self.curOffset % self.length;
 		self.rightItems -= move;
 		self.leftItems += move;
 		
@@ -181,8 +177,11 @@ METHODS_OVERRIDEN = {
 	_getOffset: function(index){
 		var self = this,
 			stage = self.get('stage'),
-			active = self.activeIndex,
-			delta = index - active,
+			
+			// the changing of this.curOffset is always ahead of this.activeIndex
+			// so we use this.expectIndex to be compared with
+			expect = self.expectIndex,
+			delta = index - expect,
 			max_right,
 			max_left; 
 			
@@ -198,7 +197,7 @@ METHODS_OVERRIDEN = {
 			}
 			
 		}
-
+		
 		return self.curOffset + delta;
 	}
 };

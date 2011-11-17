@@ -15,18 +15,18 @@ KM.define({
     
         self.on(EVENTS.BEFORE_SWITCH, function(){
             var t = this,
-                activePage = t.activePage;
+                activeIndex = t.activeIndex;
                 
-            t._getItem(activePage).removeClass(t.get(ITEM_ON_CLS));
+            t._getItem(activeIndex).removeClass(t.get(ITEM_ON_CLS));
             t._dealTriggerCls(true);
         });
 
         self.on(EVENTS.ON_SWITCH, function(){
             var t = this,
-                activePage = t.activePage = t.expectPage;
+                activeIndex = t.activeIndex = t.expectIndex;
                 
-            t._getItem(activePage).addClass(t.get(ITEM_ON_CLS));
-            t._dealTriggerCls(false, activePage);
+            t._getItem(activeIndex).addClass(t.get(ITEM_ON_CLS));
+            t._dealTriggerCls(false, activeIndex);
         });
     }
 });

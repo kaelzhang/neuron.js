@@ -178,7 +178,7 @@ var NAVITATOR_DISABLE_STYLE = {
     ];
 
 
-new Switch().plugin('step', 'carousel', 'endless'/* , 'autoPlay' */).on({
+new Switch().plugin('step', 'carousel', 'endless'/*, 'autoPlay' */).on({
 	navEnable: function(btn, which){
 		btn && btn.css(NAVITATOR_ENABLE_STYLE);
 	},

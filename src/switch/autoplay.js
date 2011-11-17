@@ -83,7 +83,7 @@ KM.define({
  - use .next() method
 
  2011-08-19  Kael:
- - fix a bug calculating activePage when auto playing
+ - fix a bug calculating activeIndex when auto playing
 
  TODO:
  A. add api: pause and resume
