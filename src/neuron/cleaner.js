@@ -11,8 +11,8 @@ var DOM = K.DOM;
 // delete K.DOM;
 delete K.__SELECTOR;
 delete K.__;
-delete DOM.methods;
-delete DOM.feature;
+// delete DOM.methods;
+// delete DOM.feature;
 
 
 // remove Slick from window
