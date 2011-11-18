@@ -6,10 +6,6 @@
  
 ;(function(K, NULL, undef){
 
-function cleanClass(str){
-	return str.replace(/\s+/g, WHITE_SPACE);
-};
-
 function hasClass(el, cls){
 	var whitespace = WHITE_SPACE; 
 	return (whitespace + el.className + whitespace).indexOf(whitespace + cls + whitespace) !== -1;
@@ -19,7 +15,7 @@ function addClass(cls){
 	var el = this;
 	
 	if(!hasClass(el, cls)){
-		el.className = cleanClass( el.className + WHITE_SPACE + cls );
+		el.className = ( el.className + WHITE_SPACE + cls ).trim();
 	}
 };
 
@@ -35,7 +31,7 @@ function getStorage(el){
 };
 
 
-// clear data stored in element
+// clear data stored in the specified element
 // clear attributes
 function cleanElement(el){
 	var id = SELECTOR.uid(el),
