@@ -156,7 +156,7 @@ var DOM = K.DOM,
 
 // @private
 // get computed styles
-currentCSS = feature.computedStyle ? 
+currentCSS = feature.curCSS = feature.computedStyle ? 
 
 	// standard
 	function(element, property){
