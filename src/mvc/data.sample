@@ -1,9 +1,0 @@
-/**
- * Data module for JavaScript template engine
- */
- 
-[
-	{cls:'class1', txt:'text1'},
-	{cls:'class2', txt:'text2'},
-	{cls:'class3', txt:'text3'}
-]
