@@ -105,6 +105,9 @@ function removeDOMEventByType(el, type, storage, index){
 function DOMEvent(event, win){
 	if(event instanceof DOMEvent){
 		return event;
+		
+	}else if(!event){
+		return;
 	}
 
 	win = win || K.__HOST;
@@ -321,12 +324,13 @@ DOM.extend({
 	
 	
 	/**
-	 * .detach()								-> remove all
-	 * .detach('click')							-> remove all click
-	 * .detach('click', fn)						-> remove click method fn
-	 * .detach({ click: fn, mouseenter: fn2 })	-> remove several events
+	 * detach a event or events
+	 * .off()								-> remove all
+	 * .off('click')							-> remove all click
+	 * .off('click', fn)						-> remove click method fn
+	 * .off({ click: fn, mouseenter: fn2 })	-> remove several events
 	 */
-	detach: K._overloadSetter(removeDOMEvent, true),
+	off: K._overloadSetter(removeDOMEvent, true),
 	
 	
 	/**
@@ -347,7 +351,7 @@ DOM.extend({
 
 
 DOM.Event = DOMEvent;
-DOM.Events = Events; 
+DOM.Events = Events;
 
 
 })(KM);

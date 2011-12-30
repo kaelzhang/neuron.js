@@ -37,7 +37,7 @@ function cleanElement(el){
 	var id = SELECTOR.uid(el),
 		dom = new DOM(el);
 		
-	dom.detach();
+	dom.off();
 	
 	el.clearAttributes && el.clearAttributes();
 	
@@ -547,6 +547,11 @@ DOM._overload = overloadDOMGetterSetter;
  
  2011-11-02  Kael:
  - change implementation of removeClass to eliminate unexpected whitespace
+
+ TODO:
+ A. deal with getter and setter of boolean attributes
+ B. refractor for native events and custom events
+ C. overload arguments of DOM.grab
  
  2011-10-17  Kael:
  - fix a but about DOM.destroy

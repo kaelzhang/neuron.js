@@ -53,7 +53,7 @@ function bind_domready(){
 	};
 	
 	function _ready(){
-		_doc.detach(eventType, _ready).detach('load', _ready);
+		_doc.off(eventType, _ready).off('load', _ready);
 		_doc = null;
 		domready();
 	};

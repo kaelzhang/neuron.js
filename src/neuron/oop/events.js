@@ -50,7 +50,7 @@ K.Class.EXTS.events = {
 		return addOrRemoveEvent(this, type, fn, true);
 	}),
 	
-	detach: function(type, fn){
+	off: function(type, fn){
 		return addOrRemoveEvent(this, type, fn);
 	},
 	
