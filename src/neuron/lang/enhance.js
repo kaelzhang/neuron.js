@@ -460,18 +460,17 @@ K._onceBefore = function(real_method_name, init_method_name, belong){
 		real = belong[real_method_name];
 		
 	belong[real_method_name] = function(){
-		init.call(this);
+		var ret, self = this;
+	
+		init.call(self);
 		
-		var ret = real.apply(this, arguments);
+		ret = real.apply(self, arguments);
+		self[real_method_name] = real;
 		
-		belong[real_method_name] = real;
+		init = real = null;
 		
 		return ret;
 	};
-	
-	// delete belong[init_method_name];
-	// 
-	belong[init_method_name] = NOOP;
 };
 
 /**
@@ -492,6 +491,8 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
  [1] why dangerous? you could find out. the order of the old keys and new created keys between various browsers is different
  
  change log:
+ 2012-01-04  Kael:
+ - KM._onceBefore will not affect prototype chain but instance only
  
  2011-10-13  Kael:
  - KM.makeArray could has an array receiver to be merged to
