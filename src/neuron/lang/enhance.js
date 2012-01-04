@@ -467,8 +467,6 @@ K._onceBefore = function(real_method_name, init_method_name, belong){
 		ret = real.apply(self, arguments);
 		self[real_method_name] = real;
 		
-		init = real = null;
-		
 		return ret;
 	};
 };
