@@ -11,6 +11,10 @@ marks:
 milestone 4.0
 ===
 
+2011-12-08  Kael:
+TODO:
+	- A. could define a tree of dependencies for a certain module. so that we can parse all dependencies of modules ahead of time by back-end services
+
 2011-10-27  Kael:
 	- bug fixes: if the base location of an app is not empty, IE will fail
 

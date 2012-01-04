@@ -3,14 +3,14 @@
  * after this, they could only be fetched by Neuron Loader
  */
 
-;(function(K){
+// ;(function(K){
 
-var DOM = K.DOM;
+// var DOM = K.DOM;
 
 // remove public members
 // delete K.DOM;
-delete K.__SELECTOR;
-delete K.__;
+delete KM.__SELECTOR;
+delete KM.__;
 // delete DOM.methods;
 // delete DOM.feature;
 
@@ -23,14 +23,17 @@ delete K.__;
 try{
 	delete window.Slick;
 }catch(e){
-	K.log('del Slick err');
+	// K.log('del Slick err');
 }
 
 
-})(KM);
+// })(KM);
 
 /**
  change log:
+ 
+ 2011-11-18  Kael:
+ - no longer remove static methods of KM.DOM
  
  2011-09-08  Kael:
  - renaming the module name as dom, making it a fake package module
