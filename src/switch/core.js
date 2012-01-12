@@ -320,8 +320,7 @@ Switch = Class({
     /**
      * go to the previous position
      */
-    prev: function(e){
-        e && e.prevent();
+    prev: function(circular){
         var self = this;
 		
 		self.fire(PREV);
@@ -335,8 +334,7 @@ Switch = Class({
 	/**
      * go to the next position
      */
-    next: function(e){
-        e && e.prevent();
+    next: function(circular){
         var self = this;
 		
 		self.fire(NEXT);
@@ -576,7 +574,10 @@ Class.setAttrs(Switch, {
 		setter: function(v){
 			var self = this, PREV = 'prev';
 			
-			self.nav[PREV] = $.all(self.CSPre + v).on(self.get('triggerType'), self[PREV]);
+			self.nav[PREV] = $.all(self.CSPre + v).on(self.get('triggerType'), function(e){
+				e && e.prevent();
+				self[PREV]();
+			});
 		}
 	},
 	
@@ -584,7 +585,10 @@ Class.setAttrs(Switch, {
 		setter: function(v){
 			var self = this, NEXT = 'next';
 			
-			self.nav[NEXT] = $.all(self.CSPre + v).on(self.get('triggerType'), self[NEXT]);
+			self.nav[NEXT] = $.all(self.CSPre + v).on(self.get('triggerType'), function(e){
+				e && e.prevent();
+				self[NEXT]();
+			});
 		}
 	},
 	
@@ -639,6 +643,11 @@ return Switch;
 
 /**
  change log:
+ 
+ 2011-11-22  Kael:
+ TODO:
+ A. add circular option for .prev and .next methods
+ B. use global clock to manage intervals
  
  2011-11-15  Kael:
  - lazily initialize the controller of lifeCycle, so that plugins could be involved in.

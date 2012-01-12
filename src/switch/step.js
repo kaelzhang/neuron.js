@@ -103,6 +103,11 @@ return {
 });
 
 /**
+ 2011-11-17  Kael:
+ TODO:
+ - A. async itemRenderer(blocked by B)
+ - B. queue with multiple threads support
+
  2011-11-09  Kael:
  issue:
  - A. if items don't exist, _getItem will fail 
