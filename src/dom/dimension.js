@@ -36,7 +36,7 @@ brokenOffsetParent = function(){
 	return ret;
 }(),
 
-styleString = Element.getComputedStyle;
+styleString = K.DOM.feature.curCSS;
 
 
 function styleNumber(element, style){
