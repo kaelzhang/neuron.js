@@ -64,12 +64,15 @@ function overloadSetter(fn, noStrict){
 		// for normal functions, if use ecma strict, 'this' is undefined
 		var self = this;
 		
-		if (K.isObject(key)){	
+		if (K.isObject(key)){
 			K.each(key, function(v, k){
 				fn.call(self, k, v);
 			});
 		}else if(noStrict || K.isString(key)){
-			fn.call(self, key, value);
+		
+			// use apply instead of fn.call(self, key, value)
+			// so the overloaded function could receive more arguments
+			fn.apply(self, arguments);
 		}
 		
 		return self;
@@ -489,6 +492,10 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
  [1] why dangerous? you could find out. the order of the old keys and new created keys between various browsers is different
  
  change log:
+ 
+ 2012-01-12  Kael:
+ - improve KM._overloadSetter, so that the overloaded function could receive more arguments
+ 
  2012-01-04  Kael:
  - KM._onceBefore will not affect prototype chain but instance only
  
