@@ -51,7 +51,7 @@ function checkRelatedTarget(event){
 };
 
 
-function removeDOMEvent(type, fn){
+function removeDOMEvent(type, fn, useCapture){
 	var el = this,
 		storage = getStorage(el),
 		remove = removeDOMEventByType,
@@ -83,7 +83,7 @@ function removeDOMEvent(type, fn){
 			s = storage[t];		// storage
 			
 			s.fns.forEach(function(v, i){
-				v && remove(el, t, s, i);
+				v && remove(el, t, s, i, useCapture);
 			})
 			
 			s.fns.length = s.vals.length = 0;
@@ -93,8 +93,12 @@ function removeDOMEvent(type, fn){
 };
 
 
-function removeDOMEventByType(el, type, storage, index){
-	removeEvent(el, type, storage.vals[index]);
+function removeDOMEventByType(el, type, storage, index, useCapture){
+	
+	// > If a listener was registered twice, one with capture and one without, 
+	// > each must be removed separately.
+	// ref: https://developer.mozilla.org/en/DOM/element.removeEventListener
+	removeEvent(el, type, storage.vals[index], useCapture);
 	delete storage.fns[index];
 	delete storage.vals[index];
 };
@@ -260,7 +264,7 @@ DOM.extend({
 	 * @param {function()} fn
 	 * @param {useOrigin} 
 	 */
-	on: K._overloadSetter(function(type, fn){
+	on: K._overloadSetter(function(type, fn, useCapture){
 		var el = this,
 			storage = getStorage(el),
 			fns;
@@ -319,7 +323,7 @@ DOM.extend({
 			};
 			
 		storage[type].vals.push(eventFn);
-		addEvent(el, real_type, eventFn);
+		addEvent(el, real_type, eventFn, useCapture);
 	}),
 	
 	
@@ -359,10 +363,16 @@ DOM.Events = Events;
 /**
  change log:
  
+ 2012-01-12  Kael:
+ - add the useCapture argument to .on and .off methods
+ 
  2011-10-11  Kael:
  - improve stability when there's no event object
  - fix a bug about no-event object events
  - add method .fire()
+ 
+ TODO:
+ - A. focusin, focusout
  
  2011-10-06  Kael:
  TODO:

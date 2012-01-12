@@ -49,11 +49,11 @@ KM.DOM.feature = function(){
 			: function(doc){ return doc.body; },
 			
 		addEvent: element_test[ADD_EVENT_LISTENER] ?
-			  function(el, type, fn){ el[ADD_EVENT_LISTENER](type, fn, false); }
+			  function(el, type, fn, useCapture){ el[ADD_EVENT_LISTENER](type, fn, !!useCapture); }
 			: function(el, type, fn){ el.attachEvent('on' + type, fn); },
 		
 		removeEvent: element_test[REMOVE_EVENT_LISTENER] ?
-			  function(el, type, fn){ el[REMOVE_EVENT_LISTENER](type, fn, false); }
+			  function(el, type, fn, useCapture){ el[REMOVE_EVENT_LISTENER](type, fn, !!useCapture); }
 			: function(el, type, fn){ el.detachEvent('on' + type, fn); },
 			
 		fragment: create_element_accepts_html ? 
@@ -87,6 +87,17 @@ KM.DOM.feature = function(){
 	};
 
 }();
+
+
+/**
+ change log:
+ 
+ 2012-01-12  Kael:
+ - add the <code>useCapture</code> argument to feature.addEvent and removeEvent methods
+ 
+ 
+ 
+ */
 
 
 
