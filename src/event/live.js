@@ -4,7 +4,10 @@
  */
 KM.define(function(K){
 
-
+/**
+ * @param {string} selector
+ * @return {Array} parsed selector
+ */
 function quickParse(selector) {
 	var quick = REGEX_MATCH_SIMPLE_SELECTOR.exec(selector);
 	if ( quick ) {
@@ -16,7 +19,15 @@ function quickParse(selector) {
 	return quick;
 };
 
-
+/**
+ * the match method of CSS Selector Engine is inefficient
+ * on most conditions, namely when the selector discribed with tagName, className or id,
+ * we could match the selector very fast
+ 
+ * @param {DOMElement} elem
+ * @param {Array} m return value of quickParse
+ * @return {boolean}
+ */
 function quickMatch(elem, m){
 	var attrs = elem.attributes || {};
 	return (
