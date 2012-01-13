@@ -105,8 +105,11 @@ function removeDOMEventByType(el, type, storage, index, useCapture){
 
 /**
  * @constructor
+ * @param {Event} event native Event instance
+ * @param {Window} win
+ * @param {Object} config
  */
-function DOMEvent(event, win){
+function DOMEvent(event, win, config){
 	if(event instanceof DOMEvent){
 		return event;
 		
@@ -114,11 +117,13 @@ function DOMEvent(event, win){
 		return;
 	}
 
-	win = win || K.__HOST;
-	event = event || win.event;
+	win || (win = K.__HOST);
+	event || (event = win.event);
+	config || (config = {});
 	
 	var self 	= this,
-		type 	= self.type = event.type,
+		type 	= self.type = config.type || event.type,
+		real	= self.base = config.base || type,
 		target 	= self.target = event.target || event.srcElement,
 		page 	= self.page = {},
 		client 	= self.client = {},
@@ -128,18 +133,19 @@ function DOMEvent(event, win){
 		touch;
 		
 	self.event = event;
+	
 	K.mix(self, event, true, ['shiftKey', 'ctrlKey', 'altKey', 'metaKey']);
 		
 	while (target && target.nodeType == 3){
 		target = target.parentNode;
 	}
 
-	if (type.indexOf('key') !== -1){
+	if (real.indexOf('key') !== -1){
 		// TODO:
 		// test function keys, on macosx and win
 		self.code = event.which || event.keyCode;
 		
-	} else if (type === 'click' || type === 'dblclick' || type === 'contextmenu' || !type.indexOf('mouse') ){
+	} else if (real === 'click' || real === 'dblclick' || real === 'contextmenu' || !real.indexOf('mouse') ){
 		doc = getCompactElement(win.document);
 		
 		page.x = event.pageX != NULL ? event.pageX : event.clientX + doc.scrollLeft;
@@ -148,14 +154,14 @@ function DOMEvent(event, win){
 		client.x = event.pageX != NULL ? event.pageX - win.pageXOffset : event.clientX;
 		client.y = event.pageY != NULL ? event.pageY - win.pageYOffset : event.clientY;
 		
-		if (type === 'DOMMouseScroll' || type === 'mousewheel'){
+		if (real === 'DOMMouseScroll' || real === 'mousewheel'){
 			self.wheel = (event.wheelDelta) ? event.wheelDelta / 120 : - (event.detail || 0) / 3;
 		}
 		
 		self.rightClick = (event.which == 3) || (event.button == 2);
 		
-		if (type == 'mouseover' || type == 'mouseout'){
-			related = event.relatedTarget || event[(type == 'mouseover' ? 'from' : 'to') + 'Element'];
+		if (real == 'mouseover' || real == 'mouseout'){
+			related = event.relatedTarget || event[(real == 'mouseover' ? 'from' : 'to') + 'Element'];
 			
 			while (related && related.nodeType == 3){
 				related = related.parentNode;
@@ -164,7 +170,7 @@ function DOMEvent(event, win){
 			self.relatedTarget = related;
 		}
 				
-	} else if ((/^(?:gesture|touch)/i).test(type)){
+	} else if ((/^(?:gesture|touch)/i).test(real)){
 		K.mix(self, event, true, ['rotation', 'scale', 'targetTouches', 'changedTouches', 'touches']);
 	
 		touch = self.touches && self.touches[0];
@@ -316,7 +322,7 @@ DOM.extend({
 			 </code>
 			 */
 			function(event){
-				event = new DOMEvent(event, getWindow(el)); // TODO: getWindow
+				event = new DOMEvent(event, getWindow(el), {type: type, base: real_type}); // TODO: getWindow
 				if (condition.call(el, event) === false){
 					event.stop();
 				}
@@ -362,6 +368,15 @@ DOM.Events = Events;
 
 /**
  change log:
+ 
+ 2012-01-13  Kael:
+ - when mouseenter(or other imitated event) triggered, event.type will no longer be 'mouseover'(the event name that delegated to) but 'mouseenter' itself.
+ 	<code>
+ 		.on('mouseenter', function(e){
+ 			e.type; // 'mouseenter'
+ 			e.base; // 'mouseover'
+ 		});
+ 	</code>
  
  2012-01-12  Kael:
  - add the useCapture argument to .on and .off methods
