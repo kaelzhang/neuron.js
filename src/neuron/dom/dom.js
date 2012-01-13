@@ -242,7 +242,7 @@ extend({
 	el: function(index){
 		var context = this.context;
 	
-		return K.isNumber(index) ? context[index] : context;
+		return K.isNumber(index) ? context[index] : K.clone(context);
 	},
 
 	get: function(index){
@@ -254,6 +254,18 @@ extend({
 	count: function(){
 		return this.context.length;
 	},
+	
+	/**
+	 all extensive modules should not rely on the private uid property of a certain element   
+	 
+	id: function(index){
+		var context = this.context,
+			el = context[index || 0];
+	
+		return el ? SELECTOR.uid(el) : null;
+	},
+	
+	 */
 	
 	/**
 	 * iterator
