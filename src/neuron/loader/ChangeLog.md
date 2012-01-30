@@ -11,6 +11,10 @@ marks:
 milestone 4.0
 ===
 
+2012-01-05  Kael:
+TODO:
+	- A. make KM.define support NodeJS environment
+
 2011-12-08  Kael:
 TODO:
 	- A. could define a tree of dependencies for a certain module. so that we can parse all dependencies of modules ahead of time by back-end services
