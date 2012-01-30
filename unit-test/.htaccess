@@ -3,6 +3,8 @@
 
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
+
+# mvp/event-bus.php -> handler.php?mod=mvp/event-bus
 RewriteRule ([a-z0-9-]+(?:\/[a-z0-9-]+)+)\.php$ handler.php?mod=$1 [NC,L]
 
 
