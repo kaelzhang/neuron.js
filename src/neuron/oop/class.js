@@ -259,7 +259,7 @@ Class.EXTS = EXTS;
  */
 Class.destroy = function(instance){
 	var destructor = instance[__DESTRUCT];
-	destructor && destructor();
+	destructor && destructor.call(instance);
 };
 
 Class.setAttrs = setAttrs;
