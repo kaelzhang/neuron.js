@@ -149,7 +149,7 @@ function resetPrototypeChain(instance){
 
 
 var INITIALIZE 		= 'initialize',
-	__DESTRUCT 		= '__destruct',
+	// __DESTRUCT 		= '__destruct',
 	__SUPER_CLASS 	= '__super',
 	EXTS			= {};
 
@@ -257,10 +257,10 @@ Class.EXTS = EXTS;
 /**
  * method to destroy a instance
  */
-Class.destroy = function(instance){
-	var destructor = instance[__DESTRUCT];
-	destructor && destructor.call(instance);
-};
+// Class.destroy = function(instance){
+//	var destructor = instance[__DESTRUCT];
+//	destructor && destructor.call(instance);
+// };
 
 Class.setAttrs = setAttrs;
 
