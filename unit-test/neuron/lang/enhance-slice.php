@@ -601,6 +601,32 @@ describe('Neuron:lang/enhance', function(){
 				
 				expect( obj.real() ).toEqual(2);
 			});
+			
+			it('will not do evil to prototype chain', function(){
+				var K = KM,
+					C = K.Class({
+						initialize: function(v){
+							this.v = v;
+						},
+						
+						_real: function(){
+							return this.v ++;
+						},
+						
+						print: function(){
+							return this.v - 1;
+						}
+					});
+					
+				K._onceBefore('print', '_real', C.prototype);
+				
+				var c = new C(1),
+					c2 = new C(1);
+					
+				expect(c.print()).toEqual(c2.print());
+				expect(c.print()).toEqual(c2.print());
+				expect(new C(3).print()).toEqual(3);
+			});
 		});
 		
 		
@@ -618,7 +644,11 @@ describe('Neuron:lang/enhance', function(){
 				memoized_foo(1, 2, 3); // exec_counter:2
 				
 				expect( memoized_foo(1, 2, 3) ).toEqual('1_2_3');
+				expect( memoized_foo(1, 2, 3) ).toEqual('1_2_3');
 				expect( exec_counter ).toEqual(2);
+				
+				expect( memoized_foo(1, 2, 4) ).toEqual('1_2_4');
+				expect( exec_counter ).toEqual(3);
 				
 			});
 		});
