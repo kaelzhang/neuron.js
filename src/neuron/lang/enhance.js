@@ -62,20 +62,21 @@ function overloadSetter(fn, noStrict){
 		// @this
 		// for instance method, 'this' is the context
 		// for normal functions, if use ecma strict, 'this' is undefined
-		var self = this;
+		var self = this, ret = self;
 		
 		if (K.isObject(key)){
 			K.each(key, function(v, k){
 				fn.call(self, k, v);
 			});
+			
 		}else if(noStrict || K.isString(key)){
 		
 			// use apply instead of fn.call(self, key, value)
 			// so the overloaded function could receive more arguments
-			fn.apply(self, arguments);
+			ret = fn.apply(self, arguments);
 		}
 		
-		return self;
+		return ret;
 	};
 };
 
