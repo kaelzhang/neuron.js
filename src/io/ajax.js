@@ -180,7 +180,7 @@ _Ajax = K.Class({
 		var self = this,
 			bind = K.bind;
 			
-		self.setAttrs({opt: options});
+		self.set({opt: options});
 		
 		self.xhr = Xhr();
 		self.headers = self._makeHeaders();

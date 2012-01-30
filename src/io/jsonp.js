@@ -66,7 +66,7 @@ JSONP = K.Class({
     Implements: 'events attrs',
 
     initialize: function (options) {
-        this.setAttrs({opt: options});
+        this.set({opt: options});
     },
 
     // @param options 
