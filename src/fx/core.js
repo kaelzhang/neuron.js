@@ -114,7 +114,7 @@ Fx = K.Class({
 			start = self.start;
 	
 		self.subject = self.subject || self;
-		self.setAttrs(options);
+		self.set(options);
 		
 		self.frameSkip = self.get('frameSkip');
 		

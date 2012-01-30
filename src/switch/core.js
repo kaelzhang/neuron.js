@@ -72,8 +72,6 @@ Switch = Class({
     initialize: function(){
     	var self = this,
     		bind = K.bind;
-    		
-    	self.setAttrs();
     	
     	// bind public methods
     	bind('prev', self);

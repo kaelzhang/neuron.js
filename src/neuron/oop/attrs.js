@@ -93,6 +93,22 @@ function createGetterSetter(host, sandbox, undef){
 };
 
 
+function createPublicMethod(name){
+	return function(){
+		var self = this,
+			
+			// @private
+			// sandbox
+			sandbox = createSandBox(self);
+		
+		// .set and .get methods won't be available util .setAttrs method excuted
+		createGetterSetter(self, sandbox);
+		
+		return self[name].apply(self, arguments);
+	};
+};
+
+
 function createSandBox(host){
 	var class_ = host.constructor,
 		sandbox;
@@ -145,29 +161,16 @@ var TRUE = true,
  };
 
  */
-	
-K.Class.EXTS.attrs = {
-	setAttrs: function(options, force){
-		var self = this,
-		
-			// @private
-			// sandbox
-			sandbox = createSandBox(self);
-		
-		// .set and .get methods won't be available util .setAttrs method excuted
-		createGetterSetter(self, sandbox);
-		
-		K.each(options, function(v, k){
-			var attr = sandbox[k];
-			
-			attr && setValue(this, attr, v, false, force);
-		}, self);
-		
-		self.setAttrs = NOOP;
-		return self;
-	}
-};
+ 
+var attrs = {};
 
+['addAttr', 'get', 'set'].forEach(function(name){
+	attrs[name] = createPublicMethod(name);
+});
+	
+K.Class.EXTS.attrs = attrs;
+
+attrs = null;
 
 })(KM);
 
