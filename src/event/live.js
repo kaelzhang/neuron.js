@@ -1,6 +1,5 @@
 /**
  * module  event/live
- * migrate from mootools 1.4.1
  */
 KM.define(function(K){
 
@@ -159,6 +158,12 @@ special = {
 
 var delegate = {
 
+	/**
+	 * @param {string|DOMElement|KM.DOM} element
+	 * @param {string} type
+	 * @param {string} selector
+	 * @param {function()} fn
+	 */
 	on: function(element, type, selector, fn){
 	
 		// @type {KM.DOM}
@@ -191,7 +196,32 @@ var delegate = {
 		// free
 		element = config = null;
 	},
-
+	
+	/**
+	 * remove a delegated event or remove all of the specified events
+	 
+	 * @param {string|DOMElement|KM.DOM} element
+	 * @param {string=} type
+	 * @param {string=} selector
+	 * @param {function()} fn
+	 
+	 * example:
+	 <code>
+	 	var live = require('event/live');
+	 
+	 	// remove all events delegated to '#container'
+ 		live.off('#container');
+ 		
+ 		// remove all click events delegated to '#container' 
+ 		live.off('#container', 'click');
+ 		
+ 		// remove all click events of the elements which match '.item' within '#container'
+ 		live.off('#container', 'click', '.item');
+ 		
+ 		// remove event handler: myEventHandler
+ 		live.off('#container', 'click', '.item', myEventHandler);
+	 </code>
+	 */
 	off: function(element, type, selector, fn){
 		// @type {KM.DOM}
 		element = $(element);
@@ -206,10 +236,16 @@ var delegate = {
 			return;
 		}
 		
+		// remove all <type> events
+		if(!selector){
+			config.length = 0;
+			return;
+		}
+		
 		for(len = config.length; i < len; i ++){
 			cfg = config[i];
 			
-			if(!cfg || cfg.selector === selector && cfg.fn === fn){
+			if(!cfg || cfg.selector === selector && (!fn || cfg.fn === fn)){
 				config.splice(i, 1);
 			}
 		}
@@ -225,3 +261,12 @@ var delegate = {
 return delegate;
 
 });
+
+
+/**
+ change log:
+ 
+ 2012-01-13  Kael:
+ - complete main functionalities;
+ 
+ */
