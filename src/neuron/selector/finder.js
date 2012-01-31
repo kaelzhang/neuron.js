@@ -40,15 +40,20 @@ local.setDocument = function(document){
 	// document sort
 	
 	this.brokenStarGEBTN
+	
+	// QSA -> querySelectorAll
 	= this.starSelectsClosedQSA
 	= this.idGetsName
 	= this.brokenMixedCaseQSA
+	
+	// GEBCN -> getElementsByClassName
 	= this.brokenGEBCN
 	= false;
 	
 	var starSelectsClosed, starSelectsComments,
 		brokenSecondClassNameGEBCN, cachedGetElementsByClassName;
 	
+	// test native selector methods: getElementsByClassName, querySelectorAll
 	if (!(this.isXMLDocument = this.isXML(document))){
 		
 		var testNode = document.createElement('div');
@@ -200,6 +205,11 @@ local.search = function(context, expression, append, first){
 		if (!parsed.length) return found;
 	} else if (expression == null){ // there is no expression
 		return found;
+	
+	// Kael:	
+	// FIXME: window also has 'Slick' property
+	// spec:
+	// Slick.search(document, window)
 	} else if (expression.Slick){ // expression is a parsed Slick object
 		parsed = expression;
 	} else if (this.contains(context.documentElement || context, expression)){ // expression is a node
@@ -882,4 +892,4 @@ Slick.uidOf = function(node){
 
 if (!this.Slick) this.Slick = Slick;
 	
-}).apply(/*<CommonJS>*/(typeof exports != 'undefined') ? exports : /*</CommonJS>*/this);
+}).apply(/*<CommonJS>*/(typeof exports != 'undefined') ? exports : /*</CommonJS>*/KM);

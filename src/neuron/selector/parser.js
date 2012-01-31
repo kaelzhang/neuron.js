@@ -212,4 +212,4 @@ Slick.escapeRegExp = escapeRegExp;
 
 if (!this.Slick) this.Slick = Slick;
 	
-}).apply(/*<CommonJS>*/(typeof exports != 'undefined') ? exports : /*</CommonJS>*/this);
+}).apply(/*<CommonJS>*/(typeof exports != 'undefined') ? exports : /*</CommonJS>*/KM);

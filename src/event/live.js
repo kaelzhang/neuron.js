@@ -1,7 +1,11 @@
 /**
  * module  event/live
+ * inspired by jQuery 
  */
 KM.define(function(K){
+
+// parser and matcher
+// credits to jQuery (http://jquery.com/)
 
 /**
  * @param {string} selector
@@ -245,11 +249,17 @@ var delegate = {
 		for(len = config.length; i < len; i ++){
 			cfg = config[i];
 			
-			if(!cfg || cfg.selector === selector && (!fn || cfg.fn === fn)){
+			if(
+				!cfg || 
+				cfg.selector === selector && 
+					// remove all event handlers off the matched elements
+					(!fn || cfg.fn === fn)
+			){
 				config.splice(i, 1);
 			}
 		}
 		
+		// if all event handlers had been removed, remove event listener from the container
 		if(!config.length){
 			element.off(config.base, config.handle);
 		}

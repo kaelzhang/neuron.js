@@ -9,17 +9,17 @@
  always return {Array.<DOMElement>} !important !!!!!!!!!!!!!!
  
  2. __SELECTOR.contains(context, selector)
- return {boolean}
+ returns {boolean}
  
  3. __SELECTOR.match(element, selector)
- return {boolean}
+ returns {boolean}
  
  4. __SELECTOR.uid(element)
- return {number} the uid of the element
+ returns {number} the uid of the element
  
  // TEMP!
  5. __SELECTOR.parse(selector)
- return {Object} selector object
+ returns {Object} selector object
  
  
  arguments:
@@ -35,7 +35,7 @@
 ;(function(K){
 
 // Store Slick in closure
-var S = Slick;
+var S = K.Slick;
 
  
 // adapter for Slick
