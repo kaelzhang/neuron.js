@@ -71,13 +71,17 @@ function isOffsetStatic(el){
 	return isOffset(el) || (/^(?:table|td|th)$/i).test(el.tagName);
 };
 
+function getNativeElement(el){
+	return $(el).el(0);
+};
+
 /**
  *
  * ---------------------------------------------------------- */
  
 function createMethod(filter, meta){
 	var method = function(element){
-		return filter(element) ? method.doc(element) : method.normal(element);
+		return filter(element) ? method.doc(getNativeElement(element)) : method.normal(getNativeElement(element));
 	};
 	
 	method.doc    = meta.doc;    delete meta.doc;
@@ -244,15 +248,22 @@ function getOffsets(element){
 return {
 	// no setter
 	offset: getPosition,
-	 
+	
+	/**
+	 * @param {DOMElement} element
+	 * @param {string=} type
+	 * @returns if type === 'scroll', returns scroll size, else returns normal size
+	 */
 	size: function(element, type){
-		return type === SCROLL ? getScrollSize(element) : getSize(element);
+		return type === SCROLL ? getScrollSize(getNativeElement(element)) : getSize(getNativeElement(element));
 	},
 	
 	scroll: getScroll,
 	
 	offsetParent: brokenOffsetParent ? 
 		function(element){
+			element = getNativeElement(element);
+		
 			var position = styleString(element, 'position'),
 				parent = HTML,
 				offsetCheck;
@@ -269,9 +280,11 @@ return {
 			}
 			
 			return parent;
-		} 
+		}
 	:	
 		function(element){
+			element = getNativeElement(element);
+		
 			var parent = HTML;
 			
 			if (!isBody(element) && styleString(element, 'position') !== FIXED){
@@ -285,3 +298,10 @@ return {
 };
 
 });
+
+/**
+ change log:
+ 2011-01-31  Kael:
+ - all dimension methods could accept KM.DOM object;
+ 
+ */
