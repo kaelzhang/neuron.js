@@ -271,6 +271,9 @@ Class.setAttrs = setAttrs;
 /**
  change log:
  
+ 2012-01-30  Kael:
+ - remove Class.destroy
+ 
  2011-11-16  Kael:
  - remove Class from the host(window)
  

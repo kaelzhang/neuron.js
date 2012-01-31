@@ -176,6 +176,9 @@ attrs = null;
 
 
 /**
+ 2012-01-30  Kael:
+ - remove .setAttrs methdo. sandbox will be initialized by the first execution of .set, .get, or .addAttr method
+
  2011-10-24  Kael:
  - setAttrs method will return this
  - prevent addAttr method from affecting the existing attr object
