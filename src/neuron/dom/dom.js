@@ -58,9 +58,15 @@ function DOM(element, context){
 	// use ECMAScript strict
 	var self = this;
 	
+	
+	// re-dollar
+	// $( $('body') );
 	if(element instanceof DOM){
 		return element;
-		
+	
+	// with 'new' keyword
+	// new $(document.body)
+	// new 	
 	}else if(self instanceof DOM){
 	
 		// @type {Array.<DOMElement>}
@@ -210,21 +216,6 @@ DOM.all = function(selector, context){
 DOM.prototype._ = atom;
 
 
-// temporary method for dom creation
-// will be override in module DOM/create
-/*
-DOM.create = function(fragment, attributes){
-	var element;
-	
-	if(typeof fragment === 'string'){
-		element = DOC.createElement(fragment);
-	}
-	
-	return element;
-};
-*/
-
-
 extend({
 	one: function(selector){
 		return new DOM( SELECTOR.find(selector, this.context, true) );
@@ -273,6 +264,16 @@ extend({
 	forEach: function(fn){
 		this.context.forEach(fn);
 		return this;
+	},
+	
+	/**
+	 * add a 
+	 * @param {string|KM.DOM|DOMElement} subject the subject to be included into the current KM.DOM instance. 
+	 	subject could be string of css selectors, instance of KM.DOM, or native DOMElement
+	 */
+	add: function(subject){
+		this.context.concat(DOM(subject).context);
+		return this;
 	}
 });
 
@@ -307,6 +308,12 @@ DOM.noConflict = function(){
 
 /**
  change log:
+ 
+ 2012-01-30  Kael:
+ - add a new api DOM::add to include a subject or group of subjects into the current instance of KM.DOM
+ 
+ TODO:
+ X A. improve $ to accept more types of subjects -- came up by yao.zhou
  
  2011-10-20  Kael:
  - fix a bug that if we dollar a dollared object(KM.DOM Object), we will loose matched elements
