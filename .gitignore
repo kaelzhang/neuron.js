@@ -2,6 +2,7 @@
 .svn/
 .idea/
 *-old/
+*-notrack/
 *.db
 *.bak
 *.patch
