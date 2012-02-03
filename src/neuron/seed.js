@@ -66,6 +66,9 @@ K._type = function(){
 
 	var toString = Object.prototype.toString,
 		_K = K,
+		
+		// basic javascript types
+		// never include any host types or new types of javascript variables for compatibility
 		type_list = 'Boolean Number String Function Array Date RegExp Object'.split(' '),
 		i = type_list.length,
 		
@@ -119,6 +122,13 @@ K._type = function(){
 	 * simple method to detect DOMWindow in a clean world that has not been destroyed
 	 */
 	_K.isWindow = function(obj){
+	
+		// toString.call(window):
+		// [object Object]	-> IE
+		// [object global]	-> Chrome
+		// [object Window]	-> Firefox
+		
+		// isObject(window)	-> 'object'
 		return isObject(obj) && 'setInterval' in obj; 
 	};
 	

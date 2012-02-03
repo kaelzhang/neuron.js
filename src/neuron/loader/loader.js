@@ -1,4 +1,7 @@
-/*! Neuron core:loader v4.2.1 * All rights reserved * author i@kael.me */
+/*! 
+ * Neuron core:loader v4.2.1
+ * author i@kael.me 
+ */
 
 ; // fix layout of UglifyJS
 
@@ -67,7 +70,7 @@ Loader,
 /**
  * @const
  */
-// ex: ~myModule
+// ex: `~myModule`
 USER_MODULE_PREFIX = '~',
 APP_HOME_PREFIX = '~/',
 
@@ -148,7 +151,7 @@ asset = {
 		
 		callback && assetOnload.css(node, callback);
 		
-		// insert new CSS in the end of <head> to maintain priority
+		// insert new CSS in the end of `<head>` to maintain priority
 		HEAD.appendChild(node);
 		
 		return node;
@@ -438,7 +441,6 @@ function _define(name, identifier, dependencies, factory, uri){
 		
 		// convention:
 		// in this case, this module must not be defined in a module file
-		// # and the uri must be an absolute uri
 		case 'string':
 			mod.status = STATUS.DI;
 			path_info = generateModuleURI_Identifier(factory);
@@ -469,8 +471,6 @@ function _define(name, identifier, dependencies, factory, uri){
 				mod.status = STATUS.DD;
 				
 				// only if defined with factory function, can a module has dependencies
-				// TODO:
-				// X enable dependencies for other types of definitions
 				mod.deps = dependencies;
 			}else{
 				mod.status = STATUS.RD;
@@ -501,7 +501,7 @@ function _define(name, identifier, dependencies, factory, uri){
 	// <code:pseudo>
 	// 		KM.define('http://myurl', function(){…});
 	// </code>
-	// it will be saved as '~http://myurl';
+	// it will be saved as `~http://myurl`;
 	name && memoizeMod(USER_MODULE_PREFIX + name, mod);
 	
 	if(identifier){

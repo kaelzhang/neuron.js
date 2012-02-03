@@ -4,7 +4,7 @@
  */
 KM.define(function(K){
 
-// parser and matcher
+// quickParse and quickMatch
 // credits to jQuery (http://jquery.com/)
 
 /**
