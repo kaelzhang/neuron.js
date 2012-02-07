@@ -13,6 +13,7 @@ milestone 4.0
 
 2012-02-06  Kael:
 	- fix image pre-loader
+	- change all `loaderError` to `error`
 
 2012-01-05  Kael:
 TODO:

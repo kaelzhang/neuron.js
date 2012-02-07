@@ -775,7 +775,7 @@ function provideOne(mod, callback, env){
 			}else if(last && mod.status === _STATUS.LD){
 				
 				if(last.status < _STATUS.DD){
-					loaderError(510);
+					error(510);
 				}
 				
 				K.mix(mod, last);
@@ -1108,7 +1108,7 @@ function realpath(path) {
 	for_each(old, function(part, i){
 		if (part === '..') {
 			if (ret.length === 0) {
-			  	loaderError(530);
+			  	error(530);
 			}
 			ret.pop();
 			
