@@ -11,6 +11,9 @@ marks:
 milestone 4.0
 ===
 
+2012-02-06  Kael:
+	- fix image pre-loader
+
 2012-01-05  Kael:
 TODO:
 	- A. make KM.define support NodeJS environment

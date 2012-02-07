@@ -175,25 +175,25 @@ asset = {
 	img: function(uri, callback){
 		var node = DOC.createElement('img'),
 			delay = setTimeout;
+			
+		function complete(name){
+			node.onload = node.onabort = node.onerror = complete = NULL;
+			
+			setTimeout(function(){
+				callback.call(node, {type: name});
+				node = NULL;
+			}, 0);
+		};
 
 		callback && ['load', 'abort', 'error'].forEach(function(name){
-		
 			node['on' + name] = function(){
-				node = node.onload = node.onabort = node.onerror = NULL;
-				
-				setTimeout(function(){
-					callback.call(node, name);
-				}, 0);
+				complete(name);
 			};
 		});
 
 		node.src = uri;
 		
-		if (callback && node.complete){
-			setTimeout( function(){
-				callback.call(node, 'load');
-			}, 0);
-		}
+		callback && node.complete && complete('load');
 		
 		return node;
 	}
@@ -1208,7 +1208,7 @@ K['provide'] = provide;
 
 // semi-private
 // will be destroyed after configuration
-K.__Loader = Loader = {
+K.__loader = Loader = {
 
 	// no fault tolerance
 	'config': function(cfg){

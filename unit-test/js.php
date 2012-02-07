@@ -29,8 +29,8 @@ inc("neuron/loader/config/alpha.js");
 
 inc("neuron/oop/class.js");
 inc("neuron/oop/attrs.js");
-inc("neuron/oop/super.js");
 inc("neuron/oop/events.js");
+inc("neuron/oop/super.js");
 
 inc("neuron/selector/finder.js");
 inc("neuron/selector/parser.js");
@@ -46,14 +46,14 @@ inc("neuron/dom/create.js");
 inc("neuron/dom/domready.js");
 
 inc("neuron/biz/biz.js");
-inc("neuron/biz/neuron.js");
+// inc("neuron/biz/neuron.js");
 // inc("neuron/biz/faker.js");
 
 inc("neuron/cleaner.js");
 
 ?>
 <script>
-KM.__Loader.init();
+KM.__loader.init();
 
 
 function log(msg){
