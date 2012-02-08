@@ -90,7 +90,7 @@ META_LINK_WRAPPER = {
 			running ? queue.push(args) : run(args);
 		};
 	
-		this.on('complete', next);
+		self.on('complete', next);
 	
 		return function(){
 			add(arguments);

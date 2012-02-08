@@ -1,22 +1,23 @@
-KM.define(['./css'], function(K, require){
+KM.define(['./core', './css'], function(K, require){
 
-var FxCSS = require('./css'),
-	FxCSS_proto = FxCSS.prototype;
-
+var Fx = require('./core'),
+	FxCSS = require('./css');
 
 return K.Class({
-	Extends: FxCSS,
+	Extends: Fx,
+	
+	Implements: FxCSS,
 
 	initialize: function(element, options){
 		this.element = this.subject = $(element);
-		FxCSS.call(this, options);
+		Fx.call(this, options);
 	},
 
 	_set: function(now){
 		var self = this;
 		
 		for (var p in now){
-			self.render(self.element, p, now[p], self.options.unit);
+			self._render(self.element, p, now[p], self.get('unit'));
 		}
 		
 		return self;
@@ -27,7 +28,7 @@ return K.Class({
 			p;
 			
 		for (p in from){
-			now[p] = FxCSS_proto._compute.call(this, from[p], to[p], delta);
+			now[p] = FxCSS._compute.call(this, from[p], to[p], delta);
 		}
 		
 		return now;
@@ -47,7 +48,7 @@ return K.Class({
 			to[p] = parsed.to;
 		}
 		
-		return FxCSS_proto.start.call(self, from, to);
+		return Fx.prototype.start.call(self, from, to);
 	}
 
 });
@@ -56,6 +57,9 @@ return K.Class({
 
 /**
  change log:
+ 
+ 2012-02-08  Kael:
+ - major bug fixes
 
  2011-10-26  Kael
  - migrate to Neuron
