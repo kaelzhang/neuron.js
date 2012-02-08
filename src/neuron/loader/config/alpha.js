@@ -17,7 +17,7 @@
 var REGEX_PATH_CLEANER_MIN = /\.min/i,
 	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i,
 	
-	STR_LOADER = '__Loader',
+	STR_LOADER = '__loader',
 	STR_PROVIDE = 'provide',
 	
 	NOOP = function(){},
