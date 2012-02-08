@@ -141,16 +141,16 @@ var DOM = K.DOM,
 	
 	CSS_CAN_BE_SINGLE_PX = {
 		// offset
-		left: TRUE, top: TRUE, bottom: TRUE, right: TRUE,
+		// left: TRUE, top: TRUE, bottom: TRUE, right: TRUE,
 		
 		// size
-		width: TRUE, height: TRUE, maxWidth: TRUE, maxHeight: TRUE, minWidth: TRUE, minHeight: TRUE, textIndent: TRUE,
+		width: TRUE, height: TRUE, maxwidth: TRUE, maxheight: TRUE, minwidth: TRUE, minheight: TRUE, textindent: TRUE,
 		
 		// text
-		fontSize: TRUE, letterSpacing: TRUE, lineHeight: TRUE,
+		fontsize: TRUE, letterspacing: TRUE, lineheight: TRUE,
 		
 		// box
-		margin: TRUE, padding: TRUE, borderWidth: TRUE
+		margin: TRUE, padding: TRUE, borderwidth: TRUE
 	};
 
 
@@ -294,6 +294,16 @@ if(!feature.opacity){
 });
 
 
+['top', 'right', 'bottom', 'left'].forEach(function(direction){
+	var list = CSS_CAN_BE_SINGLE_PX;
+	
+	list[direction] = 
+	list['margin' + direction] = 
+	list['padding' + direction] = 
+	list['border' + direction + 'width'] = true;
+});
+
+
 // add css getter and setter to DOM hook functions
 DOM.methods.css = {
 	len: 1,
@@ -314,13 +324,11 @@ DOM.methods.css = {
 			specified.SET(el, value);
 			
 		}else{
-			if( CSS_CAN_BE_SINGLE_PX[name] && (
-					   // is number string and the current style type need 'px' suffix
-					   // -> .css('margin', '20')
-					   K.isString(value) && value === String(Number(value))
-					   
-					   // -> .css('margin', 20)
-					|| K.isNumber(value)
+			if( CSS_CAN_BE_SINGLE_PX[name.toLowerCase()] && (
+					// is number string and the current style type need 'px' suffix
+					// -> .css('margin', '20')   
+					// -> .css('margin', 20)
+					(value += '') && value === '' + Number(value)
 				)
 			){
 				value += 'px';
@@ -338,6 +346,9 @@ DOM.methods.css = {
 
 /**
  change log:
+ 
+ 2012-02-08  Kael:
+ - fix a bug that marginLeft could not be properly set in webkit 
  
  2011-10-27  Kael:
  - fix the getter of css when getting 'height' of an element which it's not in the DOM
