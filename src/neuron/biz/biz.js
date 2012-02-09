@@ -20,19 +20,8 @@ function getData(name){
 // --- /method for KM.data ----------------------- *\
 
 
-// @this {Array}
-function applyBusinessModules(){
-	makeArray(this).forEach(function(mod){
-		K.provide(mod, function(K, modExports){
-			modExports && modExports.init && modExports.init();
-		});
-	});
-};
-
 	// @type {Object}
 var stored_data = {},
-	biz_modules = [],
-	makeArray = K.makeArray,
 	undef;
 
 
@@ -80,23 +69,10 @@ K.data = function(name, value){
  * attach a module for business requirement, for configurations of inline scripts
  * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
  */
-K.bizRequire = function(){
-	var stack = biz_modules,
-		args = arguments;
-
-	stack ? makeArray(args, stack) : applyBusinessModules.call(args);
-};
-
-
-// initialize all biz mods after domready
-K.ready(function(K, U){
-	var stack = biz_modules;
-	
-	applyBusinessModules.call(stack);
-	
-	// destroy stack
-	stack.length = 0;
-	biz_modules = U;
+K.require = K._overloadSetter(function(modName, config){
+	K.provice(modName, function(K, export){
+		export.init(config);
+	});
 });
 
 
@@ -105,6 +81,10 @@ K.ready(function(K, U){
 
 /**
  change log:
+ 
+ 2012-02-08  Kael:
+ - use KM.require instead of KM.bizRequire, and no longer initialize modules after DOMReady by default. 
+ 	Modules loaded by KM.require should manage DOMReady by their own if necessary.
  
  2011-10-13  Kael:
  - move KM.data to biz.js
