@@ -8,25 +8,11 @@
 
 KM.define([], function(K){
 
-return K.Class({
+var
+
+Motion = K.Class({
 	
 	Implements: 'events options',
-	
-	options: {
-		
-		// onStart: $empty,
-		// onCancel: $empty,
-		// onComplete: $empty,
-		
-		// frame per second, i.e. how many this.options.props per second
-		fps: 50,
-		
-		// one frame equal to <prop> miniseconds, proportion of time-axis in offset formula
-		prop: 1, 
-		
-		begin: 0, // ms
-		end: 500  // ms
-	},
 	
 	/**
 	 * @param {function()} onMotion
@@ -34,32 +20,38 @@ return K.Class({
 	 * @param {Object} options
 	 */
 	initialize: function(onMotion, equations, options){
-		if( !K.isFunction(onMotion) ) return;
+		if(!K.isFunction(onMotion)) return;
 		
 		var self = this,
-			bind = K.bind,
-			o = self.setOptions(options);
+			bind = K.bind;
+		
+		self.set(options);
 		
 		self.fn = onMotion;
 		self.eq = K.makeArray(equations);
 		
-		self.periodical = Math.round(1000 / this.options.fps);
-		
-		o.end < 0 && (o.end = 0);
 		self.num = self.eq.length;
+		
+		self._setPeriodical(self.get('fps'));
 		
 		bind('_step', self);
 		
 		self.timer = K.delay(self._step, self.periodical, true);
 	},
 	
+	/
+	_setPeriodical: function(fps){
+		self.periodical = Math.round(1000 / fps);
+		return fps;
+	},
+	
 	_step: function(){
 		var self = this,
-			o = self.options;
+			end = self.get('end');
 	
 		self.time += + new Date - self.ts;
 		
-		if( !o.end || self.time < o.end ){
+		if( !end || self.time < end ){
 			self._motion();
 			
 			/**
@@ -68,7 +60,7 @@ return K.Class({
 			 */
 			self.ts = + new Date;
 		}else{
-			self.time = o.end;
+			self.time = end;
 			self._motion();
 			self.complete();
 		}
@@ -84,7 +76,7 @@ return K.Class({
 	_getArgs: function(){
 		var self = this,
 			ret = [], 
-			time = self.time * self.options.prop,
+			time = self.time * self.get('prop'),
 			i = 0, len = self.num;
 			
 		for(; i < len; i ++ ){
@@ -99,7 +91,7 @@ return K.Class({
 		var self = this;
 		
 		if(!self.timer.id){
-			self.time = self.options.begin;
+			self.time = self.get('begin');
 			
 			self._startTimer();
 			self.fireEvent('start');
@@ -116,12 +108,12 @@ return K.Class({
 	
 	//what's coming...
 	pause: function(){
-		this._stopTimer().fireEvent('onPause');
+		this._stopTimer().fireEvent('pause');
 		return this;
 	},
 	
 	resume: function(){
-		this._startTimer().fireEvent('onResume');
+		this._startTimer().fireEvent('resume');
 		return this;
 	},
 	
@@ -145,5 +137,37 @@ return K.Class({
 		return self;
 	}
 });
+
+K.Class.setAttrs({
+		
+	// frame per second, i.e. how many this.options.props per second
+	fps: {
+		value: 50,
+		setter: '_setPeriodical'
+	},
+	
+	// one frame equal to <prop> miniseconds, proportion of time-axis in offset formula
+	prop: {
+		value: 1
+	}, 
+	
+	begin: {
+		value: 0,
+		validator: K.isNumber
+		
+	},
+	
+	end: {
+		value: 500,
+		validator: K.isNumber,
+		setter: function(v){
+			return v < 0 ? 0 : v;
+		}
+		
+	}
+});
+
+
+return Motion;
 
 });
