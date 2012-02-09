@@ -16,6 +16,7 @@ ACCORDION_ATTRS = accordion[STR_ATTRS],
 	
 ATTRS = {
 	property: {
+		readOnly: true,
 		value: 'opacity'
 	},
 	
