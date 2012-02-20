@@ -1,17 +1,14 @@
 KM.Class.EXTS['super'] = {
 	// execute the method of superClass
 	_super: function(name, args){
-		var __SUPER_CLASS = '__super',
+		var __SUPER_CLASS = 'superclass',
 		
 			self = this,
 			super_ = self[__SUPER_CLASS],
 			superProto,
 			superMethod,
 			superX2,
-			
-			
-			
-			ret
+			ret;
 			
 		if(super_){
 			superProto = super_.prototype;

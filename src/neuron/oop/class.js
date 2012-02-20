@@ -150,7 +150,7 @@ function resetPrototypeChain(instance){
 
 var INITIALIZE 		= 'initialize',
 	// __DESTRUCT 		= '__destruct',
-	__SUPER_CLASS 	= '__super',
+	__SUPER_CLASS 	= 'superclass',
 	EXTS			= {};
 
 

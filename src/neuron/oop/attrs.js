@@ -130,7 +130,7 @@ var TRUE = true,
 	READ_ONLY = 'readOnly',
 	WRITE_ONCE = 'writeOnce',
 	
-	__SUPER_CLASS = '__super',
+	__SUPER_CLASS = 'superclass',
 	
 	NOOP = function(){},
 	
