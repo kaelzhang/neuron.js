@@ -301,8 +301,9 @@ METHODS.attr = {
 		var prop = ATTR_CONVERT[name] || name, el = this;
 		
 		name in ATTR_KEY ? el[prop] = value
-			: ATTR_BOOLS.indexOf(prop) !== -1 ? el[prop] = !!value
-				: el.setAttribute(prop, '' + value);
+			: ( ATTR_BOOLS.indexOf(prop) !== -1 ? el[prop] = !!value
+				: el.setAttribute(prop, '' + value)
+			  );
 	}),
 
 	// attribute getter
@@ -310,6 +311,8 @@ METHODS.attr = {
 	GET: function(name){
 		var prop = ATTR_CONVERT[name] || name,
 			el = this, attrNode;
+			
+		console.log(name in ATTR_KEY, REGEX_IS_URI_ATTR.test(prop), ATTR_BOOLS.indexOf(prop), !!el[prop])
 		
 		return name in ATTR_KEY ? el[prop]
 		
@@ -318,9 +321,12 @@ METHODS.attr = {
 			: ( REGEX_IS_URI_ATTR.test(prop) ? el.getAttribute(prop, 2)
 			
 				// ref: https://developer.mozilla.org/en/DOM/element.getAttributeNode
-				: (attrNode = el.getAttributeNode(prop)) ? attrNode.nodeValue
-					: NULL 
-			  ) || NULL;
+				: ( ATTR_BOOLS.indexOf(prop) !== -1 ? !!el[prop] 
+					: ( attrNode = el.getAttributeNode(prop) ? attrNode.nodeValue
+						: NULL
+					  )
+				  ) 
+			  );
 	}
 };
 	
@@ -544,6 +550,12 @@ DOM._overload = overloadDOMGetterSetter;
 
 /**
  change log:
+ 
+ 2011-02-20  Kael:
+ - fix the getter for 'checked' and other boolean attributes
+ 
+ TODO:
+ A. refractor attr trait for better upwards compatibility
  
  2011-11-02  Kael:
  - change implementation of removeClass to eliminate unexpected whitespace
