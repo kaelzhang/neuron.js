@@ -69,11 +69,21 @@ K.data = function(name, value){
  * attach a module for business requirement, for configurations of inline scripts
  * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
  */
-K.require = K._overloadSetter(function(modName, config){
-	K.provice(modName, function(K, export){
-		export.init(config);
+K.require = function(){
+	var isString = K.isString;
+	
+	K.makeArray(arguments).forEach(function(module){
+		if(isString(module)){
+			module = {
+				mod: module
+			};
+		}
+		
+		K.provide(module.mod, function(K, method){
+			method.init && method.init(module.config);
+		});
 	});
-});
+};
 
 
 })(KM);
