@@ -41,39 +41,35 @@ function fire_domready(){
 
 
 function bind_domready(){
-
-	function poll_scroll(){
-		try {
-			// doScroll technique by Diego Perini http://javascript.nwbox.com/IEContentLoaded/
-			doScroll('left');
-			ready();
-		} catch(ex) {
-			setTimeout(poll_scroll, 10);
-		}
-	};
-	
-	function _ready(){
-		_doc.off(eventType, _ready).off('load', _ready);
-		_doc = null;
-		domready();
-	};
-
-	var COMPLETE = 'complete', doc = WIN.document,
-		doScroll = doc.documentElement.doScroll,
-		eventType = doScroll ? 'readystatechange' : 'DOMContentLoaded',
-		_doc = new DOM(doc);
-		
 	is_domready_binded = true;
+
+	var doc = WIN.document;
 	
 	// Catch cases where ready() is called after the
 	// browser event has already occurred.
-	if(doc.readyState === COMPLETE) return domready();
+	if(doc.readyState === 'complete'){
+		return setTimeout(domready, 0);
+	}
+	
+	var doScroll = doc.documentElement.doScroll,
+		eventType = doScroll ? 'readystatechange' : 'DOMContentLoaded',
+		_doc = new DOM(doc),
+		_win = new DOM(WIN),
+		
+		// define _ready function by variable assignment,
+		// so _ready will never be declared if not necessary
+		_ready = function(){
+			_doc.off(eventType, _ready).
+			_win.off('load', _ready);
+			_doc = _win = null;
+			domready();
+		};
 	
 	_doc.on(eventType, _ready);
 	
-	// A fallback to load
+	// A fallback to load, binding load event to window,
 	// and make sure that domready event fires before load event registered by user
-	_doc.on('load', _ready);
+	_win.on('load', _ready);
 	
 	if(doScroll){
 		var not_framed = false;
@@ -82,8 +78,20 @@ function bind_domready(){
 			not_framed = win.frameElement == null;
 		} catch(e) {}
 		
+		// if not a frame
 		if(not_framed){
-			poll_scroll();
+			var poll_scroll = function(){
+				try {
+					// [doScroll technique](http://javascript.nwbox.com/IEContentLoaded/) 
+					// by Diego Perini 
+					doScroll('left');
+					_ready();
+					poll_scroll = null;
+					
+				} catch(ex) {
+					setTimeout(poll_scroll, 10);
+				}
+			};
 		}
 	}
 };
@@ -129,6 +137,9 @@ K.ready = function(fn){
 })(KM);
 
 /**
+ 2012-02-20  Kael:
+ - fix a bug that KM.ready could not properly fallback to window.onload event
+
  2011-09-04  Kael Zhang:
  - split domready alone
  - migrate event handler from mootools to Neuron
