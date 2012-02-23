@@ -73,6 +73,9 @@ function getMethod(host, attr, name){
 
 /**
  * @private
+ * @param {Object} host
+ * @param {Object} sandbox shadow copy of the attributes of a class instance
+ * @param {undefined=} undef
  */
 function createGetterSetter(host, sandbox, undef){
 	host.set = K._overloadSetter( function(key, value, override){
@@ -88,7 +91,13 @@ function createGetterSetter(host, sandbox, undef){
 	};
 	
 	host.addAttr = function(key, setting){
-		sandbox[key] || (sandbox[key] = K.isObject(setting) ? setting : {});
+		sandbox[key] || (sandbox[key] = K.isObject(setting) ? 
+							
+							// it's important to clone the setting before mixing into the sandbox,
+							// or host.set method will ruin all reference
+							K.clone(setting) : 
+							{}
+						);
 	}
 };
 
@@ -176,6 +185,9 @@ attrs = null;
 
 
 /**
+ 2012-02-23  Kael:
+ - fix a fatal reference exception for .addAttr method
+
  2012-01-30  Kael:
  - remove .setAttrs methdo. sandbox will be initialized by the first execution of .set, .get, or .addAttr method
 
