@@ -283,10 +283,10 @@ _Ajax = K.Class({
 		data = self._tidyRequest(data);
 		
 		/**
-		 * if options.cache is true, 
+		 * if options.cache is false, force reloading 
 		 */
-		if (o.cache){
-			url = extendQueryString(url, K.guid());
+		if (!o.cache){
+			url = extendQueryString(url, '_nr_force=' + K.guid());
 		}
 
 		if (data && method === GET){
