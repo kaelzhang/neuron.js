@@ -2,10 +2,10 @@
 
 
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-f
 
 # mvp/event-bus.php -> handler.php?mod=mvp/event-bus
-RewriteRule ([a-z0-9-]+(?:\/[a-z0-9-]+)+)\.php$ handler.php?mod=$1 [NC,L]
+RewriteRule ([a-z0-9-]+(?:\/[a-z0-9-]+)+)-slice\.php$ handler.php?mod=$1 [NC,L]
 
 
 </IfModule>
