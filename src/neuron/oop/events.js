@@ -68,3 +68,12 @@ K.Class.EXTS.events = {
 };
 
 })(KM);
+
+/**
+ change log
+ 
+ 2011-02-24  Kael:
+ TODO:
+ A. add .after and .before
+ 
+ */

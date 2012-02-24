@@ -531,7 +531,7 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
 
  change log:
  2011-04-19  Kael:
- - add method lazyInit，fix a bug of overloadInstanceMethod
+ - add method lazyInit, fix a bug of overloadInstanceMethod
  - add method to detect the type of an object. set KM._type as semi-private method
  2011-04-15  Kael:
  - add adapter for overloadSetter, 

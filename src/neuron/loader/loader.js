@@ -907,7 +907,7 @@ function loadScript(uri, callback, type){
 
 
 /**
- * load the module’s resource file
+ * load the module's resource file
  * always load a script file no more than once
  */
 function loadModuleSrc(mod, callback){

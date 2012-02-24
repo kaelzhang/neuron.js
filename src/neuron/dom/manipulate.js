@@ -552,7 +552,7 @@ DOM._overload = overloadDOMGetterSetter;
  change log:
  
  2011-02-20  Kael:
- - fix the getter for 'checked' and other boolean attributes
+ - [TODO.11-02.A] fix the getter for 'checked' and other boolean attributes
  
  TODO:
  A. refractor attr trait for better upwards compatibility
@@ -561,7 +561,7 @@ DOM._overload = overloadDOMGetterSetter;
  - change implementation of removeClass to eliminate unexpected whitespace
 
  TODO:
- A. deal with getter and setter of boolean attributes
+ √ A. deal with getter and setter of boolean attributes
  B. refractor for native events and custom events
  C. overload arguments of DOM.grab
  

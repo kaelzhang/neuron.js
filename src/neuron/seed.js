@@ -237,6 +237,6 @@ K._debugOn = function(){
  2011-03-19  Kael: move KM.type to lang.js
  2011-03-01  Kael Zhang: add adapter for typeOf of mootools
  2010-12-13  Kael Zhang: fix the getter of KM.data
- 2010-10-09  Kael Zhang: 创建文件
+ 2010-10-09  Kael Zhang: create file
  
  */

@@ -103,7 +103,9 @@ function removeDOMEventByType(el, type, storage, index, useCapture){
 	delete storage.vals[index];
 };
 
+
 /**
+ * create an adapter and the mock object for native Event object
  * @constructor
  * @param {Event} event native Event instance
  * @param {Window} win
