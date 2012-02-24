@@ -59,7 +59,7 @@ function bind_domready(){
 		// define _ready function by variable assignment,
 		// so _ready will never be declared if not necessary
 		_ready = function(){
-			_doc.off(eventType, _ready).
+			_doc.off(eventType, _ready);
 			_win.off('load', _ready);
 			_doc = _win = null;
 			domready();
