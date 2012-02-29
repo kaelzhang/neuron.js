@@ -73,8 +73,8 @@ function decodeQuery2Object(query){
 		q = q.trim();
 		
 		if(q){
-			q = q.split('/');
-			obj[q[0]] = _decodeQueryArguments(q[1]);
+			var index = q.indexOf('/');
+			obj[q.substr(0, index)] = _decodeQueryArguments(q.substr(++ index));
 		}
 	});
 	
