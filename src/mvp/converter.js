@@ -73,6 +73,10 @@ function decodeQuery2Object(query){
 		q = q.trim();
 		
 		if(q){
+		
+			// only split the first '/'(slash)
+			// src/i/1.jpg 		-> {src: 'i/1.jpg'}
+			// img/src=i/1.jpg	-> {img: {src: 'i/1.jpg'}}
 			var index = q.indexOf('/');
 			obj[q.substr(0, index)] = _decodeQueryArguments(q.substr(++ index));
 		}

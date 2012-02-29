@@ -17,12 +17,12 @@
    {a:1, b:{c:1,d:2}}		/a/1/b/c1d2						/!#/a/1&b/c=1,d=2
  *
  */
-KM.define(['mvp/converter' /* , 'mvp/state' */ ], function(K, require){
+KM.define(['./converter' /* , 'mvp/state' */ ], function(K, require){
 
 
 var
 
-Converter		= require('mvp/converter'),
+Converter		= require('./converter'),
 // State			= require('mvp/state'),
 
 WIN 			= K.__HOST,
@@ -249,8 +249,6 @@ handler = {
 			return;
 		}
 		
-		console.log('hash', self.hash, Converter.toObject(self.hash));
-		
 		self.fire('popstate', {state: Converter.toObject(self.hash)});
 	},
 	
@@ -317,9 +315,6 @@ handler = {
 	}
 };
 
-
-K.Class.implement(handler, 'events');
-
 return handler;
 
 });
@@ -335,10 +330,6 @@ return handler;
  - refractor and migrate to Neuron
  - mvc/history will no longer register modules
  - mvc/history will only deal with state-related matters
- 
- 2011-04-28  Kael:
- TODO
- A. support pushState and replaceState
  
  2011-04-26  Kael:
  - refractor several methods, KM.history will tidy Number-type arguments
