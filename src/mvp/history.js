@@ -18,7 +18,7 @@ var
 HIS = history,
 
 need_fallback 	= !('pushState' in HIS),
-dependencies 	= ['./converter'],
+dependencies 	= ['./converter' /*, './history-legacy' */],
 HISTORY_LEGACY 	= './history-legacy',
 
 HASH_IDENTIFIER = '#!';
@@ -133,15 +133,18 @@ return handler;
  change log:
  
  2012-02-29  Kael:
- - add initialization method to deal with hash state generated from an old browser
+ - add initialization method to deal with hash state generated from an old browser.
+ TODO:
+ A. use `hashchange` event to observe the changing of location.hash.
+ B. support non-tracking hash data.
  
  2012-01-02  Kael:
- - complete pushState and relevant holyfills
+ - complete pushState and relevant polyfills.
  
  2011-11-18  Kael:
- - refractor and migrate to Neuron
- - mvc/history will no longer register modules
- - mvc/history will only deal with state-related matters
+ - refractor and migrate to Neuron.
+ - mvc/history will no longer register modules.
+ - mvc/history will only deal with state-related matters.
  
  2011-04-28  Kael:
  TODO

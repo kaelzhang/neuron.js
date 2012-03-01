@@ -1,5 +1,5 @@
 /**
- * holyfill of html5 history state manager for non-html5-pushState-enabled browsers
+ * polyfill of html5 history state manager for non-html5-pushState-enabled browsers
  * author  Kael Zhang
  
  * of support with:
@@ -249,7 +249,7 @@ handler = {
 			return;
 		}
 		
-		self.fire('popstate', {state: Converter.toObject(self.hash)});
+		self.fire('popstate', {state: self.state = Converter.toObject(self.hash)});
 	},
 	
 	/** 
@@ -311,6 +311,7 @@ handler = {
 			handler.hash = Converter.toQuery(data)
 		);
 		
+		handler.state = data;
 		handler.fire('pushstate', {state: data});
 	}
 };
