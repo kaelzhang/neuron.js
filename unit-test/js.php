@@ -53,6 +53,9 @@ inc("neuron/cleaner.js");
 
 ?>
 <script>
+
+var DP = KM;
+
 KM.__loader.init();
 
 
