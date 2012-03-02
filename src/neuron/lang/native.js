@@ -290,7 +290,7 @@ extend(Object, {
 implement(String, {
 
 	trim: function(){
-		return this.replace(/^\s+|\s+$/g, '');
+		return this.replace(/^\s+/, '').replace(/\s+$/, '');
 	},
 	
 	trimLeft: function(){
