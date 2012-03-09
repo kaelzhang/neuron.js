@@ -304,6 +304,13 @@ implement(String, {
 });
 
 
-
-
 })();
+
+/**
+ change log:
+ 
+ 2012-03-02  Kael:
+ - Optimize the performance of String.trim method for IE who always do a bad work with regular expressions.
+ 	It may even cause IE browsers(IE6-8) expectedly crash if use `/^\s+|\s+$/` to trim a big string which contains a lot of whitespaces.
+ 
+ */

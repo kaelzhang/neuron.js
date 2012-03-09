@@ -35,13 +35,22 @@
 ;(function(K){
 
 // Store Slick in closure
-var S = K.Slick;
+var 
+
+atom = K.__,
+
+S = K.Slick;
 
  
 // adapter for Slick
 K.__SELECTOR = {
 	find: function(selector, context, first){
 		context = K.makeArray( context || document );
+		
+		// if `selector` is an instance of KM.DOM	
+		if(selector._ === atom){
+			selector = selector.el(0);
+		}
 		
 		var ret = [],
 			len = context.length,

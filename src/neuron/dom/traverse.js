@@ -11,14 +11,17 @@ function createSelectorObject(expression, combinator){
 	expression = SELECTOR.parse(expression);
 
 	var expressions = expression.expressions;
-	for (var i = expressions.length; i--;)
+	for (var i = expressions.length; i--;){
 		expressions[i][0].combinator = combinator;
+	}
 
 	return expression;
 };
 
 
-var DOM = K.DOM,
+var 
+
+DOM = K.DOM,
 
 SELECTOR = K.__SELECTOR,
 

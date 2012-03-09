@@ -1,5 +1,5 @@
 Neuron Loader: Change Log
-===
+=========================
 
 marks:
 	- √ complete
@@ -7,9 +7,19 @@ marks:
 	- X discarded scheme
 	- * unimportant
 	- ! important and of high priority
+	
+
+
+2012-03-05  Kael:
+TODO:
+	- A. create an another version of loader to support loading all dependencies simultaneously according to a parsed dependency tree
 
 milestone 4.0
-===
+=============
+
+2012-03-05  Kael:
+TODO:
+	- A. add methods to define custom syntax for module identifier
 
 2012-02-06  Kael:
 	- fix image pre-loader
@@ -78,7 +88,7 @@ TODO:
 	- √ D. throw no warnings and errors when release mode on
 
 milestone 3.0
-===
+=============
 
 2011-09-09  Kael:
 TODO:
@@ -137,7 +147,7 @@ TODO:
 	- TODO[06-15].[E, A]
 
 milestone 2.0
-===
+=============
 
 2011-06-07  Kael:
 	- fix a bug on regular expressions which could not properly remove the decorators(version and min) from uris
@@ -237,7 +247,7 @@ TODO:
 	- add config for CDNHasher
 
 milestone 1.0
-===
+=============
 
 2011-04-19  Kael:
 	- # remove lazy quantifier from the regexp to match comments
