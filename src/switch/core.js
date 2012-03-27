@@ -291,7 +291,7 @@ Switch = Class({
             activeIndex = self.expectIndex = self.activeIndex;
             currentItem = self._getItem(activeIndex);
 
-            if(currentItem && !currentItem.hasClass(self.get('itemOnCls'))){
+            if(currentItem && !currentItem.hasClass(self.get('itemOnCls')) && self.pages > 1){
                 self.switchTo(self.activeIndex, true);
             }
         }
