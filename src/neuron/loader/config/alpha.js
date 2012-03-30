@@ -31,7 +31,7 @@ var REGEX_PATH_CLEANER_MIN = /\.min/i,
 	
 	host = K.__HOST,
 	
-	__config = window.__loaderConfig;
+	__config = host.__loaderConfig;
 
 
 function CDNHasher(evidence){
@@ -60,6 +60,7 @@ function santitizer(identifier){
 Loader.config(K.mix({
 	// root path of module files
 	base: 		'/',
+	// base: '',
 	
 	enableCDN:	true,
 	
@@ -85,9 +86,7 @@ Loader.config(K.mix({
 				return 'KM Loader: ' + message;
 			}
 		};
-	},
-	
-	allowUndefinedMod: 	true
+	}
 	
 }, __config));
 
@@ -137,10 +136,19 @@ K.app = function(name, config){
 
 prefix('~', {
 	base: 'src/'
+	// base: 'http://i1.static.dp:1337/trunk/lib/'
 });
 
-prefix('Main', {
-	base: 's/j/app/main/'
+
+prefix('Test', {
+	base: 'unit-test/test-notrack/j/'
+	// base: 'http://i1.kael.c/unit-test/test-notrack/j/'
+});
+
+
+prefix('Test2', {
+	base: '/unit-test/test-notrack/j/'
+	// base: 'http://i1.kael.c/unit-test/test-notrack/j/'
 });
 
 

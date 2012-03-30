@@ -220,16 +220,17 @@ var DOM = K.DOM,
 		colspan			: 'colSpan',
 		usemap			: 'useMap',
 		frameborder		: 'frameBorder',
-		contenteditable	: 'contentEditable',
+		contenteditable	: 'contentEditable' // ,
 		// type			: 'type',
-		html			: 'innerHTML',
-		text			: function(){
-			var STR_TEXTCONTENT = 'textContent';
-			
-			// TODO: test if memleak
-			return STR_TEXTCONTENT in document.createElement('div') ? STR_TEXTCONTENT : 'innerText';
-		}()
+		// html			: 'innerHTML',
 	},
+	
+	ATTR_TEXT = function(){
+		var STR_TEXTCONTENT = 'textContent';
+		
+		// TODO: test if memleak
+		return STR_TEXTCONTENT in document.createElement('div') ? STR_TEXTCONTENT : 'innerText';
+	}(),
 	
 	ATTR_KEY = {
 		html	: TRUE,
@@ -311,8 +312,6 @@ METHODS.attr = {
 	GET: function(name){
 		var prop = ATTR_CONVERT[name] || name,
 			el = this, attrNode;
-			
-		console.log(name in ATTR_KEY, REGEX_IS_URI_ATTR.test(prop), ATTR_BOOLS.indexOf(prop), !!el[prop])
 		
 		return name in ATTR_KEY ? el[prop]
 		
@@ -423,11 +422,11 @@ METHODS.html = {
 METHODS.text = {
 	SET: function(text){
 		emptyElement.call(this);
-		this[ATTR_CONVERT.text] = text;
+		this[ATTR_TEXT] = text;
 	},
 	
 	GET: function(){	
-		return this[ATTR_CONVERT.text];
+		return this[ATTR_TEXT];
 	}
 };
 

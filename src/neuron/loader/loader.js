@@ -430,7 +430,7 @@ function _define(name, identifier, dependencies, factory, uri){
 	    }
 	    
 	    if(!active_script_uri){
-	    	// if fetching interactive script failed, so fall back to normal ways
+	    	// if fetching interactive script failed, fall back to normal ways
 	    	_last_anonymous_mod = mod;
 	    }else{
 	    	mod = getModuleByIdentifier( generateModuleURI_Identifier(active_script_uri).i );
