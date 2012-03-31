@@ -284,8 +284,7 @@ describe('Neuron:lang/enhance', function(){
 					
 				// receiver2 ------------------------------------
 				// clone an object into a receiver
-				receiver2 = {}
-				KM.clone(o2, false, receiver2);
+				var receiver2 = KM.clone(o2, false);
 				
 				// test recursive object
 				expect( receiver2.c.a.b ).toEqual(2);
@@ -373,8 +372,7 @@ describe('Neuron:lang/enhance', function(){
 					
 				// receiver3 ------------------------------------
 				// unlink the reference of an object
-				receiver3 = new O3;
-				KM.clone(receiver3, false, receiver3);
+				receiver3 = KM.clone(new O3);
 				
 				// change the value of a property in receiver3
 				receiver3.a.a = 11;
@@ -426,15 +424,15 @@ describe('Neuron:lang/enhance', function(){
 				// !important
 				// * receiver4 * ------------------------------------
 				// test filter
-				receiver32 = new O32;
-				
-				KM.clone(receiver32, function(v, k, d){
+				var receiver32 = KM.clone(new O32, function(v, k, d){
 				
 					// dont copy .b and depth less than 3
 					return k !== 'b' && d < 3;
 					
-				}, receiver32);
+				});
 				
+				/*
+
 				// the change of property 'b' will affect prototype
 				receiver32.b.a = 111;
 				expect( o32.b.a ).toEqual(111);
@@ -448,14 +446,8 @@ describe('Neuron:lang/enhance', function(){
 				
 				// c is an object, and already be cloned
 				expect( !KM.isNumber( receiver32.a.c ) ).toBeTruthy();
-				
-				// filter: k !== 'b'
-				// o32.b.a = 111;
-				// expect( receiver32.b.a ).toEqual(111);
-				
-				// o32.d.a = 111;
-				// expect( receiver32.d.a ).toEqual(11);
 			
+*/
 			});	
 		});
 		
@@ -650,6 +642,39 @@ describe('Neuron:lang/enhance', function(){
 				expect( memoized_foo(1, 2, 4) ).toEqual('1_2_4');
 				expect( exec_counter ).toEqual(3);
 				
+			});
+		});
+		
+		describe('.sub()', function(){
+			
+		
+			it('could apply some parameters to a template', function(){
+				var t = 'a:{a},b:{b}',
+					p = {
+						a: 1,
+						b: 2
+					};
+					
+				expect( KM.sub(t, p) ).toEqual('a:1,b:2');
+			});
+			
+			it('will not substitute escaped symbols', function(){
+				var t = 'a:{a},b:\\{b}',
+					p = {
+						a: 1,
+						b: 2
+					};
+					
+				expect( KM.sub(t, p) ).toEqual('a:1,b:{b}');
+			});
+		
+			it('only substitute the most inner match of {}', function(){
+				var t = 'a{{{a}}',
+					p = {
+						a: 1
+					};
+					
+				expect( KM.sub(t, p) ).toEqual('a{{1}');
 			});
 		});
 	});

@@ -550,7 +550,10 @@ DOM._overload = overloadDOMGetterSetter;
 /**
  change log:
  
- 2011-02-20  Kael:
+ 2012-03-31  Kael:
+ - no longer overload DOM::attr method for 'html' and 'text' arguments, and must use .html() and .text() methods instead.
+ 
+ 2011-12-20  Kael:
  - [TODO.11-02.A] fix the getter for 'checked' and other boolean attributes
  
  TODO:

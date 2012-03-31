@@ -411,6 +411,30 @@ K.makeArray = function(array, host){
 };
 
 
+/**
+ * @param {string} template template string
+ * @param {Object} params
+ */
+K.sub = function(template, params){
+	
+	// suppose:
+	// template = 'abc{a}\\{b}';
+	// params = { a: 1, b: 2 };
+	
+	// returns: 'abc1{b}'
+	return ('' + template).replace(/\\?\{([^{}]+)\}/g, function(match, name){ // name -> match group 1
+	
+	console.log(match, name)
+	
+		// '\\{b}' -> '{b}'
+		return match.charAt(0) === '\\' ? match.slice(1)
+			:
+				// '{a}' -> '1'
+				( params[name] != null ? params[name] : '');
+	});
+};
+
+
 K.toQueryString = function(obj, splitter){
 	return K.isObject(obj) ?
 		toQueryString( K.clone(obj, function(v, k, d){
@@ -419,9 +443,9 @@ K.toQueryString = function(obj, splitter){
 				// copy depth: 1
 				return d < 2;
 			}
-		), splitter) : 
+		), splitter)
 		
-		obj;
+		: obj;
 };
 
 
