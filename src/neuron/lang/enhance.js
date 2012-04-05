@@ -163,7 +163,7 @@ function clone(o, filter, marked, cached, depth){
 	cached || (cached = {});
 	depth || (depth = 1);
 	
-	switch(K._type(o, true)){
+	switch(K._type(o)){
 		case 'array':
 			host = [];
 			is_array = true;
@@ -175,6 +175,8 @@ function clone(o, filter, marked, cached, depth){
 			if( !( K.isPlainObject(o) || is_array) ){
 			
 				// in IE, when o is undefined or null or host objects
+				// element(DOMElement, HTMLWindow, HTMLDocument, HTMLhtmlElement), collections
+				// arguments
 				return o;
 			}
 		
@@ -229,9 +231,9 @@ function clone(o, filter, marked, cached, depth){
 		case 'regexp':
 			return new RegExp(o);
 			
-		// number, boolean, element(DOMElement, HTMLWindow, HTMLDocument, HTMLhtmlElement), collections
-		// arguments?
+		
 		default:
+			// number, boolean, 
 			return o;
 	}
 };
@@ -365,9 +367,10 @@ K.delay = function(fn, delay, isInterval){
  		if nodelist, returns an array which generated from the nodelist
  		if Array, returns the array itself
  		otherwise, returns an array contains the subject
- * @param {Array} host
+ * @param {Array=} host
+ * @param {boolean=} force if true, the subject will pretend to be an array, `force` will be usefull if you call makeArray with an array-like object
  */
-K.makeArray = function(array, host){
+K.makeArray = function(array, host, force){
 	var NULL = null;
 	
 	host || (host = []);
@@ -381,21 +384,28 @@ K.makeArray = function(array, host){
 	// undefined 	-> K.makeArray() -> []
 	}else if(array != NULL){
 		if(
-			array.length == NULL ||
-			
-			// KM.isObject(arguments) -> true(all browsers)
-			
-			// Object.prototype.toString.call(arguments);
-			// -> [object Arguments]  	if Chrome, IE >= 9, Firefox >= 4
-			// -> [object Object]		if Firefox < 4, IE < 9
-			!K.isObject(array) ||
-			
-			// if is DOM subject
-			// <select>.length === <select>.options.length
-			array.nodeType ||
-			
-			// window also has 'length' property
-			'setInterval' in array
+			!force && (
+				array.length == NULL ||
+				
+				// KM.isObject(arguments) -> true(all browsers)
+				
+				// Object.prototype.toString.call(arguments);
+				// -> [object Arguments]  	if Chrome, IE >= 9, Firefox >= 4
+				// -> [object Object]		if Firefox < 4, IE < 9
+				!K.isObject(array) ||
+				
+				// if is DOM subject
+				// <select>.length === <select>.options.length
+				
+				// ATTENSION:
+				// <select>.options === <select> (tested up to IE9)
+				// so, never try to KM.makeArray(select.options)
+				array.nodeType ||
+				
+				// K.isObject(window)	-> true
+				// window also has 'length' property
+				'setInterval' in array
+			)
 		){
 			host.push(array)
 			
@@ -423,8 +433,6 @@ K.sub = function(template, params){
 	
 	// returns: 'abc1{b}'
 	return ('' + template).replace(/\\?\{([^{}]+)\}/g, function(match, name){ // name -> match group 1
-	
-	console.log(match, name)
 	
 		// '\\{b}' -> '{b}'
 		return match.charAt(0) === '\\' ? match.slice(1)
@@ -517,6 +525,9 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
  [1] why dangerous? you could find out. the order of the old keys and new created keys between various browsers is different
  
  change log:
+ 
+ 2012-04-05  Kael:
+ - add a parameter to force makeArray treating the current subject as an array
  
  2012-01-12  Kael:
  - improve KM._overloadSetter, so that the overloaded function could receive more arguments
