@@ -288,19 +288,17 @@ extend(Object, {
 
 
 implement(String, {
-
-	trim: function(){
-		return this.replace(/^\s+/, '').replace(/\s+$/, '');
-	},
-	
 	trimLeft: function(){
 		return this.replace(/^\s+/, '');
 	},
 	
 	trimRight: function(){
 		return this.replace(/\s+$/, '');
+	},
+	
+	trim: function(){
+		return this.trimLeft().trimRight();
 	}
-
 });
 
 
@@ -308,6 +306,9 @@ implement(String, {
 
 /**
  change log:
+ 
+ 2012-04-05  Kael:
+ - use trimLeft and trimRight to do a entire trim
  
  2012-03-02  Kael:
  - Optimize the performance of String.trim method for IE who always do a bad work with regular expressions.

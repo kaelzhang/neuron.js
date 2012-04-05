@@ -113,8 +113,7 @@ K._type = function(){
 	
 		// undefined 	-> false
 		// null			-> false
-		// !! to make sure the returnValue is always a boolean
-		return isObject(obj) && 'isPrototypeOf' in obj;
+		return toString.call(obj) === '[object Object]' && 'isPrototypeOf' in obj;
 	};
 	
 	

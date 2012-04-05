@@ -131,9 +131,8 @@ function resetPrototypeChain(instance){
 	
 	for(key in instance){
 		value = instance[key];
-		type = K._type(value, true);
 		
-		if(type === 'object'){
+		if(K.isPlainObject(value)){
 			var F = function(){};
 			F.prototype = value;
 			reset = resetPrototypeChain(new F);
