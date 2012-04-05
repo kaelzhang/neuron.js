@@ -207,6 +207,9 @@ var DOM = K.DOM,
 	
 	TRUE = true,
 	
+	// .attr() method will no longer deal with 'html' and 'text' 
+	// so they are now excluded in ATTR_CONVERT and ATTR_KEY
+	
 	ATTR_CONVERT = {
 		// defaultvalue	: 'defaultValue',
 		tabindex		: 'tabIndex',
@@ -233,8 +236,8 @@ var DOM = K.DOM,
 	}(),
 	
 	ATTR_KEY = {
-		html	: TRUE,
-		text	: TRUE,
+		// html	: TRUE,
+		// text	: TRUE,
 		'for'	: TRUE,
 		'class'	: TRUE,
 		type	: TRUE  // TODO: test readonly property
@@ -278,8 +281,10 @@ var DOM = K.DOM,
 			
 			SET: function(el, value){
 				var values = makeArray(value);
-
-				makeArray(el.options).forEach(function(option, i){
+				
+				// in IE(tested up to IE9), <select>.options === <select>
+				// so you couldn't makeArray el.options by detecting the type of el.options, but have to force making.
+				makeArray(el.options, [], true).forEach(function(option, i){
 					option.selected = values.indexOf( getOptionValue(option) ) !== -1;
 				});
 
@@ -301,8 +306,11 @@ METHODS.attr = {
 	SET: K._overloadSetter( function(name, value){
 		var prop = ATTR_CONVERT[name] || name, el = this;
 		
-		name in ATTR_KEY ? el[prop] = value
-			: ( ATTR_BOOLS.indexOf(prop) !== -1 ? el[prop] = !!value
+		name in ATTR_KEY ? 
+			el[prop] = value
+			: ( ATTR_BOOLS.indexOf(prop) !== -1 ?
+			
+				el[prop] = !!value
 				: el.setAttribute(prop, '' + value)
 			  );
 	}),
@@ -313,15 +321,24 @@ METHODS.attr = {
 		var prop = ATTR_CONVERT[name] || name,
 			el = this, attrNode;
 		
-		return name in ATTR_KEY ? el[prop]
-		
-			// getAttribute(name, 2), return value as string
-			// ref: http://msdn.microsoft.com/en-us/library/ms536429%28v=vs.85%29.aspx
-			: ( REGEX_IS_URI_ATTR.test(prop) ? el.getAttribute(prop, 2)
+		return name in ATTR_KEY ? 
 			
-				// ref: https://developer.mozilla.org/en/DOM/element.getAttributeNode
-				: ( ATTR_BOOLS.indexOf(prop) !== -1 ? !!el[prop] 
-					: ( attrNode = el.getAttributeNode(prop) ? attrNode.nodeValue
+			el[prop]
+			: ( REGEX_IS_URI_ATTR.test(prop) ?
+			
+				// getAttribute(name, 2), return value as string
+				// ref: http://msdn.microsoft.com/en-us/library/ms536429%28v=vs.85%29.aspx
+				el.getAttribute(prop, 2)
+				
+				: ( ATTR_BOOLS.indexOf(prop) !== -1 ?
+					
+					// if is boolean attribute
+					!!el[prop]
+					
+					// ref: https://developer.mozilla.org/en/DOM/element.getAttributeNode
+					: ( attrNode = el.getAttributeNode(prop) ?
+						
+						attrNode.nodeValue
 						: NULL
 					  )
 				  ) 
@@ -549,6 +566,12 @@ DOM._overload = overloadDOMGetterSetter;
 
 /**
  change log:
+ 2012-04-05  Kael:
+ - remove 'html' and 'text' from ATTR_KEY
+ - fix a bug of setting the value for a `<select>`
+ 
+ TODO:
+ A. support and detect boolean attributes for further standards
  
  2012-03-31  Kael:
  - no longer overload DOM::attr method for 'html' and 'text' arguments, and must use .html() and .text() methods instead.
