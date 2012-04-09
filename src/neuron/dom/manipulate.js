@@ -336,7 +336,7 @@ METHODS.attr = {
 					!!el[prop]
 					
 					// ref: https://developer.mozilla.org/en/DOM/element.getAttributeNode
-					: ( attrNode = el.getAttributeNode(prop) ?
+					: ( (attrNode = el.getAttributeNode(prop)) ?
 						
 						attrNode.nodeValue
 						: NULL

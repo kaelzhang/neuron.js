@@ -33,7 +33,7 @@
 ;(function(){
 
 function extend(host, methods){
-	for(name in methods){
+	for(var name in methods){
 		if(!host[name]){
 			host[name] = methods[name];
 		}
