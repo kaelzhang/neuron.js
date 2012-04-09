@@ -434,6 +434,7 @@ K.sub = function(template, params){
 	// returns: 'abc1{b}'
 	return ('' + template).replace(/\\?\{([^{}]+)\}/g, function(match, name){ // name -> match group 1
 	
+		// never substitute escaped braces `\\{}`
 		// '\\{b}' -> '{b}'
 		return match.charAt(0) === '\\' ? match.slice(1)
 			:
@@ -528,6 +529,7 @@ K._memoize = memoizeMethod; // overload_for_instance_method( memoizeMethod )
  
  2012-04-05  Kael:
  - add a parameter to force makeArray treating the current subject as an array
+ - add KM.sub method to substitute a string templete with parameters
  
  2012-01-12  Kael:
  - improve KM._overloadSetter, so that the overloaded function could receive more arguments
