@@ -107,6 +107,19 @@ DOM.extend(TRAVERSING_CONFIG).extend({
 	// @return {Object} the new DOM instance with the last element of the current matches
 	last: function(){
 		return new DOM( this.context.slice(-1) );
+	},
+	
+	/**
+	 * @param {Element|KM.DOM} node
+	 */
+	contains: function(node){
+		node = DOM(node).el(0);
+		
+		return !!node && !this.context.every(function(el){
+		
+			// if the node is included in one of the contexts, stop traversing
+			return !SELECTOR.contains(el, node);
+		});
 	}
 	
 });
