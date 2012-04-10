@@ -113,7 +113,7 @@ K._type = function(){
 	
 		// undefined 	-> false
 		// null			-> false
-		return toString.call(obj) === '[object Object]' && 'isPrototypeOf' in obj;
+		return !!obj && toString.call(obj) === '[object Object]' && 'isPrototypeOf' in obj;
 	};
 	
 	
