@@ -1,7 +1,6 @@
-/*! 
- * @preserve
- * Neuron Framwork & Library * author i@kael.me
- * build %buildtime%
+/**
+ * @preserve Neuron JavaScript Framework & Library
+ * author i@kael.me
  */
 
 // "use strict";
