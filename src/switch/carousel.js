@@ -14,12 +14,12 @@ function checkStage(_t){
 	    var triggerlength = _t.triggers.length,                        
 	        i;
 	                        
-	    // 若trigger数比翻页数更多，则移除多余的trigger，这是为了避免后端输出错误，对js造成影响
+	    // if triggers are more than pages，removing redundant ones
 	    for(i = _t.pages; i < triggerlength; ++ i){
 	        _t.triggers[i].destroy();
 	    }
 	
-	    // 设置container为offsetParent，从而正确的定位和获得偏移量
+	    // in order to calculate positions and offsets precisely, set container as offsetParent of the switching items
 	    if(_t._getItem(0).el(0).offsetParent !== _t.container.el(0)){
 	        _t.container.css('position', 'relative');
 	    }   

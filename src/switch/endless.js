@@ -92,6 +92,7 @@ METHODS_OVERRIDEN = {
 	nonext: false,
 	
 	/**
+	 * @override
 	 * limit the range of this.activeIndex
 	 */
 	_limit: function(index){
@@ -99,6 +100,7 @@ METHODS_OVERRIDEN = {
 	},
 
 	/**
+	 * @override
 	 * if plugin::endless attached,
 	 * there will be no left end or right end
 	 */
@@ -169,6 +171,7 @@ METHODS_OVERRIDEN = {
 	},
 	
 	/**
+	 * @override
 	 * method to get the real offset relative to the container
 	 * after plugin::endless attached, the index of items and the offset to the initial pos might be different
 	 * 
@@ -235,6 +238,10 @@ return {
 
 /**
  change log:
+ 
+ 2012-04-18  Kael:
+ TODO:
+ A. new _moveItems method to deal with nonlinear switching.
  
  2011-11-02  Kael:
  - add ._getOffset method to get the real offset relative to the container

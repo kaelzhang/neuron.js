@@ -27,6 +27,8 @@ KM.define({
                 
             t._getItem(activeIndex).addClass(t.get(ITEM_ON_CLS));
             t._dealTriggerCls(false, activeIndex);
+            
+            t.fire(EVENTS.COMPLETE_SWITCH);
         });
     }
 });
@@ -34,6 +36,9 @@ KM.define({
 
 /**
  change log
+ 
+ 2012-04-19  Kael:
+ - turn back the missing COMPLETE_SWITCH event
  
  2011-10-31  Kael:
  - use _dealTriggerCls and _getItem instead of old methods

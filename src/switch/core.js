@@ -150,7 +150,8 @@ Switch = Class({
 		for(; i < len; i ++){
 			plugin = plugins[i];
 			
-			if(K.isString(plugin)){
+			// abandon empty plugin name
+			if(plugin && K.isString(plugin)){
 				pending_plugins.push(config.modName(plugin));
 				pending_indexs.push(i);
 			}
@@ -421,9 +422,36 @@ Switch = Class({
   	
   	/**
   	 * method to get items
+  	 * returns 
   	 */
   	_getItem: function(index){
   		return this.items[index];
+  	},
+  	
+  	// _setItem: function(index, item){
+  	//    return this.items[index] = item;
+  	// },
+  	
+  	/**
+  	 * make sure the item is in the dom, if not 'plant' it into the container
+  	 
+  	 * @param {boolean=} dontSetPos if true, _getItem method will not set the position of newly created item
+  	 */
+  	_plantItem: function(item, index, dontSetPos){
+        var self = this;
+  	
+  		// if the item is not in the document
+		if(item && !item.offsetParent){
+			item.inject(self.container);
+			
+			dontSetPos || item.css(self.get('direction'), self._getOffset(index) * self.get('itemSpace'));
+		}
+		
+		return item;
+  	},
+  	
+  	_getOffset: function(index){
+        return index;	
   	},
   
   	/**
@@ -472,7 +500,9 @@ Switch = Class({
      * method to limit the given index
      */
     _limit: function(index){
-    	return index % this.length;
+    
+        // before plugin:endless attached, index could never be negative
+    	return index > 0 ? index % this.length : 0;
     },
     
     _getPage: function(){
@@ -531,7 +561,8 @@ Class.setAttrs(Switch, {
 	triggerCS: {
 		setter: function(v){
 			var self = this,
-				type = self.get('triggerType');
+				type = self.get('triggerType'),
+				move = self.get('move');
 				
 			self.triggers = $.all(self.CSPre + v).el().map(function(trigger, index){
 	        	var t = self;
@@ -539,7 +570,7 @@ Class.setAttrs(Switch, {
 	        	return $(trigger)
 	        		.on(type, function(e){
 		                e && e.prevent();
-		                t.switchTo(index);
+		                t.switchTo(index * move);
 		
 		            }).on({
 		                mouseenter: function(){ t._onEnterTrigger(index); },
@@ -614,25 +645,20 @@ Class.setAttrs(Switch, {
 	},
 	
 	EVENTS: {
-		readOnly: true,
-		getter: function(){
-			return this.constructor.EVENTS;
-		}
+        value: {
+        	BEFORE_INIT		: EVENT_BEFORE_INIT,
+            AFTER_INIT		: EVENT_AFTER_INIT,
+            BEFORE_SWITCH	: EVENT_BEFORE_SWITCH,
+            ON_SWITCH		: EVENT_ON_SWITCH,
+            COMPLETE_SWITCH	: EVENT_COMPLETE_SWITCH,
+            NAV_DISABLE		: EVENT_NAV_DISABLE,
+            NAV_ENABLE		: EVENT_NAV_ENABLE,
+            PREV			: PREV,
+            NEXT			: NEXT
+        },
+		readOnly: true
 	}
 });
-
-
-Switch.EVENTS = {
-	BEFORE_INIT		: EVENT_BEFORE_INIT,
-    AFTER_INIT		: EVENT_AFTER_INIT,
-    BEFORE_SWITCH	: EVENT_BEFORE_SWITCH,
-    ON_SWITCH		: EVENT_ON_SWITCH,
-    COMPLETE_SWITCH	: EVENT_COMPLETE_SWITCH,
-    NAV_DISABLE		: EVENT_NAV_DISABLE,
-    NAV_ENABLE		: EVENT_NAV_ENABLE,
-    PREV			: PREV,
-    NEXT			: NEXT
-};
 
 
 return Switch;
@@ -641,6 +667,15 @@ return Switch;
 
 /**
  change log:
+ 
+ 2012-04-19  Kael:
+ - will no longer improperly try to load an plugin with empty name
+ - fix a bug on Switch::_limit which would change negative number to 
+ TODO:
+ A. plugin priorities and depedencies
+ 
+ 2012-04-18  Kael:
+ - fix a bug clicking on triggers if ATTR.move is more than one.
  
  2011-11-22  Kael:
  TODO:
@@ -712,14 +747,13 @@ return Switch;
  √ F. deal with the letter case of plugin names
  
  2010-02-23  Kael:
- - 处理activeIndex属性的一个问题，将其的初始化从插件里移动到本体中进行
- - 优化了plugin的调用链，优化部分性能
- - 加入autoplay
- - 修正本体中，一个计算分页值的算法错误
+ - optimize the calling chain and performance of Switch::plugin
+ - add autoplay plugin
+ - fix an arithmetic bug of calculating pages
  
  2010-01-05  Kael:
- - 修正一个nextBtn没有正确禁用的问题
+ - fix the next button which will be able to disabled properly
  
  2009-10-20  Kael:
- - 主体方法
+ - main functionalities
  */

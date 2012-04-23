@@ -17,19 +17,10 @@ METHODS_OVERRIDEN = {
 			item = self.items[index];
 			
 		if(!item){
-			item = self.items[index] = self[ITEM_RENDERER].call(self, index).inject(self.container);
-			
-			dontSetPos || item.css(self.get('direction'), self._getOffset(index) * self.get('itemSpace'));
+			item = self.items[index] = self[ITEM_RENDERER].call(self, index);
 		}
 		
-		return item;
-	},
-	
-	/**
-	 * 
-	 */
-	_getOffset: function(index){
-		return index;
+		return self._plantItem(item, index, dontSetPos);
 	}
 };
 
@@ -53,11 +44,17 @@ return {
 			}
 		},
 		
+		data: {
+            value: [],
+            validator: K.isArray
+		},
+		
 		dataLength: {
-			value: K.isNumber,
-			getter: function(v){
-				return v || 0;
-			}
+            value: 0,
+            validator: K.isNumber,
+            getter: function(v){
+                return v || this.get('data').length;
+            }
 		},
 		
 		itemSpace: null
@@ -66,7 +63,6 @@ return {
 	init: function(self){
 		var EVENTS = self.get('EVENTS');
 		
-		// check the existance of the items in the expected page which the switche is switching to
 		self.on(EVENTS.BEFORE_SWITCH, function(){
 			var self = this,
 				move = self.get('move'),
@@ -74,8 +70,9 @@ return {
 				
 				now = self.expectIndex,
 				end = now + move,
-				index;
-				
+				index;			
+
+            // check the existance of the items in the expected page which the switcher is switching to
 			while(now < end){
 				index = now ++ % length;
 				

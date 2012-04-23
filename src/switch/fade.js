@@ -8,6 +8,7 @@ KM.define(['./accordion'], function(K, require){
 var 
 
 accordion = require('./accordion'),
+mix = K.mix,
 fade = {},
 
 STR_ATTRS = 'ATTRS',
@@ -38,13 +39,13 @@ ATTRS = {
 fade[STR_ATTRS] = ATTRS;
 
 // mix attributes
-K.mix(ATTRS, ACCORDION_ATTRS, false);
+mix(ATTRS, ACCORDION_ATTRS, false);
 
 // mix value of fx
-K.mix(ATTRS.fx.value, ACCORDION_ATTRS.fx.value, false);
+mix(ATTRS.fx.value, ACCORDION_ATTRS.fx.value, false);
 
 // mix plugin members
-K.mix(fade, accordion, false);
+mix(fade, accordion, false);
 
 return fade;
 
