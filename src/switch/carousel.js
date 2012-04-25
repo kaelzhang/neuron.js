@@ -9,20 +9,24 @@ KM.define(['fx/tween', 'fx/easing'], function(K, require){
 // check the stage, and remove the extra triggers
 // @method checkStage
 // @param t {Object} DP.Switch instance
-function checkStage(_t){
-	if(_t.triggers){
-	    var triggerlength = _t.triggers.length,                        
-	        i;
+function checkStage(self){
+	if(self.triggers){
+	    var triggerlength = self.triggers.length,                        
+	        i,
+	        ghostItem = K.DOM.create('div').inject(self.container);
 	                        
 	    // if triggers are more than pages，removing redundant ones
-	    for(i = _t.pages; i < triggerlength; ++ i){
-	        _t.triggers[i].destroy();
+	    for(i = self.pages; i < triggerlength; ++ i){
+	        self.triggers[i].destroy();
 	    }
-	
+	    
 	    // in order to calculate positions and offsets precisely, set container as offsetParent of the switching items
-	    if(_t._getItem(0).el(0).offsetParent !== _t.container.el(0)){
-	        _t.container.css('position', 'relative');
-	    }   
+	    // never use this._getItem() method before real switching
+	    if(ghostItem.el(0).offsetParent !== self.container.el(0)){
+	        self.container.css('position', 'relative');
+	    }
+	    
+	    ghostItem.destroy();
     }                        
 };
 
@@ -66,7 +70,8 @@ return {
 
             var t = this,
                 active = t.activeIndex,
-                fx = t.get('fx');
+                fx = t.get('fx'),
+                container = t.container;
                 
             direction = t.get('direction');
             
@@ -76,13 +81,15 @@ return {
 	            fx.property = direction;
 	        };
 	        
-            t.effect = new Tween(t.container, fx).on('complete', function(){
+            t.effect = new Tween(container, fx).on('complete', function(){
 	            t.fire(EVENTS.COMPLETE_SWITCH);
 	        });
 
-            // there's a bug about moo tools Fx: the container's position must be specified before you use Fx,
+            // there's a bug about MooTools Fx: the container's position must be specified before you use Fx,
             // or the first Fx will have no animation
-            t.container.css(direction, - t._getItem(active).el(0)[offset_direction] );
+            
+            // if container's position is not explicitly assigned, set it to 0
+            !parseInt(container.css(direction)) && container.css(direction, 0);
             t._dealNavs();
         });
 
@@ -92,12 +99,13 @@ return {
 
         self.on(EVENTS.ON_SWITCH, function(){
             var t = this,
-                active = t.activeIndex = t.expectIndex;
+                active = t.activeIndex = t.expectIndex,
+                activeItem = t._getItem(active);
 
             t._dealNavs();
 			
 			// start animation
-            t.effect.start( - ( t._getItem(active) ).el(0)[offset_direction] );
+            activeItem && t.effect.start( - activeItem.el(0)[offset_direction] );
 
             t._dealTriggerCls(false, active);
         });
@@ -106,3 +114,14 @@ return {
 };
 
 });
+
+/**
+ change log
+ ==========
+ 
+ 2012-04-25  Kael:
+ - fix the callback of AFTER_INIT event and checkStage method which might cause the premature construction of items. 
+    NEVER use this._getItem method before the first switch 
+ 
+ 
+ */

@@ -266,6 +266,7 @@ Switch = Class({
 
 		self._initializer.off();
 		self.nav = {};
+		self.items = [];
 		
 		// apply plugin initialization method
         plugins.forEach(function(plugin){
@@ -287,12 +288,21 @@ Switch = Class({
           
         if(self.container){
             self._itemData();
+            
+            // after this time, there might be ghost items
+            self.originLength = self.length;
+            
             self.fire(EVENT_AFTER_INIT);
             
             activeIndex = self.expectIndex = self.activeIndex;
             currentItem = self._getItem(activeIndex);
-
-            if(currentItem && !currentItem.hasClass(self.get('itemOnCls')) && self.pages > 1){
+            
+            if(
+                // if there's no items at the beginning, an initial move is needed.
+                // switch instance might fetch remote data
+                !self.originLength 
+                || currentItem && !currentItem.hasClass(self.get('itemOnCls')) && self.pages > 1
+            ){
                 self.switchTo(self.activeIndex, true);
             }
         }
@@ -403,6 +413,7 @@ Switch = Class({
     	
     	if(self.force || self.activeIndex !== index){
     		self.fire(EVENT_BEFORE_SWITCH);
+    		self.force = false;
     	}else{
     		self._lifeCycle.stop();
     	}
@@ -451,7 +462,7 @@ Switch = Class({
   	},
   	
   	_getOffset: function(index){
-        return index;	
+        return index;
   	},
   
   	/**
@@ -506,7 +517,7 @@ Switch = Class({
     },
     
     _getPage: function(){
-    	return parseInt(this.activeIndex / this.get('stage'));
+    	return parseInt(this.activeIndex / this.get('move'));
     },
     
     /**
@@ -516,7 +527,10 @@ Switch = Class({
     _isNoprev: function(){
     	var self = this;
     
-    	return self.noprev = !self._getPage();
+    	return self.noprev = !self._getPage() 
+    	
+            // if activeIndex is more than zero, there still be previous items
+            && !self.activeIndex;
     },
     
     _isNonext: function(){
@@ -667,6 +681,15 @@ return Switch;
 
 /**
  change log:
+ 
+ 2012-04-24  Kael:
+ - fix a bug determine whether there's previous items
+ - fix a bug which is caused by confusing ATTR.move with ATTR.stage
+ TODO:
+ A. add plugin:async
+ 
+ 2012-04-21  Kael:
+ - add offset getter and _plantItem method
  
  2012-04-19  Kael:
  - will no longer improperly try to load an plugin with empty name

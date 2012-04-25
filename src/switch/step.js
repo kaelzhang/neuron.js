@@ -65,7 +65,7 @@ return {
 		
 		self.on(EVENTS.BEFORE_SWITCH, function(){
 			var self = this,
-				move = self.get('move'),
+				move = self.get('stage'),
 				length = self.length,
 				
 				now = self.expectIndex,
@@ -88,7 +88,7 @@ return {
 	
 		self.on(EVENTS.AFTER_INIT, function(){
 			var self = this,
-				length = self.originLength = self.length;
+				length = self.originLength;
 			
 			// set fake length value
 			self._itemData(length + self.get('dataLength'));
@@ -100,14 +100,19 @@ return {
 });
 
 /**
+ 
+ 2012-04-25  Kael:
+ - [issue.11-09].A
+ - fix a bug which is caused by confusing ATTR.move with ATTR.stage
+
  2011-11-17  Kael:
  TODO:
- - A. async itemRenderer(blocked by B)
- - B. queue with multiple threads support
+ A. async itemRenderer(blocked by B)
+ B. queue with multiple threads support
 
  2011-11-09  Kael:
  issue:
- - A. if items don't exist, _getItem will fail 
+ A. if items don't exist, _getItem will fail 
 
  2011-11-02  Kael:
  - complete plugin::step
