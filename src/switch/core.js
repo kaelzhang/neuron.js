@@ -516,7 +516,7 @@ Switch = Class({
     _limit: function(index){
     
         // before plugin:endless attached, index could never be negative
-    	return Math.max(0, Math.min(this.length, index));
+    	return Math.max(0, Math.min(this.length - 1, index));
     },
     
     _getPage: function(){
