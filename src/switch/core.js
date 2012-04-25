@@ -295,7 +295,10 @@ Switch = Class({
             self.fire(EVENT_AFTER_INIT);
             
             activeIndex = self.expectIndex = self.activeIndex;
-            currentItem = self._getItem(activeIndex);
+            
+            // TODO
+            // add an attr to determine whether should do initial switching
+            currentItem = self.items[activeIndex];
             
             if(
                 // if there's no items at the beginning, an initial move is needed.
@@ -513,7 +516,7 @@ Switch = Class({
     _limit: function(index){
     
         // before plugin:endless attached, index could never be negative
-    	return index > 0 ? index % this.length : 0;
+    	return Math.max(0, Math.min(this.length, index));
     },
     
     _getPage: function(){
@@ -685,6 +688,8 @@ return Switch;
  2012-04-24  Kael:
  - fix a bug determine whether there's previous items
  - fix a bug which is caused by confusing ATTR.move with ATTR.stage
+ - fix default this._limit method which will limit index from 0 to length, instead of mod operation
+ 
  TODO:
  A. add plugin:async
  

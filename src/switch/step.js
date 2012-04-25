@@ -74,7 +74,7 @@ return {
 
             // check the existance of the items in the expected page which the switcher is switching to
 			while(now < end){
-				index = now ++ % length;
+				index = self._limit(now ++);
 				
 				index >= self.originLength && self._getItem(index);
 			}
