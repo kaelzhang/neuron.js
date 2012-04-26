@@ -15,17 +15,17 @@ KM.define({
     
         self.on(EVENTS.BEFORE_SWITCH, function(){
             var t = this,
-                activeIndex = t.activeIndex;
+                activeItem = t._getItem(t.activeIndex);
                 
-            t._getItem(activeIndex).removeClass(t.get(ITEM_ON_CLS));
+            activeItem && activeItem.removeClass(t.get(ITEM_ON_CLS));
             t._dealTriggerCls(true);
         });
 
         self.on(EVENTS.ON_SWITCH, function(){
             var t = this,
-                activeIndex = t.activeIndex = t.expectIndex;
+                activeItem = t._getItem(t.activeIndex = t.expectIndex);
                 
-            t._getItem(activeIndex).addClass(t.get(ITEM_ON_CLS));
+            activeItem && activeItem.addClass(t.get(ITEM_ON_CLS));
             t._dealTriggerCls(false, activeIndex);
             
             t.fire(EVENTS.COMPLETE_SWITCH);
@@ -36,6 +36,9 @@ KM.define({
 
 /**
  change log
+ 
+ 2012-04-22  Kael:
+ - fix a runtime error if there's no items at the beginning
  
  2012-04-19  Kael:
  - turn back the missing COMPLETE_SWITCH event
