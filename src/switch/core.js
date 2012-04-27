@@ -333,12 +333,13 @@ Switch = Class({
      * go to the previous position
      */
     prev: function(circular){
-        var self = this;
+        var self = this,
+            expect = self.activeIndex - self.get('move');
 		
 		self.fire(PREV);
 		
         // limit the range of activeIndex
-        !self.noprev && self.switchTo( self.activeIndex - self.get('move') );
+        !self.noprev && self.switchTo( circular ? expect % self.length : expect );
         
         return self;
     },
@@ -347,10 +348,11 @@ Switch = Class({
      * go to the next position
      */
     next: function(circular){
-        var self = this;
+        var self = this,
+            expect = self.activeIndex + self.get('move');
 		
 		self.fire(NEXT);
-        !self.nonext && self.switchTo( self.activeIndex + self.get('move') );
+        !self.nonext && self.switchTo( circular ? expect % self.length : expect );
         
         return self;
     },

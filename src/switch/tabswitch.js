@@ -23,10 +23,11 @@ KM.define({
 
         self.on(EVENTS.ON_SWITCH, function(){
             var t = this,
-                activeItem = t._getItem(t.activeIndex = t.expectIndex);
+                active = t.activeIndex = t.expectIndex,
+                activeItem = t._getItem(active);
                 
             activeItem && activeItem.addClass(t.get(ITEM_ON_CLS));
-            t._dealTriggerCls(false, activeIndex);
+            t._dealTriggerCls(false, active);
             
             t.fire(EVENTS.COMPLETE_SWITCH);
         });

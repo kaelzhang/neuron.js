@@ -14,6 +14,13 @@ KM.define({
         
         hoverStop: {
         	value: true
+        },
+        
+        /**
+         * @type {boolean} if true, it will switch to the first when the right end reached
+         */
+        circular: {
+            value: true
         }
     },
 
@@ -21,7 +28,7 @@ KM.define({
         function autoplay(){
             var t = self;
             if(!t.triggerOn && !t.paused){
-                t.next();
+                t.next(t.get('circular'));
             }
         };
 
