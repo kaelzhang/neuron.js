@@ -162,6 +162,8 @@ h2{margin-bottom:5px; font-family: }
 
 <script>
 
+console.log(KM);
+
 KM.provide('switch/core', function(K, Switch){
 
 var NAVITATOR_DISABLE_STYLE = {
@@ -225,7 +227,6 @@ new Switch().plugin('accordion', 'autoPlay').on({
 	itemOnCls:		'on'
 });
 */
-
 
 new Switch().plugin('lazyload', 'carousel', 'endless', 'autoPlay').on({
 	navEnable: function(btn, which){

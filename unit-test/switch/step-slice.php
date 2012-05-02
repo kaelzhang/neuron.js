@@ -103,7 +103,7 @@ h2{margin-bottom:5px; font-family: }
 </div>
 
 <script type="text/plain" id="J_tpl-complex">
-<ul class="items"><?php echo '<?js'; ?>
+<ul class="items" data-index="@{it.index}"><?php echo '<?js'; ?>
 
 	var i = 0, pre = 'item' + it.index + '-';
 	it.list.forEach(function(li, i){
@@ -121,7 +121,7 @@ h2{margin-bottom:5px; font-family: }
 
 <script>
 
-KM.provide(['switch/core', 'mvc/tpl'], function(K, Switch, tpl){
+KM.provide(['switch/core', 'mvp/tpl'], function(K, Switch, tpl){
 
 var NAVITATOR_DISABLE_STYLE = {
         opacity	: .3,
@@ -134,51 +134,21 @@ var NAVITATOR_DISABLE_STYLE = {
     },
     
     template = tpl.parse($('#J_tpl-complex').html()),
-    data = [
-    	{
-    		index: 6,
-    		list: [1,2,3,4]
-    	},
-    	
-    	{
-    		index: 7,
-    		list: [1,2,3,4]
-    	},
-    	
-    	{
-    		index: 8,
-    		list: [1,2,3,4]
-    	},
-    	
-    	{
-    		index: 9,
-    		list: [1,2,3,4]
-    	},
-    	
-    	{
-    		index: 10,
-    		list: [1,2,3,4]
-    	},
-    	
-    	// 11 +
-    	{
-    		index: 11,
-    		list: [1,2,3,4]
-    	},
-    	
-    	{
-    		index: 12,
-    		list: [1,2,3,4]
-    	},
-    	
-    	{
-    		index: 13,
-    		list: [1,2,3,4]
-    	}
-    ];
+    data = [],
+    
+    amount = 100,
+    start = 6;
+    
+
+while(amount --){
+    data.push({
+        index: start ++,
+        list: [1,2,3,4]
+    })
+}
 
 
-new Switch().plugin('step', 'carousel', 'endless'/*, 'autoPlay' */).on({
+new Switch().plugin('step', 'carousel', 'endless', 'cleaner').on({
 	navEnable: function(btn, which){
 		btn && btn.css(NAVITATOR_ENABLE_STYLE);
 	},
@@ -220,7 +190,7 @@ new Switch().plugin('step', 'carousel', 'endless'/*, 'autoPlay' */).on({
 	
 	itemSpace:		200,
 	dataLength:		data.length,
-	itemRenderer:	function(index){
+	itemRenderer:	function(index){ 
 		var html = template(data[index - 5]),
 			item = $.create('div').html(html).child();
 		

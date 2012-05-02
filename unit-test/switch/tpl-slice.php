@@ -87,7 +87,7 @@ h2{margin-bottom:5px; font-family: }
 
 <script>
 
-KM.provide(['switch/core', 'mvc/tpl'], function(K, Switch, tpl){
+KM.provide(['switch/core', 'mvp/tpl'], function(K, Switch, tpl){
 
 var NAVITATOR_DISABLE_STYLE = {
         opacity	: .3,

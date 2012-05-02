@@ -2,6 +2,8 @@
 .box{border:1px solid gray; padding:10px; background:white; zoom:1;}
 .box-container{width:500px;}
 
+#dom-event-mouse-enter-leave{border:1px solid #000; width:100px; height:100px;}
+
 </style>
 
 <div id="dom-event">
@@ -25,6 +27,8 @@
 		<option value="4">4</option>
 		<option value="5">5</option>
 	</select>
+	
+	<div id="dom-event-mouse-enter-leave"></div>
 </div>
 
 <script>
@@ -37,6 +41,12 @@ $('#test-select').on('change', function(){
 
 $('#test-select').on('click', function(){
 	console.log('click', $(this));
+});
+
+$('#dom-event-mouse-enter-leave').on('mouseleave', function(e){
+	location.hash = e + ':' + this + ':' + typeof e + ':' + typeof this + ':' + this.nodeType + ':' + e.type + ':' + e.base;
+}).on('mouseenter', function(e){
+	location.hash = e + ':' + this + ':' + typeof e + ':' + typeof this + ':' + this.nodeType + ':' + e.type + ':' + e.base;
 });
 
 // $('#test-select').detach('click');

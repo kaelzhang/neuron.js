@@ -13,6 +13,14 @@
 	<option value="3">3</option>
 </select>
 
+<div id="test-dom-attr-html-text">haha<div>inner</div></div>
+<div id="test-dom-attr-html-text-set">haha</div>
+<div id="test-dom-attr-bool">
+	
+
+
+</div>
+
 <script>
 
 describe('Neuron: dom/manipulate', function(){
@@ -34,7 +42,7 @@ describe('Neuron: dom/manipulate', function(){
 				
 				el.html(html);
 				
-				expect( el.html().toLowerCase().trim() ).toEqual(html.toLowerCase().trim());
+				expect( el.html().toLowerCase().trim().replace(/"/g, '') ).toEqual(html.toLowerCase().trim().replace(/"/g, ''));
 				
 				// expect( el.one('.inner').el(0) ).not.toBeUndefined();
 			});
@@ -43,7 +51,7 @@ describe('Neuron: dom/manipulate', function(){
 		describe('.text()', function(){
 			it('could set text', function(){
 				var el = $('#test-dom-manipulate .dom-text-get');
-				expect( el.text() ).toEqual('abcdef');
+				expect( el.text().replace(/\s+/, '') ).toEqual('abcdef');
 			});
 			
 			it('could get text', function(){
@@ -54,7 +62,7 @@ describe('Neuron: dom/manipulate', function(){
 				el.text('abcdef');
 				el2.text(html);
 				
-				expect( el.text() ).toEqual('abcdef');
+				expect( el.text().replace(/\s+/, '') ).toEqual('abcdef');
 				expect( el2.text() ).toEqual(html);
 			});
 		});
@@ -72,6 +80,43 @@ describe('Neuron: dom/manipulate', function(){
 				select.val(2);
 				
 				expect( select.val() ).toEqual('2');
+			});
+		});
+		
+		describe('.attr() getter', function(){
+			it('will not deal with html and text', function(){
+				var el = $('#test-dom-attr-html-text');
+				
+				// console.log(el.attr('html'));
+				// console.log(el.attr('html', 'abc'));
+				
+				
+				expect( el.attr('html') ).toEqual(null);
+				expect( el.attr('text') ).toEqual(null);
+				
+				// IE7 will upper the case of html tagname, and add a whitespace behind `<div>`
+				expect( el.html().toLowerCase().replace(/\s+/, '') ).toEqual('haha<div>inner</div>');
+				expect( el.text().toLowerCase().replace(/\s+/, '') ).toEqual('hahainner');
+			});
+			
+			
+			
+			it('could deal with boolean attributes', function(){
+				
+			});
+			
+		});
+		
+		describe('.attr() setter', function(){
+			it('will not deal with html and text', function(){
+				var el = $('#test-dom-attr-html-text-set');
+				
+				el.attr('html', 'haha2');
+				expect(el.html()).toEqual('haha');
+				
+				el.attr('text', 'haha3');
+				expect(el.text()).toEqual('haha');
+				
 			});
 		});
 	});

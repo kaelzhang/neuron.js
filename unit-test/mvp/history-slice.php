@@ -3,6 +3,8 @@
 	width: 600px;
 	margin: 0 auto;
 }
+
+.G_H .img{display:none;}
 </style>
 
 
@@ -14,7 +16,7 @@
 <a class="J_state" href="http://neuron.lc/unit-test/mvc/forward.php">forward</a>
 <br/><br/>
 
-<img id="img" src="i/1.jpg" />
+<img class="img" id="img" src="i/1.jpg" />
 </div>
 
 <script>
@@ -26,14 +28,30 @@ var imgs = [
 ];
 
 
-KM.provide('mvc/history', function(K, History){
+KM.provide('mvp/history', function(K, History){
 	
-	var img = $('img'),
+	var img = $('#img'),
 		count = 1,
-		href = location.href + '/';
+		href = location.href + '?img=';
 	
-	History.on(function(data){ console.log('statechange', data, data.src);
-		data.src && img.attr('src', data.src);
+	History.on({
+		pushstate: function(e){
+			console.log('pushstate', e, e.state.src);
+			
+			var src = e.state.src;
+			src && img.attr('src', src);
+		},
+		
+		popstate: function(e){
+			console.log('popstate', e, e.state.src);
+			
+			var src = e.state.src;
+			src && img.attr('src', src);
+		},
+		
+		start: function(){
+			document.documentElement.className = '';
+		}
 	});
 
 	$.all('.J_state').on('click', function(e){
@@ -42,10 +60,16 @@ KM.provide('mvc/history', function(K, History){
 		count = Math.abs( count + ( $(e.target).attr('data-back') ? -1 : 1 ) );
 		var	flag = count % 3;
 		
+		console.log('flag', flag);
+		
 		History.push({src: imgs[flag] }, '', href + flag);
 	});
 	
 	History.start();
+	
+	window.onpopstate = function(e){
+		console.log(e)
+	}
 });
 
 
