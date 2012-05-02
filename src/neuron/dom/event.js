@@ -147,7 +147,7 @@ function DOMEvent(event, win, config){
 		// test function keys, on macosx and win
 		self.code = event.which || event.keyCode;
 		
-	} else if (real === 'click' || real === 'dblclick' || real === 'contextmenu' || !real.indexOf('mouse') ){
+	} else if (real === 'click' || real === 'dblclick' || real === 'contextmenu' || real.indexOf('mouse') !== -1 ){
 		doc = getCompactElement(win.document);
 		
 		page.x = event.pageX != NULL ? event.pageX : event.clientX + doc.scrollLeft;
@@ -370,6 +370,9 @@ DOM.Events = Events;
 
 /**
  change log:
+ 
+ 2012-05-02  Kael:
+ - fix mousewheel event for firefox
  
  2012-01-13  Kael:
  - when mouseenter(or other imitated event) triggered, event.type will no longer be 'mouseover'(the event name that delegated to) but 'mouseenter' itself.
