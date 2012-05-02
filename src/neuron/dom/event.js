@@ -147,7 +147,7 @@ function DOMEvent(event, win, config){
 		// test function keys, on macosx and win
 		self.code = event.which || event.keyCode;
 		
-	} else if (real === 'click' || real === 'dblclick' || real === 'contextmenu' || real.indexOf('mouse') !== -1 ){
+	} else if (real === 'click' || real === 'dblclick' || real === 'contextmenu' || /mouse/i.test(real) ){
 		doc = getCompactElement(win.document);
 		
 		page.x = event.pageX != NULL ? event.pageX : event.clientX + doc.scrollLeft;
