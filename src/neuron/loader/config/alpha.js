@@ -62,7 +62,7 @@ Loader.config(K.mix({
 	base: 		'/',
 	// base: '',
 	
-	enableCDN:	true,
+	// enableCDN:	true,
 	
 	// @return: the domain of either cdn server
 	CDNHasher:	CDNHasher,
@@ -140,18 +140,6 @@ prefix('~', {
 });
 
 
-prefix('Test', {
-	base: 'unit-test/test-notrack/j/'
-	// base: 'http://i1.kael.c/unit-test/test-notrack/j/'
-});
-
-
-prefix('Test2', {
-	base: '/unit-test/test-notrack/j/'
-	// base: 'http://i1.kael.c/unit-test/test-notrack/j/'
-});
-
-
 /**
  * before module-version.js is downloaded and executed,
  * KM.provide temporarily does nothing but push the action into a pending queue
@@ -177,14 +165,16 @@ Loader.init = function(){
 
  
 // you can set current href as http://abc.com/#!/debug/on to switch debug-mode on
+/*
+ // TODO: remove from loader
+
 var href = K.getLocation().href,
 	index_marker = href.indexOf('#!/');
 	
 if(index_marker !== -1 && href.indexOf('debug/on') > index_marker){
 	K._debugOn();
 }
+*/
 
 
 })(KM);
-
-var DP = KM;

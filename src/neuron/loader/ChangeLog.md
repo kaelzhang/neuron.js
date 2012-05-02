@@ -9,6 +9,8 @@ marks:
 	- ! important and of high priority
 	
 
+2012-04-26  Kael:
+    - A. transaction support
 
 2012-03-05  Kael:
 TODO:

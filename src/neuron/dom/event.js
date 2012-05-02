@@ -389,17 +389,17 @@ DOM.Events = Events;
  - add method .fire()
  
  TODO:
- - A. focusin, focusout
+ A. focusin, focusout
  
  2011-10-06  Kael:
  TODO:
- - A. refractor event module
+ A. refractor event module
  
  2011-09-10  Kael:
  - basic functionalities
  
  TODO:
- A. fix onchange event of input elements
+ X A. fix onchange event of input elements
 
 
  */

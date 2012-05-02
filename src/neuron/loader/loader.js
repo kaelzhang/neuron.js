@@ -625,9 +625,9 @@ function getOrDefine(name, env, noWarn){
 	 * 'NC::dom'	-> top, no user mod
 	 */
 	 
-	// Only if the there's no referenceURI, may the module be a user mod
-	// define a user module with a namespace is forbidden
-	// ex: 'dom'
+	// Only if the there's no referenceURI, may the module be a user mod.
+	// defining a user module with a namespace is forbidden
+	// example: 'dom'
 	if(!referenceURI && !namespace){
 		// get user module
 		mod = getModuleByIdentifier(USER_MODULE_PREFIX + name);
@@ -966,12 +966,12 @@ var generateModuleURI_Identifier = K._memoize( function(uri){
 		cfg = _config,
 		path;
 
-	if(cfg.enableCDN){
-		path = isAbsoluteURI(uri) ? getLocation(uri).pathname : uri;
-			
-		path_for_uri = cfg.CDNHasher(path) + path;
-		path_for_identifier = path;
-	}
+	// if(cfg.enableCDN){
+	path = isAbsoluteURI(uri) ? getLocation(uri).pathname : uri;
+		
+	path_for_uri = cfg.CDNHasher(path) + path;
+	path_for_identifier = path;
+	// }
 
 	return {
 		// uri
@@ -1131,12 +1131,6 @@ function getDir(uri){
 	var m = uri.match(REGEX_DIR_MATCHER); // greedy match
     return (m ? m[0] : '.') + '/';
 };
-
-
-// function getHost(uri){
-//	var m = uri.match(/^\w+:\/\/[^/]+/); /* coda highlight error */ 
-//	return m[0];
-// };
 
 
 /**

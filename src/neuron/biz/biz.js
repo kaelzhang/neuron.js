@@ -68,6 +68,21 @@ K.data = function(name, value){
 /**
  * attach a module for business requirement, for configurations of inline scripts
  * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
+ * @usage: 
+ <code>
+ 	
+ 	// require biz modules with no config
+ 	KM.require('Index::common', 'Index::food');
+ 
+ 	// require biz modules with configs
+ 	KM.require('Index::common', {
+ 		mod: 'Index::food',
+ 		config: {
+ 			icon: 'http://kael.me/u/2012-03/icon.png'
+ 		}
+ 	});
+ 
+ </code>
  */
 K.require = function(){
 	var isString = K.isString;
