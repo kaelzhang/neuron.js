@@ -3,6 +3,9 @@
 function inc_unit($name, $integration = false, $use_simple = false){
 
 	$root = __DIR__;
+	$dirname = dirname($name);
+	$basename = basename($name);
+	
 
 	if(!$integration){
 
@@ -14,7 +17,7 @@ function inc_unit($name, $integration = false, $use_simple = false){
 <title>Unit-Test:<?php echo $name ?>.js</title>
 <link rel="stylesheet" href="/unit-test/reset.css" type="text/css" />
 <style>
-.neuron{width:700px; margin:0 auto; padding-top:10px;}
+.neuron{width:700px; margin:0 auto; padding:10px 0 5px;}
 .neuron .cate{display:block; font-family: Verdana; font-size: 20px; padding-top:15px; color:#666; text-transform: uppercase; margin-bottom:10px;}
 .neuron p{padding:0 0 10px; margin:0;}
 .neuron a, .neuron .title{line-height:20px; font-size: 18px; padding-bottom:1px; margin-left:20px; font-family: Verdana; color:#1376b6; text-decoration: none; border-bottom:1px solid #fff;}
@@ -32,7 +35,7 @@ var r = + new Date,
 
 </script>
 </head>
-<body><div class="neuron"><h1 class="title">Neuron: <a class="module-name" href="/unit-test/<?php echo $name; ?>-slice.php"><?php echo strtoupper($name); ?></a> <span>unit test cases</span></h1></div><?php
+<body><div class="neuron"><h1 class="title">Neuron:<a href="/unit-test/<?php echo $dirname . '/'; ?>"><?php echo strtoupper($dirname) ?></a>/<a class="module-name" href="/unit-test/<?php echo $name; ?>-slice.php"><?php echo strtoupper($basename); ?></a> <span>unit test cases</span></h1></div><?php
 
 	}
 
