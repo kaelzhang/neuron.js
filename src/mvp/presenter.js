@@ -2,7 +2,7 @@
  * module  mvp/presenter
  * connect view and model togethor
  */
-KM.define(['event/live', './model', ''], function(K, require, exports){
+KM.define(['event/live', './model'], function(K, require, exports){
 
 var 
 
@@ -13,20 +13,72 @@ Presenter = K.Class({
 	Implements: 'attrs',
 	
 	initialize: function(options){
-		this.set(options);
-	},
+		var self = this;
 	
-	register: K._overloadSetter(function(name){
+		self.set(options);
 		
-	}),
-	
-	_updateView: function(){
-		this.view.render();
-	},
-	
-	_updateModel: function(){
+		self._dealEvents('on');
+		self._observeModel();
 		
+		if(self.get('hasInit')){
+			self._init();
+		}
 	},
+	
+	destroy: function(){
+		this._dealEvents('off');
+		delete this._model;
+		delete this.view;
+	},
+	
+	_init: function(data){
+		var self = this,
+			model = self.get('model');
+	
+		model.update(data);
+		model.sync('read', function(data){
+			self.view.render(data);
+		});
+	},
+	
+	// model: Model,
+	
+	// @type {Object} 
+	// @see ATTRS.events
+	// events: {}
+	 
+	_dealEvents: function(action){
+		var self = this,
+			subject = self.get('subject');
+	
+		K.each(self.get('events'), function(events, selector){
+			K.each(events, function(actionName, type){
+				var action = K.isFunction(actionName) ? actionName : self[actionName];
+			
+				Live[action](subject, type, selector, action);
+			});
+		});
+	},
+	
+	/**
+	 * 
+	 */
+	_observeModel: function(){
+		var model = this.get('model');
+		
+		model.on({
+			'update': this._applyChange
+		});
+	},
+	
+	/**
+	 * apply change event
+	 */
+	_applyChange: function(){
+		
+	}
+	
+	
 });
 
 
@@ -53,9 +105,17 @@ K.Class.setAttrs(Presenter, {
 	 live events
 	
 	 syntax:
+	 
+	 
+	 @param {string} selector
+	 @param {string} event-type
+	 @param {string|function()} event-handler
+	 	{string} 
+	 	{function()} handler function
+	 
 	 {
 	 	'<selector>': {
-	 		'<event-type>': dataGetter
+	 		'<event-type>': <event-handler>
 	 	}
 	 }
 	 
@@ -68,33 +128,50 @@ K.Class.setAttrs(Presenter, {
 	 
 	 */
 	events: {
-		setter: function(events){
-			if(K.isPlainObject(events)){
-				var key,
-					handler,
-					element = this.element;
-				
-				for(key in events){
-					handler = events[key];
-					key = key.split(' ');
-					Live.on(element, key[0], key[1], );
-				}
-			}
-			
-			return events;
+		getter: function(v){
+		
+			// user options has higher priority
+			return v || this.events || {};
+		}
+	},
+	
+	/**
+	 * the container element to be delegated to
+	 */
+	container: {
+		getter: function(){
+			return this.view.get('container');
 		}
 	},
 	
 	model: {
 		setter: function(v){
-			return this.model = v || new Model();
+			return this._model = v;
+		},
+		
+		getter: function(v){
+			if(!v){
+				var M = this.model || Model;
+				v = new M;
+				
+				this.set('model', v);
+			}
+		
+			return v;
 		}
 	},
 	
 	view: {
-		setter: function(){
-			
+		setter: function(v){
+			return this.view = v;
 		}
+	},
+	
+	/**
+	 * @type {boolean} whether the presenter 
+	 */
+	hasInit: {
+		value: false
 	}
 	
 });

@@ -1,6 +1,6 @@
 /**
  * module  model
- * object manager, add or remove object members
+ * object manager, add or remove object members. 
  */
 
 KM.define(function(K){
@@ -23,12 +23,27 @@ Model = K.Class({
 	
 	initialize: function(initial, options){
 		this._model = initial || {};
-		// @public
-		// @readOnly
+		
+		// unique id 
 		this.id = K.guid();
 		
 		this.set(options);
 	},
+	
+	/**
+	 * @interface
+	 */
+	sync: function(type, callback){
+		
+	},
+	
+	/**
+	 * sync with 
+	 */
+	// sync: function(){
+		
+		// new Ajax().send()...
+	// },
 	
 	/**
 	 * update the value of a specified key associated with the model
@@ -53,14 +68,21 @@ Model = K.Class({
 			validator = validators[key],
 			pass = true;
 		
-		if(!validator || (pass = validator(value)) ){
+		if(!validator || (pass = !!validator(value)) ){
 			self._model[key] = value;
 		}
 		
-		self.fire( pass ? 'update' : 'error', {
+		
+		self.fire('update', {
 			key: key,
-			value: value
+			value: value,
+			valid: pass
 		});
+		
+		// self.fire( pass ? 'update' : 'error', {
+		//	key: key,
+		//	value: value
+		// });
 		
 		return pass;
 	}),
@@ -72,9 +94,8 @@ Model = K.Class({
 	 	.remove('name');
 	 	.remove('name', 'gender');
 	 </code>
-	 
 	 */
-	remove: function(){
+	remove: function(/* item1, item2, ... */){
 		var self = this,
 			model = self._model,
 			args = K.makeArray(arguments);
@@ -98,18 +119,30 @@ Model = K.Class({
 		var value = this.fetch(key);
 		
 		return escapeHTML(value ? '' + value : '');
-	}
+	} // ,
+	
+	// serialize: function(){
+		
+	// }
 }),
 
 
 ATTRS = {
 	validators: {
+	
+		// so that we could add validator rules after initilization
 		setter: function(rules){
 			return K.mix(this.get('validators'), rules);
 		},
-		
+
 		getter: function(v){
 			return v || {};
+		}
+	},
+	
+	id: {
+		getter: function(){
+			return this.id;
 		}
 	}
 };

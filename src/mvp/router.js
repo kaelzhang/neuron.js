@@ -1,10 +1,15 @@
 /**
  * module  mvp/router
  */
-KM.define(function(K, require){
+KM.define(['./history'], function(K, require){
 
 var
 
+History = require('./history'),
+
+// .123
+// 1.123
+// 123
 REGEX_NUMBER = /^(?:\d*\.)?\d+$/,
 
 /**
@@ -12,14 +17,17 @@ REGEX_NUMBER = /^(?:\d*\.)?\d+$/,
  * credits to [http://documentcloud.github.com/backbone/](backbone)
  */
 // escape special symbols
-REGEX_ESCAPE = /[-[\]{}()+?.,\\^$|#\s]/g,
+REGEX_REPLACER_ESCAPE = /[-[\]{}()+?.,\\^$|#\s]/g,
 
-// ex: `/page/:page`
-REGEX_NAMED_PARAM = /:([\w\d]+)/g,
+// example: `/page/:page`
+REGEX_REPLACER_NAMED_PARAM = /:([\w\d]+)/g,
 
 // matching parameter begins with asterisk symbol(`*`)
 // ex: `/page/*page`
-REGEX_SPLAT_PARAM = /\*([\w\d]+)/g,
+REGEX_REPLACER_SPLAT_PARAM = /\*([\w\d]+)/g,
+
+// be used with RegExp.exec, matching `:page` 
+REGEX_EXECUTOR_PARAM = /[:*]([\w\d]+)/g,
 
 
 /**
@@ -33,14 +41,13 @@ REGEX_SPLAT_PARAM = /\*([\w\d]+)/g,
  	action: {string} action, ex: `'page'`
  	rewrite: {RegExp|string|function()} rewrite rule
  		X {RegExp} return matches
- 	 	{string} backbone-style pattern for matching, '/page/:page'
+ 	 	{string} ruby-style pattern for matching, '/page/:page'
  	 	{function()} returns the matched data
  }
  
  router.add(matcher, rules);
  
  router.route(url);
- 
  
  
  <code:pseudo>
@@ -64,104 +71,112 @@ Router = K.Class({
 		this._rules = [];
 	},
 	
-	add: function(matcher, rule){
-		rule || (rule = {});
+	/**
+	 * add a router
+	 * @param {string|regexp} pattern
+	 * @param {Object}
+	 */
+	add: function(pattern, action){
+
+		this._rules.push({
+			pattern: pattern,
+			action: action,
+			rewrite: this._patternToRegExp(pattern)
+		});
 		
-		var self = this;
+		return this;
+	},
 	
-		if(K.isString(matcher)){
-			rule.matcher = new RegExp(matcher.replace('\\', '\\\\'));
-		}else if(!K.isRegExp(matcher)){
-			return self;
+	/**
+	 * navigate to a specified url, and apply router action simultaneously
+	 * @param {string} url
+	 */
+	navigate: function(url){
+		this._route(url, true);
+	},
+	
+	/**
+	 * apply the matched router action to the specified url
+	 */
+	route: function(url){
+		this._route(url);
+	},
+	
+	_route: function(url, pushState){
+		var data = this._routeUrl2Data(url);
+		
+		if(data){
+		
+			// FIXME:
+			// fix document.title
+			pushState && History.push(data.state, document.title, url);
+			data.action(data.state);
 		}
-		
-		self._createRewriteRule(rule) && this._rules.push(rule);
-		
-		return self;
 	},
 	
-	/**
-	 * @param {function()|string} rule
-	 	{string} backbone style string
-	 	{function()} matching function, returns the matched data object
-	 	
-	 * @returns {boolean} whether the rewrite rule is invalid
-	 */
-	_createRewriteRule: function(rule){
-		var parsed_rewrite_rule = false,
-			rewrite = rule.rewrite;
-	
-		switch(K._type(rule.rewrite)){
-			case 'string':
-				parsed_rewrite_rule = this._routeToRegExp(rewrite);
-				rule.pattern = rewrite;
-				break;
-				
-			case 'function':
-				parsed_rewrite_rule = rewrite;
-				break;
-		};
+	// remove: K._overloadSetter(function(matcher, action){
 		
-		return !!(rule.rewrite = parsed_rewrite_rule);
-	},
+	// }),
 	
 	/**
+	 * convert '/page/:page' to regular expression
 	 * @param {string} route backbone style string for matching, '/page/:page' for example
+	 * @returns {RegExp}
 	 */
-	_routeToRegExp: function(route){
-      	route = route.replace(REGEX_ESCAPE, "\\$&")
-					 .replace(REGEX_NAMED_PARAM, "([^\/]*)")
-					 .replace(REGEX_SPLAT_PARAM, "(.*?)");
+	_patternToRegExp: function(route){
+      	route = route.replace(REGEX_REPLACER_ESCAPE, "\\$&")
+					 .replace(REGEX_REPLACER_NAMED_PARAM, "([^\/]*)")
+					 .replace(REGEX_REPLACER_SPLAT_PARAM, "(.*?)");
 					 
-		// 
+		// the router pattern must be a full matcher
 		return new RegExp(route + '$');
     },
     
     /**
-     * apply rewrite rule according to the specified url
+     * split and parse a url into a data object
      */
-    _applyRule: function(url, rule){
-    	var data = {}, matched_data;
+    _routeUrl2Data: function(url){
+    	var rules = this._rules,
+			i = 0,
+			len = rules.length,
+			rule,
+			result;
+		
+		for(; i < len; i ++){
+			rule = rules[i];
+			
+			if(result = this._testRule(url, rule)){
+				return {
+					state: result,
+					action: rule.action
+				};
+			}
+		}
+    },
+    
+    /**
+     * apply rewrite rule according to the specified url
+     * @returns {Object|undefined} parsed url data
+     */
+    _testRule: function(url, rule){
+    	var matched_data, parsed;
     	
-    	if(rule.pattern && (matched_data = url.match(rule.rewrite)) ){
+    	if(matched_data = url.match(rule.rewrite)){
     		var offset = 0, 
-    			regex = REGEX_NAMED_PARAM,
+    			regex = REGEX_EXECUTOR_PARAM,
     			matched_key, value;
+    		
+    		parsed = {};
     		
     		while(matched_key = regex.exec(rule.pattern)){
     			value = matched_data[++ offset];
     		
-    			data[matched_key[1]] = REGEX_NUMBER.test(value) ? Number(value) : value;
+    			parsed[matched_key[1]] = REGEX_NUMBER.test(value) ? Number(value) : value;
     		}
-    	
-    	}else{
-  			data = rule.rewrite(url);
     	}
     	
-    	rule.action(data);
-    },
-	
-	route: function(url){
-		var rules = this._rules,
-			i = 0,
-			len = rules.length,
-			rule;
-		
-		for(; i < len; i ++){
-			rule = rules[i];
-		
-			if(rule && rule.matcher.test(url)){
-				this._applyRule(url, rule);
-				break;
-			}
-		}
-		
-		return this;
-	}
-});
-
-
-K.mix(Router, {
+    	return parsed;
+    }
 });
 
 
@@ -169,8 +184,17 @@ return Router;
 
 });
 
+
 /**
  change log
+ 
+ 2012-03-01  Kael:
+ - 
+ 
+ 2012-02-29  Kael:
+ - refractor .add method, .add will only accept two params, `matcher` and `action`
+ - fix a bug routing a url which include a splat param
+ 
  2012-02-03  Kael:
  - complete main functionalities
  

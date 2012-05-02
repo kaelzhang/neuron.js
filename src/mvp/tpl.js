@@ -153,6 +153,7 @@ COMPILERS = {
 return {
 
 	/**
+	 * for most cases you should cache the template function by using tpl.parse
 	 * @param {string} template JavaScript template
 	 * @param {Object} data module
 	 

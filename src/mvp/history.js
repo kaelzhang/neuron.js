@@ -112,6 +112,7 @@ if(need_fallback){
 			}
 			
 			handler.fire('start');
+			handler.start = function(){};
 		}
 	};
 	

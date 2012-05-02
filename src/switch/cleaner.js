@@ -1,5 +1,3 @@
-'use strict';
-
 /**
  * temporarily remove unnecessary items away from the container 
  */
