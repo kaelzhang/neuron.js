@@ -276,6 +276,10 @@ return delegate;
 /**
  change log:
  
+ 2012-03-01  Kael:
+ TODO:
+ A. overload the setter of binding live events
+ 
  2012-01-30  Kael:
  - add more situations of arguments' overloading; delegate.off now could remove more than one events
  
