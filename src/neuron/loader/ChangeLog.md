@@ -8,13 +8,18 @@ marks:
 	- * unimportant
 	- ! important and of high priority
 	
+2012-05-02  Kael:
+    - create a new dev branch for loader of passive mode
+    
+TODO:
+    - A. remove KM.define.on and KM.define.off	
 
 2012-04-26  Kael:
     - A. transaction support
 
 2012-03-05  Kael:
 TODO:
-	- A. create an another version of loader to support loading all dependencies simultaneously according to a parsed dependency tree
+	- X A. create an another version of loader to support loading all dependencies simultaneously according to a parsed dependency tree
 
 milestone 4.0
 =============
@@ -33,7 +38,8 @@ TODO:
 
 2011-12-08  Kael:
 TODO:
-	- A. could define a tree of dependencies for a certain module. so that we can parse all dependencies of modules ahead of time by back-end services
+	- X A. could define a tree of dependencies for a certain module. so that we can parse all dependencies of modules ahead of time by back-end services
+	reason: dealing loading sequence is not the matter front-end loader should concern, because it's doing something with arithmetics and environment configurations. 
 
 2011-10-27  Kael:
 	- bug fixes: if the base location of an app is not empty, IE will fail
@@ -70,7 +76,7 @@ TODO:
 	- C. optimize mod.uri, if enableCDN is true, mod.uri will no more be applied with CDNHasher
 
 2011-09-21  Kael:
-	- TODO[09-02].B 80%
+	- TODO[09-02].B 100%
 
 TODO:
 	- ! A. support pre-loading env modules before anything taking effect
@@ -86,7 +92,7 @@ TODO:
 TODO:
 	- √ A. split the logic about loader constructor and its instances
 	- ?X B. refractor dependency model with EventProxy
-	- C. use dev version modules if debug mode on
+	- X C. use dev version modules if debug mode on
 	- √ D. throw no warnings and errors when release mode on
 
 milestone 3.0
@@ -102,7 +108,7 @@ TODO:
 
 2011-09-07  Kael:
 TODO:
-	- A. [issue] if pkg module is directly defined by define.on(), automatically providing called by a child module will fail
+	- √ A. [issue] if pkg module is directly defined by define.on(), automatically providing called by a child module will fail
 	- ? B. support fake package module definition: define.on(); define('dom', fn); define.off(); define('dom/dimension', fn)
 
 2011-09-02  Kael:
