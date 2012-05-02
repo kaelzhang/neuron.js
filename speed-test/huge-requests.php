@@ -57,7 +57,8 @@ KM.ready(function(){
 	KM.load('http://neuron.lc/src/fx/tween2.v20000.js');
 });
 
-for(var i = 0; i < 100; i ++){
+// load 200 scripts
+for(var i = 0; i < 200; i ++){
 	KM.load('http://neuron.lc/src/switch/core.v' + i + '.js');
 };
 
