@@ -2,6 +2,13 @@
  * Neuron core:loader v4.2.1(active mode)
  * author i@kael.me 
  */
+ 
+/**
+ 
+ which is ifferent from loader in passive mode, 
+ active loader will automatically parse dependencies and load them into the current page.
+ 
+ */
 
 ; // fix layout of UglifyJS
 
@@ -53,8 +60,6 @@ _config = {},
 
 _last_anonymous_mod = NULL,
 _define_buffer_on = false,
-
-_allow_undefined_mod = true,
 
 // fix onload event on script node in ie6-9
 use_interactive = K.UA.ie < 10,
@@ -136,150 +141,8 @@ STATUS = {
 	// the module has been initialized, i.e. the module's factory function has been executed
 	// ATTACHED  	: 6
 },
-	
-/**
- * static resource loader
- * meta functions for assets
- * --------------------------------------------------------------------------------------------------- */
-	
-asset = {
-	css: function(uri, callback){
-		var node = DOC.createElement('link');
-		
-		node.href = uri;
-		node.rel = 'stylesheet';
-		
-		callback && assetOnload.css(node, callback);
-		
-		// insert new CSS in the end of `<head>` to maintain priority
-		HEAD.appendChild(node);
-		
-		return node;
-	},
-	
-	js: function(uri, callback){
-		var node = DOC.createElement('script');
-		
-		node.src = uri;
-		node.async = true;
-		
-		callback && assetOnload.js(node, callback);
-		
-		_pending_script = uri;
-		HEAD.insertBefore(node, HEAD.firstChild);
-		_pending_script = NULL;
-		
-		return node;
-	},
-	
-	img: function(uri, callback){
-		var node = DOC.createElement('img'),
-			delay = setTimeout;
-			
-		function complete(name){
-			node.onload = node.onabort = node.onerror = complete = NULL;
-			
-			setTimeout(function(){
-				callback.call(node, {type: name});
-				node = NULL;
-			}, 0);
-		};
 
-		callback && ['load', 'abort', 'error'].forEach(function(name){
-			node['on' + name] = function(){
-				complete(name);
-			};
-		});
-
-		node.src = uri;
-		
-		callback && node.complete && complete('load');
-		
-		return node;
-	}
-}, // end asset
-
-// @this {element}
-assetOnload = {
-	js: ( DOC.createElement('script').readyState ?
-	
-		/**
-		 * @param {DOMElement} node
-		 * @param {!function()} callback asset.js makes sure callback is not null
-		 */
-		function(node, callback){
-	    	node.onreadystatechange = function(){
-	        	var rs = node.readyState;
-	        	if (rs === 'loaded' || rs === 'complete'){
-	            	node.onreadystatechange = NULL;
-	            	
-	            	callback.call(this);
-	        	}
-	    	};
-		} :
-		
-		function(node, callback){
-			node.addEventListener('load', callback, false);
-		}
-	)
-},
-
-// assert.css from jQuery
-cssOnload = ( DOC.createElement('css').attachEvent ?
-	function(node, callback){
-		node.attachEvent('onload', callback);
-	} :
-	
-	function(node, callback){
-		var is_loaded = false,
-			sheet = node['sheet'];
-			
-		if(sheet){
-			if(K.UA.webkit){
-				is_loaded = true;
-			
-			}else{
-				try {
-					if(sheet.cssRules) {
-						is_loaded = true;
-					}
-				} catch (ex) {
-					if (ex.name === 'NS_ERROR_DOM_SECURITY_ERR') {
-						is_loaded = true;
-					}
-				}
-			}
-		}
-	
-	    if (is_loaded) {
-	    	setTimeout(function(){
-	    		callback.call(node);
-	    	}, 0);
-	    }else {
-			setTimeout(function(){
-				cssOnload(node, callback);
-			}, 10);
-	    }
-	}
-); // end var
-
-assetOnload.css = cssOnload;
-
-
-/**
- * method to load a resource file
- * @param {string} uri uri of resource
- * @param {function()} callback callback function
- * @param {string=} type the explicitily assigned type of the resource, 
- 	can be 'js', 'css', or 'img'. default to 'img'. (optional) 
- */
-function loadSrc(uri, callback, type){
-	var extension = type || uri.match(REGEX_FILE_TYPE)[1];
-	
-	return extension ?
-		( asset[ extension.toLowerCase() ] || asset.img )(uri, callback)
-		: NULL;
-};
+asset = K.load;
 
 
 /**
@@ -426,7 +289,7 @@ function _define(name, identifier, dependencies, factory, uri){
 				// > the DOM insertion of the script tag, so you can keep track of which 
 				// > script is being requested in case define() is called during the DOM 
 				// > insertion.			
-				|| _pending_script;
+				|| asset.__pending;
 	    }
 	    
 	    if(!active_script_uri){
@@ -1190,9 +1053,6 @@ function prefix(name, config){
 
 // use extend method to add public methods, 
 // so that google closure will NOT minify Object properties
-
-// load a static source
-K['load'] = loadSrc;
 
 // define a module
 K['define'] = define;
