@@ -286,7 +286,7 @@ Switch = Class({
 		self.fire(EVENT_BEFORE_INIT);
         self.set(options);
           
-        if(self.container){
+        if(self.container.count()){
             self._itemData();
             
             // after this time, there might be ghost items
