@@ -94,7 +94,7 @@ function createGetterSetter(host, sandbox, undef){
 		sandbox[key] || (sandbox[key] = K.isObject(setting) ? 
 							
 							// it's important to clone the setting before mixing into the sandbox,
-							// or host.set method will ruin all reference
+							// or host.set method will ruin all references
 							K.clone(setting) : 
 							{}
 						);
