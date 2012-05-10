@@ -8,6 +8,11 @@ marks:
 	- * unimportant
 	- ! important and of high priority
 	
+
+2012-05-10  Kael:
+    - complete main functionalities of passive-mode loader.
+	
+	
 2012-05-02  Kael:
     - create a new dev branch for loader of passive mode
     
