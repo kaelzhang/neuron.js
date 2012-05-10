@@ -60,6 +60,9 @@ function santitizer(identifier){
 Loader.config(K.mix({
 	// root path of module files
 	base: 		'/',
+	
+	appBase: '/',
+	
 	// base: '',
 	
 	// enableCDN:	true,

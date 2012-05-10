@@ -1,5 +1,5 @@
 /*! 
- * Neuron core:loader v4.2.1(active mode)
+ * Neuron core:loader v5.0.1(active mode)
  * author i@kael.me 
  */
  
@@ -167,8 +167,10 @@ function define(name, dependencies, factory){
 		_def = _define;
 	
 	if(arg[last] === true){					// -> define(uri1, uri2, uri3, true);
-		for_each(arg, function(arg, i, U){
-			i < last && _def(EMPTY, U, U, absolutizeURI(arg));
+		arg.forEach(function(path, i){
+            var UNDEF;
+		
+			i < last && _def(EMPTY, UNDEF, UNDEF, absolutizeURI(path));
 		});
 		return;
 	}
@@ -422,7 +424,7 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 	if(counter === 0){
 		cb && cb();
 	}else{
-		for_each(dependencies, function(dep, i, undef){
+		dependencies.forEach(function(dep, i){
 			var mod = getOrDefine(dep, env),
 				arg_index = mod.isCSS ? 0 : ++ arg_counter;
 			
@@ -594,7 +596,7 @@ function provideOne(mod, callback, env){
 			// recursively loading dependencies
 			_provide(mod.deps, function(){
 				var m = mod;
-				for_each(m.pending, function(c){
+				m.pending.forEach(function(c){
 					c();
 				});
 				
@@ -785,7 +787,7 @@ function loadModuleSrc(mod, callback){
         loadScript(uri, function(){
         	var m = mod;
         		
-        	for_each(script, function(s){
+        	script.forEach(function(s){
         		s.call(m);
         	});
         	
@@ -968,7 +970,7 @@ function realpath(path) {
 	var old = path.split('/'),
 		ret = [];
 		
-	for_each(old, function(part, i){
+	old.forEach(function(part, i){
 		if (part === '..') {
 			if (ret.length === 0) {
 			  	error(530);
@@ -993,22 +995,6 @@ function realpath(path) {
 function getDir(uri){
 	var m = uri.match(REGEX_DIR_MATCHER); // greedy match
     return (m ? m[0] : '.') + '/';
-};
-
-
-/**
- * lang
- * ---------------------------------------------------------------------------------- */
-
-// use for_each instead of foreach
-// prevent compiler(such as google closure) from treating 'foreach' as a reserved word
-function for_each(array, fn){
-	var i = 0,
-		len = array.length;
-
-	for(; i < len; i ++){
-		fn(array[i], i);
-	}
 };
 
 
