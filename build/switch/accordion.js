@@ -22,6 +22,10 @@ return {
 	            link: 'cancel',
 	            transition: Easing.Cubic.easeOut,
 	            duration:200
+	        },
+	        
+	        setter: function(v){
+                return K.mix(this.get('fx'), v);
 	        }
         },
         

@@ -262,7 +262,7 @@ Class.EXTS = EXTS;
 // };
 
 Class.setAttrs = setAttrs;
-Class.implement = implement;
+// Class.implement = implement;
 
 })(KM);
 

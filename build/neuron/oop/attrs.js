@@ -9,27 +9,24 @@
  	
  * @return {boolean} whether the new value has been successfully set
  */
-function setValue(host, attr, value, override, ghost){
+function setValue(host, attr, value){
 	var pass = true,
 		setter,
 		validator,
 		v;
 
-	// if ghost setting, ignore checking
-	if(!ghost){
-		if(attr[READ_ONLY]){
-			pass = false;
-			
-		}else{
-			validator = getMethod(host, attr, VALIDATOR);
-			
-			pass = !validator || validator.call(host, value);
-		}
+	if(attr[READ_ONLY]){
+		pass = false;
 		
-		if(pass && attr[WRITE_ONCE]){
-			delete attr[WRITE_ONCE];
-			attr[READ_ONLY] = TRUE;
-		}
+	}else{
+		validator = getMethod(host, attr, VALIDATOR);
+		
+		pass = !validator || validator.call(host, value);
+	}
+	
+	if(pass && attr[WRITE_ONCE]){
+		delete attr[WRITE_ONCE];
+		attr[READ_ONLY] = TRUE;
 	}
 	
 	if(pass){
@@ -41,7 +38,7 @@ function setValue(host, attr, value, override, ghost){
 		}else{
 		
 			// mix object values
-			!override && isPlainObject(value) && isPlainObject(v = attr.value) ? K.mix(v, value) : (attr.value = value);
+			attr.value = value;
 		}
 	}
 	
@@ -78,10 +75,10 @@ function getMethod(host, attr, name){
  * @param {undefined=} undef
  */
 function createGetterSetter(host, sandbox, undef){
-	host.set = K._overloadSetter( function(key, value, override){
+	host.set = overloadSetter( function(key, value){
 		var attr = sandbox[key];
 		
-		return attr ? setValue(this, attr, value, override) : false;
+		return attr ? setValue(this, attr, value) : false;
 	});
 	
 	host.get = function(key){
@@ -90,7 +87,7 @@ function createGetterSetter(host, sandbox, undef){
 		return attr ? getValue(this, attr) : undef;
 	};
 	
-	host.addAttr = function(key, setting){
+	host.addAttr = overloadSetter(function(key, setting){
 		sandbox[key] || (sandbox[key] = K.isObject(setting) ? 
 							
 							// it's important to clone the setting before mixing into the sandbox,
@@ -98,7 +95,7 @@ function createGetterSetter(host, sandbox, undef){
 							K.clone(setting) : 
 							{}
 						);
-	}
+	});
 };
 
 
@@ -143,7 +140,8 @@ var TRUE = true,
 	
 	NOOP = function(){},
 	
-	isPlainObject = K.isPlainObject;
+	isPlainObject = K.isPlainObject,
+	overloadSetter = K._overloadSetter;
 
 
 /**
