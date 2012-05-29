@@ -15,21 +15,18 @@ ModelList = K.Class({
 		var self = this;
 		
 		self._models = [];
-		
-		
-		
 	},
 	
-	sync: function(){
-		
-	},
+	sync: function(){},
 	
 	// sorter: sortWithModelID,
+	
+	/**
+	 * 
+	 */
 	// model: Model,
 	
 	add: function(model){
-	
-		
 	
 		// make sure every model has a global unique id
 		if(!model.id){
@@ -66,8 +63,19 @@ K.Class.setAttrs(ModelList, {
 	 * constructor of model
 	 */
 	model: {
+        setter: function(v){
+            this.model = v;
+        },
+	
 		getter: function(v){
-			return v || this.model || Model;
+            var ins = this._model, M;
+		
+            if(!ins){
+                M = this.model || Model;
+                ins = new M;
+            }
+            
+			return ins;
 		}
 	}
 });

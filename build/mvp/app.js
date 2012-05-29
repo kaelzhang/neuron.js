@@ -14,7 +14,62 @@ Presenter 	= require('./presenter'),
 History 	= require('./history'),
 Router 		= require('./router'),
 Live		= require('event/live'),
-DOC			= K.__HOST.document;
+DOC			= K.__HOST.document,
+
+/**
+ 
+ new App({
+    routes: [
+        {
+            path: '/shop/:shopID/photos', 
+            presenter: 'shopPhoto' 
+            events: {
+                '.page': {
+                    'click': navigateToPage
+                }
+            },
+            
+            view: 'photos'
+        },
+        
+        {
+            path: '/shop/:shopID/upload',
+            presenter: 'shopUpload',
+            events: {
+                
+            } 
+        },
+        
+        ... 
+    },
+    
+    views: {
+        'photos': shopPhotoView
+    },
+    
+    presenters: {
+        'shopPhoto': ShopPhotoPresenter
+    },
+    
+    links: [
+        '.mvc-link',
+        
+        {
+            CS: ''
+        }
+        
+    ]
+    
+ });
+ 
+ 
+ 
+ 
+ 
+ 
+ */
+
+
 
 App = K.Class({
 	
@@ -43,12 +98,39 @@ App = K.Class({
 	
 	_bindTrigger: function(linkCS){
 		Live.on(DOC, 'click', linkCS, this._routeTrigger);
-	}
+	},
+	
+	_attachView: function(){
+	    
+	},
+	
+	_detachView: function(){
+	    
+	},
+	
+	_destroyView: function(){
+	    
+	},
+	
+	_isParentView: function(){
+	    
+	   
+	},
+	
+	_isChildView: function(){
+	    
+	},
+	
+	
 	
 });
 
 K.Class.setAttrs(App, {
-	view: {}
+	views: {},
+	
+	routes: {},
+	
+	
 });
 
 

@@ -1,6 +1,11 @@
 /**
+ module  mvp/view
+ inspired by apple, ref: http://developer.apple.com/library/ios/#documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/CreatingViews/CreatingViews.html
+
  Actually, on browsers, the `View` of Model-View-Presenter structure is the DOM itself.
  we can use DOM api to listen user events, and re-render elements.
+ 
+ 
  
  for some
  
@@ -50,11 +55,16 @@ View = K.Class({
 		
 	},
 
-	
 	// template: {string|function()}
 
 	render: function(){
 		return this;
+	},
+	
+	dispose: function(){
+	},
+	
+	destroy: function(){
 	}
 
 });
@@ -102,9 +112,6 @@ Class.setAttrs(View, {
 	wrap: {
 		value: null
 	}
-	
-	// TODO?
-	// tplType: {string}
 });
  
  

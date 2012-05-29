@@ -27,8 +27,11 @@ Presenter = K.Class({
 	
 	destroy: function(){
 		this._dealEvents('off');
-		delete this._model;
 		delete this.view;
+	},
+	
+	applyData: function(data){
+        
 	},
 	
 	_init: function(data){
@@ -46,8 +49,7 @@ Presenter = K.Class({
 	// @type {Object} 
 	// @see ATTRS.events
 	// events: {}
-	 
-	_dealEvents: function(action){
+	_dealEvents: function(actionType){
 		var self = this,
 			subject = self.get('subject');
 	
@@ -55,7 +57,7 @@ Presenter = K.Class({
 			K.each(events, function(actionName, type){
 				var action = K.isFunction(actionName) ? actionName : self[actionName];
 			
-				Live[action](subject, type, selector, action);
+				Live[actionType](subject, type, selector, action);
 			});
 		});
 	},
@@ -77,8 +79,6 @@ Presenter = K.Class({
 	_applyChange: function(){
 		
 	}
-	
-	
 });
 
 
@@ -128,10 +128,15 @@ K.Class.setAttrs(Presenter, {
 	 
 	 */
 	events: {
+        setter: function(v){
+            this.events || (this.events = {});
+            
+            // user option has higher priority
+            K.mix(this.events, v);
+        },
+        
 		getter: function(v){
-		
-			// user options has higher priority
-			return v || this.events || {};
+			return this.events || {};
 		}
 	},
 	
@@ -145,10 +150,6 @@ K.Class.setAttrs(Presenter, {
 	},
 	
 	model: {
-		setter: function(v){
-			return this._model = v;
-		},
-		
 		getter: function(v){
 			if(!v){
 				var M = this.model || Model;
@@ -162,8 +163,9 @@ K.Class.setAttrs(Presenter, {
 	},
 	
 	view: {
-		setter: function(v){
-			return this.view = v;
+		getter: function(v){
+            // user option has higher priority
+			return v || this.view;
 		}
 	},
 	
