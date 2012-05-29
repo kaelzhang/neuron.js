@@ -18,7 +18,7 @@ function getStorage(host, type){
 function addOrRemoveEvent(host, type, fn, toAdd){
 	var storage = getStorage(host, type),
 		i = 0,
-		len = storage.lenth;
+		len = storage.length;
 		
 	if(toAdd){
 		// add an event
