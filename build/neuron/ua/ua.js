@@ -57,6 +57,10 @@ if(platform !== DEFAULT_PLATFORM){
 /**
  change log:
  
+ 2012-05-16  Kael:
+ TODO:
+ A. support detect a specified userAgent text
+ 
  2011-09-03  Kael Zhang:
  - create file
  - remove KM.UA.chrome and KM.UA.safari

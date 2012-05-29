@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+<title>Speed Analytics</title>
+<script type="text/javascript">
+
+function dpga(){};
+
+</script>
+
+<link rel="stylesheet" type="text/css" href="http://www.humblesoftware.com/static/css/hsd.css?d2893" />
+<link rel="stylesheet" type="text/css" href="http://www.humblesoftware.com/static/css/hsd-flotr2.css?d2893" />
+
+<style type="text/css">
+html,body,ul,ol,li,dl,dt,dd,p,h1,h2,h3,h4,h5,h6,a,img,th,td,form,fieldset,iframe,object,pre,code,legend,blockquote{margin:0;padding:0;border:0;outline:0;}ol,ul{list-style:none;}:focus{outline:0;}strong{font-weight:bold;}address,caption,cite,em,code,dfn,th,var{font-style:normal;font-weight:normal;}form label{cursor:pointer;}input,button,textarea{font-family:inherit;font-size:100%;}table{border-collapse:separate;}caption,th,td{font-weight:normal;}h1,h2,h3,h4,h5,h6{font-weight:normal;font-size:100%;}
+
+body{padding:10px;}
+
+.fields{margin-bottom:5px;}
+
+.fields:after{clear:both; display:block; content:'\20'; height:0;}
+
+.fields .column{float:left; margin-right:10px;}
+
+.fields label{display:block; float:none; text-transform: uppercase; font-weight: bold; width:auto; margin-bottom:3px;}
+
+.fields textarea{width:450px; height:200px; border:2px solid #ccc; border-radius:2px;}
+
+.fields .err{border-color:red;}
+
+.fields textarea:focus{border-color:#5fa3f5;}
+
+.btn, .btn:hover, .btn:active, .btn:visited{
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	color: #ffffff;
+	padding: 10px 20px;
+	background: -moz-linear-gradient(
+		top,
+		#ff2819 0%,
+		#ab0000);
+	background: -webkit-gradient(
+		linear, left top, left bottom, 
+		from(#ff2819),
+		to(#ab0000));
+	border-radius: 0px;
+	-moz-border-radius: 0px;
+	-webkit-border-radius: 0px;
+	border: 1px solid #7d0000;
+	-moz-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	-webkit-box-shadow:
+		0px 1px 3px rgba(000,000,000,0.5),
+		inset 0px 0px 2px rgba(255,255,255,0.7);
+	text-shadow:
+		0px -1px 0px rgba(000,000,000,0.4),
+		0px 1px 0px rgba(255,255,255,0.3);
+		
+    text-decoration: none;
+    outline:none;
+}
+
+.graph-wrap .graph{width:450px; height:300px; float:left; margin-right:10px; margin-bottom:10px;}
+
+.note {margin-bottom:10px; display:none; border-top: 1px solid #ddd; padding-top:10px;}
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="fields">
+    <div class="data-relative column">
+        <label for="data-relative">relative cost</label>
+        <textarea id="data-relative"></textarea>
+    </div>
+    <div class="data-now column">
+        <label for="data-now">current cost</label>
+        <textarea id="data-now"></textarea>
+    </div>
+    <div class="data-ua column">
+        <label for="data-ua">userAgent</label>
+        <textarea id="data-ua"></textarea>
+    </div>
+
+</div>
+
+<a href="javascript:" id="start" class="btn">Analysis!</a> <br/><br/>
+
+<div class="note">
+    Y轴为用户数，X轴为耗时减少的比例 = (currentCost - pastCost) / currentCost <br>
+    currentCost -> 目前（改版后）消耗的时间， pastCost -> 改版前消耗的时间<br>
+    X轴数值越大，说明对比优化前，该用户页面渲染花费的时间越少，性能越高。比如 X = 50%，则说明耗时相比之前减少一半。
+</div>
+<div class="graph-wrap">
+</div>
+
+
+
+<script src="http://i1.dpfile.com/lib/neuron.min.v17.js"></script>
+<script src="http://www.humblesoftware.com/static/js/hsd-flotr2.js?d2893"></script>
+<!-- <script src="http://www.humblesoftware.com/static/js/hsd-flotr2-examples.js?d2893"></script> -->
+
+
+<script type="text/javascript">
+
+var
+
+REGEX_UA_MATCHER = {
+	
+	// the behavior of Google Chrome, Safari, Maxthon 3+, 360 is dependent on the engine they based on
+	// so we will no more detect the browser version but the engine version
+	
+	// KM.UA.chrome and KM.UA.safari are removed
+	webkit	: /webkit[ \/]([^ ]+)/,
+	opera	: /opera(?:.*version)?[ \/]([\w.]+)/,
+	ie		: /msie ([\w.]+)/,
+	mozilla	: /mozilla(?:.*? rv:([\w.]+))?/,
+	ipad    : /ipad/,
+};
+
+
+var 
+
+Parser = DP.Class({
+    initialize: function(past, now, ua){
+        this.past = past;
+        this.now = now;
+        this.ua = ua;
+    },
+    
+    _parseUA: function(userAgent){
+        var UA = {};
+            
+        // userAgent
+        ['webkit', 'opera', 'ie', 'ipad', 'mozilla'].forEach(function(name){
+            if(UA.name){
+                return;
+            }
+        
+    		var match = userAgent.toLowerCase().match(REGEX_UA_MATCHER[name]);
+    			
+    		if(match){
+    			UA.name = name;
+    			UA.ver = match[1] || 0;
+    		}
+        });
+        
+        return UA;
+    },
+    
+    _getAverageData: function(data, useClean){
+        data = data.split(',').filter(function(d){
+            return !!d;
+        }).map(function(d){
+            return parseInt(d);
+        });
+        
+        if(useClean){
+            
+            data = data
+                .sort(function(a, b){return a - b;})
+                
+                // remove duplicate items
+                .reduce(function(prev, current){
+            
+                    
+                    if(current !== prev[prev.length - 1]){
+                        prev.push(current);
+                    }
+                    
+                    return prev;
+                
+                
+                }, [])
+                
+                // remove the largest and the smallest  
+                .slice(1, data.length - 1);
+        }
+        
+        return data.reduce(function(prev, current){
+            return prev + current;
+        }) / data.length;
+    },
+    
+    parse: function(space){
+        var self = this,
+            past = self.past,
+            now = self.now,
+            ua = self.ua;
+        
+        self.costChanged = [];
+    
+        past.forEach(function(p, i){
+            var c = now[i],
+                pa = self._getAverageData(p, true),
+                ca = self._getAverageData(c, true),
+                
+                per = (pa - ca) / pa;
+                
+            self.costChanged.push(per);
+        });
+        
+        self._parseResultRegion(space);
+        
+        return self;
+    },
+    
+    _parseResultRegion: function(space){
+        var self = this,
+            past = self.past,
+            
+            result = {all: {sum:0, positive: 0}, bad: {sum: 0}};
+            
+        past.forEach(function(p, i){
+            var ua = self._parseUA(self.ua[i]),
+                per = self.costChanged[i],
+                pos = Math.floor(per / space);
+            
+            result[pos] || (result[pos] = {sum:0});
+            DP.isNumber(result[pos][ua.name]) || (result[pos][ua.name] = 0);
+            DP.isNumber(result.all[ua.name]) || (result.all[ua.name] = 0);
+            
+            result[pos].sum ++;
+            result[pos][ua.name] ++;
+            result.all.sum ++;
+            result.all[ua.name] ++;
+            
+            if(per > 0){
+                result.all.positive ++;
+            }else{
+            
+                if(pos < -4){
+                    DP.isNumber(result.bad[ua.name]) || (result.bad[ua.name] = 0);
+                    result.bad.sum ++;
+                    result.bad[ua.name] ++;
+                }
+                
+                if(pos < -100){
+                
+                    console.log(
+                        'slow sample found >>',
+                        'ua:',          ua.name + ua.ver,
+                        '| pastCost:',   self._getAverageData(self.past[i], true), 
+                        '| curCost:',    self._getAverageData(self.now[i], true), 
+                        '| %:',           self.costChanged[i]
+                    );
+                }
+            }
+        });
+        
+        console.log('parsed result detail >>', result);
+        
+        return self.result = result;
+    },
+    
+    flotr: function(ua){
+        var self = this,
+            uaList = ua ? [ua] : ['ie', 'webkit', 'mozilla', 'opera', 'ipad'],
+            container = $.create('div', {'class': 'graph'}).inject($('.graph-wrap')),
+            
+            flotrData = uaList.map(function(ua){
+                return {
+                    data: [],
+                    label: ua
+                }
+            }),
+            
+            i = -5,
+            result;
+            
+        for(; i < 11; i ++){
+            result = (i == -5 ? self.result.bad : self.result[i]) || {};
+            
+            uaList.forEach(function(ua, index){
+                flotrData[index].data.push([i / 10, result[ua] || 0]);
+            });
+        }
+        
+        console.log('flotr data >>', flotrData)
+        
+        Flotr.draw(container.el(0), flotrData, {
+            legend: {
+                backgroundColor: "#D2E8FF"
+            },
+            bars: {
+                show: true,
+                stacked: true,
+                horizontal: false,
+                barWidth: 0.06,
+                lineWidth: 1,
+                shadowSize: 0
+            },
+            grid: {
+                verticalLines: false,
+                horizontalLines: true
+            }
+        });
+        
+        return self;
+    }
+});
+
+
+var ev = {
+        focus: function(){
+            $(this).removeClass('err');
+        }
+    },
+    p = $('#data-relative').on(ev),
+    n = $('#data-now').on(ev),
+    u = $('#data-ua').on(ev);
+
+$('#start').on('click', function(e){
+
+e.prevent();
+
+var past = p.val(),
+    now = n.val(),
+    ua = u.val();
+    
+if(!past){
+    return p.addClass('err');
+}
+
+if(!now){
+    return n.addClass('err');
+}
+
+if(!ua){
+    return u.addClass('err');
+}
+
+$('.note').css('display', 'block');
+    
+var 
+
+parser = new Parser(past.split('\n'), now.split('\n'), ua.split('\n'));
+
+parser.parse(.1).flotr().flotr('ie').flotr('webkit').flotr('mozilla').flotr('opera').flotr('ipad');
+
+});
+
+
+</script>
+
+
+</body>
+
+</html>

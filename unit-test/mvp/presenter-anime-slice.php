@@ -71,7 +71,7 @@ Presenter, Model, Router, History, Live, Ajax){
 var NaviModel = K.Class({
 	Extends: Model,
 
-	_read: function(callback){
+	read: function(callback){
 		new Ajax({
 			method: 'GET',
 			url: '/unit-test/mvp/handler/navi.php',
