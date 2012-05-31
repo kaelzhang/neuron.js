@@ -1,4 +1,4 @@
-KM.define(['./core'], function(K, require){
+KM.define(function(K){
 
 
 function Transition(transition, params){

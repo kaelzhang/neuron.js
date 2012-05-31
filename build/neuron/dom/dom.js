@@ -222,7 +222,7 @@ extend({
 	},
 	
 	all: function(selector){
-		return new DOM( SELECTOR.find(selector, this.context) ); 
+		return new DOM( SELECTOR.find(selector, this.context.slice(0, 1)) );
 	},
 	
 	/**

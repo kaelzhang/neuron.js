@@ -1,7 +1,12 @@
 <?php
 
-function inc($path){
-	?><script src="http://neuron.lc/src/<?php
+function inc($path, $package = false){
+
+    if($package){
+        ?><script src="http://neuron.lc/passive-mode/src/<?php	
+	}else{
+        ?><script src="http://neuron.lc/src/<?php
+	}
 	
 		echo $path;
 	
@@ -111,8 +116,14 @@ inc("neuron/dom/manipulate.js");
 inc("neuron/dom/create.js");
 inc("neuron/dom/domready.js");
 
-inc("neuron/loader/loader.js");
-inc("neuron/loader/config/alpha.js");
+inc("neuron/loader/assets.js");
+
+
+// inc("neuron/loader/active.js");
+// inc("neuron/loader/config/alpha.js");
+
+inc("neuron/loader/passive.js");
+
 
 inc("neuron/biz/biz.js");
 

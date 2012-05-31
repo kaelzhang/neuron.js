@@ -506,7 +506,7 @@ DOM.extend({
 			
 			name in ATTR_KEY ? el[prop] = ''
 				: ATTR_BOOLS.indexOf(prop) !== -1 ? el[prop] = false
-					: self.removeAttribute(prop);
+					: el.removeAttribute(prop);
 	},
 	
 	inject: function(element, where){
@@ -544,6 +544,8 @@ DOM.extend({
 			children.forEach(cleanElement);
 			disposeElement.call(el);
 		});
+		
+		context.length = 0;
 		
 		return NULL;
 	}
