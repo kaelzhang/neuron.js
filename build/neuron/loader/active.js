@@ -48,7 +48,7 @@ _script_map = {},
 /**
  * map -> namespace: config
  */
-_apps_map = {},
+// _apps_map = {},
 
 /**
  * configurations:
@@ -64,7 +64,6 @@ _define_buffer_on = false,
 // fix onload event on script node in ie6-9
 use_interactive = K.UA.ie < 10,
 interactive_script = NULL,
-_pending_script = NULL,
 
 // @type {function()}
 warning,
@@ -76,13 +75,13 @@ Loader,
  * @const
  */
 // ex: `~myModule`
-USER_MODULE_PREFIX = '~',
+// USER_MODULE_PREFIX = '~',
 APP_HOME_PREFIX = '~/',
 
 // ex: Checkin::index
 APP_NAMESPACE_SPLITTER = '::',
 
-REGEX_FILE_TYPE = /\.(\w+)$/i,
+// REGEX_FILE_TYPE = /\.(\w+)$/i,
 
 /**
  * abc 			-> js: abc.js		
@@ -160,11 +159,13 @@ asset = K.load;
  *  	{object} 	module exports
  */
 function define(name, dependencies, factory){
-	var version, info, uri, identifier,
-		arg = arguments,
-		last = arg.length - 1,
-		EMPTY = '',
-		_def = _define;
+	var 
+	
+	version, info, uri, identifier,
+	arg = arguments,
+	last = arg.length - 1,
+	EMPTY = '',
+	_def = _define;
 	
 	if(arg[last] === true){					// -> define(uri1, uri2, uri3, true);
 		arg.forEach(function(path, i){
@@ -239,22 +240,17 @@ function _define(name, identifier, dependencies, factory, uri){
 		 	exports:	{Object}	module exports
 		 }
 	 */
-	var mod = {},
-		path_info,
-		existed,
-		active_script_uri;
+	var 
+	
+	mod = {},
+	path_info,
+	existed,
+	active_script_uri;
 	
 	/**
 	 * get module object 
 	 */
 	if(name){
-		// mod.name = name;
-		// pkg = _last_anonymous_mod;
-		
-		// modules defined in packages will be treated as explicit-defined modules
-		// if(pkg){
-		//	isImplicit = true;
-		// }
 		
 		name.indexOf('/') !== -1 && !_define_buffer_on && warning(100, name);
 	
@@ -281,7 +277,7 @@ function _define(name, identifier, dependencies, factory, uri){
 			active_script_uri = getInteractiveScript()
 			
 				// Kael:
-				// if no interactive script, fallback to _pending_script
+				// if no interactive script, fallback to asset.__pending
 				// if the script is in the cache, there is actually no interactive scripts when it's executing
 				|| {};
 				
@@ -367,7 +363,7 @@ function _define(name, identifier, dependencies, factory, uri){
 	// 		KM.define('http://myurl', function(){…});
 	// </code>
 	// it will be saved as `~http://myurl`;
-	name && memoizeMod(USER_MODULE_PREFIX + name, mod);
+	// name && memoizeMod(USER_MODULE_PREFIX + name, mod);
 	
 	if(identifier){
 		existed = getModuleByIdentifier(identifier);
@@ -407,10 +403,12 @@ function provide(dependencies, callback){
  * @param {boolean=} noCallbackArgs whether callback method need arguments, for inner use
  */
 function _provide(dependencies, callback, env, noCallbackArgs){
-	var counter = dependencies.length,
-		args = [K],
-		arg_counter = 0,
-		cb;
+    var 
+
+    counter = dependencies.length,
+    args = [K],
+    arg_counter = 0,
+    cb;
 		
 	if(K.isFunction(callback)){
 		cb = noCallbackArgs ?
@@ -458,22 +456,24 @@ function _provide(dependencies, callback, env, noCallbackArgs){
  * @param {undefined=} undef
  */
 function getOrDefine(name, env, noWarn){
-	var referenceURI = env.r, 
-		mod, 					// module data
-		namespace, namesplit,	// app data 
-		warn,
+	var 
+	
+	referenceURI = env.r, 
+	   
+	// module data
+	mod,
 		
-		// if key is '', objects will be treated as arrays
-		DEFAULT_NS = '~',
-		is_user_module,
-		is_home_module;
+	// app data  					
+	namespace,	
+	namesplit,
+	app_home,
+	is_app_home_module;
 	
 	namesplit = name.split(APP_NAMESPACE_SPLITTER);
 	if(namesplit[1]){
 		name = namesplit[1];
-		namespace = namesplit[0];
-	}else{
-		namespace = DEFAULT_NS;
+		namespace = namesplit[0].toLowerCase();
+		app_home = _config.appBase + namespace + '/';
 	}
 	
 	/**
@@ -489,25 +489,17 @@ function getOrDefine(name, env, noWarn){
 	 * 'dom'		-> top, user mod or lib mod
 	 * 'NC::dom'	-> top, no user mod
 	 */
-	 
-	// Only if the there's no referenceURI, may the module be a user mod.
-	// defining a user module with a namespace is forbidden
-	// example: 'dom'
-	if(!referenceURI && !namespace){
-		// get user module
-		mod = getModuleByIdentifier(USER_MODULE_PREFIX + name);
-		warn = !noWarn && !_allow_undefined_mod && !mod;
-		is_user_module = !!mod;
-	}
-	
 	if(!mod){
-		var uri, identifier, app, 
-			home_prefix = APP_HOME_PREFIX;
+	
+		var 
+		
+		uri, identifier, app, 
+		home_prefix = APP_HOME_PREFIX;
 	
 		// in [Checkin::index].js
 		// ex: '~/dom' 
 		//     -> name: 'dom', namespace: 'Checkin'
-		if(is_home_module = name.indexOf(home_prefix) === 0){
+		if(is_app_home_module = name.indexOf(home_prefix) === 0){
 			name = name.substr(home_prefix.length);
 		}
 		
@@ -515,21 +507,14 @@ function getOrDefine(name, env, noWarn){
 		// '~/dom'
 		// './dom'
 		// '../dom'
-		if(is_home_module || isRelativeURI(name)){
+		if(is_app_home_module || isRelativeURI(name)){
 			namespace = env.n;
 		}
-		
-		app = _apps_map[namespace];
-		
-		// app must be defined, any configuration error will throw
-		if(!app){
-			error(540, namespace);
-		}
 	
-		uri = moduleNameToURI(name, referenceURI, app.base);
+		uri = moduleNameToURI(name, referenceURI, app_home);
 		identifier = generateModuleURI_Identifier(uri).i
 		mod = getModuleByIdentifier(identifier);
-		warn = warn && !mod;
+		// warn = warn && !mod;
 	}
 	
 	if(!mod){
@@ -537,13 +522,9 @@ function getOrDefine(name, env, noWarn){
 		mod = _define('', undef, undef, uri);
 	}
 	
-	if(!is_user_module){
-	
-		// store namespace to mod object
-		mod.ns = namespace;
-	}
-	
-	warn && warning(110, name);
+	mod.ns = namespace;
+
+	// warn && warning(110, name);
 	
 	return mod;
 };
@@ -910,11 +891,12 @@ function isDebugMode(){
 /**
  * the reference uri for a certain module is the module's uri
  * @param {string=} referenceURI
+ * @param {string=} base
  */
 function absolutizeURI(uri, referenceURI, base){
 	var ret;
 	
-	base || (base = _config.base);
+	base || (base = _config.libBase);
 	referenceURI || (referenceURI = base);
 	
 	// absolute uri
@@ -1027,6 +1009,7 @@ K.mix(define, {
  			'lib/';	 // WRONG!
    }
  */
+/*
 function prefix(name, config){
 	var map = _apps_map;
 
@@ -1035,6 +1018,7 @@ function prefix(name, config){
 		config.base = _config.base + config.base;
 	}
 };
+*/
 
 
 // use extend method to add public methods, 
@@ -1052,16 +1036,16 @@ K.__loader = Loader = {
 
 	// no fault tolerance
 	'config': function(cfg){
+    	cfg.libBase = '/' + cfg.libBase;
+    	cfg.appBase = '/' + cfg.appBase;
+	
 		_config = cfg;
 		
 		warning = cfg.warning;
 		error = cfg.error;
 		
 		Loader['config'] = NOOP;
-	},
-	
-	// no fault tolerance
-	'prefix': prefix
+	}
 };
 
 
