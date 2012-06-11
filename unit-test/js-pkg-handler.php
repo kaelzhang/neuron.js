@@ -1,7 +1,7 @@
 <?php
 
 $mod = $_GET['mod'];
-$root = preg_replace('/\/[^\/]+$/', '', __DIR__) . '/src/';
+$root = preg_replace('/\/[^\/]+$/', '', __DIR__) . '/lib/';
 
 $content = file_get_contents($root . $mod . '.js');
 

@@ -3,7 +3,7 @@
 function inc($path, $package = false){
 
     if($package){
-        ?><script src="http://neuron.lc/passive-mode/src/<?php	
+        ?><script src="http://neuron.lc/passive-mode/lib/<?php
 	}else{
         ?><script src="http://neuron.lc/lib/<?php
 	}

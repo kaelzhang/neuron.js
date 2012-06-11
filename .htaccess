@@ -11,7 +11,7 @@ RewriteRule ^(.+)\.v\d+(?:\.\d+)*\.(js|css|png|jpg|gif|bmp|swf)$ $1.$2 [L]
 RewriteEngine On
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule passive-mode\/src\/((?:[a-zA-Z0-9]+\/)*[a-zA-Z0-9]+)\.js$ /unit-test/js-pkg-handler.php?mod=$1 [L]
+RewriteRule passive-mode\/lib\/((?:[a-zA-Z0-9]+\/)*[a-zA-Z0-9]+)\.js$ /unit-test/js-pkg-handler.php?mod=$1 [L]
 
 
 </IfModule>
