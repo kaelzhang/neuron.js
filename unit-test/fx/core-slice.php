@@ -6,6 +6,8 @@
 
 <div id="tween-box"></div>
 
+
+
 <script>
 
 /*
@@ -17,7 +19,16 @@ KM.provide('fx/tween', function(K, Tween){
 });
 */
 
-KM.provide(['fx/tween', 'fx/easing'], function(K, tween, Easing){
+KM.define.on();
+
+KM.define('/unit-test/one/a.js', [], function(){
+   return true;
+});
+
+KM.define.off();
+
+
+KM.provide(['fx/tween', 'fx/easing', 'one::a'], function(K, tween, Easing){
 	new tween('#tween-box', {
 		duration: 3000,
 		property: 'left',
@@ -28,3 +39,14 @@ KM.provide(['fx/tween', 'fx/easing'], function(K, tween, Easing){
 
 
 </script>
+
+<?php
+
+/*
+inc('fx/core.js', true);
+inc('fx/tween.js', true);
+inc('fx/css.js', true);
+inc('fx/easing.js', true);
+*/
+    
+?>

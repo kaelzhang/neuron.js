@@ -17,73 +17,9 @@ function inc($path, $package = false){
 // use strict mode
 ?><script>'use strict';
 
-
-(function(){
-
-var host = window;
-
-var REGEX_PATH_CLEANER_MIN = /\.min/i,
-	REGEX_PATH_CLEANER_VERSION = /\.v(?:\d+\.)*\d+/i;
-
-function CDNHasher(evidence){
-	function hashToNumber(s){
-		return (s || '').length % 3 + 1;
-	};
-	
-	return 'http://i' + hashToNumber(evidence) + '.kael.lc';
-	// return 'http://neuron.lc:80';
-};
-
-
-function santitizer(identifier){
-	return identifier.replace(REGEX_PATH_CLEANER_MIN, '').replace(REGEX_PATH_CLEANER_VERSION, '');
-};
-
-
-/**
- * @param {Object=} conf {
-	 	base: 				{string} root "path" of module library
-	 	allowUndefinedMod: 	{boolean}
-	 	enableCDN:			{boolean}
-	 	CDNHasher: 			{function}
-	 }
- */
 var __loaderConfig = {
-	// root path of module files
-	// base: 		'/',
-	
-	// enableCDN:	true,
-	
-	// @return: the domain of either cdn server
-	// CDNHasher:	CDNHasher,
-	
-	santitizer: santitizer,
-	
-	warning: host.console && console.warn ?
-		function(msg){
-			console.warn('KM Loader: ' + msg);
-		}
-		: NOOP,
-	
-	/**
-	 * custom error type
-	 * @constructor
-	 */
-	error: function loaderError(message){
-		throw {
-			message:	message,
-			toString:	function(){
-				return 'KM Loader: ' + message;
-			}
-		};
-	}
+    server: 'i{n}.neuron.lc'  
 };
-
-// window.__loaderConfig = __loaderConfig;
-
-})();
-
-
 
 </script>
 <!-- <script src="http://i1.static.dp:1337/trunk/lib/neuron.js"></script> -->
@@ -122,8 +58,10 @@ inc("neuron/loader/assets.js");
 inc("neuron/loader/active.js");
 inc("neuron/loader/active-config.js");
 
-// inc("neuron/loader/passive.js");
-// inc("neuron/loader/passive-config.js");
+/*
+inc("neuron/loader/passive.js");
+inc("neuron/loader/passive-config.js");
+*/
 
 inc("neuron/biz/biz.js");
 
@@ -134,7 +72,7 @@ inc("neuron/cleaner.js");
 
 var DP = KM;
 
-KM.__loader.init();
+KM.__loader.init && KM.__loader.init();
 
 
 function log(msg){
