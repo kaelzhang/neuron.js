@@ -5,7 +5,7 @@ RewriteEngine On
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f 
 # RewriteRule ^((?:.(?!(?:\.min|\.v(?:\d+\.)*\d+)))*[^.])(?:\.min)?(?:\.v\d+(?:\.\d+)*)?\.(js|css|png|jpg|gif|bmp|swf)$ $1.$2 [L]
-RewriteRule ^(.+)\.v\d+(?:\.\d+)*\.(js|css|png|jpg|gif|bmp|swf)$ $1.$2 [L]
+RewriteRule ^(.+)\.v\d+\.(js|css|png|jpg|gif|bmp|swf)$ $1.$2 [L]
 
 
 RewriteEngine On

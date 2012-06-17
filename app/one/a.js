@@ -1,3 +1,3 @@
-KM.define(function(){
+KM.define(['~/b'], function(){
     return true;
 });

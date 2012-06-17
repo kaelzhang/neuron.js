@@ -10,25 +10,20 @@
 
 <script>
 
-/*
-KM.provide('fx/tween', function(K, Tween){
-	new Tween('#tween-box', {
-		property: 'left',
-		duration: 3000
-	}).start(1000);
-});
-*/
+KM.define('http://i3.neuron.lc/app/one/a.v1.js', true);
+// KM.define('http://i1.js.lc/Neuron/lib/fx/core.js', true);
+
 
 KM.define.on();
 
-KM.define('/unit-test/one/a.js', [], function(){
+KM.define('switch/core.js', [], function(){
    return true;
 });
 
 KM.define.off();
 
 
-KM.provide(['fx/tween', 'fx/easing', 'one::a'], function(K, tween, Easing){
+KM.provide(['fx/tween', 'fx/easing', 'switch/core', 'one::a'], function(K, tween, Easing){
 	new tween('#tween-box', {
 		duration: 3000,
 		property: 'left',

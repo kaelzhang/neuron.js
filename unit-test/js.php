@@ -18,7 +18,8 @@ function inc($path, $package = false){
 ?><script>'use strict';
 
 var __loaderConfig = {
-    server: 'i{n}.neuron.lc'  
+    server: 'i{n}.neuron.lc',
+    libServer: 'i{n}.js.lc/Neuron'
 };
 
 </script>
