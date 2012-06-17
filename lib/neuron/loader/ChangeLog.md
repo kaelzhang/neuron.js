@@ -10,14 +10,18 @@ marks:
 
 ##### 2012-06-17  Kael:
 
-- TODO[06-08]
+- TODO[06-08].A
+- improve active loaders, now active loader could specify libBase and
+appBase with different locations
+- remove KM.app method.
+- unit-test cases and environment configuration updated
 	
 ##### 2012-06-08  Kael:
 
 TODO:
 
-- split logic of module loading and generating module identifiers
-- backword compatibility with passive mode
+A. split logic of module loading and generating module identifiers
+B. backword compatibility with passive mode
 
 ##### 2012-05-10  Kael:
 
