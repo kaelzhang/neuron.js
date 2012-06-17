@@ -7,6 +7,10 @@ marks:
 - X discarded scheme
 - * unimportant
 - ! important and of high priority
+
+##### 2012-06-17  Kael:
+
+- TODO[06-08]
 	
 ##### 2012-06-08  Kael:
 
