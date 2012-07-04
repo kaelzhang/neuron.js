@@ -38,9 +38,9 @@ inc("neuron/oop/attrs.js");
 inc("neuron/oop/events.js");
 inc("neuron/oop/super.js");
 
-inc("neuron/selector/finder.js");
-inc("neuron/selector/parser.js");
-inc("neuron/selector/adapter.js");
+inc("neuron/slick/finder.js");
+inc("neuron/slick/parser.js");
+inc("neuron/slick/adapter.js");
 
 inc("neuron/ua/ua.js");
 
