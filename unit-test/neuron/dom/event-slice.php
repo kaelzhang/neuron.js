@@ -2,7 +2,7 @@
 .box{border:1px solid gray; padding:10px; background:white; zoom:1;}
 .box-container{width:500px;}
 
-#dom-event-mouse-enter-leave{border:1px solid #000; width:100px; height:100px;}
+#dom-event-mouse-enter-leave{border:1px solid #000; width:400px; height:400px;}
 
 </style>
 
