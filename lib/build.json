@@ -15,9 +15,9 @@
 			"oop/attrs.js",
 			"oop/events.js",
 
-			"selector/finder.js",
-			"selector/parser.js",
-			"selector/adapter.js",
+			"slick/finder.js",
+			"slick/parser.js",
+			"slick/adapter.js",
 
 			"ua/ua.js",
 
@@ -30,15 +30,15 @@
 			"dom/create.js",
 			"dom/domready.js",
 			
+			"loader/assets.js",
 			"loader/passive.js",
 			"loader/passive-config.js",
 			
 			"biz/biz.js",
-			"biz/neuron.js",
-			"biz/hippo.js",
-			"biz/main.js",
 
-			"cleaner.js"
+			"cleaner.js" // ,
+			
+			// "ext-notrack/hippo.js"
 		]
 	}, {
 		"folder": "neuron",
@@ -55,9 +55,9 @@
 			"oop/attrs.js",
 			"oop/events.js",
 
-			"selector/finder.js",
-			"selector/parser.js",
-			"selector/adapter.js",
+			"slick/finder.js",
+			"slick/parser.js",
+			"slick/adapter.js",
 
 			"ua/ua.js",
 
@@ -70,15 +70,15 @@
 			"dom/create.js",
 			"dom/domready.js",
 			
+			"loader/assets.js",
 			"loader/active.js",
 			"loader/active-config.js",
 			
 			"biz/biz.js",
-			"biz/neuron.js",
-			"biz/hippo.js",
-			"biz/main.js",
 
-			"cleaner.js"
+			"cleaner.js" //,
+			
+			// "ext-notrack/hippo.js"
 		]
 	}]
 }
