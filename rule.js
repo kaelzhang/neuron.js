@@ -38,11 +38,11 @@
         this.produce = function (rule) {
 			
 			
-			if(typeof rule == "string"){
+			if(typeof rule === "string"){
 				rule = {test:rule};	
 			}
 			
-			if(typeof rule.test == "string"){
+			if(typeof rule.test === "string"){
 				rule = getPreset(rule);
 			}
 			
@@ -66,19 +66,23 @@
 
     // 必填
     Rule.add('required', function (v) {
-        return !!v && v.trim() != '';
+    	if(typeof v === "string"){
+	    	return v.trim() !== '';
+    	}else{
+      	  return !!(v === 0 || v);
+        }
     });
     
     Rule.add('notempty',function(v){
-    	return v.length && v.length > 0;
+    	return !!(v && (v.length !== undefined) && v.length > 0);
     });
 
     Rule.add('equal', function (v, v2) {
-        return v == v2;
+        return v === v2;
     });
 
     Rule.add('unequal', function (v, v2) {
-        return v != v2;
+        return v !== v2;
     });    
 
     // 最大
@@ -92,7 +96,13 @@
 	});
 
     Rule.add('allnumber',function (v) {
-        return !/^\d+$/.test(v);
+    	if(v && v.constructor === Array){
+	    	return !!(v.length && !v.some(function(num){
+		    	return !/^\d+$/.test(num);
+	    	}));
+    	}else{
+        	return !!/^\d+$/.test(v);
+        }
     });
 
     Rule.add('in', function (v, str) {
