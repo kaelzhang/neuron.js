@@ -124,7 +124,7 @@ DP.makeArray
 将目标包装，转化成数组
 
 ### 语法
-	DP.makeArray(array, host, force)
+	DP.makeArray(array, host)
 	
 ### 返回
 {Array} 包装或者转化为的数组
