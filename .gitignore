@@ -15,3 +15,4 @@ old
 # *.php
 index.php
 build/*.js
+jscoverage_lib/
