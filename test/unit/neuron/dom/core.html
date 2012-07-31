@@ -1,0 +1,312 @@
+<style>
+.dom-core-nested-div, .dom-core-form{
+    display:none;
+}
+</style>
+
+<h1 class="ut-title">DOM/CORE</h1>
+
+<div id="dom-core-nested-div" class="dom-core-nested-div">
+    <div>
+        <div>
+            <div></div>
+        </div>
+    </div>
+    <div></div>
+</div>
+<div id="dom-core-nested-div-2" class="dom-core-nested-div">
+    <div>
+        <div>
+            <div></div>
+        </div>
+    </div>
+    <div></div>
+</div>
+
+<form id="dom-core-form" class="dom-core-form" action="formaction">
+	<label for="action" id="label-for">Action:</label>
+	<input type="text" name="action" value="Test" id="text1" maxlength="30"/>
+	<input type="text" name="text2" value="Test" id="text2" disabled="disabled"/>
+	<input type="radio" name="radio1" id="radio1" value="on"/>
+
+	<input type="radio" name="radio2" id="radio2" checked="checked"/>
+	<input type="checkbox" name="check" id="check1" checked="checked"/>
+	<input type="checkbox" id="check2" value="on"/>
+
+	<input type="hidden" name="hidden" id="hidden1"/>
+	<input type="text" style="display:none;" name="foo[bar]" id="hidden2"/>
+
+	<input type="text" id="name" name="name" value="name" />
+	<input type="search" id="search" name="search" value="search" />
+
+	<button id="button" name="button" type="button">Button</button>
+</form>
+
+<form id="dom-core-form-2" class="dom-core-form">
+    <input id="dom-core-input-id" />
+    <input id="dom-core-input-id-2" name="dom-core-input-id" />
+</form>
+
+
+<script>
+
+describe("Test env requirements", function(){
+    it("document.getElementById", function(){
+        
+        // in old ie, document.getElementById is not function type, so simply use !! instead
+        expect(!!document.getElementById).toBe(true);
+    });
+    
+    it("document.getElementsByTagName", function(){
+        expect(!!document.getElementsByTagName).toBe(true);
+    });
+    
+});
+
+describe('Constructor of $', function(){
+    var 
+    
+    $ = KM.DOM,
+    divs = $('div'),
+    main = $('#qunit-fixture');
+    
+    it('$().length === 0', function(){
+        expect($().length).toBe(0);
+    });
+
+    it('$(undefined).length === 0', function(){
+        expect($(undefined).length).toBe(0);
+    });
+    
+    it('$(null).length === 0', function(){
+        expect($(null).length).toBe(0);
+    });
+    
+    it("$('').length === 0", function(){
+        expect($('').length).toBe(0);
+    });
+    
+    it("$('#').length === 0", function(){
+        expect($('#').length).toBe(0);
+    });
+});
+
+
+describe("$(selector)", function(){
+    var 
+    
+    $ = KM.DOM;
+    
+    it("could get document.body by $('body')", function(){
+        expect($('body').length).toBe(1);
+    });
+    
+    it("$('body')[0] === document.body", function(){
+        expect($('body')[0]).toBe(document.body);
+    });
+    
+    it("could get only 2 direct <div> inside #dom-core-nested-div", function(){
+        expect($('#dom-core-nested-div > div').length).toBe(2);
+    });
+    
+    it("would be empty if no match found", function(){
+        expect($('#element-that-could-not-be-found').length).toBe(0);
+    });
+    
+    it("would not unexpectedly get element by name, if selector is #abc", function(){
+        expect($('#dom-core-input-id').length).toBe(1)
+        expect($('#dom-core-input-id')[0] === $('#dom-core-input-id-2')[0]).toBe(false);
+    });
+});
+
+
+describe("$(selector, context)", function(){
+    var $ = KM.DOM;
+    
+    it("context could be a selector string", function(){
+        expect($('div', '.dom-core-nested-div').length).toBe(8);
+    });
+    
+    it("context could be a Neuron DOM Object", function(){
+        expect($('div', $('.dom-core-nested-div') ).length).toBe(8);
+    });
+    
+    it("context could be a DOMElement", function(){
+        expect( $('div', document.getElementById('dom-core-nested-div')).length ).toBe(4);
+    });
+    
+    it("context could be an array of DOMElements", function(){
+        expect( 
+            $('div', [
+                document.getElementById('dom-core-nested-div'), 
+                document.getElementById('dom-core-nested-div-2')
+            ]).length 
+        ).toBe(8);
+    });
+    
+    it("context could be a Nodelist", function(){
+        expect(
+            $('div', document.getElementById('dom-core-nested-div').getElementsByTagName('div')).length
+        ).toBe(2);
+    });
+});
+
+
+describe('$ with element(s)', function(){
+    var 
+    
+    $ = KM.DOM,
+    
+    form = document.getElementById('dom-core-form'),
+    inputs = form.getElementsByTagName('input');
+    
+    
+    // can actually yield more than one, when iframes are included, the window is an array as well
+    it("Correct number of elements generated for $(window)", function(){
+        expect($(window).length).toBe(1);
+    });
+    
+    it('could initialize with an DOMElement', function(){
+        expect($(form).length).toBe(1);
+        expect($(form)[0] === form).toBe(true);
+    });
+    
+    it('could initialize with a NodeList', function(){
+        expect($(inputs).length).toBe(10);
+        expect($(inputs)[8] === inputs[8]).toBe(true);
+    });
+    
+    it('could initialize with an array of elements', function(){
+        expect($([ inputs[0], inputs[3] ]).length).toBe(2);
+        expect($([ inputs[0], inputs[3] ])[1] === inputs[3]).toBe(true);
+    });
+});
+
+
+describe('$ with dirty data', function(){
+    var 
+    
+    $ = KM.DOM;
+    
+    it('would santitize dirty data', function(){
+        expect( $([1,2,3]).length ).toBe(0);
+        expect( $([ document.body, null ]).length ).toBe(1);
+        expect( $([ undefined, document.body ])[0] === document.body ).toBe(true);
+    });
+    
+});
+
+
+describe('$.one()', function(){
+    var $ = KM.DOM;
+    
+    it("could get the first direct <p> inside #dom-core-nested-div", function(){
+        expect($.one('#dom-core-nested-div > div').length).toBe(1);
+    });
+    
+    it("$.one('#dom-core-nested-div > div')[0] === $('#dom-core-nested-div > div')[0]", function(){
+        expect($.one('#dom-core-nested-div > div')[0]).toBe($('#dom-core-nested-div > div')[0]);
+    });
+    
+    it("will returns a brandnew object", function(){
+        var div = $('.dom-core-nested-div');
+    
+        expect(div === div.one('div')).toBe(false);
+    });
+});
+
+
+describe('.find()', function(){
+    var
+    
+    $ = KM.DOM,
+    
+    div = $('#dom-core-nested-div');
+    
+    it("will find all matched child elements", function(){
+        expect(div.find('div').length).toBe(4);
+    });
+    
+    it("will find all elements' matched childNodes, and prevent duplication", function(){
+        var divs = $('.dom-core-nested-div div');
+    
+        expect(divs.find('div').length).toBe(4);
+    });
+    
+    it("will return an empty Neuron Object, if no arguments specified", function(){
+        expect($('.dom-core-nested-div div').find().length).toBe(0);
+    });
+    
+    it("will returns a brandnew object", function(){
+        var div = $('.dom-core-nested-div');
+    
+        expect(div === div.find('div')).toBe(false);
+    });
+    
+});
+
+
+describe(".count()", function(){
+    var 
+    
+    $ = KM.DOM;
+    
+    it("could get the number of contained elements", function(){
+        expect($('div').length === $('div').count()).toBe(true);
+    });
+});
+
+
+describe(".add()", function(){
+    var $ = KM.DOM;
+    
+    it("could add elements by selector", function(){
+        expect($('#dom-core-nested-div div').add('#dom-core-nested-div-2 div').length).toBe(8);
+    });
+    
+    it("could add elements by NodeList", function(){
+        expect($('#dom-core-nested-div div').add(
+            document.getElementById('dom-core-nested-div-2').getElementsByTagName('div')
+        ).length).toBe(8);
+    });
+    
+    it("could add elements by DOMElement", function(){
+        expect($('#dom-core-nested-div div').add(document.getElementById('dom-core-nested-div-2')).length).toBe(5);
+    });
+    
+    it("could add elements by Neuron DOM Object(contains one element)", function(){
+        expect( $('#dom-core-nested-div div').add($('#dom-core-nested-div-2')).length ).toBe(5);
+    });
+    
+    it("could add elements by Neuron DOM Object(contains several elements)", function(){
+        expect( $('#dom-core-nested-div div').add($('#dom-core-nested-div-2 div')).length ).toBe(8);
+    });
+    
+    it("will prevent duplication", function(){
+        var direct_divs = $('.dom-core-nested-div > div');
+    
+        expect( direct_divs.add($('.dom-core-nested-div div')).length ).toBe(8);
+    });
+    
+    it("will change the origin object", function(){
+        var divdiv = $('#dom-core-nested-div div');
+        expect( divdiv === divdiv.add('#dom-core-nested-div-2 div') ).toBe(true);
+        
+        var divdiv2 = $('#dom-core-nested-div div');
+        expect( divdiv2 === divdiv2.add(
+            document.getElementById('dom-core-nested-div-2').getElementsByTagName('div')
+        ) ).toBe(true);
+        
+        var divdiv3 = $('#dom-core-nested-div div');
+        expect( divdiv3 === divdiv3.add(
+            document.getElementById('dom-core-nested-div-2')
+        ) ).toBe(true);
+        
+        var divdiv4 = $('#dom-core-nested-div div');
+        expect( divdiv4 === divdiv4.add(
+            $('#dom-core-nested-div-2 div')
+        ) ).toBe(true);
+    });
+});
+
+</script>
