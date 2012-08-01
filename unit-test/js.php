@@ -44,7 +44,7 @@ inc("neuron/slick/adapter.js");
 
 inc("neuron/ua/ua.js");
 
-inc("neuron/dom/dom.js");
+inc("neuron/dom/core.js");
 inc("neuron/dom/feature.js");
 inc("neuron/dom/event.js");
 inc("neuron/dom/css.js");
@@ -54,8 +54,6 @@ inc("neuron/dom/create.js");
 inc("neuron/dom/domready.js");
 
 inc("neuron/loader/assets.js");
-
-
 inc("neuron/loader/active.js");
 inc("neuron/loader/active-config.js");
 
