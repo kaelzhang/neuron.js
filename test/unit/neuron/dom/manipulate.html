@@ -1,0 +1,329 @@
+<div id="dom-manipulate-match" class="my_class"></div>
+<div id="dom-manipulate-has-class" class="my_class"></div>
+<div id="dom-manipulate-add-class"></div>
+<div id="dom-manipulate-remove-class" class="my_class"></div>
+<div id="dom-manipulate-toggle-class"></div>
+<div id="dom-manipulate-inject"><div id="dom-manipulate-inject-existing"></div></div>
+<div id="dom-manipulate-grab"><div id="dom-manipulate-grab-existing"></div></div>
+<div id="dom-manipulate-empty">text node<div id="dom-manipulate-empty-elem"></div></div>
+<div id="dom-manipulate-html"></div>
+<div id="dom-manipulate-text"></div>
+<input id="dom-manipulate-val" type="hidden" />
+
+<select name="" id="dom-manipulate-val-select">
+	<option value="1">1</option>
+	<option value="2" selected>2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+</select>
+
+<div id="dom-manipulate-remove-data"></div>
+<div id="dom-manipulate-remove-attr" attr="myattr"></div>
+
+<div id="dom-manipulate-dispose" myattr="myattr"></div>
+<div id="dom-manipulate-destroy" myattr="myattr"></div>
+
+<script>
+
+	
+describe("Neuron: dom/manipulate",function(){
+
+var $ = NR.DOM;
+	
+	
+describe(".match()",function(){
+	it("should match class \"my_class\"",function(){
+		var el = $("#dom-manipulate-has-class");
+		expect(el.match(".my_class")).toBe(true);
+	});
+});
+
+describe(".hasClass()",function(){
+	it("should has class \"my_class\"",function(){
+		var el = $("#dom-manipulate-has-class");
+		expect(el.hasClass("my_class")).toBe(true);
+	});
+});
+
+describe(".addClass()",function(){
+	it("should has class \"my_class\" after added",function(){
+		var el = $("#dom-manipulate-add-class");
+		expect(el.hasClass("my_class")).toBe(false);
+		el.addClass("my_class");
+		expect(el.hasClass("my_class")).toBe(true);
+		
+	});
+});
+
+describe(".removeClass()",function(){
+	it("should not has class \"my_class\" after removed",function(){
+		var el = $("#dom-manipulate-remove-class");
+		expect(el.hasClass("my_class")).toBe(true);
+		el.removeClass("my_class");
+		expect(el.hasClass("my_class")).toBe(false);
+		
+	});
+});
+
+describe(".toggleClass()",function(){
+	it("should toggle class \"my_class\"",function(){
+		var el = $("#dom-manipulate-toggle-class");
+		expect(el.hasClass("my_class")).toBe(false);
+		el.toggleClass("my_class");
+		expect(el.hasClass("my_class")).toBe(true);
+		el.toggleClass("my_class");
+		expect(el.hasClass("my_class")).toBe(false);
+	});
+});
+
+describe(".inject()",function(){
+	it("should has child after injected",function(){
+		var main_id = "#dom-manipulate-inject";
+		var child_id = main_id + "-child";
+		var el = $(main_id);
+		var child = $.create("div").attr("id","dom-manipulate-inject-child");
+		
+		// by string
+		expect(el.one(child_id).count()).toBe(0);
+		child.inject(main_id);
+		expect($(child_id).get(0)).toBe(el.all("div").get(1));
+		
+		child.dispose();
+		
+		// bottom
+		expect(el.one(child_id).count()).toBe(0);
+		child.inject(el);
+		expect($(child_id).get(0)).toBe(el.all("div").get(1));
+		
+		child.dispose();
+		
+		// top
+		expect(el.one(child_id).count()).toBe(0);
+		child.inject(el,"top");
+		expect($(child_id).get(0)).toBe(el.all("div").get(0));
+		
+		child.dispose();
+		
+		// before
+		expect(el.one(child_id).count()).toBe(0);
+		child.inject(el,"before");
+		expect($(child_id).get(0)).toBe(el.prev().get(0));
+		child.dispose();
+		
+		// after
+		expect(el.one(child_id).count()).toBe(0);
+		child.inject(el,"after");
+		expect($(child_id).get(0)).toBe(el.next().get(0));
+		
+		child.dispose();
+		
+		
+	});
+});
+
+
+describe(".grab()",function(){
+	it("should has child after grabed",function(){
+		var main_id = "#dom-manipulate-grab";
+		var child_id = main_id + "-child";
+		var el = $(main_id);
+		var child = $.create("div").attr("id","dom-manipulate-grab-child");
+		
+		
+		
+		expect(el.one(child_id).count()).toBe(0);
+		el.grab(child);
+		expect($(child_id).get(0)).toBe(el.all("div").get(1));
+		
+		child.dispose();
+		
+		// bottom
+		expect(el.one(child_id).count()).toBe(0);
+		el.grab(child);
+		expect($(child_id).get(0)).toBe(el.all("div").get(1));
+		
+		child.dispose();
+		
+		// top
+		expect(el.one(child_id).count()).toBe(0);
+		el.grab(child,"top");
+		expect($(child_id).get(0)).toBe(el.all("div").get(0));
+		
+		child.dispose();
+		
+		// before
+		expect(el.one(child_id).count()).toBe(0);
+		el.grab(child,"before");
+		expect($(child_id).get(0)).toBe(el.prev().get(0));
+		child.dispose();
+		
+		// after
+		expect(el.one(child_id).count()).toBe(0);
+		el.grab(child,"after");
+		
+		console.log($(child_id).get(0), el, el.next(), el.next().get(0));
+		
+		expect($(child_id).get(0)).toBe(el.next().get(0));
+		
+		// child.dispose();
+	});
+});
+
+describe(".empty()",function(){
+	it("should not has inner html after empty",function(){
+		var main_id = "#dom-manipulate-empty";
+		var el = $(main_id);
+		
+		expect(el.html()).not.toBe("");
+		el.empty();
+		expect(el.html()).toBe("");
+	});
+});
+
+
+describe(".html()",function(){
+	it("should has correct html",function(){
+		var main_id = "#dom-manipulate-empty";
+		var el = $(main_id);
+		el.html("test html");
+		expect(el.html()).toBe("test html");
+	});
+});
+
+
+describe(".text()",function(){
+	it("should has correct text",function(){
+		var main_id = "#dom-manipulate-empty";
+		var el = $(main_id);
+		
+		// get text
+		el.html("<div>text</div>");
+		expect(el.text()).toBe("text");
+		el.html("");
+		
+		// set text
+		
+		el.text("<div>text</div>");
+		expect(el.text()).toBe("<div>text</div>");
+		el.html("");
+		
+		
+	});
+});
+
+
+describe(".val()",function(){
+	it("should has correct val",function(){
+		var main_id = "#dom-manipulate-val";
+		var el = $(main_id);
+		var select = $(main_id+"-select");
+		var win = $(window);
+
+		expect(el.val()).toBe("");
+		el.val("myval");
+		expect(el.val()).toBe("myval");
+		win.val("test");
+		
+		
+		expect(select.val()).toBe("2");
+		select.val("3");
+		expect(select.val()).toBe("3");
+	});
+});
+
+
+describe(".removeAttr()",function(){
+	it("should not has data after remove data",function(){
+		var el = $("#dom-manipulate-remove-attr");
+		el.removeAttr("myattr");
+		expect(el.attr("myattr")).toBe(null);
+		
+	});	
+});
+
+describe(".removeData()",function(){
+	it("should not has attr after remove attr",function(){
+		var el = $("#dom-manipulate-remove-attr");
+	
+		el.data("mydata",true);
+		expect(el.data("mydata")).not.toBe(null);
+		el.removeData("mydata");
+		expect(!el.data("mydata")).toBe(true);
+		
+		
+		el.data("mydata1",true);
+		el.data("mydata2",true);
+		expect(el.data("mydata")).not.toBe(null);
+		el.removeData();
+		expect(!el.data("mydata1")).toBe(true);
+		expect(!el.data("mydata2")).toBe(true);
+		
+	});
+	
+});
+
+
+describe(".dispose()",function(){
+	it("should has event data and attrs after dispose",function(){
+		var main_id = "#dom-manipulate-dispose";
+		var el = $(main_id);
+		var event_val = null;
+		
+		el.on('click',function(){
+			event_val = true;
+		});
+		el.fire("click");
+		el.data("mydata",true);
+		
+		expect($(main_id).count()).toBe(1);
+		expect(event_val).toBe(true);
+		expect(el.data("mydata")).toBe(true);
+		expect(el.attr("myattr")).toBe("myattr");
+		
+		
+		event_val = null;
+		el.dispose();
+		el.fire("click");
+		
+		expect($(main_id).count()).toBe(0);
+		expect(event_val).toBe(true);
+		expect(el.data("mydata")).toBe(true);
+		expect(el.attr("myattr")).toBe("myattr");
+	});
+});
+
+
+
+describe(".destory()",function(){
+	it("should not has event data and attrs after destroy",function(){
+		var main_id = "#dom-manipulate-destroy";
+		var el = $(main_id);
+		var event_val = null;
+		
+		el.on('click',function(){
+			event_val = true;
+		});
+		el.fire("click");
+		el.data("mydata",true);
+		
+		expect($(main_id).count()).toBe(1);
+		expect(event_val).toBe(true);
+		expect(el.data("mydata")).toBe(true);
+		expect(el.attr("myattr")).toBe("myattr");
+		
+		
+		event_val = null;
+		el.destroy();
+		el.fire("click");
+		
+		expect($(main_id).count()).toBe(0);
+		expect(event_val).toBe(null);
+		expect(el.data("mydata")).toBe(null);
+		expect(el.attr("myattr")).toBe(null);
+		
+	});
+});
+
+
+});
+</script>
