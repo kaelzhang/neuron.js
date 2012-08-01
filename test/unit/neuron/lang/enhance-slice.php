@@ -505,14 +505,30 @@ describe('Neuron:lang/enhance', function(){
 			
 			it('will return the array itself', function(){
 				checkArray([]);
+				
+				var arr = [1, document.getElementsByTagName('p')];
+				expect( KM.makeArray(arr) ).toEqual(arr);
+				
 			});
 			
 			it('will wrap non-array objects and numeric variables', function(){
 				checkArray();
+				expect( KM.makeArray()[0] ).toEqual(undefined);
+				
 				checkArray(null);
+				expect( KM.makeArray(null)[0] ).toEqual(undefined);
+				
 				checkArray(123);
+				expect( KM.makeArray(123)[0] ).toEqual(123);
+				
 				checkArray('STRING');
+				expect( KM.makeArray('STRING')[0] ).toEqual('STRING');
+				
 				checkArray(window);
+				expect( KM.makeArray(window)[0] ).toEqual(window);
+				
+				checkArray(document.body);
+				expect( KM.makeArray(document.body)[0] ).toEqual(document.body);
 			});
 			
 			it('will make collections as pure array', function(){
