@@ -1,18 +1,22 @@
+# system files
 .DS_Store
-.svn/
-.idea/
-*-old/
-*-notrack/
 *.db
 *.bak
 *.patch
 *.diff
-license.txt
-readme.html
-combo
-reference
-old
-# *.php
-index.php
+
+# folders
+.svn/
+.idea/
+*-old/
+*-notrack/
 build/*.js
+combo/
+reference/
+old/
 jscoverage_lib/
+temp/
+
+# php files
+index.php
+
