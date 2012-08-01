@@ -1,5 +1,3 @@
-<script>
-
 describe('Neuron:lang/native', function(){
 	describe('Array', function(){
 		it('.indexOf()', function(){
@@ -53,5 +51,3 @@ describe('Neuron:lang/native', function(){
 
 
 });
-
-</script>
