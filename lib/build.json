@@ -2,7 +2,7 @@
 	"name":"neuron",
 	"concat":[{
 		"folder": "neuron",
-		"output": "neuron.js",
+		"output": "neuron-active.js",
 		"relativepath": true,
 		"maintainorder": true,
 		"path":[
@@ -21,7 +21,7 @@
 
 			"ua/ua.js",
 
-			"dom/dom.js",
+			"dom/core.js",
 			"dom/feature.js",
 			"dom/event.js",
 			"dom/css.js",
@@ -35,10 +35,10 @@
 			"loader/passive-config.js",
 			
 			"biz/biz.js",
-
-			"cleaner.js" // ,
 			
-			// "ext-notrack/hippo.js"
+			"legacy/neuron-2.0-1.0.js",
+
+			"cleaner.js"
 		]
 	}, {
 		"folder": "neuron",
@@ -61,7 +61,7 @@
 
 			"ua/ua.js",
 
-			"dom/dom.js",
+			"dom/core.js",
 			"dom/feature.js",
 			"dom/event.js",
 			"dom/css.js",
@@ -75,10 +75,10 @@
 			"loader/active-config.js",
 			
 			"biz/biz.js",
-
-			"cleaner.js" //,
 			
-			// "ext-notrack/hippo.js"
+			"legacy/neuron-2.0-1.0.js",
+
+			"cleaner.js"
 		]
 	}]
 }
