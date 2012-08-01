@@ -13,7 +13,7 @@ marks:
 - TODO[06-08].A
 - improve active loaders, now active loader could specify libBase and
 appBase with different locations
-- remove KM.app method.
+- remove NR.app method.
 - unit-test cases and environment configuration updated
 	
 ##### 2012-06-08  Kael:
@@ -34,7 +34,7 @@ B. backword compatibility with passive mode
     
 TODO:
 
-- A. remove KM.define.on and KM.define.off	
+- A. remove NR.define.on and NR.define.off	
 
 ##### 2012-04-26  Kael:
 
@@ -65,7 +65,7 @@ TODO:
 
 TODO:
 
-- A. make KM.define support NodeJS environment
+- A. make NR.define support NodeJS environment
 
 ##### 2011-12-08  Kael:
 
@@ -127,7 +127,7 @@ TODO:
 - √ ! B. remove API: define(alias, uri) to improve readability and definition
 - √ C. replace all text of errors and warnings with error code
 - √ D. treat loaderError and warning as configurations of loader
-- X E. remove the feature that loader would not initialize the factory function if no callback method passed to KM.provide
+- X E. remove the feature that loader would not initialize the factory function if no callback method passed to NR.provide
 
 ##### 2011-09-17  Kael:
 
@@ -151,8 +151,8 @@ milestone 3.0
 TODO:
 
 - √ ! A. add loader constructor to create more than one configuration about library base, etc.
-		Scheme: KM.define('http://...fx.js'); var Checkin = KM.app('Checkin'); KM.define('http://...timeline.js');
-		KM.provide('Checkin::timeline', function(K, timeline){ … });
+		Scheme: NR.define('http://...fx.js'); var Checkin = NR.app('Checkin'); NR.define('http://...timeline.js');
+		NR.provide('Checkin::timeline', function(K, timeline){ … });
 - √ B. optimize isXXX methods for scope chain
 - X C. use native forEach methods for Array: too much arguments
 
@@ -234,7 +234,7 @@ milestone 2.0
 	
 TODO:
 
-- √ A. new API: KM.define(uri1, uri1, uri3, uri4, true) to define several module uris
+- √ A. new API: NR.define(uri1, uri1, uri3, uri4, true) to define several module uris
 - B. add loader constructor to create more instances of loader
 	- 1. association of several instances of loader
 	- 2. comm definition
@@ -246,11 +246,11 @@ TODO:
 - X # D. [blocked by C] frequency detection for the use of modules within a same lib directory(package), and automatically use package source instead
 - √ E. switcher to turn on define buffer, so we can load module files in traditional ways(directly use <script> to load external files)
 - F. tidy the logic about param factory of string type and param uri in _define method
-- ? G. nested define-provide structure. you can use KM.provide inside the factory function of KM.define to dynamically declare dependencies
+- ? G. nested define-provide structure. you can use NR.provide inside the factory function of NR.define to dynamically declare dependencies
 	
 	// ._allMods removed
 - X # H. complete ._allMods method
-- √ I. abolish KM._pkg
+- √ I. abolish NR._pkg
 - √ J. prevent defining a non-anonymous module with a name like pathname
 - √ ? K. explode the cache object of modules
 - L. optimize the calling chain of define and getOrdefine, use less step to get module idenfitier.
@@ -380,7 +380,7 @@ TODO:
 ##### 2011-04-10  Kael:
 
 - create main function of provide
-- add a new api, KM.pkg to define a package
+- add a new api, NR.pkg to define a package
 
 ##### 2011-04-05  Kael:
 

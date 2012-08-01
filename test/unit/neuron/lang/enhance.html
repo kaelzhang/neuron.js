@@ -15,7 +15,7 @@
 describe('Neuron:lang/enhance', function(){
 
 
-describe('KM.mix(receiver, sender, override, copylist)', function(){
+describe('NR.mix(receiver, sender, override, copylist)', function(){
     it("always returns the receiver itself", function(){
         var receiver = {
             a: 1,
@@ -23,9 +23,9 @@ describe('KM.mix(receiver, sender, override, copylist)', function(){
             c: 3
         };
     
-        expect(KM.mix(receiver, {a: 2})).toBe(receiver);
-        expect(KM.mix(receiver, {a: 1}, false)).toBe(receiver);
-        expect(KM.mix(receiver, {a: 1}, false, ['b', 'c'])).toBe(receiver);
+        expect(NR.mix(receiver, {a: 2})).toBe(receiver);
+        expect(NR.mix(receiver, {a: 1}, false)).toBe(receiver);
+        expect(NR.mix(receiver, {a: 1}, false, ['b', 'c'])).toBe(receiver);
     });
 
     it('could mix an object to the receiver', function(){
@@ -57,7 +57,7 @@ describe('KM.mix(receiver, sender, override, copylist)', function(){
             };
             
         // default to override
-        KM.mix(receiver, sender);
+        NR.mix(receiver, sender);
             
         expect( receiver.a ).toBe(1);
         expect( receiver.b ).toBe(22);
@@ -96,7 +96,7 @@ describe('KM.mix(receiver, sender, override, copylist)', function(){
             };
             
         // no override
-        KM.mix(receiver2, sender, false);
+        NR.mix(receiver2, sender, false);
             
         // no override
         expect( receiver2.b ).toBe(2);
@@ -132,7 +132,7 @@ describe('KM.mix(receiver, sender, override, copylist)', function(){
             };
             
         // override by a copy list
-        KM.mix(receiver3, sender, true, ['d1', 'd2']);
+        NR.mix(receiver3, sender, true, ['d1', 'd2']);
             
         expect( receiver3.b ).toBe(2);
         expect( receiver3.d1.a ).toBe(1);
@@ -167,7 +167,7 @@ describe('KM.mix(receiver, sender, override, copylist)', function(){
                 d3: 3
             };
             
-        KM.mix(receiver4, sender, false, ['o', 'd1', 'd3']);
+        NR.mix(receiver4, sender, false, ['o', 'd1', 'd3']);
         // not override
         expect( receiver4.o.c ).toBe(undefined);
         expect( receiver4.o.a ).toBe(1);
@@ -178,7 +178,7 @@ describe('KM.mix(receiver, sender, override, copylist)', function(){
 });
 
 
-describe('KM.each()', function(){
+describe('NR.each()', function(){
     it("returns undefined", function(){
         var c = {
                 a: 1,
@@ -187,7 +187,7 @@ describe('KM.each()', function(){
             
             obj_receiver = {};
             
-        var ret = KM.each(c, function(v, k){
+        var ret = NR.each(c, function(v, k){
             obj_receiver[k] = v;
         });
     
@@ -202,7 +202,7 @@ describe('KM.each()', function(){
             
             obj_receiver = {};
             
-        KM.each(c, function(v, k){
+        NR.each(c, function(v, k){
             obj_receiver[k] = v;
         });
         
@@ -222,7 +222,7 @@ describe('KM.each()', function(){
             
         d.b = 2;
             
-        KM.each(d, function(v, k){
+        NR.each(d, function(v, k){
             obj_receiver2[k] = v;
         });
         
@@ -237,7 +237,7 @@ describe('KM.each()', function(){
             
         a.a = a;
         
-        KM.each(a, function(v, i){
+        NR.each(a, function(v, i){
             arr_receiver[i] = v;
         });
         
@@ -247,7 +247,7 @@ describe('KM.each()', function(){
 });
 
 
-describe('KM.clone(object, filter)', function(){
+describe('NR.clone(object, filter)', function(){
     
     it('could clone an object', function(){
         // preparing origin data >>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -274,7 +274,7 @@ describe('KM.clone(object, filter)', function(){
         
         // receiver ------------------------------------
         // clone an object
-        receiver = KM.clone(o);
+        receiver = NR.clone(o);
         
         // test recursive object
         expect( receiver.c.a.b ).toBe(2);
@@ -315,7 +315,7 @@ describe('KM.clone(object, filter)', function(){
             
         // receiver2 ------------------------------------
         // clone an object into a receiver
-        var receiver2 = KM.clone(o2, false);
+        var receiver2 = NR.clone(o2, false);
         
         // test recursive object
         expect( receiver2.c.a.b ).toBe(2);
@@ -339,7 +339,7 @@ describe('KM.clone(object, filter)', function(){
             
         array.a = array;
             
-        cloned = KM.clone(array);
+        cloned = NR.clone(array);
         
         cloned[0] = 11;
         array[2] = 33;
@@ -365,7 +365,7 @@ describe('KM.clone(object, filter)', function(){
                 p
             ],
             
-            cloned = KM.clone(obj);
+            cloned = NR.clone(obj);
             
         obj[0].b[0] = 11;
             
@@ -403,7 +403,7 @@ describe('KM.clone(object, filter)', function(){
             
         // receiver3 ------------------------------------
         // unlink the reference of an object
-        receiver3 = KM.clone(new O3);
+        receiver3 = NR.clone(new O3);
         
         // change the value of a property in receiver3
         receiver3.a.a = 11;
@@ -455,7 +455,7 @@ describe('KM.clone(object, filter)', function(){
         // !important
         // * receiver4 * ------------------------------------
         // test filter
-        var receiver32 = KM.clone(new O32, function(v, k, d){
+        var receiver32 = NR.clone(new O32, function(v, k, d){
         
             // only copy the first depth
             return d === 1;
@@ -476,14 +476,14 @@ describe('KM.clone(object, filter)', function(){
         // recursive
         a.a = a;
     
-        var c = KM.clone(a);
+        var c = NR.clone(a);
     
         expect(c.a.a.a.b).toBe(1);
     });   
 });
 
 
-describe('KM.bind()', function(){
+describe('NR.bind()', function(){
     it('could bind a normal fn', function(){
         var context = {
                 a: 1
@@ -498,7 +498,7 @@ describe('KM.bind()', function(){
             
             fn;
             
-        fn = KM.bind(obj.fn, context);
+        fn = NR.bind(obj.fn, context);
         expect(fn()).toBe(1);
         
     });
@@ -516,7 +516,7 @@ describe('KM.bind()', function(){
                 },
                 
                 bindFn: function(){
-                    KM.bind('fn', context);
+                    NR.bind('fn', context);
                 }
             };
     
@@ -526,7 +526,7 @@ describe('KM.bind()', function(){
     
     it("could bind an instance method", function(){
         function A(){
-            KM.bind('fn', this);  
+            NR.bind('fn', this);  
         };
         
         A.prototype = {
@@ -549,14 +549,14 @@ describe('KM.bind()', function(){
 });
 
 
-describe('KM.makeArray(array, host)', function(){
+describe('NR.makeArray(array, host)', function(){
     function checkArray(item){
-        var converted = KM.makeArray(item);
+        var converted = NR.makeArray(item);
         
-        expect( KM.isArray( converted ) ).toBe(true);
+        expect( NR.isArray( converted ) ).toBe(true);
     };
     
-    describe("KM.makeArray(array)", function(){
+    describe("NR.makeArray(array)", function(){
         it("test env requirements", function(){
             expect(!!document.getElementById).toBe(true);
             expect(!!document.getElementsByTagName).toBe(true);
@@ -566,48 +566,48 @@ describe('KM.makeArray(array, host)', function(){
             checkArray([]);
             
             var arr = [1, document.getElementsByTagName('p')];
-            expect( KM.makeArray(arr) ).toBe(arr);
+            expect( NR.makeArray(arr) ).toBe(arr);
             
         });
         
-        it("KM.makeArray(undefined) -> KM.makeArray() -> []", function(){
-            var result = KM.makeArray(undefined);
+        it("NR.makeArray(undefined) -> NR.makeArray() -> []", function(){
+            var result = NR.makeArray(undefined);
         
             expect(result.length).toBe(0);
         });
         
-        it("KM.makeArray(false) -> [false]", function(){
-            var result = KM.makeArray(false);
+        it("NR.makeArray(false) -> [false]", function(){
+            var result = NR.makeArray(false);
         
             expect(result.length).toBe(1);
             expect(result[0]).toBe(false);
         });
         
         
-        it("KM.makeArray(null) -> []", function(){
-            var result = KM.makeArray(null);
+        it("NR.makeArray(null) -> []", function(){
+            var result = NR.makeArray(null);
         
             expect(result.length).toBe(0);
         });
         
         it('would wrap non-array objects and numeric variables', function(){
             checkArray();
-            expect( KM.makeArray()[0] ).toBe(undefined);
+            expect( NR.makeArray()[0] ).toBe(undefined);
             
             checkArray(null);
-            expect( KM.makeArray(null)[0] ).toBe(undefined);
+            expect( NR.makeArray(null)[0] ).toBe(undefined);
             
             checkArray(123);
-            expect( KM.makeArray(123)[0] ).toBe(123);
+            expect( NR.makeArray(123)[0] ).toBe(123);
             
             checkArray('STRING');
-            expect( KM.makeArray('STRING')[0] ).toBe('STRING');
+            expect( NR.makeArray('STRING')[0] ).toBe('STRING');
             
             checkArray(window);
-            expect( KM.makeArray(window)[0] ).toBe(window);
+            expect( NR.makeArray(window)[0] ).toBe(window);
             
             checkArray(document.body);
-            expect( KM.makeArray(document.body)[0] ).toBe(document.body);
+            expect( NR.makeArray(document.body)[0] ).toBe(document.body);
         });
         
         it('would make NodeList as pure array', function(){
@@ -620,24 +620,24 @@ describe('KM.makeArray(array, host)', function(){
     });
     
     
-    describe("KM.makeArray(array, host)", function(){
+    describe("NR.makeArray(array, host)", function(){
         it("always returns the host itself", function(){
             var host = [],
                 host2 = {};
         
-            expect(KM.makeArray([1,2,3], host)).toBe(host);
-            expect(KM.makeArray([1,2,3], host2)).toBe(host2);
+            expect(NR.makeArray([1,2,3], host)).toBe(host);
+            expect(NR.makeArray([1,2,3], host2)).toBe(host2);
         });
     
         it("would copy the array to the host", function(){
             var array = [1, 2],
                 host = [],
                 host2 = {},
-                host3 = KM.DOM();
+                host3 = NR.DOM();
                 
-            KM.makeArray(array, host);
-            KM.makeArray(array, host2);
-            KM.makeArray(array, host3);
+            NR.makeArray(array, host);
+            NR.makeArray(array, host2);
+            NR.makeArray(array, host3);
         
             expect(host[0]).toBe(1);
             expect(host2[0]).toBe(1);
@@ -648,11 +648,11 @@ describe('KM.makeArray(array, host)', function(){
             var array = [1, 2],
                 host = [],
                 host2 = {},
-                host3 = KM.DOM();
+                host3 = NR.DOM();
                 
-            KM.makeArray(array, host);
-            KM.makeArray(array, host2);
-            KM.makeArray(array, host3);
+            NR.makeArray(array, host);
+            NR.makeArray(array, host2);
+            NR.makeArray(array, host3);
         
             expect(host.length).toBe(2);
             expect(host2.length).toBe(2);
@@ -662,7 +662,7 @@ describe('KM.makeArray(array, host)', function(){
 });
 
 
-describe("KM.makeArray.merge(array, host)", function(){
+describe("NR.makeArray.merge(array, host)", function(){
     it("will always treat the parameter as Array, even if it's not", function(){
         var obj = {
             length: 3
@@ -673,7 +673,7 @@ describe("KM.makeArray.merge(array, host)", function(){
         obj[0] = 1;
         obj[1] = 2;
         
-        KM.makeArray.merge(obj, host);
+        NR.makeArray.merge(obj, host);
     
         expect(host.length).toBe(3);
         expect(host[0]).toBe(1);
@@ -686,7 +686,7 @@ describe("KM.makeArray.merge(array, host)", function(){
 });
 
 
-describe('semi-private: KM._overloadSetter()', function(){
+describe('semi-private: NR._overloadSetter()', function(){
     
     it('could overload a normal fn', function(){
 
@@ -696,7 +696,7 @@ describe('semi-private: KM._overloadSetter()', function(){
         }
     
         var storage = {},
-            batchSetter = KM._overloadSetter( setter );
+            batchSetter = NR._overloadSetter( setter );
         
         setter('a', 1);
         expect( storage.a ).toBe(1);
@@ -719,7 +719,7 @@ describe('semi-private: KM._overloadSetter()', function(){
                 },
                 
                 change: function(){
-                    this.setter = KM._overloadSetter(this.setter);
+                    this.setter = NR._overloadSetter(this.setter);
                 }
             };
             
@@ -738,7 +738,7 @@ describe('semi-private: KM._overloadSetter()', function(){
 });
 
 
-describe('semi-private: KM._onceBefore()', function(){
+describe('semi-private: NR._onceBefore()', function(){
     it('could swap two methods', function(){
         var obj = {
                 real: function(){
@@ -752,13 +752,13 @@ describe('semi-private: KM._onceBefore()', function(){
             
         expect( obj.real() ).toBe(undefined);
         
-        KM._onceBefore('real', 'fake', obj);
+        NR._onceBefore('real', 'fake', obj);
         
         expect( obj.real() ).toBe(2);
     });
     
     it('would not do evil to prototype chain', function(){
-        var K = KM,
+        var K = NR,
             C = K.Class({
                 initialize: function(v){
                     this.v = v;
@@ -787,7 +787,7 @@ describe('semi-private: KM._onceBefore()', function(){
 });
 
 
-describe('semi-private: KM._memoize(fn)', function(){
+describe('semi-private: NR._memoize(fn)', function(){
     it('could memoize the result of a function with number params', function(){
         function foo(){
             exec_counter ++;
@@ -796,7 +796,7 @@ describe('semi-private: KM._memoize(fn)', function(){
         };
         
         var exec_counter = 1,
-            memoized_foo = KM._memoize( foo );
+            memoized_foo = NR._memoize( foo );
         
         memoized_foo(1, 2, 3); // exec_counter:2
         
@@ -810,7 +810,7 @@ describe('semi-private: KM._memoize(fn)', function(){
     });
 });
 
-describe('KM.sub(template, data)', function(){
+describe('NR.sub(template, data)', function(){
     
 
     it('could apply some parameters to a template', function(){
@@ -820,7 +820,7 @@ describe('KM.sub(template, data)', function(){
                 b: 2
             };
             
-        expect( KM.sub(t, p) ).toBe('a:1,b:2');
+        expect( NR.sub(t, p) ).toBe('a:1,b:2');
     });
     
     it('would not substitute escaped symbols', function(){
@@ -830,7 +830,7 @@ describe('KM.sub(template, data)', function(){
                 b: 2
             };
             
-        expect( KM.sub(t, p) ).toBe('a:1,b:{b}');
+        expect( NR.sub(t, p) ).toBe('a:1,b:{b}');
     });
 
     it('only substitute the most inner match of {}', function(){
@@ -839,17 +839,17 @@ describe('KM.sub(template, data)', function(){
                 a: 1
             };
             
-        expect( KM.sub(t, p) ).toBe('a{{1}');
+        expect( NR.sub(t, p) ).toBe('a{{1}');
     });
 });
 
 
-describe("KM._pushUnique(array, host)", function(){
+describe("NR._pushUnique(array, host)", function(){
     it("always returns the host", function(){
         var host = [1],
             array = [1,2,3];
     
-        expect(KM._pushUnique(host, array)).toBe(host);
+        expect(NR._pushUnique(host, array)).toBe(host);
     });
     
     it("host can be an Object", function(){
@@ -857,7 +857,7 @@ describe("KM._pushUnique(array, host)", function(){
             array = [1,2,3]
         
         
-        expect(KM._pushUnique(obj_host, array)).toBe(obj_host);
+        expect(NR._pushUnique(obj_host, array)).toBe(obj_host);
         expect(obj_host[0]).toBe(1);
         expect(obj_host[1]).toBe(2);
         expect(obj_host.length).toBe(3);
@@ -867,7 +867,7 @@ describe("KM._pushUnique(array, host)", function(){
         var host = [1, 2],
             array = [2, 3];
             
-        KM._pushUnique(host, array);
+        NR._pushUnique(host, array);
     
         expect(host.length).toBe(3);
         expect(host.indexOf(2)).toBe(host.lastIndexOf(2));
@@ -881,7 +881,7 @@ describe("KM._pushUnique(array, host)", function(){
         host[1] = 2;
         host.length = 2;
             
-        KM._pushUnique(host, array);
+        NR._pushUnique(host, array);
     
         expect(host.length).toBe(3);
     });

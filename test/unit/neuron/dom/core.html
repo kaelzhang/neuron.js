@@ -69,7 +69,7 @@ describe("Test env requirements", function(){
 describe('Constructor of $', function(){
     var 
     
-    $ = KM.DOM,
+    $ = NR.DOM,
     divs = $('div'),
     main = $('#qunit-fixture');
     
@@ -98,7 +98,7 @@ describe('Constructor of $', function(){
 describe("$(selector)", function(){
     var 
     
-    $ = KM.DOM;
+    $ = NR.DOM;
     
     it("could get document.body by $('body')", function(){
         expect($('body').length).toBe(1);
@@ -124,7 +124,7 @@ describe("$(selector)", function(){
 
 
 describe("$(selector, context)", function(){
-    var $ = KM.DOM;
+    var $ = NR.DOM;
     
     it("context could be a selector string", function(){
         expect($('div', '.dom-core-nested-div').length).toBe(8);
@@ -158,7 +158,7 @@ describe("$(selector, context)", function(){
 describe('$ with element(s)', function(){
     var 
     
-    $ = KM.DOM,
+    $ = NR.DOM,
     
     form = document.getElementById('dom-core-form'),
     inputs = form.getElementsByTagName('input');
@@ -189,7 +189,7 @@ describe('$ with element(s)', function(){
 describe('$ with dirty data', function(){
     var 
     
-    $ = KM.DOM;
+    $ = NR.DOM;
     
     it('would santitize dirty data', function(){
         expect( $([1,2,3]).length ).toBe(0);
@@ -201,7 +201,7 @@ describe('$ with dirty data', function(){
 
 
 describe('$.one()', function(){
-    var $ = KM.DOM;
+    var $ = NR.DOM;
     
     it("could get the first direct <p> inside #dom-core-nested-div", function(){
         expect($.one('#dom-core-nested-div > div').length).toBe(1);
@@ -222,7 +222,7 @@ describe('$.one()', function(){
 describe('.find()', function(){
     var
     
-    $ = KM.DOM,
+    $ = NR.DOM,
     
     div = $('#dom-core-nested-div');
     
@@ -252,7 +252,7 @@ describe('.find()', function(){
 describe(".count()", function(){
     var 
     
-    $ = KM.DOM;
+    $ = NR.DOM;
     
     it("could get the number of contained elements", function(){
         expect($('div').length === $('div').count()).toBe(true);
@@ -261,7 +261,7 @@ describe(".count()", function(){
 
 
 describe(".add()", function(){
-    var $ = KM.DOM;
+    var $ = NR.DOM;
     
     it("could add elements by selector", function(){
         expect($('#dom-core-nested-div div').add('#dom-core-nested-div-2 div').length).toBe(8);

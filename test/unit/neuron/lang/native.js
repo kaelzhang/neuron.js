@@ -40,12 +40,12 @@ describe('Neuron:lang/native', function(){
 			
 			// test filter
 			expect( a.filter(function(i){return i === 2;}).length ).toEqual(0);
-			expect( a.filter(function(i){return KM.isFunction(i)})[0] ).toEqual(foo);
-			expect( a.filter(function(i){return KM.isObject(i)}).length ).toEqual(1);
-			expect( a.filter(function(i){return KM.isObject(i)})[0] === {} ).toBeFalsy();
+			expect( a.filter(function(i){return NR.isFunction(i)})[0] ).toEqual(foo);
+			expect( a.filter(function(i){return NR.isObject(i)}).length ).toEqual(1);
+			expect( a.filter(function(i){return NR.isObject(i)})[0] === {} ).toBeFalsy();
 			
 			// test context
-			expect( a.filter(function(i){return KM.isObject(i)})[0] === {} ).toBeFalsy();
+			expect( a.filter(function(i){return NR.isObject(i)})[0] === {} ).toBeFalsy();
 		});
 	});
 
