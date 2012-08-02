@@ -165,8 +165,6 @@ describe(".grab()",function(){
 		expect(el.one(child_id).count()).toBe(0);
 		el.grab(child,"after");
 		
-		console.log($(child_id).get(0), el, el.next(), el.next().get(0));
-		
 		expect($(child_id).get(0)).toBe(el.next().get(0));
 		
 		// child.dispose();
