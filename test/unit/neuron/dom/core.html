@@ -251,6 +251,31 @@ describe('.find()', function(){
 });
 
 
+describe(".eq(index)", function(){
+    var p = $('#dom-core-form input');
+    
+    it("would return a different object", function(){
+        expect(p.eq(0) === p).toBe(false);
+    });
+    
+    it("reduce the set of matched elements to the one at the specified index", function(){
+        expect(p.eq(3)[0]).toBe(p[3]);
+    });
+    
+    it("if index === 0", function(){
+        expect(p.eq(0)[0]).toBe(p[0]);
+    });
+    
+    it("if index is negative, .eq() will indicates an offset from the end of the sequence", function(){
+        expect(p.eq(-3)[0]).toBe(p[7]);
+    });
+    
+    it("specially, if index is -1, .eq() will get the last matched element", function(){
+        expect(p.eq(-1)[0]).toBe(p[9]);
+    });
+});
+
+
 describe(".count()", function(){
     var 
     
