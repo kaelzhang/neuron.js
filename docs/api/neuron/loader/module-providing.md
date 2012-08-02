@@ -1,18 +1,18 @@
-DP.provide
+NR.provide
 ====
 
 动态加载一个或多个模块；或当这些模块加载完成后，使用他们完成既定的事情。
 
 ### Syntax
 
-	DP.provide(module, callback);
-	DP.provide(modules, callback);
+	NR.provide(module, callback);
+	NR.provide(modules, callback);
 	
 因此，如下的代码都是合法的：
 
-	DP.provide('io/ajax', function(){ ... });
-	DP.provide(['io/ajax'], function(){ ... });
-	DP.provide(['io/ajax', 'switch/core'], function(){ ... });
+	NR.provide('io/ajax', function(){ ... });
+	NR.provide(['io/ajax'], function(){ ... });
+	NR.provide(['io/ajax', 'switch/core'], function(){ ... });
 	
 ### Returns
 {undefined}
@@ -35,14 +35,14 @@ DP.provide
 ### Arguments
 
 #### D
-{Object} DP 对象的引用
+{Object} NR 对象的引用
 
 #### moduleExports
-{function()|Object} callback 从第二个开始的参数，为 `DP.provide` 第一个参数中所包含的模块。
+{function()|Object} callback 从第二个开始的参数，为 `NR.provide` 第一个参数中所包含的模块。
 
 比如，有如下的代码
 
-	DP.provide(['io/ajax', 'util/cookie'], function(D, Ajax, Cookie){
+	NR.provide(['io/ajax', 'util/cookie'], function(D, Ajax, Cookie){
 	});
 	
 那么，Ajax 为前面 'io/ajax' 对应的模块的 API， Cookie 为 'util/cookie' 的 API;
@@ -51,17 +51,17 @@ DP.provide
 特别说明
 ----
 
-请特别注意，`DP.provide` 是一个 **异步** 调用的过程，因此第二次调用 `DP.provide` 的时候无法保证第一个 callback 已经完成了。
+请特别注意，`NR.provide` 是一个 **异步** 调用的过程，因此第二次调用 `NR.provide` 的时候无法保证第一个 callback 已经完成了。
 
 因此，如下的代码是 **错误** 的：
 
 	var Module1;
 	
-	DP.provide(['test/module1'], function(D, M1){
+	NR.provide(['test/module1'], function(D, M1){
 		Module1 = M1;
 	});
 	
-	DP.provide(['test/module2'], function(D, M2){
+	NR.provide(['test/module2'], function(D, M2){
 	
 		// 错误！！！在这个位置，无法保证 'test/module1' 模块已经加载完成
 		// 这个地方，Module1 的值可能为 undefined
@@ -71,7 +71,7 @@ DP.provide
 	
 上面的代码可以修改为：
 
-	DP.provide(['test/module1', 'test/module2'], function(D, M1, M2){
+	NR.provide(['test/module1', 'test/module2'], function(D, M1, M2){
 		new M1();
 		new M2();
 	});
@@ -83,7 +83,7 @@ DP.provide
 
 假若，我们需要在页面中调用 ajax 
 
-	DP.provide('io/ajax', function(D, Ajax){
+	NR.provide('io/ajax', function(D, Ajax){
 		new Ajax({
 			url: 'abc.php'
 		}).on({

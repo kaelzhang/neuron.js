@@ -8,11 +8,11 @@ neuron/lang/enhance
 - 框架中与ECMA定义稍微不同的方法
 
 
-DP.mix
+NR.mix
 ----
 ***
 ### 语法
-	DP.mix(receiver, sender, override, copylist)
+	NR.mix(receiver, sender, override, copylist)
 	
 ### 返回值
 {Object} mix 之后的 receiver 引用
@@ -32,19 +32,19 @@ DP.mix
 {Array.<string>} 仅将 copylist 中的 key mix到 receiver 上
 
 
-DP.guid
+NR.guid
 ----
 ***
 ### 返回值
 {number} 全局的唯一id值
 
 
-DP.each
+NR.each
 ----
-与 for-in 不同，DP.each 不会遍历原型中的属性。
+与 for-in 不同，NR.each 不会遍历原型中的属性。
 
 ### 语法
-	DP.each(obj, fn, context)
+	NR.each(obj, fn, context)
 	
 ### 参数
 
@@ -64,13 +64,13 @@ DP.each
 {number|string} 数组下标（如果obj为对象） / 属性名（如果obj为数组）
 
 
-DP.clone
+NR.clone
 ----
 ***
 创建一个 shadow copy
 
 ### 语法
-	DP.clone(obj, filter)
+	NR.clone(obj, filter)
 	
 ### 参数
 
@@ -90,13 +90,13 @@ DP.clone
 {number} 当前复制的属性，位于原始对象的深度。初始从 1 开始
 
 
-DP.bind
+NR.bind
 ----
 ***
 绑定一个函数的上下文
 
 ### 语法
-	DP.bind(fn, bind)
+	NR.bind(fn, bind)
 	
 ### 返回值
 {function()} 绑定后的函数
@@ -118,13 +118,13 @@ DP.bind
 {Object} 对应的对象
 
 
-DP.makeArray
+NR.makeArray
 ----
 ****
 将目标包装，转化成数组
 
 ### 语法
-	DP.makeArray(array, host)
+	NR.makeArray(array, host)
 	
 ### 返回
 {Array} 包装或者转化为的数组

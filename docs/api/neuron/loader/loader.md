@@ -4,22 +4,22 @@ Neuron Loader API
 Outline
 ----
 
-- DP.define
-- DP.provide	
-- DP.require
+- NR.define
+- NR.provide	
+- NR.require
 
 
-DP.define
+NR.define
 ----
 见 module-defining.md
 
 
-DP.provide
+NR.provide
 ----
 见 module-providing.md
 
 
-DP.require
+NR.require
 ----
 加载一个页面级别业务模块（门面模块），并执行该模块的 init 方法。
 请参见 identifier.md 中的相对定义。
@@ -27,10 +27,10 @@ DP.require
 
 ### Syntax
 
-	DP.require(moduleIdentifier [, moduleIdentifier [, ...]]);
-	DP.require(moduleData [, moduleData [, ...]]);
+	NR.require(moduleIdentifier [, moduleIdentifier [, ...]]);
+	NR.require(moduleData [, moduleData [, ...]]);
 	
-	DP.require([moduleIdentifier || moduleData]{1, });
+	NR.require([moduleIdentifier || moduleData]{1, });
 	
 ### Returns
 {undefined}
@@ -49,11 +49,11 @@ DP.require
 ### Example
 
 	// 使用这种方式，则 config 为 undefined
-	DP.require('promo::index');
+	NR.require('promo::index');
 	
 或者
 
-	DP.require({
+	NR.require({
 		mod: 'promo::index',
 		config: {}
 	});
@@ -61,12 +61,12 @@ DP.require
 
 
 ### 说明
-使用 `DP.require` 载入的模块，需要包含名为 init 的方法，否则将不会产生任何效果。
+使用 `NR.require` 载入的模块，需要包含名为 init 的方法，否则将不会产生任何效果。
 
 
 ### 用法及场景
 
-`DP.require` 最大的作用在于，将业务模块的初始化进行有效的封装（[Facade](http://en.wikipedia.org/wiki/Facade_pattern)）。并为前后端进行页面元素的模块化，提供配置映射的可能。
+`NR.require` 最大的作用在于，将业务模块的初始化进行有效的封装（[Facade](http://en.wikipedia.org/wiki/Facade_pattern)）。并为前后端进行页面元素的模块化，提供配置映射的可能。
 
 ##### 入口
 在每个 App 根部（见 identifier.md ）的文件，都是页面级别的模块文件。这些模块仅包含一个叫做 init 的方法。我们就是通过这样的模块文件，来将页面中多个初始化逻辑集合起来，为后端程序提供一个友好而简单的 **入口**。
@@ -86,7 +86,7 @@ DP.require
 
 那么，我们在前后端建立一个 *后端模块 -> 前端模块* 的映射，那么后端的前台程序仅需要在页面中输出如下的 JavaScript 代码，
 
-	DP.require(
+	NR.require(
 		'shop::main/a', 
 		'shop::main/b', {
 			mod: 'shop::main/d',

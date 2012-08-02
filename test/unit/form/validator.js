@@ -4,7 +4,7 @@ describe("测试getRule",function(){
 		var ready = false;
 		
 		runs(function(){
-			DP.provide(['form/validator'],function(D,Validator){
+			NR.provide(['form/validator'],function(D,Validator){
 				var v2 = new Validator([{
 					test:"email",
 					hint:"email not correct"
@@ -34,7 +34,7 @@ describe("测试removeRule",function(){
 		var ready = false;
 		
 		runs(function(){
-			DP.provide(['form/validator'],function(D,Validator){
+			NR.provide(['form/validator'],function(D,Validator){
 				var v2 = new Validator([{
 					test:"email",
 					hint:"email not correct"
@@ -64,7 +64,7 @@ describe("空验证器",function(){
 		var ready = false;
 		
 		runs(function(){
-			DP.provide(['form/validator'],function(D,Validator){
+			NR.provide(['form/validator'],function(D,Validator){
 				var v1 = new Validator();
 				ready = true;
 				
@@ -93,7 +93,7 @@ describe("多预设验证器在max:5处出错",function(){
 		var ready = false;
 		
 		runs(function(){
-			DP.provide(['form/validator'],function(D,Validator){
+			NR.provide(['form/validator'],function(D,Validator){
 				var v2 = new Validator([{
 					test:"email",
 					hint:"email not correct"
@@ -121,7 +121,7 @@ describe("my@gmail.com测试自定义规则不通过",function(){
 		var ready = false;
 		
 		runs(function(){
-			DP.provide(['form/validator'],function(D,Validator){
+			NR.provide(['form/validator'],function(D,Validator){
 				var v3 = new Validator([{
 					test:function(v){
 						return v === 123;
@@ -152,7 +152,7 @@ describe("异步验证器",function(){
 		var ready = false;
 		
 		runs(function(){
-			DP.provide(['form/validator','io/ajax'],function(D,Validator,Ajax){
+			NR.provide(['form/validator','io/ajax'],function(D,Validator,Ajax){
 				var v4 = new Validator([{
 					test:function(v,cb){
 						new Ajax({

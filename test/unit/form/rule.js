@@ -3,7 +3,7 @@ describe("预设不存在 unexist",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				var r1;
 				
@@ -26,7 +26,7 @@ describe("简单预设 required",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("required");
@@ -51,7 +51,7 @@ describe("简单预设 notempty",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("notempty");
@@ -77,7 +77,7 @@ describe("简单预设 allnumber",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("allnumber");
@@ -109,7 +109,7 @@ describe("简单预设 equal",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("equal:abc");
@@ -134,7 +134,7 @@ describe("简单预设 unequal",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("unequal:abc");
@@ -158,7 +158,7 @@ describe("简单预设 email",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("email");
@@ -180,7 +180,7 @@ describe("预设配置 {name:email,hint:\"必须为email\"}",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r2 = Rule.produce({
@@ -206,7 +206,7 @@ describe("带参数预设配置 {test:\"min:5\",hint:\"长度不小于{0}\"}",fu
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r3 = Rule.produce({
@@ -235,7 +235,7 @@ describe("带参数预设配置 {test:\"max:5\",hint:\"长度不大于{0}\"}",fu
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r3 = Rule.produce({
@@ -264,7 +264,7 @@ describe("参数预设配置 in:a,b,c",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r1 = Rule.produce("in:a,b,c");
@@ -291,7 +291,7 @@ describe("自定义函数test",function(){
 	
 		var ready = false;	
 		runs(function(){
-			DP.provide('form/rule',function(D,Rule){
+			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
 				var r4 = Rule.produce({

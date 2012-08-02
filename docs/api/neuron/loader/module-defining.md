@@ -1,4 +1,4 @@
-DP.define
+NR.define
 ====
 
 定义一个模块。
@@ -7,9 +7,9 @@ DP.define
 ### 语法
 
 	// 包含三种重载方式
-	DP.define(factory);
-	DP.define(dependencies, factory);
-	DP.define(exports);
+	NR.define(factory);
+	NR.define(dependencies, factory);
+	NR.define(exports);
 	
 
 ### 返回值
@@ -65,7 +65,7 @@ DP.define
 ### 参数
 
 #### D
-{Object} 即 DP 的引用
+{Object} 即 NR 的引用
 
 #### require(dependency)
 获取依赖项的 API
@@ -85,7 +85,7 @@ dependency {string} 需要获取的模块的 identifier
 
 a >. 模块不包含依赖，指定工厂函数
 
-	DP.define(factory);
+	NR.define(factory);
 	
 **特别说明** 
 
@@ -93,11 +93,11 @@ a >. 模块不包含依赖，指定工厂函数
 	
 b >. 模块不包含依赖，直接指定模块的 API
 	
-	DP.define(exports);
+	NR.define(exports);
 	
 c >. 指定包含依赖（或显式指定不包含依赖），指定工厂函数
 	
-	DP.define(dependencies, factory);
+	NR.define(dependencies, factory);
 
 
 代码示例

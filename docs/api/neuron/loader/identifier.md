@@ -136,7 +136,7 @@ neuron 项目中也经常将 <业务模块包名> 成为 app名。
 ----
 
 ### ./abc (relative identifier)
-形如 ./abc 模块标识，只允许在 `DP.define` 的 factory 中使用，它指代的是相对于当前模块的路径。
+形如 ./abc 模块标识，只允许在 `NR.define` 的 factory 中使用，它指代的是相对于当前模块的路径。
 
 #### 假若，
 
@@ -144,7 +144,7 @@ libBase 的路径为 lib/1.0/
 
 在 lib/1.0/mypackage/mymodule.js （`'mypackage/mymodule'`） 文件中，有如下代码片段：
 
-	DP.define(['./mymodule2'], function(D, require){
+	NR.define(['./mymodule2'], function(D, require){
 		var myModule2 = require('./mymodule2');
 		
 		// ...
@@ -177,7 +177,7 @@ appBase 的路径为 s/j/app/
 
 该模块的文件中，有如下代码片段:
 
-	DP.define(['~/comm/locmap'], function(D, require){
+	NR.define(['~/comm/locmap'], function(D, require){
 	});
 
 那么，上面的

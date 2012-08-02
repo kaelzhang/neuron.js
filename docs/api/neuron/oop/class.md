@@ -45,12 +45,12 @@ Class Method: constructor
 
 ***
     {{lang:javascript}}
-    var DP = Class({
+    var NR = Class({
         initialize: function(name){
             this.name = name;
         }
     });
-    var dp = new DP('dianping');
+    var dp = new NR('dianping');
     alert(dp.name); // alerts 'dianping'
 ***
 
