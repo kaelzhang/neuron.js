@@ -30,7 +30,7 @@ describe('Neuron: dom/create: $.create()', function (){
 
         it('-legal tag name passed in', function (){
             $.create('div').inject(tempWrap);
-            expect(tempWrap.html()).toBe("<div></div>");
+            expect(tempWrap.html().toLowerCase()).toBe("<div></div>");
         });
 
         it('-custom tag name passed in', function (){

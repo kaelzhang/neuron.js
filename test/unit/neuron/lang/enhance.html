@@ -1,4 +1,4 @@
-<div id="lang-enhance-container">
+<div id="lang-enhance-container" class="lang-enhance-container">
     <p></p>
     <p></p>
     <div></div>
@@ -67,7 +67,7 @@ describe('NR.mix(receiver, sender, override, copylist)', function(){
         expect( receiver.o.c ).toBe(3);
     });
     
-    it('could mix an object to the receiver, excluding the existed member', function(){
+    it('could mix an object to the receiver, excluding existed members', function(){
         var receiver2 = {
                 a: 1,
                 b: 2,
@@ -686,6 +686,40 @@ describe("NR.makeArray.merge(array, host)", function(){
 });
 
 
+describe('NR.sub(template, data)', function(){
+    
+
+    it('could apply some parameters to a template', function(){
+        var t = 'a:{a},b:{b}',
+            p = {
+                a: 1,
+                b: 2
+            };
+            
+        expect( NR.sub(t, p) ).toBe('a:1,b:2');
+    });
+    
+    it('would not substitute escaped symbols', function(){
+        var t = 'a:{a},b:\\{b}',
+            p = {
+                a: 1,
+                b: 2
+            };
+            
+        expect( NR.sub(t, p) ).toBe('a:1,b:{b}');
+    });
+
+    it('only substitute the most inner match of {}', function(){
+        var t = 'a{{{a}}',
+            p = {
+                a: 1
+            };
+            
+        expect( NR.sub(t, p) ).toBe('a{{1}');
+    });
+});
+
+
 describe('semi-private: NR._overloadSetter()', function(){
     
     it('could overload a normal fn', function(){
@@ -810,41 +844,8 @@ describe('semi-private: NR._memoize(fn)', function(){
     });
 });
 
-describe('NR.sub(template, data)', function(){
-    
 
-    it('could apply some parameters to a template', function(){
-        var t = 'a:{a},b:{b}',
-            p = {
-                a: 1,
-                b: 2
-            };
-            
-        expect( NR.sub(t, p) ).toBe('a:1,b:2');
-    });
-    
-    it('would not substitute escaped symbols', function(){
-        var t = 'a:{a},b:\\{b}',
-            p = {
-                a: 1,
-                b: 2
-            };
-            
-        expect( NR.sub(t, p) ).toBe('a:1,b:{b}');
-    });
-
-    it('only substitute the most inner match of {}', function(){
-        var t = 'a{{{a}}',
-            p = {
-                a: 1
-            };
-            
-        expect( NR.sub(t, p) ).toBe('a{{1}');
-    });
-});
-
-
-describe("NR._pushUnique(array, host)", function(){
+describe("semi-private: NR._pushUnique(array, host)", function(){
     it("always returns the host", function(){
         var host = [1],
             array = [1,2,3];
@@ -853,7 +854,9 @@ describe("NR._pushUnique(array, host)", function(){
     });
     
     it("host can be an Object", function(){
-        var obj_host = {},
+        var obj_host = {
+                length: 0
+            },
             array = [1,2,3]
         
         
