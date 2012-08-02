@@ -2,7 +2,7 @@
 	"name":"neuron",
 	"concat":[{
 		"folder": "neuron",
-		"output": "neuron-active.js",
+		"output": "neuron.js",
 		"relativepath": true,
 		"maintainorder": true,
 		"path":[

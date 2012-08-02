@@ -2,7 +2,7 @@ describe('Neuron: oop/attrs', function(){
 
 var Class = NR.Class;
 
-describe('class ext: attrs', function(){
+describe('NR.Class ext: attrs', function(){
 
     it('will unlink the attributes of a instance with the presets', function(){
         var myClass = Class({

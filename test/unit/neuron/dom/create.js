@@ -56,19 +56,19 @@ describe('Neuron: dom/create: $.create()', function (){
     describe('has attributes passed in', function (){
         it('-checkbox-s checked passed in attributes', function (){
 
-            expect($.create('input', {name: 'username', type: 'checkbox', checked:true}).get(0).attr("defaultChecked")).toBeTruthy();
+            expect($.create('input', {name: 'username', type: 'checkbox', checked:true}).attr("checked")).toBeTruthy();
         });
 
         it('-checkbox-s checked passed in attributes, no value', function (){
-            expect($.create('input', {name: 'username', type: 'text', value: '1'}).get(0).val()).toBe("1");
+            expect($.create('input', {name: 'username', type: 'text', value: '1'}).val()).toBe("1");
         });
 
         it('-checkbox-s checked passed in attributes, value is false', function (){
-            expect($.create('input', {name: 'username', type: 'checkbox', checked:false}).get(0).attr("defaultChecked")).not.toBeTruthy();
+            expect($.create('input', {name: 'username', type: 'checkbox', checked:false}).attr("checked")).not.toBeTruthy();
         });
 
         it('-checkbox-s checked passed in attributes, value is true', function (){
-            expect($.create('input', {name: 'username', type: 'checkbox', checked:true}).get(0).attr("defaultChecked")).toBeTruthy();
+            expect($.create('input', {name: 'username', type: 'checkbox', checked:true}).attr("checked")).toBeTruthy();
         });
 /*
         it('if ie lt 8 name and type passed in', function (){

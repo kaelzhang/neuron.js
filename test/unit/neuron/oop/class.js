@@ -45,6 +45,20 @@ describe('NR.Class', function(){
         expect(ins.get()).toBe(20);
     });
     
+    it("could create a empty class", function(){
+        var emptyClass = Class(),
+            obj = new emptyClass(),
+            key;
+        
+        for(key in obj){
+            if(key){
+                break;
+            }
+        }
+    
+        expect(key).toBe(undefined);
+    });
+    
     it('would create a pure class with tidy prototype', function(){
         expect(myClass.prototype.data.a).toBe(1);
     });
