@@ -853,7 +853,9 @@ describe("NR._pushUnique(array, host)", function(){
     });
     
     it("host can be an Object", function(){
-        var obj_host = {},
+        var obj_host = {
+                length: 0
+            },
             array = [1,2,3]
         
         
