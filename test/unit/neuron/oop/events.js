@@ -196,7 +196,7 @@ describe("NR.Class ext: events", function(){
     
     describe(".fire()", function(){
         
-        it("normal fire, with tested before", function(){
+        it("normal fire, which tested before", function(){
             expect().toBe();
         });
     });
