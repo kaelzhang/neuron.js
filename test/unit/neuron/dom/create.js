@@ -21,11 +21,11 @@ describe('Neuron: dom/create: $.create()', function (){
     describe('fragment passed in', function (){
 
         xit('-html fragment passed in', function (){
-            expect($.create('<asd>').count()).toBe(0);
+            expect($.create('<asd>').length).toBe(0);
         });
 
         xit('-illegal string passed in, fragment passed in', function (){
-            expect($.create('.##').count()).toBe(0);
+            expect($.create('.##').length).toBe(0);
         });
 
         it('-legal tag name passed in', function (){
