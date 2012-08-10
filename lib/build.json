@@ -80,5 +80,33 @@
 
 			"cleaner.js"
 		]
+	}, {
+		"folder": "neuron",
+		"output": "neuron-jq.js",
+		"relativepath": true,
+		"maintainorder": true,
+		"path":[
+			"seed.js",
+			"lang/native.js",
+			"lang/enhance.js",
+			"lang/web.js",
+
+			"oop/class.js",
+			"oop/attrs.js",
+			"oop/events.js",
+
+			"ua/ua.js",
+			
+			"jquery/jquery.js",
+			"jquery/adapter.js",
+			
+			"loader/assets.js",
+			"loader/active.js",
+			"loader/active-config.js",
+			
+			"biz/biz.js",
+
+			"cleaner.js"
+		]
 	}]
 }

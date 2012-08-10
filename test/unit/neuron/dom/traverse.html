@@ -73,21 +73,21 @@ describe(".prevAll()", function(){
     it("could get all previous sublings: .prevAll()", function(){
         var last = $('#dom-traverse-prev .last');
     
-        expect(last.prevAll().count()).toBe(4);
+        expect(last.prevAll().length).toBe(4);
     });
     
     it("could get all previous sublings who match the selector: .prevAll(selector)", function(){
         var last = $('#dom-traverse-prev .last');
     
         // only 2 .special
-        expect(last.prevAll('.special').count()).toBe(2);
+        expect(last.prevAll('.special').length).toBe(2);
     });
     
     it("could prevent duplication", function(){
         var elements = $('#dom-traverse-prev .last').add('#dom-traverse-prev .special');
     
-        expect(elements.prevAll().count()).toBe(4);
-        expect(elements.prevAll('.special').count()).toBe(2);
+        expect(elements.prevAll().length).toBe(4);
+        expect(elements.prevAll('.special').length).toBe(2);
     });
 });
 
@@ -114,21 +114,21 @@ describe(".nextAll()", function(){
     it("could get all following sublings: .nextAll()", function(){
         var last = $('#dom-traverse-next .first');
     
-        expect(last.nextAll().count()).toBe(5);
+        expect(last.nextAll().length).toBe(5);
     });
     
     
     it("could get all following sublings who match the selector: .nextAll(selector)", function(){
         var last = $('#dom-traverse-next .first');
     
-        expect(last.nextAll('.special').count()).toBe(2);
+        expect(last.nextAll('.special').length).toBe(2);
     });
     
     it("could prevent duplication", function(){
         var elements = $('#dom-traverse-next .first').add('#dom-traverse-next .special');
     
-        expect(elements.nextAll().count()).toBe(5);
-        expect(elements.nextAll('.special').count()).toBe(2);
+        expect(elements.nextAll().length).toBe(5);
+        expect(elements.nextAll('.special').length).toBe(2);
     });
 });
 
@@ -152,11 +152,11 @@ describe(".child()", function(){
 
 describe(".children()", function(){
     it("could get all direct offspring", function(){
-        expect($('#dom-traverse-child').children().count()).toBe(3);
+        expect($('#dom-traverse-child').children().length).toBe(3);
     });
     
     it("could get all direct offspring who match the selector", function(){
-        expect($('#dom-traverse-child').children('.special').count()).toBe(2);
+        expect($('#dom-traverse-child').children('.special').length).toBe(2);
     });
 });
 
@@ -182,16 +182,16 @@ describe(".parents()", function(){
     it("could get all matched parents", function(){
         var son = $('#dom-traverse-grandson');
 
-        expect(son.parents('.parent-special').count()).toBe(2);
-        expect(son.parents('.parent').count()).toBe(1);
+        expect(son.parents('.parent-special').length).toBe(2);
+        expect(son.parents('.parent').length).toBe(1);
     });
     
     it("could prevent duplication", function(){
         var sons = $('.dom-traverse-grandson');
     
-        expect(sons.parents('.parent').count()).toBe(1);
-        expect(sons.parents('.parent-special').count()).toBe(2);
-        expect(sons.add(sons.parents('.parent-special')).parents('.parent-special').count()).toBe(2);
+        expect(sons.parents('.parent').length).toBe(1);
+        expect(sons.parents('.parent-special').length).toBe(2);
+        expect(sons.add(sons.parents('.parent-special')).parents('.parent-special').length).toBe(2);
     });
 });
 

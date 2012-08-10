@@ -15,7 +15,7 @@ describe('Neuron: dom/create: $.create()', function (){
 
     describe('fragment not passed in', function (){
         it('-fragment not passed in', function (){
-            expect($.create().count()).toBe(0);
+            expect($.create().length.toBe(0);
         });
     });
     describe('fragment passed in', function (){
