@@ -1,0 +1,881 @@
+<style>
+#dom-event-container{
+    padding: 10px;
+    background-color:rgba(0, 0, 0, .05);
+}
+
+#dom-event-container div, #dom-event-container .sub{
+    padding: 10px;
+    background-color:rgba(0, 0, 0, .05);
+}
+
+#dom-event-container .color-change{
+    color: blue;
+}
+
+#dom-event-container .color-red{
+    color: red;
+}
+
+#dom-event-container .has-border{
+    border: 1px solid #000;
+}
+
+#dom-event-container .thick-bg{
+    background-color:rgba(0, 0, 0, 0.2);
+}
+
+
+</style>
+
+<div id="dom-event-container">
+    #dom-event-container
+    <div id="dom-event-on-add-one">
+        <div>
+            click to change background
+        </div>
+    </div>
+    <div id="dom-event-on-type-map">
+        <div>
+            click to toggle border, mouse enter and leave to change color
+        </div>
+    </div>
+    <div id="dom-event-on-add-live">
+        the color of these texts sould not change
+        <div class="toggle color-change">
+            click to toggle text color
+        </div>
+    </div>
+    <div id="dom-event-on-type-map-live">
+        <div class="toggle">
+            use your mouse to trigger changes
+        </div>
+    </div>
+    
+    <div id="dom-event-on-bad-arguments">
+        <div>
+            .on() -> bad arguments: will do nothing
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-one">
+        <div>
+            .off(type, fn): will do nothing when clicking on
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-map">
+        <div>
+            .off(type-map): will do nothing when clicking on or mouse leaving and entering
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-live">
+        <div>
+            .off(type, selector, fn): will do nothing when clicking on
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-live-type-selector">
+        <div>
+            .off(type, selector): will do nothing when clicking on
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-live-map-selector">
+        <div>
+            .off(type-map, selector): will do nothing when clicking on or moving your mouse
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-live-type-all-selector">
+        <div class="click">
+            .off(type, '**'): will do nothing when clicking on
+        </div>
+        <div class="sub">
+            .off(type, '**'): will do nothing when clicking on
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-live-type-all-selector-fn">
+        <div class="click">
+            .off(type, '**', fn): will do nothing when clicking on
+        </div>
+        <div class="sub">
+            .off(type, '**', fn): will do nothing when clicking on
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-live-map-all-selector">
+        <div class="click">
+            .off(type-map, '**'): will do nothing when clicking on
+        </div>
+        <div class="sub">
+            .off(type-map, '**'): will do nothing when clicking on or moving your mouse
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-all-normal-live-by-type">
+        <div class="click">
+            .off(type): will do nothing when clicking on
+        </div>
+        <div class="sub">
+            .off(type): will do nothing when clicking on
+        </div>
+    </div>
+    
+    <div id="dom-event-off-remove-all">
+        <div class="click">
+            .off(type): will do nothing when clicking on or moving your mouse
+        </div>
+        <div class="sub">
+            .off(type): will do nothing when clicking on or moving your mouse
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+describe("Neuron: dom/event (semi-automate test case)", function(){
+    
+var 
+
+DOM = NR.DOM,
+
+event_storage = DOM.__storage.events,
+
+method = {
+    getStorage: function(el){
+        var id = DOM.SELECTOR.uid(el[0]);
+
+        return event_storage[id] || (event_storage[id] = {});
+    },
+    
+    getHandlers: function(el, type){
+        var storage = method.getStorage(el);
+    
+        return storage[type];
+    },
+    
+    // if handlers contains fn, returns true
+    containsFn: function(handlers, fn, selector){
+        var ret = false;
+        
+        handlers && handlers.forEach(function(handler){
+            if(handler.fn === fn && handler.selector === selector){
+                ret = true;
+            }
+        });
+        
+        return ret;
+    },
+    
+    isHandlerEmpty: function(handlers){
+        return !handlers || !handlers.length;
+    }
+}; 
+    
+    
+describe(".on()", function(){
+    describe(".on(type, fn)", function(){
+        var el = $('#dom-event-on-add-one div'),
+            fn = function(){
+                $(this).toggleClass('thick-bg');
+            },
+            ret = el.on('click', fn);
+    
+        it("could attach a specific event: .on(type, fn)", function(){
+            var handlers = method.getHandlers(el, 'click');
+            
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn)).toBe(true);
+        });
+        
+        it("returns the current NR.DOM Object", function(){
+            expect(el).toBe(ret);
+        });
+    });
+    
+    describe(".on(type-map)", function(){
+        var el = $('#dom-event-on-type-map div'),
+            fn1 = function(){
+                $(this).toggleClass('has-border');
+            },
+            fn2 = function(){
+                $(this).addClass('color-red');
+            },
+            ret = el.on({
+                'click': fn1,
+                'mouseenter': fn2,
+                'mouseleave': function(){
+                    $(this).removeClass('color-red');
+                }
+            });
+    
+        it("could attach several events", function(){
+            var handlers1 = method.getHandlers(el, 'click'),
+                handlers2 = method.getHandlers(el, 'mouseenter');
+        
+            expect(method.isHandlerEmpty(handlers1)).toBe(false);
+            expect(method.isHandlerEmpty(handlers2)).toBe(false);
+            
+            expect(method.containsFn(handlers1, fn1)).toBe(true);
+            expect(method.containsFn(handlers2, fn2)).toBe(true);
+        });
+        
+        it("returns the current NR.DOM Object", function(){
+            expect(el).toBe(ret);
+        });
+    });
+    
+    describe(".on(type, selector, fn)", function(){
+        var el = $('#dom-event-on-add-live'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            ret = el.on('click', '.toggle', fn);
+    
+        it("could attach a specific live event: .on(type, fn)", function(){
+            var handlers = method.getHandlers(el, 'click');
+            
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, '.toggle')).toBe(true);
+        });
+        
+        it("returns the current NR.DOM Object", function(){
+            expect(el).toBe(ret);
+        });
+    });
+    
+    describe(".on(type-map, selector)", function(){
+        var el = $('#dom-event-on-type-map-live'),
+            fn1 = function(){
+                $(this).text('mouse clicked');
+            },
+            fn2 = function(){
+                $(this).text('mouse entered');
+            },
+            fn3 = function(){
+                $(this).text('mouse leaved');
+            }
+            selector = '.toggle',
+            ret = el.on({
+                'click': fn1,
+                'mouseenter': fn2,
+                'mouseleave': fn3
+            }, selector);
+    
+        it("could attach several events", function(){
+            var handlers1 = method.getHandlers(el, 'click'),
+                handlers2 = method.getHandlers(el, 'mouseenter'),
+                handlers3 = method.getHandlers(el, 'mouseleave');
+        
+            expect(method.isHandlerEmpty(handlers1)).toBe(false);
+            expect(method.isHandlerEmpty(handlers2)).toBe(false);
+            expect(method.isHandlerEmpty(handlers3)).toBe(false);
+            
+            expect(method.containsFn(handlers1, fn1, selector)).toBe(true);
+            expect(method.containsFn(handlers2, fn2, selector)).toBe(true);
+            expect(method.containsFn(handlers3, fn3, selector)).toBe(true);
+        });
+        
+        it("returns the current NR.DOM Object", function(){
+            expect(el).toBe(ret);
+        });
+    });
+    
+    describe("bad arguments", function(){
+        describe(".on(type), no function", function(){
+            var el = $('#dom-event-on-bad-arguments div'),
+                fn = function(){
+                    $(this).toggleClass('thick-bg');
+                },
+                ret = el.on('click');
+        
+            it("will do nothing", function(){
+                var handlers = method.getHandlers(el, 'click');
+                
+                expect(method.isHandlerEmpty(handlers)).toBe(true);
+                expect(method.containsFn(handlers, fn)).toBe(false);
+            });
+            
+            it("returns the current NR.DOM Object, either", function(){
+                expect(el).toBe(ret);
+            });
+        });
+        
+        describe(".on(type, <no-string>, fn), wrong type: selector", function(){
+            var el = $('#dom-event-on-bad-arguments div'),
+                fn = function(){
+                    $(this).toggleClass('thick-bg');
+                },
+                ret = el.on('click', true, fn).on('click', /1/, fn).on('click', 1, fn);
+        
+            it("will do nothing", function(){
+                var handlers = method.getHandlers(el, 'click');
+                
+                expect(method.isHandlerEmpty(handlers)).toBe(true);
+                expect(method.containsFn(handlers, fn)).toBe(false);
+            });
+            
+            it("returns the current NR.DOM Object, either", function(){
+                expect(el).toBe(ret);
+            });
+        });
+        
+        describe(".on(type, selector, <no-function>), wrong type: fn", function(){
+            var el = $('#dom-event-on-bad-arguments'),
+                fn = function(){
+                    $(this).toggleClass('thick-bg');
+                },
+                ret = el.on('click', 'div', true).on('click', 'div', 'fn');
+        
+            it("will do nothing", function(){
+                var handlers = method.getHandlers(el, 'click');
+                
+                expect(method.isHandlerEmpty(handlers)).toBe(true);
+                expect(method.containsFn(handlers, fn)).toBe(false);
+            });
+            
+            it("returns the current NR.DOM Object, either", function(){
+                expect(el).toBe(ret);
+            });
+        });
+        
+        describe(".on(type, <no-selector>, <no-function>), either type of selector and fn is wrong", function(){
+            var el = $('#dom-event-on-bad-arguments'),
+                fn = function(){
+                    $(this).toggleClass('thick-bg');
+                },
+                ret = el
+                    .on('click', 'div', true)
+                    .on('click', 'div', 'fn')
+                    .on('click', true, fn)
+                    .on('click', /1/, fn)
+                    .on('click', 1, fn)
+                    .on('click', true, true)
+                    .on('click', /1/, 'fn');
+        
+            it("will do nothing", function(){
+                var handlers = method.getHandlers(el, 'click');
+                
+                expect(method.isHandlerEmpty(handlers)).toBe(true);
+                expect(method.containsFn(handlers, fn)).toBe(false);
+            });
+            
+            it("returns the current NR.DOM Object, either", function(){
+                expect(el).toBe(ret);
+            });
+        });
+    });
+    
+});
+
+
+describe(".off()", function(){
+    describe(".off(type, fn)", function(){
+        var el = $('#dom-event-off-remove-one div'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            };
+            
+        el.on('click', fn);
+        el.off('click', fn);
+    
+        it("could remove event handler with event type and handler function", function(){
+            var handlers = method.getHandlers(el, 'click');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(false);
+        });
+        
+        it("would ignore bad arguments: .off(type, x)", function(){
+            el.on('scroll', fn);
+            
+            // ignore: .off(type, x)
+            el.off('scroll', null);
+        
+            var handlers = method.getHandlers(el, 'scroll');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn)).toBe(true);
+        });
+    });
+    
+    describe(".off(type-map)", function(){
+        var el = $('#dom-event-off-remove-map div'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            };
+            
+        el.on({
+            click: fn,
+            mouseenter: fn,
+            mouseleave: fn
+        });
+    
+        it("could remove several event handlers with a map", function(){
+            el.on({
+                click: fn,
+                mouseenter: fn,
+                mouseleave: fn,
+                scroll: fn
+            });
+            
+            el.off({
+                click: fn,
+                mouseenter: fn,
+                mouseleave: fn
+            });
+        
+            var handlers;
+            
+            handlers = method.getHandlers(el, 'click');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(false);
+            
+            handlers = method.getHandlers(el, 'mouseenter');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(false);
+            
+            handlers = method.getHandlers(el, 'mouseleave');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(false);
+        });
+        
+        it("would ignore bad arguments: .off({type: x})", function(){
+            // ignore: .off(type, x)
+            el.off({
+                scroll: null
+            });
+        
+            var handlers = method.getHandlers(el, 'scroll');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn)).toBe(true);
+        });
+    });
+    
+    describe(".off(type, selector, fn)", function(){
+        var el = $('#dom-event-off-remove-live'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            };
+            
+        el.on('click', 'div', fn);
+        el.off('click', 'div', fn);
+    
+        it("could remove event handler with event type and handler function", function(){
+            var handlers = method.getHandlers(el, 'click');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn, 'div')).toBe(false);
+        });
+        
+        it("would not remove event handlers if not match the criterias", function(){
+            el.on('resize', 'div', fn);
+            
+            el.on('resize', fn);
+            el.on('resize', 'span', fn);
+        
+            var handlers = method.getHandlers(el, 'scroll');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(false);
+            expect(method.containsFn(handlers, fn, 'div')).toBe(false);
+        });
+        
+        it("would ignore bad arguments", function(){
+            el.on('scroll', 'div', fn);
+            
+            // ignore: .off(type, x)
+            el.off('scroll', null, null);
+            el.off('scroll', null, fn);
+            el.off('scroll', 'div', null);
+        
+            var handlers = method.getHandlers(el, 'scroll');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, 'div')).toBe(true);
+        });
+    });
+    
+    describe(".off(type, selector)", function(){
+        var el = $('#dom-event-off-remove-live-type-selector'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector = 'div';
+        
+        
+        it("would remove all event handlers which match `type` and `selector`", function(){
+            
+            el.on('click', selector, fn).on('click', selector, fn2);
+            
+            el.off('click', selector);
+            
+            var handlers = method.getHandlers(el, 'click');
+            
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn, 'div')).toBe(false);
+        });
+        
+        it("would not remove event handlers if not match the criterias", function(){
+            el.on('scroll', selector, fn).on('scroll', selector, fn2);
+            
+            el.off('scroll', 'span').off('click', selector);
+            
+            var handlers = method.getHandlers(el, 'scroll');
+            
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, 'div')).toBe(true);
+        });
+    });
+    
+    describe(".off(type-map, selector)", function(){
+        var el = $('#dom-event-off-remove-live-map-selector'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector = 'div';
+        
+        el.on('scroll', selector, fn).on('resize', selector, fn2);
+        
+        
+        it("would remove all event handlers which match `map` and `selector`", function(){
+            
+            el.on('click', selector, fn).on('mouseenter', selector, fn2);
+            
+            el.off({
+                click: fn,
+                mouseenter: fn2
+            }, selector);
+            
+            var handlers = method.getHandlers(el, 'click'),
+                handlers2 = method.getHandlers(el, 'mouseenter');
+            
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.containsFn(handlers, fn, selector)).toBe(false);
+            expect(method.isHandlerEmpty(handlers2)).toBe(true);
+            expect(method.containsFn(handlers2, fn2, selector)).toBe(false);
+        });
+        
+        it("would not remove event handlers if not match the criterias", function(){
+            
+            el.off({scroll: fn}, 'span')    // selector doesn't match
+              .off({click: fn2}, selector)  // type doesn't match
+              .off({resize: fn}, selector)  // fn doesn't match
+            
+            var handlers = method.getHandlers(el, 'scroll'),
+                handlers2 = method.getHandlers(el, 'resize');
+            
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, selector)).toBe(true);
+            expect(method.isHandlerEmpty(handlers2)).toBe(false);
+            expect(method.containsFn(handlers2, fn2, selector)).toBe(true);
+        });
+        
+        it("would ignore bad arguments: .off(type-map, x)", function(){
+            el.off({
+                scroll: fn,
+                resize: fn2
+            }, null).off({
+                scroll: fn,
+                resize: fn2
+            }, 1).off({
+                scroll: fn,
+                resize: fn2
+            }, undefined)
+        
+            var handlers = method.getHandlers(el, 'scroll'),
+                handlers2 = method.getHandlers(el, 'resize');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, selector)).toBe(true);
+            expect(method.isHandlerEmpty(handlers2)).toBe(false);
+            expect(method.containsFn(handlers2, fn2, selector)).toBe(true);
+        });
+    });
+    
+    describe(".off(type, '**')", function(){
+        var el = $('#dom-event-off-remove-live-type-all-selector'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector1 = '.click',
+            selector2 = '.sub';
+        
+        
+        it("would remove all event handlers", function(){
+            
+            el.on('click', selector1, fn).on('click', selector2, fn2).on('click', selector1, fn2);
+            
+            el.off('click', '**');
+            
+            var handlers = method.getHandlers(el, 'click');
+            
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+        });
+        
+        it("would not remove event handlers if not match the criterias", function(){
+            el.on('scroll', selector1, fn).on('scroll', selector2, fn2);
+            
+            el.off('click', '**');
+                        
+            var handlers = method.getHandlers(el, 'scroll');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, selector1)).toBe(true);
+        });
+    });
+    
+    describe(".off(type, '**', fn)", function(){
+        var el = $('#dom-event-off-remove-live-type-all-selector-fn'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector1 = '.click',
+            selector2 = '.sub';
+        
+        
+        it("would remove all live event handlers by type and fn", function(){
+            
+            el.on('click', selector1, fn).on('click', selector2, fn);
+            
+            el.off('click', '**', fn);
+            
+            var handlers = method.getHandlers(el, 'click');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+        });
+        
+        it("would not remove event handlers if not match the criterias", function(){
+            el.on('scroll', selector1, fn).on('scroll', selector2, fn2);
+            
+            el.off('scroll', '**', fn);
+                        
+            var handlers = method.getHandlers(el, 'scroll');
+                
+            expect(method.containsFn(handlers, fn, selector1)).toBe(false);
+            expect(method.containsFn(handlers, fn2, selector2)).toBe(true);
+        });
+        
+        it("should ignore bad arguments: .off(type, '**', x)", function(){
+            el.on('resize', selector1, fn)
+            
+            el.off('resize', '**', null);
+                        
+            var handlers = method.getHandlers(el, 'resize');
+            expect(method.containsFn(handlers, fn, selector1)).toBe(true);
+        });
+    });
+    
+    describe(".off(type-map, '**')", function(){
+        var el = $('#dom-event-off-remove-live-map-all-selector'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector1 = '.click',
+            selector2 = '.sub';
+        
+        it("would remove all live event handlers", function(){
+            
+            el.on('click', selector1, fn).on('click', selector1, fn).on('mouseenter', selector2, fn2);
+            
+            el.off({
+                click: fn,
+                mouseenter: fn2
+            }, '**');
+            
+            var handlers = method.getHandlers(el, 'click'),
+                handlers2 = method.getHandlers(el, 'mouseenter');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.isHandlerEmpty(handlers2)).toBe(true);
+        });
+        
+        it("would not remove event handlers if not match the criterias", function(){
+            el.on('scroll', selector1, fn).on('resize', selector2, fn2);
+            
+            el.off({
+                scroll: fn2,
+                resize: fn
+            }, '**');
+                        
+            var handlers = method.getHandlers(el, 'scroll'),
+                handlers2 = method.getHandlers(el, 'resize');
+                
+            expect(method.containsFn(handlers, fn, selector1)).toBe(true);
+            expect(method.containsFn(handlers2, fn2, selector2)).toBe(true);
+        });
+    });
+    
+    describe(".off(type)", function(){
+        var el = $('#dom-event-off-remove-all-normal-live-by-type'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector1 = '.click',
+            selector2 = '.sub';
+            
+        el.on('resize', selector1, fn)
+          .on('resize', fn)
+    
+        it("would remove all normal and live event handlers by type", function(){
+            // live events
+            el.on('click', selector1, fn)
+              .on('click', selector2, fn)
+              .on('click', selector2, fn2);
+              
+            // normal events
+            el.on('click', fn)
+              .on('click', fn2);
+              
+            el.off('click');
+            
+            var handlers = method.getHandlers(el, 'click');
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+        });
+        
+        it("would do nothing if type didn't match", function(){
+            el.off('click')
+            
+            var handlers = method.getHandlers(el, 'resize');
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, selector1)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(true);
+        });
+        
+        it("would ignore bad arguments: .off(type, <no-string>)", function(){
+            el.off('click', undefined).off('click', 1).off('click', null);
+            
+            
+            var handlers = method.getHandlers(el, 'resize');
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, selector1)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(true);
+        });
+        
+        it("would ignore bad arguments: .off(type, <no-string>, <no-function>)", function(){
+            el.off('click', undefined, undefined).off('click', 1, null).off('click', null, 1);
+            
+            var handlers = method.getHandlers(el, 'resize');
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.containsFn(handlers, fn, selector1)).toBe(true);
+            expect(method.containsFn(handlers, fn)).toBe(true);
+        });
+    });
+    
+    describe(".off()", function(){
+        var el = $('#dom-event-off-remove-all'),
+            fn = function(){
+                $(this).toggleClass('color-red');
+            },
+            
+            fn2 = function(){
+                $(this).toggleClass('has-border');
+            },
+            
+            selector1 = '.click',
+            selector2 = '.sub';
+    
+        it("would remove all normal and live event handlers by type", function(){
+            // live events
+            el.on('click', selector1, fn)
+              .on('click', selector2, fn)
+              .on('click', selector2, fn2)
+              .on('mouseenter', selector1, fn)
+              .on('mouseenter', selector2, fn2)
+              
+            // normal events
+            el.on('click', fn)
+              .on('click', fn2)
+              .on('mouseenter', fn)
+              
+            el.off();
+            
+            var handlers = method.getHandlers(el, 'click'),
+                handlers2 = method.getHandlers(el, 'mouseenter');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(true);
+            expect(method.isHandlerEmpty(handlers2)).toBe(true);
+        });
+        
+        it("should ignore bad arguments: .off(<no-string>, [,all [,all]])", function(){
+            // live events
+            el.on('resize', selector1, fn)
+              .on('resize', selector2, fn)
+              .on('resize', selector2, fn2)
+              .on('scroll', selector1, fn)
+              .on('scroll', selector2, fn2)
+              
+            // normal events
+            el.on('resize', fn)
+              .on('resize', fn2)
+              .on('scroll', fn)
+              
+            el.off(null)
+              .off(undefined)
+              .off(false)
+              .off(1)
+              .off(null, null)
+              .off(null, undefined)
+              .off(1, 1)
+              .off(1, 1, 1)
+              .off(null, null, undefined)
+              .off(null, selector1, fn)
+              .off(1, selector2, fn);
+            
+            var handlers = method.getHandlers(el, 'resize'),
+                handlers2 = method.getHandlers(el, 'scroll');
+                
+            expect(method.isHandlerEmpty(handlers)).toBe(false);
+            expect(method.isHandlerEmpty(handlers2)).toBe(false);
+            expect(handlers.length).toBe(5);
+        });
+    });
+});
+
+
+});
+
+</script>
