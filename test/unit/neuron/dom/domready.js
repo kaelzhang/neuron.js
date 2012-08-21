@@ -1,6 +1,9 @@
 describe("Neuron: dom/domready", function(){
-    var domready_time,
-        onload_time;
+    var 
+    
+    $ = NR.DOM,
+    domready_time,
+    onload_time;
     
     // register `load` event ahead of domready
     $(window).on('load', function(){
@@ -42,4 +45,25 @@ describe("Neuron: dom/domready", function(){
             })
         });
     });
+    
+    describe("NR.isDomReady()", function(){
+        it("should return true, if DOMContentLoaded fired", function(){
+            var ready;
+            
+            runs(function(){
+                NR.ready(function(){
+                    ready = true;
+                });
+            });
+            
+            waitsFor(function(){
+                return ready;
+            });
+        
+            runs(function(){
+                expect(NR.isDomReady()).toBe(true);
+            });
+        });
+    });
+    
 });

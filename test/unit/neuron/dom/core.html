@@ -212,6 +212,19 @@ describe('$.one()', function(){
     it("$.one('#dom-core-nested-div > div')[0] === $('#dom-core-nested-div > div')[0]", function(){
         expect($.one('#dom-core-nested-div > div')[0]).toBe($('#dom-core-nested-div > div')[0]);
     });
+});
+
+
+describe('.one()', function(){
+    var $ = NR.DOM;
+    
+    it("could get the first matched element", function(){
+        expect($('#dom-core-nested-div').one('div').length).toBe(1);
+    });
+    
+    it("$('#dom-core-nested-div').one('div')[0] === $('#dom-core-nested-div > div')[0]", function(){
+        expect($('#dom-core-nested-div').one('div')[0]).toBe($('#dom-core-nested-div > div')[0]);
+    });
     
     it("will returns a brandnew object", function(){
         var div = $('.dom-core-nested-div');
@@ -324,6 +337,20 @@ describe(".add()", function(){
         expect( divdiv4 === divdiv4.add(
             $('#dom-core-nested-div-2 div')
         ) ).toBe(false);
+    });
+});
+
+
+describe("$.noConflict()", function(){
+    var DOM = NR.DOM,
+        ret = DOM.noConflict();
+
+    it("could relinquish neuron's ctrl of the $ variable", function(){
+        expect($()).toBe('blah');
+    });
+    
+    it("will return NR.DOM", function(){
+        expect(ret).toBe(NR.DOM);
     });
 });
 
