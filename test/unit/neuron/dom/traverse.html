@@ -50,9 +50,10 @@
 
 describe("Neuron: dom/traverse", function(){
 
-var PREFIX = 'dom-traverse';
+var PREFIX = 'dom-traverse',
+    $ = NR.DOM;
     
-describe(".prev()", function(){
+!$.jq && describe(".prev()", function(){
     it("could get previous subling of the first context: .prev()", function(){
         var last = $('#dom-traverse-prev .last'),
             all_p = $('#dom-traverse-prev p');
@@ -92,7 +93,7 @@ describe(".prevAll()", function(){
 });
 
 
-describe(".next()", function(){
+!$.jq && describe(".next()", function(){
     it("could get the next subling: .next()", function(){
         var el = $('#dom-traverse-next .first'),
             all_p = $('#dom-traverse-next p');
@@ -161,7 +162,7 @@ describe(".children()", function(){
 });
 
 
-describe(".parent()", function(){
+!$.jq && describe(".parent()", function(){
     it("could get the direct parent", function(){
         var son = $('#dom-traverse-grandson');
     
