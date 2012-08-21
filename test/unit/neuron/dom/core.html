@@ -193,7 +193,7 @@ describe('$ with dirty data', function(){
     
     $ = NR.DOM;
     
-    it('would santitize dirty data', function(){
+    !$.jq && it('would santitize dirty data', function(){
         expect( $([1,2,3]).length ).toBe(0);
         expect( $([ document.body, null ]).length ).toBe(1);
         expect( $([ undefined, document.body ])[0] === document.body ).toBe(true);
@@ -305,25 +305,25 @@ describe(".add()", function(){
     
         expect( direct_divs.add($('.dom-core-nested-div div')).length ).toBe(8);
     });
-    
-    it("will change the origin object", function(){
+ 
+    it("will not change the origin object", function(){
         var divdiv = $('#dom-core-nested-div div');
-        expect( divdiv === divdiv.add('#dom-core-nested-div-2 div') ).toBe(true);
+        expect( divdiv === divdiv.add('#dom-core-nested-div-2 div') ).toBe(false);
         
         var divdiv2 = $('#dom-core-nested-div div');
         expect( divdiv2 === divdiv2.add(
             document.getElementById('dom-core-nested-div-2').getElementsByTagName('div')
-        ) ).toBe(true);
+        ) ).toBe(false);
         
         var divdiv3 = $('#dom-core-nested-div div');
         expect( divdiv3 === divdiv3.add(
             document.getElementById('dom-core-nested-div-2')
-        ) ).toBe(true);
+        ) ).toBe(false);
         
         var divdiv4 = $('#dom-core-nested-div div');
         expect( divdiv4 === divdiv4.add(
             $('#dom-core-nested-div-2 div')
-        ) ).toBe(true);
+        ) ).toBe(false);
     });
 });
 
