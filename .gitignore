@@ -1,4 +1,4 @@
-# php files
+# PHP files
 index.php
 
 # Numerous always-ignore extensions
@@ -6,7 +6,7 @@ index.php
 *.patch
 *.diff
 *.err
-*.orig
+*.orig  # temp file for git conflict merging
 *.log
 *.rej
 *.swo
