@@ -35,12 +35,14 @@ thumbs.db
 .CVS
 .idea
 node_modules
-old/
-*-old/
-*-notrack/
 build/
 combo/
 reference/
 jscoverage_lib/
 temp/
+*-notrack/
 
+# Filter old Folders
+unit-test/
+old/
+*-old/
