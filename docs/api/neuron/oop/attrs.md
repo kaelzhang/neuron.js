@@ -1,5 +1,3 @@
-<markdown>
-
 # Attrs Method: addAttr
 
 ##   语法:
@@ -115,4 +113,3 @@
     var F2E = new Dpper({ name: 'Kael'});
 	alert(F2E.get('name')); // alerts Kael
 ***
-</markdown>
