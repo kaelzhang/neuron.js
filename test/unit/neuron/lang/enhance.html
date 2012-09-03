@@ -265,7 +265,11 @@ describe('NR.clone(object, filter)', function(){
                 b: {
                     a: 11,
                     b: 22
-                }
+                },
+                
+                date: new Date,
+                
+                regex: /abc/g
             },
             
             receiver;
@@ -288,7 +292,9 @@ describe('NR.clone(object, filter)', function(){
         expect( receiver.c.a.c.d.e ).toBe(1);
         
         receiver.a.a = 11;
-        expect( o.a.a ).toBe(1);    
+        expect( o.a.a ).toBe(1);
+        
+        expect(receiver.date.getMonth()).toBe(o.date.getMonth());
     });
     
     it('could clone members of an object into a receiver', function(){
@@ -716,6 +722,121 @@ describe('NR.sub(template, data)', function(){
             };
             
         expect( NR.sub(t, p) ).toBe('a{{1}');
+    });
+});
+
+
+describe("NR.guid()", function(){
+    it("could create an unique and increasing global id", function(){
+        var base = NR.guid();
+        
+        expect(NR.guid()).toBe(base + 1);
+        expect(NR.guid()).toBe(base + 2);
+        expect(NR.guid() === NR.guid()).toBe(false);
+    });
+});
+
+
+describe("NR.delay()", function(){
+    it("returns an object contains two methods: start, cancel", function(){
+        function a(){
+            b = 2;
+        };
+        
+        var b = 1,
+            timer = NR.delay(a, 100);
+    
+        expect(NR.isObject(timer)).toBe(true);
+        expect(NR.isFunction(timer.start)).toBe(true);
+        expect(NR.isFunction(timer.cancel)).toBe(true);
+    });
+    
+    describe("methods:", function(){
+        it(".start() could start a timer, returns a number", function(){
+            function a(){
+                b = 2;
+            };
+            
+            var b = 1,
+                timer = NR.delay(a, 10),
+                ret;
+                
+            runs(function(){
+                ret = timer.start();
+            });
+            
+            waitsFor(function(){
+                return b !== 1;
+            });
+            
+            runs(function(){
+                expect(b).toBe(2);
+                expect(NR.isNumber(ret)).toBe(true);
+            });
+        });
+        
+        it(".cancel() could cancel a timer", function(){
+            function a(){
+                b = 2;
+            };
+            
+            var b = 1,
+                flag = false,
+                timer = NR.delay(a, 50);
+            
+            // little longer
+            setTimeout(function(){
+                flag = true;
+            }, 100);
+            
+            timer.start();
+            timer.cancel();
+            
+            waitsFor(function(){
+                return flag;
+            });
+            
+            runs(function(){
+                expect(b).toBe(1);
+            });
+        });
+    });
+    
+    it("the timer which canceled could start again", function(){
+        function a(){
+            b = 2;
+        };
+        
+        var b = 1,
+            timer = NR.delay(a, 50),
+            ret;
+            
+        runs(function(){
+            timer.start();
+            timer.cancel();
+            ret = timer.start();
+        });
+        
+        waitsFor(function(){
+            return b !== 1;
+        });
+        
+        runs(function(){
+            expect(b).toBe(2);
+            expect(NR.isNumber(ret)).toBe(true);
+        });
+    });
+});
+
+
+describe("NR.toQueryString(object)", function(){
+    it("could convert an object into a query string", function(){
+        var obj = {
+            a: 1,
+            b: 2
+        };
+    
+        expect(NR.toQueryString(obj)).toBe('a=1&b=2');
     });
 });
 
