@@ -261,6 +261,7 @@ describe('NR.Class ext: attrs', function(){
         expect(obj.get('c')).toBe(3);
     });
     
+    
     (function(){
         var myClass = Class({
                 Implements: 'attrs',
@@ -328,6 +329,50 @@ describe('NR.Class ext: attrs', function(){
         });
         
     })();
+    
+    describe(".addAttr()", function(){
+        var myClass = Class({
+                Implements: 'attrs'
+            }),
+            
+            obj = new myClass(),
+            
+            attr = {
+                a: {
+                    value: 1
+                }
+            };
+        
+        obj.addAttr(attr);
+        
+        it("could add a new attribute", function(){
+            expect(obj.get('a')).toBe(1);
+        });
+    
+        it("would not ruin the reference of attr object", function(){
+            obj.set('a', 123)
+        
+            expect(attr.a.value).toBe(1);
+        });
+    });
+    
+    describe(".removeAttr(key)", function(){
+        var myClass = Class({
+                Implements: 'attrs'
+            }, {
+                a: {
+                    value: 1
+                }
+            }),
+            
+            obj = new myClass();
+            
+        obj.removeAttr('a');
+            
+        it("could remove attr by a specified key", function(){
+            expect(obj.get('a')).toBe(undefined);
+        });
+    });
     
     
     describe("attributes inheritance", function(){
