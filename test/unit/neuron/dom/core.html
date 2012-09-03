@@ -203,7 +203,10 @@ describe('$ with dirty data', function(){
 
 
 describe('$.one()', function(){
-    var $ = NR.DOM;
+    var 
+    $ = NR.DOM,
+    form = document.getElementById('dom-core-form'),
+    inputs = form.getElementsByTagName('input');
     
     it("could get the first direct <p> inside #dom-core-nested-div", function(){
         expect($.one('#dom-core-nested-div > div').length).toBe(1);
@@ -211,6 +214,11 @@ describe('$.one()', function(){
     
     it("$.one('#dom-core-nested-div > div')[0] === $('#dom-core-nested-div > div')[0]", function(){
         expect($.one('#dom-core-nested-div > div')[0]).toBe($('#dom-core-nested-div > div')[0]);
+    });
+    
+    it("could wrap a nodelist, and only maintain the first element", function(){
+        expect($.one(inputs).length).toBe(1);
+        expect($.one(inputs)[0]).toBe(inputs[0]);
     });
 });
 
@@ -340,6 +348,41 @@ describe(".add()", function(){
     });
 });
 
+describe("$.extend()", function(){
+    describe("could extend the NR.DOM prototype", function(){
+        var 
+        
+        $ = NR.DOM,
+        
+        inputs = $('inputs');
+    
+        it("extend several methods: extend(Object)", function(){
+            
+            $.extend({
+                __a: function(n){
+                    return this[n]
+                },
+                
+                __b: function(n){
+                    return this[n + 1];
+                }
+            });
+            
+            expect(NR.isFunction(inputs.__a)).toBe(true);
+            expect(inputs.__a(1)).toBe(inputs[1]);
+            expect(inputs.__b(1)).toBe(inputs[2]);
+        });
+        
+        it("extend one method: extend(name, method)", function(){
+            $.extend('__c', function(n){
+                return this[n - 1]; 
+            });
+        
+            expect(NR.isFunction(inputs.__c)).toBe(true);
+            expect(inputs.__c(2)).toBe(inputs[1]);
+        });
+    });
+});
 
 describe("$.noConflict()", function(){
     var DOM = NR.DOM,
