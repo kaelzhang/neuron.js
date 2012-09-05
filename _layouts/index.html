@@ -1,0 +1,41 @@
+{{> head.html}}
+
+<link rel="stylesheet" href="/_assets/style.css" />
+</head>
+<body>
+<div class="body">
+
+	<div class="aside">
+		
+		<section class="logo">
+		<h1>NEURON</h1>
+		</section>
+		
+		<section class="channel apidocs">
+			<header><h2>API DOCS</h2></header>
+			
+			{{#site.docs}}
+				<a href="{{path}}">{{name}}</a>
+			{{/site.docs}}
+		</section>
+		
+		<section class="channel unittests">
+			<header><h2 data-link="/test/unit/all.html">UNIT TESTS<a href="jscoverage_lib/jscoverage.html?/test/unit/all.html" target="_blank">c</a></h2></header>
+
+			<ul>
+			{{#site.tests}}
+				<a href="{{path}}">{{name}}</a>
+			{{/site.tests}}
+			</ul>
+		</section>
+		
+	</div>
+	<div class="docbg">
+		<div class="board"></div>
+	</div>
+	<div id="main">
+		<article class="markdown-article"></article>
+	</div>
+	
+</div></body>
+</html>
