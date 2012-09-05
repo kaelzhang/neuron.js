@@ -11,7 +11,7 @@ Class
 Class Method: constructor
 ---------
 
-###   语法:
+### 语法:
 
 ***
     {{lang:javascript}}
@@ -20,23 +20,23 @@ Class Method: constructor
     var MyClass = Class(properties);
 ***
 
-###   参数:
+### 参数:
  - properties
 - (object) 自定义属性集合、特殊属性（Extends、Implements、initialize）
 
-###   Property: Extends
+### Property: Extends
 - (class) 被继承的父类
 
-###   Property: Implements
+### Property: Implements
 - (string)空格分隔的字符属性，该组属性将复制到类上
 - (object)该对象属性将被复制到类上
 - (class)该类的原型属性将被复制到类上
 - (array)数组中的各元素(string、object、class)对象属性将被复制到类上
 
-###   Property: initialize
+### Property: initialize
 - (function)类实例化时的构造方法
 
-###   Returns:
+### Returns:
 - (class) 类的实例
 
 ### Examples:
@@ -54,7 +54,7 @@ Class Method: constructor
     alert(dp.name); // alerts 'dianping'
 ***
 
-####   Extends Example:
+#### Extends Example:
 ***
     {{lang:javascript}}
     var Dapper= new Class({
@@ -74,7 +74,7 @@ Class Method: constructor
     alert(Kael.age);  // alerts 18
 ***
 
-####   Implements Example:
+#### Implements Example:
 ***
     {{lang:javascript}}
     var commons = {
@@ -95,18 +95,18 @@ Class Method: constructor
 
 ### Class Static Method: setAttrs
 
-#   语法:
+# 语法:
 
 ***
     {{lang:javascript}}
     Class.setAttrs(class, properties);
 ***
 
-##   参数:
+## 参数:
  - class (class) 类
  - properties (object)用户自定义设置属性
 
-####   setAttrs Example:
+#### setAttrs Example:
 ***
     {{lang:javascript}}
     var Dapper= Class({

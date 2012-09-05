@@ -25,7 +25,9 @@ describe("Neuron: dom/domready", function(){
             });
             
             runs(function(){
-                expect(onload_time > domready_time).toBe(true);
+                
+                // might be the same timestamp
+                expect(onload_time >= domready_time).toBe(true);
             });
         });
         

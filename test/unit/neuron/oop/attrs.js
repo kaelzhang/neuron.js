@@ -330,6 +330,109 @@ describe('NR.Class ext: attrs', function(){
         
     })();
     
+    describe(".addAttr()", function(){
+        var myClass = Class({
+                Implements: 'attrs'
+            }),
+            
+            obj = new myClass(),
+            
+            attr = {
+                a: {
+                    value: 1
+                }
+            };
+        
+        obj.addAttr(attr);
+        
+        it("could add a new attribute", function(){
+            expect(obj.get('a')).toBe(1);
+        });
+    
+        it("would not ruin the reference of attr object", function(){
+            obj.set('a', 123)
+        
+            expect(attr.a.value).toBe(1);
+        });
+    });
+    
+    describe(".removeAttr(key)", function(){
+        var myClass = Class({
+                Implements: 'attrs'
+            }, {
+                a: {
+                    value: 1
+                }
+            }),
+            
+            obj = new myClass();
+            
+        obj.removeAttr('a');
+            
+        it("could remove attr by a specified key", function(){
+            expect(obj.get('a')).toBe(undefined);
+        });
+    });
+    
+    
+    describe("attributes inheritance", function(){
+        var superClass = Class({}, {
+                a: {
+                    value: 1
+                },
+                
+                b: {
+                    value: 2
+                },
+                
+                c: {
+                    value: 3
+                }
+            }),
+            
+            subClass = Class({
+                Implements: 'attrs',
+                Extends: superClass
+            }, {
+                a: {
+                    value: 10
+                },
+                
+                d: {
+                    value: 4
+                }
+            }),
+            
+            implementClass = Class({
+                Implements: [superClass, 'attrs']
+            }, {
+                e: {
+                    value: 5
+                }
+            });
+    
+        it("could inherit attributes from super class", function(){
+            var sub = new subClass();
+        
+            expect(sub.get('d')).toBe(4);
+            expect(sub.get('b')).toBe(2);
+            expect(sub.get('c')).toBe(3);
+        });
+        
+        it("could override attributes of super class", function(){
+            var sub = new subClass();
+        
+            expect(sub.get('a')).toBe(10);
+        });
+        
+        it("would never inherit attributes from implements", function(){
+            var im = new implementClass();
+        
+            expect(im.get('e')).toBe(5);
+            expect(im.get('a')).toBe(undefined);
+        });
+    });
+    
 });
 
 

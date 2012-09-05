@@ -1,5 +1,5 @@
-describe('Neuron:lang/biz', function(){
-
+describe("Neuron: biz", function(){
+    
 describe('NR.data()', function(){
     it('could store data by key-value, and sharing a global storage', function(){
         NR.data('a', 1);
@@ -56,46 +56,6 @@ describe('NR.data()', function(){
         DATA.h = 3;
         expect(NR.data('h')).toBe(undefined);
     })
-});
-
-
-describe('NR.getLocation()', function(){
-    describe('could analyse a given uri and split it to several parts', function(){
-        
-        // custom protocal
-        var itunes = NR.getLocation( 'itms://mylocalhost:8000/abc/def/?abc=123&fffff#ddddddd?abcdef' );
-        
-        it("correct protocol", function(){
-            expect(itunes.protocol).toBe('itms:');
-        });
-        
-        it("correct port", function(){
-            expect(itunes.port).toBe('8000');
-        });
-        
-        it("correct host", function(){
-            expect(itunes.host).toBe('mylocalhost:8000');
-        });
-        
-        it("correct hostname", function(){
-            expect(itunes.hostname).toBe('mylocalhost');
-        });
-        
-        it("correct pathname", function(){
-            expect(itunes.pathname).toBe('/abc/def/');
-        });
-        
-        it("correct search", function(){
-            expect(itunes.search).toBe('?abc=123&fffff');
-        });
-        
-        
-        it("correct hash", function(){
-            expect(itunes.hash).toBe('#ddddddd?abcdef');
-        });
-          
-    });
-});
-    
+}); 
     
 });
