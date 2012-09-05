@@ -3,39 +3,25 @@
 <link rel="stylesheet" href="/_assets/style.css" />
 </head>
 <body>
-<div class="body">
 
-	<div class="aside">
-		
-		<section class="logo">
-		<h1>NEURON</h1>
-		</section>
-		
-		<section class="channel apidocs">
-			<header><h2>API DOCS</h2></header>
-			
-			{{#site.docs}}
-				<a href="{{path}}">{{name}}</a>
-			{{/site.docs}}
-		</section>
-		
-		<section class="channel unittests">
-			<header><h2 data-link="/test/unit/all.html">UNIT TESTS<a href="jscoverage_lib/jscoverage.html?/test/unit/all.html" target="_blank">c</a></h2></header>
+<h2>docs</h2>
+<ul>
+	{{#site.docs}}
+		<li><a href="{{path}}">{{name}}</a></li>
+	{{/site.docs}}
+</ul>
 
-			<ul>
-			{{#site.tests}}
-				<a href="{{path}}">{{name}}</a>
-			{{/site.tests}}
-			</ul>
-		</section>
-		
-	</div>
-	<div class="docbg">
-		<div class="board"></div>
-	</div>
-	<div id="main">
-		<article class="markdown-article"></article>
-	</div>
-	
-</div></body>
+
+<h2>unit tests</h2>
+<ul>
+	{{#site.tests}}
+		<li><a href="{{path}}">{{name}}</a></li>
+	{{/site.tests}}
+</ul>
+
+<div>
+{{{page.content}}}
+</div>
+
+</body>
 </html>
