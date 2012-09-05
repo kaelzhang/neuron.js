@@ -1,0 +1,12 @@
+{{> head.html}}
+
+<script type="text/javascript" src="/tools/jasmine/jasmine.js"></script>
+<script type="text/javascript" src="/tools/jasmine/jasmine-html.js"></script>
+<script type="text/javascript" src="http://jstest.dianpingoa.com/js/inject.js"></script>
+<link rel="stylesheet" href="/tools/jasmine/jasmine.css" />
+</head>
+<body>
+    {{{page.content}}}
+    <script type="text/javascript">(function(){var jasmineEnv=jasmine.getEnv();jasmineEnv.updateInterval=1000;var htmlReporter=new jasmine.HtmlReporter();jasmineEnv.addReporter(htmlReporter);jasmineEnv.specFilter=function(spec){return htmlReporter.specFilter(spec);};var currentWindowOnload=window.onload;window.onload=function(){if(currentWindowOnload){currentWindowOnload();}execJasmine();};function execJasmine(){jasmineEnv.execute();}})();</script>
+</body>
+</html>

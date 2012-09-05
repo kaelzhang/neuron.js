@@ -1,0 +1,27 @@
+{{> head.html}}
+
+<link rel="stylesheet" href="/_assets/style.css" />
+</head>
+<body>
+
+<h2>docs</h2>
+<ul>
+	{{#site.docs}}
+		<li><a href="{{path}}">{{name}}</a></li>
+	{{/site.docs}}
+</ul>
+
+
+<h2>unit tests</h2>
+<ul>
+	{{#site.tests}}
+		<li><a href="{{path}}">{{name}}</a></li>
+	{{/site.tests}}
+</ul>
+
+<div>
+{{{page.content}}}
+</div>
+
+</body>
+</html>
