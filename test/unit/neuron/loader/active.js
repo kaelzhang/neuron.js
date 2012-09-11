@@ -51,7 +51,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-return', function(K, E){ console.log(E);
+                    NR.provide('test/fn-return', function(K, E){
                         e = E;
                     });
                 });
