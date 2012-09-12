@@ -6,12 +6,12 @@ describe("Neuron: dom/domready", function(){
     onload_time;
     
     // register `load` event ahead of domready
-    $(window).on('load', function(){
-        onload_time = + new Date; 
+    $(window).on('load', function(){ 
+        onload_time = + new Date;
     });
         
     NR.ready(function(){
-        domready_time = + new Date; 
+        domready_time = + new Date;
     });
 
     describe("NR.ready(fn)", function(){
