@@ -86,6 +86,15 @@ describe('NR.getLocation()', function(){
             expect(cur.hash).toBe(parsed.hash);
         });
     });
+    
+    describe("special situation", function(){
+        it("NR.getLocation(href).search should be an empty string if search query is '?'", function(){
+            var href = 'http://kael.me/?',
+                l = NR.getLocation(href);
+        
+            expect(l.search).toBe('');
+        });
+    });
 });
     
     
