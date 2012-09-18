@@ -38,13 +38,13 @@ describe("Neuron: dom/css", function(){
         var div2 = create('div').css('display', 'none').html("<input type='text' style='height:20px;'/><textarea style='height:20px;'></textarea><div style='height:20px;'></div>").inject(document.body);
     
         it("Height on hidden input.", function () {
-            expect(div2.one("input").css('height')).toBe(20);
+            expect(div2.findOne("input").css('height')).toBe(20);
         });
         it("Height on hidden textarea.", function () {
-            expect(div2.one("textarea").css('height')).toBe(20);
+            expect(div2.findOne("textarea").css('height')).toBe(20);
         });
         it("Height on hidden div.", function () {
-            expect(div2.one("div").css('height')).toBe(20);
+            expect(div2.findOne("div").css('height')).toBe(20);
     
             div2.destroy();
         });
@@ -52,13 +52,13 @@ describe("Neuron: dom/css", function(){
         var div3 = create('div').html("<input type='text' style='height:20px;display:none'/><textarea style='height:20px;display:none'></textarea><div style='height:20px;display:none'></div>").inject(document.body);
     
         it("Height on visible input.", function () {
-            expect(div3.one("input").css('height')).toBe(20);
+            expect(div3.findOne("input").css('height')).toBe(20);
         });
         it("Height on visible textarea.", function () {
-            expect(div3.one("textarea").css('height')).toBe(20);
+            expect(div3.findOne("textarea").css('height')).toBe(20);
         });
         it("Height on visible div.", function () {
-            expect(div3.one("div").css('height')).toBe(20);
+            expect(div3.findOne("div").css('height')).toBe(20);
     
             div3.destroy();
         });
@@ -75,7 +75,7 @@ describe("Neuron: dom/css", function(){
     
         var div4 = create('div').html("<div style='display: none;'></div>");
         it("Styles on disconnected nodes.", function () {
-            expect(div4.one('div').css("display")).toBe('none')
+            expect(div4.findOne('div').css("display")).toBe('none')
         });
     
         $('#dom-css-float').css({ "float": "right" });

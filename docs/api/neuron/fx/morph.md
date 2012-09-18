@@ -11,7 +11,7 @@ return K.Class({
 	Implements: FxCSS,
 
 	initialize: function(element, options){
-		this.element = this.subject = $.one(element);
+		this.element = this.subject = $.findOne(element);
 		Fx.call(this, options);
 	},
 

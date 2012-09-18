@@ -202,42 +202,42 @@ describe('$ with dirty data', function(){
 });
 
 
-describe('$.one()', function(){
+describe('$.findOne()', function(){
     var 
     $ = NR.DOM,
     form = document.getElementById('dom-core-form'),
     inputs = form.getElementsByTagName('input');
     
     it("could get the first direct <p> inside #dom-core-nested-div", function(){
-        expect($.one('#dom-core-nested-div > div').length).toBe(1);
+        expect($.findOne('#dom-core-nested-div > div').length).toBe(1);
     });
     
-    it("$.one('#dom-core-nested-div > div')[0] === $('#dom-core-nested-div > div')[0]", function(){
-        expect($.one('#dom-core-nested-div > div')[0]).toBe($('#dom-core-nested-div > div')[0]);
+    it("$.findOne('#dom-core-nested-div > div')[0] === $('#dom-core-nested-div > div')[0]", function(){
+        expect($.findOne('#dom-core-nested-div > div')[0]).toBe($('#dom-core-nested-div > div')[0]);
     });
     
     it("could wrap a nodelist, and only maintain the first element", function(){
-        expect($.one(inputs).length).toBe(1);
-        expect($.one(inputs)[0]).toBe(inputs[0]);
+        expect($.findOne(inputs).length).toBe(1);
+        expect($.findOne(inputs)[0]).toBe(inputs[0]);
     });
 });
 
 
-describe('.one()', function(){
+describe('.findOne()', function(){
     var $ = NR.DOM;
     
     it("could get the first matched element", function(){
-        expect($('#dom-core-nested-div').one('div').length).toBe(1);
+        expect($('#dom-core-nested-div').findOne('div').length).toBe(1);
     });
     
-    it("$('#dom-core-nested-div').one('div')[0] === $('#dom-core-nested-div > div')[0]", function(){
-        expect($('#dom-core-nested-div').one('div')[0]).toBe($('#dom-core-nested-div > div')[0]);
+    it("$('#dom-core-nested-div').findOne('div')[0] === $('#dom-core-nested-div > div')[0]", function(){
+        expect($('#dom-core-nested-div').findOne('div')[0]).toBe($('#dom-core-nested-div > div')[0]);
     });
     
     it("will returns a brandnew object", function(){
         var div = $('.dom-core-nested-div');
     
-        expect(div === div.one('div')).toBe(false);
+        expect(div === div.findOne('div')).toBe(false);
     });
 });
 

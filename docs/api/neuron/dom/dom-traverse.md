@@ -11,7 +11,7 @@ one
 
 ### 语法
 	
-	DOM().one(selector);
+	DOM().findOne(selector);
 
 ### 参数
 
@@ -37,7 +37,7 @@ one
 
 ##### javascript
 
-	DOM('ul').one('a');
+	DOM('ul').findOne('a');
 	
 ##### resulting context
 
