@@ -35,8 +35,6 @@
 			"loader/passive-config.js",
 			
 			"biz/biz.js",
-			
-			"legacy/neuron-2.0-1.0.js",
 
 			"cleaner.js"
 		]
