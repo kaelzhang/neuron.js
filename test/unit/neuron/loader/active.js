@@ -9,7 +9,7 @@ describe("NR.define, feated with NR.provide", function(){
             var e;
         
             runs(function(){
-                NR.provide('test/exports', function(K, E){
+                NR.provide('test/loader/exports', function(K, E){
                     e = E;
                 });
             });
@@ -31,7 +31,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-exports', function(K, E){
+                    NR.provide('test/loader/fn-exports', function(K, E){
                         e = E;
                     });
                 });
@@ -51,7 +51,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-return', function(K, E){
+                    NR.provide('test/loader/fn-return', function(K, E){
                         e = E;
                     });
                 });
@@ -71,7 +71,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-module-exports', function(K, E){
+                    NR.provide('test/loader/fn-module-exports', function(K, E){
                         e = E;
                     });
                 });
@@ -91,7 +91,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-3-2', function(K, E){
+                    NR.provide('test/loader/fn-3-2', function(K, E){
                         e = E;
                     });
                 });
@@ -111,7 +111,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-2-1', function(K, E){
+                    NR.provide('test/loader/fn-2-1', function(K, E){
                         e = E;
                     });
                 });
@@ -131,7 +131,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-2-1', function(K, E){
+                    NR.provide('test/loader/fn-2-1', function(K, E){
                         e = E;
                     });
                 });
@@ -151,7 +151,7 @@ describe("NR.define, feated with NR.provide", function(){
                 var e;
             
                 runs(function(){
-                    NR.provide('test/fn-3-2-1', function(K, E){
+                    NR.provide('test/loader/fn-3-2-1', function(K, E){
                         e = E;
                     });
                 });
@@ -175,8 +175,8 @@ describe("NR.define, feated with NR.provide", function(){
             var a;
         
             runs(function(){
-                NR.define('/lib/test/a.v2.js', true);
-                NR.provide('test/a', function(K, A){
+                NR.define('/lib/test/loader/a.v2.js', true);
+                NR.provide('test/loader/a', function(K, A){
                     a = A;
                 });
             });
@@ -206,7 +206,7 @@ describe("NR.provide", function(){
                 a, b;
         
             runs(function(){
-                NR.provide(['test/a', 'test/b'], function(K, A, B){
+                NR.provide(['test/loader/a', 'test/loader/b'], function(K, A, B){
                     a = A;
                     b = B;
                     loaded = true;
@@ -229,7 +229,7 @@ describe("NR.provide", function(){
             var loaded;
             
             runs(function(){
-                NR.provide('test/a', function(K, A){
+                NR.provide('test/loader/a', function(K, A){
                     loaded = true
                 });
             });
@@ -240,7 +240,7 @@ describe("NR.provide", function(){
             
             runs(function(){
                 var a;
-                NR.provide('test/a', function(K, A){
+                NR.provide('test/loader/a', function(K, A){
                     a = A;
                 });
                 
