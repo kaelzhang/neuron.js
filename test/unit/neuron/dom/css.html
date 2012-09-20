@@ -1,10 +1,18 @@
-﻿<div id="dom-css-display-block"></div>
-<div id="dom-css-float"></div>
-<div id="dom-css-opacity">
-    <div class="empty-opacity"></div>
-</div>
-<div id="dom-css-foo"></div>
+﻿<style>
+    #dom-css{font-size: 0;}
+    ＃dom-css-left{position: relative;}
+</style>
 
+<div id="dom-css">
+    <div id="dom-css-display-block"></div>
+    <div id="dom-css-float"></div>
+    <div id="dom-css-opacity">
+        <div class="empty-opacity"></div>
+    </div>
+    <div id="dom-css-foo"></div>
+    <div id="dom-css-height-visible"></div>
+    <div id="dom-css-left"></div>
+</div>
 
 <script>
 
@@ -14,12 +22,41 @@ describe("Neuron: dom/css", function(){
 var 
 
 $ = NR.DOM,
-create = $.create;
+create = $.create,
+
+wrap = $('#dom-css');
 
 describe(".css()", function(){
     describe("default value of css property", function(){
         it("should return 'block' dealing with a clean <div> element", function () {
             expect(create('div').inject(document.body).css("display")).toBe('block');
+        });
+    });
+    
+    describe("normal properties", function(){
+        it("could get correct `left`", function(){
+            var div = $('#dom-css-left');
+            div.css('left', '30px');
+        
+            expect(div.css('left')).toBe('30px');
+        });
+        
+        it("height on normal element", function(){
+            var div = $('#dom-css-height-visible');
+            
+            div.css('height', '3px');
+        
+            expect(div.css('height')).toBe('3px');
+        });
+    });
+    
+    describe("Sometimes, units could be omitted", function(){
+        describe("set a pixel unit value, 'px' could be omitted", function(){
+            var div = $.create('div').inject(wrap);
+            
+            div.css('height', 10);
+            
+            expect(div.css('height')).toBe('10px');
         });
     });
     
@@ -149,6 +186,17 @@ describe(".css()", function(){
                 expect(div.css("opacity")).toBe(value);
             });
         });
+        
+        [1, 0.75, 0.5, 0.25, 0].forEach(function (value) {
+            
+            var container = $("#dom-css-opacity");
+
+            it("Assert opacity is " + value + " as a Number", function () {
+                var div = $.create('div').css({ "opacity": value }).inject(container);
+                expect(div.css("opacity")).toBe('' + value);
+            });
+        });
+        
     });
     
     
