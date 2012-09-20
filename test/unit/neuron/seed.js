@@ -171,7 +171,7 @@ describe("type detection", function(){
     });
     
     describe("NR.isWindow()", function(){
-        it("", function(){
+        it("window", function(){
             expect(NR.isWindow(window)).toBe(true);
         });
     });

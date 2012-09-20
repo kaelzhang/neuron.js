@@ -1,171 +1,237 @@
 ﻿<div id="dom-css-display-block"></div>
 <div id="dom-css-float"></div>
-<div id="dom-css-opacity"></div>
+<div id="dom-css-opacity">
+    <div class="empty-opacity"></div>
+</div>
 <div id="dom-css-foo"></div>
 
-<!--
-<script type="text/javascript">
 
-var create = $.create;
+<script>
 
 
 describe("Neuron: dom/css", function(){
-    describe(".css(property): css getter", function(){
+
+var 
+
+$ = NR.DOM,
+create = $.create;
+
+describe(".css()", function(){
+    describe("default value of css property", function(){
         it("should return 'block' dealing with a clean <div> element", function () {
-            expect($('#dom-css-display-block').css("display")).toBe('block');
+            expect(create('div').inject(document.body).css("display")).toBe('block');
         });
+    });
     
-        var div1 = create('div');
+    describe("with disconnected node", function(){
     
-        it("Width on disconnected node.", function () {
-            expect(div1.css("width")).toBe(0);
+        describe("width and height", function(){
+            var div1 = create('div'),
+                div2 = create('div').css({
+                    width:  4,
+                    height: 4
+                }),
+                
+                div3 = create('div').css({
+                    width: '100%' 
+                }).inject(document.body);
+    
+            it("Width on disconnected node.", function () {
+                expect(div1.css("width")).toBe('0px');
+            });
+        
+            it("Height on disconnected node.", function () {
+                expect(div1.css("height")).toBe('0px');
+            });
+    
+            it("Width on disconnected node. Set width to 4 pixel", function () {
+            
+                expect(div2.css("width")).toBe('4px');
+            });
+        
+            it("Height on disconnected node. Set height to 4 pixel", function () {
+                expect(div2.css("height")).toBe('4px');
+            });
+            
+            it('Width on disconnected node. Set width to 100%', function(){
+                // expect(div3.css('width')).toBe('100%');
+                expect().toBe();
+            }); 
         });
-    
-        it("Height on disconnected node.", function () {
-            expect(div1.css("height")).toBe(0);
-        });
-    
-        div1.css({ "width": 4, "height": 4 });
-    
-        it("Width on disconnected node. Set width to 4 pixel", function () {
-            expect(div1.css("width")).toBe(4);
-        });
-    
-        it("Height on disconnected node. Set height to 4 pixel", function () {
-            expect(div1.css("height")).toBe(4);
-        });
-    
-        var div2 = create('div').css('display', 'none').html("<input type='text' style='height:20px;'/><textarea style='height:20px;'></textarea><div style='height:20px;'></div>").inject(document.body);
-    
-        it("Height on hidden input.", function () {
-            expect(div2.findOne("input").css('height')).toBe(20);
-        });
-        it("Height on hidden textarea.", function () {
-            expect(div2.findOne("textarea").css('height')).toBe(20);
-        });
-        it("Height on hidden div.", function () {
-            expect(div2.findOne("div").css('height')).toBe(20);
-    
-            div2.destroy();
-        });
-    
-        var div3 = create('div').html("<input type='text' style='height:20px;display:none'/><textarea style='height:20px;display:none'></textarea><div style='height:20px;display:none'></div>").inject(document.body);
-    
-        it("Height on visible input.", function () {
-            expect(div3.findOne("input").css('height')).toBe(20);
-        });
-        it("Height on visible textarea.", function () {
-            expect(div3.findOne("textarea").css('height')).toBe(20);
-        });
-        it("Height on visible div.", function () {
-            expect(div3.findOne("div").css('height')).toBe(20);
-    
-            div3.destroy();
-        });
-    
-        $('#dom-css-display-block').css({ "width": 0, "height": 0 });
-        $('#dom-css-display-block').css({ "overflow": "hidden", "width": -1, "height": -1 });
-    
-        it("Test negative width set to 0.", function () {
-            expect($('#dom-css-display-block').css('width')).toBe(0);
-        });
-        it("Test negative height set to 0.", function () {
-            expect($('#dom-css-display-block').css('height')).toBe(0);
-        });
-    
-        var div4 = create('div').html("<div style='display: none;'></div>");
-        it("Styles on disconnected nodes.", function () {
-            expect(div4.findOne('div').css("display")).toBe('none')
-        });
-    
-        $('#dom-css-float').css({ "float": "right" });
-        it("Modified CSS float using \"float\": Assert float is right.", function () {
-            expect($('#dom-css-float').css("float")).toBe('right')
-        });
-    
-        $('#dom-css-float').css({ "font-size": "30px" });
-        it("Modified CSS font-size: Assert font-size is 30px.", function () {
-            expect($('#dom-css-float').css("font-size")).toBe('30px')
-        });
-    
-        "1,0.75,0.5,0.25,0".split(",").forEach(function (value) {
-    
-            it("Assert opacity is " + parseFloat(value) + " as a String", function () {
-                $("#dom-css-opacity").css({ "opacity": value });
-                expect($('#dom-css-opacity').css("opacity")).toBe(value);
+        
+        describe("display", function(){
+            it("display on disconnected nodes.", function () {
+                var div = create('div').html("<div style='display: none;'></div>");
+            
+                expect(div.findOne('div').css("display")).toBe('none')
             });
         });
+    });
     
-        $('#dom-css-opacity').css({ "opacity": "" });
+    describe("Width or height on hidden elements", function(){
+        var div = create('div')
+                 .css('display', 'none')
+                 .html("<input type='text' style='height:20px;'/><textarea style='height:20px;'></textarea><div style='height:20px;'></div>")
+                 .inject(document.body);
+
+        it("Height on hidden input", function () {
+            expect(div.findOne("input").css('height')).toBe('20px');
+        });
+        
+        it("Height on hidden textarea", function () {
+            expect(div.findOne("textarea").css('height')).toBe('20px');
+        });
+        
+        it("Height on hidden div.", function () {
+            expect(div.findOne("div").css('height')).toBe('20px');
+        });
+    });
+    
+    describe("Width or height of non-pixel value", function(){
+        var div = create('div').css({
+                height: '10em'
+            }),
+            
+            div2 = create('div').css({
+                width: '100%'
+            });
+        
+        // 
+        // it("Set height to 10em", function(){
+        //    expect(div.css('height')).toBe('10em');
+        // });
+        
+        it("Set width to 100%", function(){
+            expect(div2.css('width')).toBe('100%');
+        });
+    });
+    
+    
+    describe("Set nagative value to width and height (IE will throw a declaration exception)", function(){
+        var display_block = $('#dom-css-display-block');
+        
+        display_block.css({
+            width  : 0,
+            height : 0
+        }).css({
+            overflow: 'hidden',
+            width: -1,
+            height: -1
+        });
+        
+        it("Test negative width set to 0.", function () {
+            expect(display_block.css('width')).toBe('0px');
+        });
+
+        it("Test negative height set to 0.", function () {
+            expect(display_block.css('height')).toBe('0px');
+        });
+    });
+    
+    
+    describe("Opacity", function(){
         it("Assert opacity is 1 when set to an empty String", function () {
+            var div = $('#dom-css-opacity .empty-opacity');
+            
+            div.css('opacity', '');
+        
             expect($('#dom-css-opacity').css("opacity")).toBe('1');
         });
-    });
-});
+        
+        [1, 0.75, 0.5, 0.25, 0].forEach(function (value) {
+        
+            value = '' + value;
+            
+            var container = $("#dom-css-opacity");
 
-describe("marginRight computed style", function () {
-    $('#dom-css-foo').css({
-        "width": "1px",
-        "marginRight": 0
-    });
-
-    it('marginRight correctly calculated with a width and display block', function () {
-        expect($('#dom-css-foo').css("marginRight")).toBe(0);
-    });
-});
-
-describe("box model properties incorrectly returning % instead of px", function () {
-    var container = create('div').css('width', 400),
-        el1 = create("div").css({ "width": "50%", "marginRight": "50%" }),
-        el2 = create("div").css({ "width": "50%", "minWidth": "300px", "marginLeft": "25%" });
-
-    el1.inject(container);
-    el2.inject(container);
-    container.inject($('#dom-css-display-block'));
-
-    it('css("marginRight") returning % instead of px', function () {
-        expect(el1.css("marginRight")).toBe(200);
-        el1.destroy();
-    });
-
-    it('css("marginLeft") returning incorrect pixel value', function () {
-        expect(el2.css("marginLeft")).toBe(100);
-        el2.destroy();
-    });
-});
-
-describe("can't get css for disconnected in IE<9", function () {
-    var span = create("span").css("background-image", "url(http://i2.dpfile.com/s/res/betalogo.v6.png)");
-
-    it("can't get background-image in IE<9", function () {
-        expect(span.css("background-image")).not.toBe(null);
-    });
-});
-
-describe("can't get background-position in IE<9", function () {
-    var div = create("div");
-    units = [
-		"0 0",
-		"12px 12px",
-		"13px 12em",
-		"12em 13px",
-		"12em center",
-		"+12em center",
-		"12.2em center",
-		"center center"
-	],
-	l = units.length,
-	i = 0;
-
-    div.inject($('#dom-css-display-block'));
-
-    for (; i < l; i++) {
-        div.css("background-position", units[i]);
-
-        it("can't get background-position in IE<9", function () {
-            expect(div.css("background-position")).not.toBeNull();
+            it("Assert opacity is " + value + " as a String", function () { console.log('value', value)
+                var div = $.create('div').css({ "opacity": value }).inject(container);
+                expect(div.css("opacity")).toBe(value);
+            });
         });
-    }
+    });
+    
+    
+    it("Modified CSS float using \"float\": Assert float is right.", function () {
+        $('#dom-css-float').css({ "float": "right" });
+        expect($('#dom-css-float').css("float")).toBe('right')
+    });
+
+    it("Modified CSS font-size: Assert font-size is 30px.", function () {
+        $('#dom-css-float').css({ "font-size": "30px" });
+        expect($('#dom-css-float').css("font-size")).toBe('30px')
+    });
+    
+    
+    describe("marginRight computed style", function () {
+        $('#dom-css-foo').css({
+            "width": "1px",
+            "marginRight": 0
+        });
+    
+        it('marginRight correctly calculated with a width and display block', function () {
+            expect($('#dom-css-foo').css("marginRight")).toBe('0px');
+        });
+    });
+
+/*    
+    describe("box model properties incorrectly returning % instead of px", function () {
+        var container = create('div').css('width', 400),
+            el1 = create("div").css({ "width": "50%", "marginRight": "50%" }),
+            el2 = create("div").css({ "width": "50%", "minWidth": "300px", "marginLeft": "25%" });
+    
+        el1.inject(container);
+        el2.inject(container);
+        container.inject($('#dom-css-display-block'));
+    
+        it('css("marginRight") returning % instead of px', function () {
+            expect(el1.css("marginRight")).toBe('200px');
+            el1.destroy();
+        });
+    
+        it('css("marginLeft") returning incorrect pixel value', function () {
+            expect(el2.css("marginLeft")).toBe('100px');
+            el2.destroy();
+        });
+    });
+*/
+    
+    describe("can't get css for disconnected in IE<9", function () {
+        var span = create("span").css("background-image", "url(http://i2.dpfile.com/s/res/betalogo.v6.png)");
+    
+        it("can't get background-image in IE<9", function () {
+            expect(span.css("background-image")).not.toBe(null);
+        });
+    });
+    
+    describe("can't get background-position in IE<9", function () {
+        var div = create("div");
+        units = [
+    		"0 0",
+    		"12px 12px",
+    		"13px 12em",
+    		"12em 13px",
+    		"12em center",
+    		"+12em center",
+    		"12.2em center",
+    		"center center"
+    	],
+    	l = units.length,
+    	i = 0;
+    
+        div.inject($('#dom-css-display-block'));
+    
+        for (; i < l; i++) {
+            div.css("background-position", units[i]);
+    
+            it("can't get background-position in IE<9", function () {
+                expect(div.css("background-position")).not.toBeNull();
+            });
+        }
+    });
+
+});
+
 });
     
 /**
@@ -173,4 +239,3 @@ describe("can't get background-position in IE<9", function () {
  */
     
 </script>
--->
