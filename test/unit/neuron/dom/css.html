@@ -144,7 +144,7 @@ describe(".css()", function(){
             
             var container = $("#dom-css-opacity");
 
-            it("Assert opacity is " + value + " as a String", function () { console.log('value', value)
+            it("Assert opacity is " + value + " as a String", function () {
                 var div = $.create('div').css({ "opacity": value }).inject(container);
                 expect(div.css("opacity")).toBe(value);
             });
