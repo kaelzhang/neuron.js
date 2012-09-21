@@ -16,7 +16,7 @@ var docs = {{{site.docsjson}}};
 var tests = {{{site.testsjson}}};
 </script>
 <script type="text/javascript">
-	function renderList(wrap,data){
+	function renderList(wrap,data,renderItem){
 		var wrap = $(wrap);
 		var ul;
 		var el;
@@ -29,20 +29,28 @@ var tests = {{{site.testsjson}}};
 			if(data.name == wrap.attr("id")){
 				el.html(data.name);
 			}else{
-				$.create("a").attr("href",data.path).html(data.name).inject(el);
+				renderItem(data,el);
 			}
 			data.children.forEach(function(child){
 				var li = $.create("li");
 				li.inject(ul);
-				renderList(li,child);
+				renderList(li,child,renderItem);
 			});
 		}else{
-			$.create("a").attr("href",data.path).html(data.basename).inject(wrap);
+			renderItem(data,wrap);
 		}
 	}
 
-	renderList("#docs",docs);
-	renderList("#test",tests);
+
+
+
+	renderList("#docs",docs,function(data,parent){
+		$.create("a").attr("href",data.path).html(data.basename).inject(parent);
+	});
+	renderList("#test",tests,function(data,parent){
+		$.create("a").attr("href",data.path).html(data.basename).inject(parent);
+		$.create("a").attr("href","/jscoverage_lib/jscoverage.html?"+data.path).css("margin-left",10).html("cov").inject(parent);
+	});
 </script>
 </body>
 </html>
