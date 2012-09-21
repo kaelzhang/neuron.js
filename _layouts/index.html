@@ -4,24 +4,45 @@
 </head>
 <body>
 
-<h2>docs</h2>
-<ul>
-	{{#site.docs}}
-		<li><a href="{{path}}">{{name}}</a></li>
-	{{/site.docs}}
-</ul>
-
-
-<h2>unit tests</h2>
-<ul>
-	{{#site.tests}}
-		<li><a href="{{path}}">{{name}}</a></li>
-	{{/site.tests}}
-</ul>
+<div id="docs"></div>
+<div id="test"></div>
 
 <div>
 {{{page.content}}}
 </div>
 
+<script type="text/javascript">
+var docs = {{{site.docsjson}}};
+var tests = {{{site.testsjson}}};
+</script>
+<script type="text/javascript">
+	function renderList(wrap,data){
+		var wrap = $(wrap);
+		var ul;
+		var el;
+		if(data.children){
+			ul = $.create("ul");
+			ul.inject(wrap);
+
+			el = $.create("h3");
+			el.inject(ul);
+			if(data.name == wrap.attr("id")){
+				el.html(data.name);
+			}else{
+				$.create("a").attr("href",data.path).html(data.name).inject(el);
+			}
+			data.children.forEach(function(child){
+				var li = $.create("li");
+				li.inject(ul);
+				renderList(li,child);
+			});
+		}else{
+			$.create("a").attr("href",data.path).html(data.basename).inject(wrap);
+		}
+	}
+
+	renderList("#docs",docs);
+	renderList("#test",tests);
+</script>
 </body>
 </html>
