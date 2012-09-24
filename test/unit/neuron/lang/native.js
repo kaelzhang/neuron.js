@@ -276,6 +276,12 @@ describe('Array', function(){
                 }
                 expect(passed).toBe(true);
             });
+            
+            it("should return undefined", function(){
+                expect([].forEach(function(){
+                    
+                })).toBe();
+            });
         });
         
         describe(".forEach(callback, thisObject)", function(){
@@ -444,6 +450,18 @@ describe('Array', function(){
                 expect(NR.isArray(result)).toBe(true);
                 expect(zero in result).toBe(false);
             });
+            
+            it("should not mutate the array, unless `mapper` function did it", function(){
+                var arr = [1, 2, 3],
+                    arr_copy = NR.clone(arr);
+                    
+                var result = arr.map(function(v){
+                    return v + 1; 
+                });
+            
+                expect(result === arr).toBe(false);
+                expect(arr).toEqual(arr_copy)
+            });
         });
         
         describe(".map(mapper, thisObject)", function(){
@@ -564,6 +582,21 @@ describe('Array', function(){
                 expect(first).toBe(1);
                 expect(result).toBe(4);
             });
+            
+            it("should throw typeError, if reduce of empty array with no initial value", function(){
+                var err;
+                
+                try{
+                    [].reduce(function(p, c, i, a){
+                        return p + c;
+                        
+                    }) 
+                }catch(e){
+                    err = true;
+                }
+            
+                expect(err).toBe(true);
+            });
         });
     });
     
@@ -640,6 +673,21 @@ describe('Array', function(){
                 expect(first).toBe(2);
                 expect(result).toBe(4);
             });
+            
+            it("should throw typeError, if reduceRight of empty array with no initial value", function(){
+                var err;
+                
+                try{
+                    [].reduceRight(function(p, c, i, a){
+                        return p + c;
+                        
+                    }) 
+                }catch(e){
+                    err = true;
+                }
+            
+                expect(err).toBe(true);
+            });
         });
     });
     
@@ -648,6 +696,8 @@ describe('Array', function(){
 
 
 describe('Object', function(){
+
+/*
     describe('Object.create()', function (){
         describe("Object.create(proto)", function(){
             it('create a object', function (){
@@ -661,8 +711,63 @@ describe('Object', function(){
         describe(".create(proto, properties)", function(){
             
         });
+        
+        describe("will throw a TypeError, if `proto` is not an Object nor null", function(){
+            it("undefined", function(){
+                var is_type_error;
+                
+                try{
+                    Object.create();
+                    
+                }catch(e){
+                    is_type_error = e instanceof TypeError;
+                }
+            
+                expect(is_type_error).toBe(true);
+            });
+            
+            it("primitive: Number", function(){
+                var is_type_error;
+                
+                try{
+                    Object.create(1);
+                    
+                }catch(e){
+                    is_type_error = e instanceof TypeError;
+                }
+            
+                expect(is_type_error).toBe(true);
+            });
+            
+            it("primitive: String", function(){
+                var is_type_error;
+                
+                try{
+                    Object.create('');
+                    
+                }catch(e){
+                    is_type_error = e instanceof TypeError;
+                }
+            
+                expect(is_type_error).toBe(true);
+            });
+            
+            it("primitive: Boolean", function(){
+                var is_type_error;
+                
+                try{
+                    Object.create(true);
+                    
+                }catch(e){
+                    is_type_error = e instanceof TypeError;
+                }
+            
+                expect(is_type_error).toBe(true);
+            });
+        });
     });
-    
+*/
+  
     describe('Object.keys()', function (){
         describe("standard", function(){
             it('could get keys of object', function (){
