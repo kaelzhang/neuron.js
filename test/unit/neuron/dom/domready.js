@@ -48,6 +48,7 @@ describe("Neuron: dom/domready", function(){
         });
     });
     
+/*
     describe("NR.isDomReady()", function(){
         it("should return true, if DOMContentLoaded fired", function(){
             var ready;
@@ -67,5 +68,6 @@ describe("Neuron: dom/domready", function(){
             });
         });
     });
+*/
     
 });
