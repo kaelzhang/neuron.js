@@ -70,7 +70,7 @@ NR.DOM.findOne()
 .find()
 ----
 ****
-查找当前集合中元素的子元素，并获取所有符合条件的元素集合，并包裹为 Neuron DOM 对象。
+查找当前集合中元素的子元素，获取所有符合条件的元素集合，并在**去除重复**之后，包裹为 Neuron DOM 对象。
 
 使用该方法，不会修改原对象，而会创建一个新的 Neuron DOM 对象。
 
@@ -80,6 +80,32 @@ NR.DOM.findOne()
 
 ### Returns
 {Object} Neuron DOM 对象
+
+### 特别说明
+我们来说说 .find() 的工作原理。假若有如下的结构
+
+	<div id="div-1">
+		<div id="div-2">
+			<div id="div-3">
+		</div>
+	</div>
+	
+那么：
+
+	// 它包含 div#div-1, div#div-2, div#div-3
+	var divs = NR.DOM('div'); 
+	
+	divs.find('div');
+	// 它实际包含 div#div-2, div#div-3
+	// 如何得到这个结果的呢？过程是这样的：
+	
+	// div#div-1 -> find('div') -> [div#div-2, div#div-3]
+	// div#div-2 -> find('div') -> [div#div-3]
+	// div#div-3 -> find('div') -> []
+	
+	// 接下来，将三者的结果集合起来，并去除重复的元素，得到：
+	// [div#div-2, div#div-3]
+	
 
 .findOne()
 ----
