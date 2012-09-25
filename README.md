@@ -13,15 +13,16 @@
 	cd path/to/nervecentre/
 	npm link
 	cd path/to/neuron/
-	neuron start . -d
+	neuron start .
 
 ### 2nd: 访问主页
 
-visit: http://localhost:1337
+visit: [http://localhost:1337](http://localhost:1337)
+
+## 公共主页（临时）
+[http://f2e.dp:1337](http://f2e.dp:1337)
 
 
-
-
-
+## 帮助
 
 [NerveCentre 使用手册文档连接](https://docs.google.com/a/dianping.com/document/d/1BGAwakGRIgp06RkyASa5f0MZx9VBJlpY-pvQc8XA3y4/edit)
