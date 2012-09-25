@@ -37,7 +37,7 @@ NR.DOM()
 
 
 ### Returns
-{Object} Neuron DOM 对象（请注意并不是 NR.DOM 的实例）
+{Object} Neuron DOM 对象（请注意并不是 `NR.DOM` 的实例）
 
 ### Example
 
@@ -116,7 +116,7 @@ NR.DOM.findOne()
 {number} 元素的数组位置。
 
 ### Returns
-{Element|undefined} 
+{Element|undefined} DOM 元素；若没找到元素，则返回 undefined。
 
 
 .add()
