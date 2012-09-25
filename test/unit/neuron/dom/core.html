@@ -122,6 +122,12 @@ describe("$(selector)", function(){
         expect($('#dom-core-input-id').length).toBe(1)
         expect($('#dom-core-input-id')[0] === $('#dom-core-input-id-2')[0]).toBe(false);
     });
+    
+    it("would directly return the object if it's a Neuron Object", function(){
+        var body = $('body');
+    
+        expect($(body)).toBe(body);
+    });
 });
 
 
@@ -157,7 +163,7 @@ describe("$(selector, context)", function(){
 });
 
 
-describe('$ with element(s)', function(){
+describe('$(elementArray): $ with element(s)', function(){
     var 
     
     $ = NR.DOM,
@@ -219,6 +225,14 @@ describe('$.findOne()', function(){
     it("could wrap a nodelist, and only maintain the first element", function(){
         expect($.findOne(inputs).length).toBe(1);
         expect($.findOne(inputs)[0]).toBe(inputs[0]);
+    });
+    
+    it("would directly return the object if it's a Neuron Object", function(){
+        var body = $('body'),
+            find_one = $.findOne(body);
+    
+        expect(find_one[0]).toBe(body[0]);
+        expect(find_one.length).toBe(1);
     });
 });
 
