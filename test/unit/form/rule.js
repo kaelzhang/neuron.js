@@ -34,7 +34,7 @@ describe("简单预设 required",function(){
 			  	expect(r1.test("")).toEqual(false);
 			  	expect(r1.test(null)).toEqual(false);
 			  	expect(r1.test(undefined)).toEqual(false);
-			  	expect(r1.test(0)).toEqual(true);
+			  	expect(r1.test(0)).toEqual(false);
 			  	expect(r1.test("ha")).toEqual(true);
 			  	expect(r1.hint).toEqual(null);
 		  	});
@@ -56,10 +56,7 @@ describe("简单预设 notempty",function(){
 				
 				var r1 = Rule.produce("notempty");
 			  	expect(r1.name).toEqual("notempty");
-			  	expect(r1.test("")).toEqual(false);
 			  	expect(r1.test([])).toEqual(false);
-			  	expect(r1.test(null)).toEqual(false);
-			  	expect(r1.test(undefined)).toEqual(false);
 			  	expect(r1.test([1])).toEqual(true);
 			  	expect(r1.hint).toEqual(null);
 		  	});
@@ -72,24 +69,17 @@ describe("简单预设 notempty",function(){
 });
 
 
-describe("简单预设 allnumber",function(){
-	it("name为allnumber",function(){
+describe("简单预设 numeric",function(){
+	it("name为numeric",function(){
 	
 		var ready = false;	
 		runs(function(){
 			NR.provide('form/rule',function(D,Rule){
 				ready = true;
 				
-				var r1 = Rule.produce("allnumber");
-			  	expect(r1.name).toEqual("allnumber");
+				var r1 = Rule.produce("numeric");
+			  	expect(r1.name).toEqual("numeric");
 			  	expect(r1.test("")).toEqual(false);
-			  	expect(r1.test([])).toEqual(false);
-			  	expect(r1.test(null)).toEqual(false);
-			  	expect(r1.test(undefined)).toEqual(false);
-			  	expect(r1.test([1])).toEqual(true);
-			  	expect(r1.test([1,2])).toEqual(true);
-			  	expect(r1.test([1,"23"])).toEqual(true);
-			  	expect(r1.test([1,"2a3"])).toEqual(false);
 			  	expect(r1.test("23")).toEqual(true);
 			  	expect(r1.test(13)).toEqual(true);
 			  	expect(r1.test(0)).toEqual(true);
