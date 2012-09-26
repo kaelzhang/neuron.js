@@ -1,4 +1,5 @@
 {
 	"tpl":"_layouts",
-	"libbase":"lib"
+	"libbase":"lib",
+	"jscoverage_libbase":"jscoverage_lib"
 }
