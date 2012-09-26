@@ -52,20 +52,6 @@ NR.DOM()
 - 与 jQuery 不同的是，`NR.DOM` 创建的对象中，仅仅会包含 DOM 元素，也永远只会处理与DOM相关的内容；而 jQuery 对象中，可以包含多种类型的对象，如 Ajax 对象，defered 对象，甚至是 number，string，boolean，null。
 - NR.DOM 不提供 domready 事件的绑定，如果需要绑定 domready 事件，可是使用 `NR.ready(fn)` 方法
 
-NR.DOM.findOne()
-----
-****
-仅查找出第一个符合条件的 DOM 对象，并将它包装为 Neuron DOM 对象，并可以使用 Neuron DOM 的所有方法。
-在某些情况下，NR.DOM.findOne() 会比 NR.DOM() 消耗更小。
-
-### Syntax
-
-	NR.DOM.findOne(element);
-	NR.DOM.findOne(selector, context);
-
-### Arguments
-参数同 NR.DOM()
-
 
 .find()
 ----
@@ -106,17 +92,6 @@ NR.DOM.findOne()
 	// 接下来，将三者的结果集合起来，并去除重复的元素，得到：
 	// [div#div-2, div#div-3]
 	
-
-.findOne()
-----
-****
-查找当前集合中元素的子元素，并获取第一个符合条件的元素，并包裹为 Neuron DOM 对象。
-
-使用该方法，不会修改原对象，而会创建一个新的 Neuron DOM 对象。
-
-### Syntax
-	.findOne(selector)
-	.findOne(element)
 
 .eq(index=)
 ----

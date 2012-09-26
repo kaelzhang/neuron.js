@@ -13,11 +13,6 @@ DOM 遍历相关的方法，这些方法全部都不会修改原对象，而会�
 见 core.md
 
 
-.findOne()
-----
-见 core.md
-
-
 .eq()
 ----
 见 core.md

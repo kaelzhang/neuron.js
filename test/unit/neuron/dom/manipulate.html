@@ -88,34 +88,34 @@ describe(".inject()",function(){
 		var child = $.create("div").attr("id","dom-manipulate-inject-child");
 		
 		// by string
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		child.inject(main_id);
 		expect($(child_id).get(0)).toBe(el.find("div").get(1));
 		
 		child.dispose();
 		
 		// bottom
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		child.inject(el);
 		expect($(child_id).get(0)).toBe(el.find("div").get(1));
 		
 		child.dispose();
 		
 		// top
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		child.inject(el,"top");
 		expect($(child_id).get(0)).toBe(el.find("div").get(0));
 		
 		child.dispose();
 		
 		// before
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		child.inject(el,"before");
 		expect($(child_id).get(0)).toBe(el.prev().get(0));
 		child.dispose();
 		
 		// after
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		child.inject(el,"after");
 		expect($(child_id).get(0)).toBe(el.next().get(0));
 		
@@ -135,34 +135,34 @@ describe(".grab()",function(){
 		
 		
 		
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		el.grab(child);
 		expect($(child_id).get(0)).toBe(el.find("div").get(1));
 		
 		child.dispose();
 		
 		// bottom
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		el.grab(child);
 		expect($(child_id).get(0)).toBe(el.find("div").get(1));
 		
 		child.dispose();
 		
 		// top
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		el.grab(child,"top");
 		expect($(child_id).get(0)).toBe(el.find("div").get(0));
 		
 		child.dispose();
 		
 		// before
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		el.grab(child,"before");
 		expect($(child_id).get(0)).toBe(el.prev().get(0));
 		child.dispose();
 		
 		// after
-		expect(el.findOne(child_id).length).toBe(0);
+		expect(el.find(child_id).length).toBe(0);
 		el.grab(child,"after");
 		
 		expect($(child_id).get(0)).toBe(el.next().get(0));

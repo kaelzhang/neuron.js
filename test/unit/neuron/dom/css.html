@@ -100,7 +100,7 @@ describe(".css()", function(){
             it("display on disconnected nodes.", function () {
                 var div = create('div').html("<div style='display: none;'></div>");
             
-                expect(div.findOne('div').css("display")).toBe('none')
+                expect(div.find('div').css("display")).toBe('none')
             });
         });
     });
@@ -112,15 +112,15 @@ describe(".css()", function(){
                  .inject(document.body);
 
         it("Height on hidden input", function () {
-            expect(div.findOne("input").css('height')).toBe('20px');
+            expect(div.find("input").css('height')).toBe('20px');
         });
         
         it("Height on hidden textarea", function () {
-            expect(div.findOne("textarea").css('height')).toBe('20px');
+            expect(div.find("textarea").css('height')).toBe('20px');
         });
         
         it("Height on hidden div.", function () {
-            expect(div.findOne("div").css('height')).toBe('20px');
+            expect(div.find("div").css('height')).toBe('20px');
         });
     });
     

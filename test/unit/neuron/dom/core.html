@@ -208,54 +208,6 @@ describe('$ with dirty data', function(){
 });
 
 
-describe('$.findOne()', function(){
-    var 
-    $ = NR.DOM,
-    form = document.getElementById('dom-core-form'),
-    inputs = form.getElementsByTagName('input');
-    
-    it("could get the first direct <p> inside #dom-core-nested-div", function(){
-        expect($.findOne('#dom-core-nested-div > div').length).toBe(1);
-    });
-    
-    it("$.findOne('#dom-core-nested-div > div')[0] === $('#dom-core-nested-div > div')[0]", function(){
-        expect($.findOne('#dom-core-nested-div > div')[0]).toBe($('#dom-core-nested-div > div')[0]);
-    });
-    
-    it("could wrap a nodelist, and only maintain the first element", function(){
-        expect($.findOne(inputs).length).toBe(1);
-        expect($.findOne(inputs)[0]).toBe(inputs[0]);
-    });
-    
-    it("would directly return the object if it's a Neuron Object", function(){
-        var body = $('body'),
-            find_one = $.findOne(body);
-    
-        expect(find_one[0]).toBe(body[0]);
-        expect(find_one.length).toBe(1);
-    });
-});
-
-
-describe('.findOne()', function(){
-    var $ = NR.DOM;
-    
-    it("could get the first matched element", function(){
-        expect($('#dom-core-nested-div').findOne('div').length).toBe(1);
-    });
-    
-    it("$('#dom-core-nested-div').findOne('div')[0] === $('#dom-core-nested-div > div')[0]", function(){
-        expect($('#dom-core-nested-div').findOne('div')[0]).toBe($('#dom-core-nested-div > div')[0]);
-    });
-    
-    it("will returns a brandnew object", function(){
-        var div = $('.dom-core-nested-div');
-    
-        expect(div === div.findOne('div')).toBe(false);
-    });
-});
-
-
 describe('.find()', function(){
     var
     
