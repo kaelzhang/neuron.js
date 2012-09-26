@@ -10,7 +10,7 @@ Outline
 - destory
 
 
-以下方法`逐个`处理DOM对象中的所有节点
+以下方法 **逐个** 处理DOM对象中的所有节点
 
 addClass
 ------
@@ -26,7 +26,7 @@ addClass
 
 ### 返回
 
-- {DOM} 原DOM对象
+- {NeuronDOM} 原DOM对象
 
 ### 示例
 	
@@ -47,7 +47,7 @@ removeClass
 
 ### 返回
 
-- {DOM} 原DOM对象
+- {NeuronDOM} 原DOM对象
 
 ### 示例
 	
@@ -67,7 +67,7 @@ toggleClass
 
 ### 返回
 
-- {DOM} 原DOM对象
+- {NeuronDOM} 原DOM对象
 
 ### 示例
 	
@@ -83,12 +83,12 @@ inject
 
 ### 参数
 
-1. element {DOM} 目标节点
+1. element {NeuronDOM|DOMElement} 目标节点
 2. where {enum \<string\> } 在目标节点的什么位置插入，接受before(元素前), after(元素后), top(元素内部最前), bottom(元素内部最后 默认值)
 
 ### 返回
 
-- {DOM} 原DOM对象
+- {NeuronDOM} 原DOM对象
 
 ### 示例
 
@@ -120,12 +120,12 @@ grab
 
 ### 参数
 
-1. elem {DOM} 目标节点
+1. elem {NeuronDOM} 目标节点
 2. where {enum \<string\> } 在原节点的什么位置插入，接受before(元素前), after(元素后), top(元素内部最前), bottom(元素内部最后 默认值)
 
 ### 返回
 
-- {DOM} 原DOM对象
+- {NeuronDOM} 原DOM对象
 
 ### 示例
 	

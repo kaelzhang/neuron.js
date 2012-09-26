@@ -1,37 +1,43 @@
+Neuron: DOM/css
+======
+
+修改或获取元素的特定css
+
 Outline
 ----
 - css
 
-修改或获取元素的特定css
 
-css
-------
-删除节点上所存储的相应数据
+.css(key)
+---------
+获取某个css属性
 
-### 语法
-
-	DOM().css(prop);
-	
 ### 参数
+#### key
+{string} css属性的键
 
-1. key: {string} 所要删除数据的键，若为undefined，则删除节点上存储的所有数据
+### 返回
 
-### 示例
+css属性的值
 
-1. 获取css属性
 
-	DOM("#myele").css("width"); // 返回 50px
+.css(key,value)
+---------
+设置一条css属性
 
-2. 设置css属性
+### 参数
+#### key
+{string} css属性的键
+#### value
+{string|number} css属性的值
 
-	DOM("#myele").css("width",50);
+.css(properties)
+---------
+设置一组css属性
+### 参数
+#### properties
+{Object} css属性键值对
 
-3. 设置多组css属性
-
-	DOM("#myele").css({
-            "width":50,
-            "height":'12em'
-        });
 
 ### 注意
 
