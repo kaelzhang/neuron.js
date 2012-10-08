@@ -1,3 +1,7 @@
+/**
+ * enhanced ast walker based on uglifyjs
+ */
+
 var
 
 NR = require('../../lib/neuron/seed'),
@@ -11,9 +15,9 @@ fs = require('fs'),
 
 ast_walker = pro.ast_walker(),
 
-REGEX_MATCH_DOT = /\.(?!$)/;
+Walker = exports,
 
-console.log('abc', NR);
+REGEX_MATCH_DOT = /\.(?!$)/;
 
 
 /**
@@ -23,20 +27,26 @@ console.log('abc', NR);
 function isConditionMatched(obj, condition){
     var pass = true;
     
-    Object.keys(condition).forEach(function(rule, key, condition){
-        pass = pass && NR.isFunction(rule) ? 
-              rule(obj[key])
-            : lang.isEqual(obj[key], condition[key]);
+    Object.keys(condition).forEach(function(key, index){
+        var rule = this[key],
+            value = obj[key];
+    
+        pass = pass && (
+            NR.isFunction(rule) ? 
+              rule(value)
+            : lang.isEqual(value, rule)
+        );
             
-    });
+    }, condition);
     
     return pass;
 };
 
 
 /**
+ * walk an ast with build-in `with_walkers` of uglifyjs
  * @param {Array} ast uglifyjs ast
- * @param {string} type statement type
+ * @param {string|Object} type statement type, or walker object
  * @param {function()} interator callback
  */
 exports.walk = function(ast, type, interator){
@@ -64,12 +74,13 @@ exports.walk = function(ast, type, interator){
 
 
 /**
+ * read a file, parse it to ast, then use `Walker.walk`
  * @param {string} file file path
  */
 exports.walk_file = function(file, type, interator){
     var content = fs.readFileSync(file);
     
-    return exports.walk(parser.parse(content.toString()), type, interator);
+    return Walker.walk(parser.parse(content.toString()), type, interator);
 };
 
 
@@ -95,8 +106,9 @@ exports.get_fn_content = function(ast, condition, callback){
         'defun': function(){
             var stat = this;
             
-            // before calling callback, make sure the current sub-ast is a syntax tree of function
+            // before calling `callback`, make sure the current sub-ast is a syntax tree of function
             filter({
+                fnName: stat[1],
                 args: stat[2],
                 content: stat[3]
             });
@@ -111,7 +123,7 @@ exports.get_fn_content = function(ast, condition, callback){
             true,
             [
                 "name",
-                "a"
+                "foo"
             ],
             [
                 "function",
@@ -132,7 +144,8 @@ exports.get_fn_content = function(ast, condition, callback){
             if(to[0] === 'function'){
                 filter({
                     fnName: stat[2][1],
-                    args: to[2]  
+                    args: to[2],
+                    content: to[3]
                 });
             }
         },
@@ -171,14 +184,13 @@ exports.get_fn_content = function(ast, condition, callback){
                 if(value && value[0] === 'function'){
                     filter({
                         fnName: content[0],
-                        args: value[2]
+                        args: value[2],
+                        content: content[1][3]
                     })
                 }
             }
             
-        },
-        
-        
+        }  
     };
     
     
@@ -191,43 +203,165 @@ exports.get_fn_content = function(ast, condition, callback){
     }
     
     var filter = function(stat){
-        isConditionMatched(stat, condition) && callback(stat)
+        isConditionMatched(stat, condition) && callback(stat);
     };
     
     
-    exports.walk(ast, fn_walkers, filter);
-    
+    Walker.walk(ast, fn_walkers, filter);  
 };
 
 
-exports.insert = function(code, to, position){
+/**
+ * insert a sub-ast to an existed ast
+ * @param {Array} sub_ast
+ * @param {Array} to destination ast
+ * @param {number} position the index to be inserted to
+ */
+exports.insert_ast = function(sub_ast, to, position){
+    if(NR.isArray(sub_ast) && NR.isArray(to)){
+        var U;
     
+        if(position === U){
+            position = to.length;
+            
+        }else if(position < 0){
+            position += to.length;
+        }
+        
+        to.splice(position, 0, sub_ast);
+    }
 };
 
 
-
-exports.remove_sub_ast = function(sub_ast, from, all){
+exports.insert_code = function(code, to, position){
+    /**
+     var a = 1;
+     
+     ast:
+     [
+        "toplevel",
+        [
+            [
+                "var",
+                [
+                    [
+                        "a",
+                        [
+                            "num",
+                            1
+                        ]
+                    ]
+                ]
+            ]
+        ]
+     ]
+     */
+    var sub_ast = parser.parse(code)[1][0];
     
+    Walker.insert_ast(sub_ast, to, position);
 };
 
 
+/**
+ * remove a sub-ast. notice that this method will change the origin ast
+ * @param {Object} options {
+    all: {boolean} remove all, default to all
+    strict: {boolean} use strict equal(===) or deep equal(lang.isEqual), default to deep equal
+ }
+ */
+exports.remove_sub_ast = function(sub_ast, from, options){
+    options = NR.mix({
+        all: true,
+        strict: true
+        
+    }, options);
+
+    Walker.walk_ast(from, function(current, env){
+        if(options.strict ? current === sub_ast : lang.isEqual(sub_ast, current)){
+            var index = env.ast.indexOf(sub_ast);
+            
+            env.ast.splice(index, 1);
+            
+            if(!options.all){
+                return false;
+            }
+        } 
+    });
+};
+
+
+/**
+ * get parent ast
+ */
 exports.get_parent_ast = function(sub_ast, full_ast){
+    var parent;
     
+    if(NR.isArray(sub_ast) && NR.isArray(full_ast)){
+    
+        Walker.walk_ast(full_ast, function(current, env){
+            if(current === sub_ast){
+                parent = env.ast;
+                return false;
+            }
+        });
+        
+        return parent;
+    
+    }else{
+    
+        return null;
+    }
 };
 
 
-exports.walk_ast = function(ast, traverser, env){
-    env || (env = {});
+/**
+ * walk an ast with manual traverser
+ * @param {Array} ast uglifyjs ast
+ * @param {function()}
+ */
+exports.walk_ast = function(ast, traverser){
+
+    // during 
+    if(!NR.isArray(ast)){
+        return;
+    }
     
-    var 
+    var
+    
+    // internal use
+    env = arguments[2],
     
     i = 0,
     len = ast.length,
     sub_ast;
     
+    env || (env = {});
+    
+    // so that we can use the current ast with env.ast inside `traverser`
+    env.ast = ast;
+    
     for(; i < len; i ++){
-        sub_ast =
-        if()
+        sub_ast = ast[i];
+        
+        // 
+        if(env.stopped){
+            break;
+        }
+        
+        if(traverser(sub_ast, env) === false){
+            env.stopped = true;
+            break;
+        }
+        
+        if(NR.isArray(sub_ast)){
+            var sub_env = {
+                parent: env
+            };
+        
+            Walker.walk_ast(sub_ast, traverser, {
+                parent: env
+            });
+        }
     }
 };
 
