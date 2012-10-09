@@ -216,7 +216,6 @@ describe("异步验证通过",function(){
 				}]);
 				
 				v5.check("my@gmail.com",function(e){
-					console.log(e);
 		  			expect(e.name).toEqual("username test");
 		  			expect(e.hint).toEqual("user name exist");
 		  			expect(e.passed).toEqual(true);
