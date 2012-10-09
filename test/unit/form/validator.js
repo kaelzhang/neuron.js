@@ -27,7 +27,7 @@ describe("测试getRule",function(){
 	});	
 });
 
-
+/*
 describe("测试removeRule",function(){
 	it("name为max，passed为false，hint为null",function(){
 		
@@ -56,7 +56,7 @@ describe("测试removeRule",function(){
 		});
 	});	
 });
-
+ */
 
 describe("空验证器",function(){
 	
@@ -146,7 +146,7 @@ describe("my@gmail.com测试自定义规则不通过",function(){
 
 
 
-describe("异步验证器",function(){
+describe("异步验证不通过",function(){
 	it("name为remote test，passed为false，hint为custom error hint",function(){
 		
 		var ready = false;
@@ -159,8 +159,8 @@ describe("异步验证器",function(){
 							url:'/test/unit/form/ajax/check_email.txt',
 							method:'post'
 						}).on('success',function(rt){
-							cb(rt.code === 200,rt.msg.hint);
 							ready = true;
+							cb(rt.code === 200,rt.msg.hint);
 						}).send();
 					},
 					async:true,
@@ -181,7 +181,26 @@ describe("异步验证器",function(){
 					});
 				});
 				
-				
+			});
+		});
+		
+		waitsFor(function(){
+			return ready;
+		});
+	});	
+});
+
+
+
+
+
+describe("异步验证通过",function(){
+	it("name为remote test，passed为false，hint为custom error hint",function(){
+		
+		var ready = false;
+		
+		runs(function(){
+			NR.provide(['form/validator','io/ajax'],function(D,Validator,Ajax){
 				var v5 = new Validator([{
 					test:function(v,cb){
 						new Ajax({
@@ -197,10 +216,10 @@ describe("异步验证器",function(){
 				}]);
 				
 				v5.check("my@gmail.com",function(e){
-			  			expect(e.name).toEqual(null);
-			  			expect(e.hint).toEqual(null);
-			  			expect(e.passed).toEqual(true);
-					});
+		  			expect(e.name).toEqual("username test");
+		  			expect(e.hint).toEqual("user name exist");
+		  			expect(e.passed).toEqual(true);
+				});
 				
 			});
 		});
@@ -210,3 +229,6 @@ describe("异步验证器",function(){
 		});
 	});	
 });
+
+				
+				
