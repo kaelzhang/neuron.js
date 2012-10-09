@@ -27,7 +27,7 @@ describe("测试getRule",function(){
 	});	
 });
 
-
+/*
 describe("测试removeRule",function(){
 	it("name为max，passed为false，hint为null",function(){
 		
@@ -56,7 +56,7 @@ describe("测试removeRule",function(){
 		});
 	});	
 });
-
+ */
 
 describe("空验证器",function(){
 	
