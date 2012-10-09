@@ -12,12 +12,15 @@ lang.isEqual = function(compare, to){
     
     equal = NR._type(compare) === NR._type(to);
     
-    equal && Object.keys(to).forEach(function(v, i){
+    equal && Object.keys(to).forEach(function(key){
         if(equal){
+            var v = compare[key];
+        
             if(v === Object(v)){
-                equal = lang.isEqual(compare[i], to[i]);
+                equal = lang.isEqual(v, to[key]);
+                
             }else{
-                equal = compare[i] === to[i];
+                equal = v === to[key];
             }
         }
     });
