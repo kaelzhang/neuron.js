@@ -134,23 +134,6 @@ describe(".nextAll()", function(){
 });
 
 
-describe(".child()", function(){
-    it("could get the first direct offspring", function(){
-        var parent = $('#dom-traverse-child'),
-            first_child = $('#dom-traverse-child-1');
-    
-        expect(parent.child()[0]).toBe(first_child[0]);
-    });
-    
-    it("could get the first matched direct offspring", function(){
-        var parent = $('#dom-traverse-child');
-    
-        expect(parent.child('.special').is('.child-1')).toBe(true);
-        expect(parent.child('.special').is('.special')).toBe(true);
-    });
-});
-
-
 describe(".children()", function(){
     it("could get all direct offspring", function(){
         expect($('#dom-traverse-child').children().length).toBe(3);
