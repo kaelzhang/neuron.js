@@ -286,7 +286,7 @@ var
 INSERT_EQ_AFTER_FN = ['$'],
 
 // before .prev()
-INSERT_EQ_BEFORE_METHOD = ['prev', 'prevAll', 'next', 'nextAll', 'children', 'parent', 'parents'],
+INSERT_EQ_BEFORE_METHOD = ['child', 'prev', 'prevAll', 'next', 'nextAll', 'children', 'parent', 'parents'],
 INSERT_EQ_BEFORE_METHOD_ASTS = [],
 
 
@@ -302,7 +302,10 @@ METHOD_TO_CHANGE = [
         
     }, {
         name: 'all',
-        to: 'find'
+        to: 'find',
+        condition: function(stat){
+            return !lang.isEqual(stat.former_result, ["name", "$"]);   
+        }
         
     }, {
         name: 'el',
@@ -314,13 +317,33 @@ METHOD_NAME_TO_CHANGE = METHOD_TO_CHANGE.map(function(config){
     return config.name;
 }),
 
-COUNT_ASTS = []
+COUNT_ASTS = [],
+
+METHOD_TO_CHANGE_INSERT_EQ_AFTER = [
+    {
+        name: 'one',
+        to: 'find'
+    }, {
+        name: 'child',
+        to: 'children'
+    }
+],
+
+METHOD_NAME_TO_CHANGE_INSERT_EQ_AFTER = METHOD_TO_CHANGE_INSERT_EQ_AFTER.map(function(config){
+    return config.name;
+})
 
 ;
 
 
 get_all_fn_call(nr_define_closure).forEach(function(ast, i){
     walker.walk(ast, 'call', function(sub_ast){
+    
+        var fn_name_ast = sub_ast[1],
+            
+            fn_name_operator = fn_name_ast[0],
+            former_result = fn_name_ast[1],
+            fn_name = fn_name_ast[2];
         
         /**
          a.b();
@@ -339,12 +362,7 @@ get_all_fn_call(nr_define_closure).forEach(function(ast, i){
             ]
          ]
         
-         */
-    
-        var fn_name_ast = sub_ast[1],
-            fn_name = fn_name_ast[2],
-            fn_name_operator = fn_name_ast[0];
-            
+         */ 
         if(fn_name_operator === 'dot'){
             var index = METHOD_NAME_TO_CHANGE.indexOf(fn_name);
         
@@ -352,7 +370,8 @@ get_all_fn_call(nr_define_closure).forEach(function(ast, i){
                 var 
                 
                 stat = {
-                    arg: sub_ast[2]
+                    arg: sub_ast[2],
+                    former_result: former_result
                 },
                 
                 config = METHOD_TO_CHANGE[index];
@@ -361,7 +380,9 @@ get_all_fn_call(nr_define_closure).forEach(function(ast, i){
                     fn_name_ast[2] = config.to;
                 }
                 
-            }else if(INSERT_EQ_BEFORE_METHOD.indexOf(fn_name) !== -1){
+            }
+            
+            if(INSERT_EQ_BEFORE_METHOD.indexOf(fn_name) !== -1){
                 
                 var 
                 
@@ -369,14 +390,123 @@ get_all_fn_call(nr_define_closure).forEach(function(ast, i){
                 prev_sub_ast = fn_name_ast[1];
                 INSERT_EQ_BEFORE_METHOD_ASTS.push(prev_sub_ast);
                 
-            }else if(fn_name === 'count'){
+            }
+            
+            if(fn_name === 'count'){
                 
                 COUNT_ASTS.push({
                     ast: sub_ast,
-                    former_result: fn_name_ast[1]
+                    former_result: former_result
+                });
+            
+            }
+            
+            if((index = METHOD_NAME_TO_CHANGE_INSERT_EQ_AFTER.indexOf(fn_name)) !== -1){
+                
+                fn_name_ast[2] = METHOD_TO_CHANGE_INSERT_EQ_AFTER[index].to;
+                
+                walker.replace_sub_ast(sub_ast, [
+                    "call",
+                    [
+                        "dot",
+                        sub_ast,
+                        "eq"
+                    ],
+                    [
+                        [
+                            "num",
+                            0
+                        ]
+                    ]
+                    
+                ], nr_define_closure, {
+                   all: false
                 });
             }
         }
+        
+        /**
+         [
+                "call",
+            [
+                "name",
+                "$"
+            ],
+            [
+                [
+                    "string",
+                    "ab"
+                ]
+            ]
+         ]
+         
+         $(selector) -> $(selector).eq(0)
+        */
+        if(lang.isEqual(fn_name_ast, ["name", "$"])){
+            walker.replace_sub_ast(sub_ast, [
+                "call",
+                [
+                    "dot",
+                    sub_ast,
+                    "eq"
+                ],
+                [
+                    [
+                        "num",
+                        0
+                    ]
+                ]
+                
+            ], nr_define_closure, {
+               all: false
+            });
+        
+        
+        }
+        
+        // $.all(selector) -> $(selector) 
+        if(lang.isEqual(fn_name_ast, [
+            "dot",
+            [
+                "name",
+                "$"
+            ],
+            "all"
+        ])){
+            sub_ast[1] = ["name", "$"];
+        
+        
+        // $.one(selector) -> $(selector).eq(0)
+        }else if(lang.isEqual(fn_name_ast, [
+            "dot",
+            [
+                "name",
+                "$"
+            ],
+            "one"
+        ])){
+            sub_ast[1] = ["name", "$"];
+            
+            walker.replace_sub_ast(sub_ast, [
+                "call",
+                [
+                    "dot",
+                    sub_ast,
+                    "eq"
+                ],
+                [
+                    [
+                        "num",
+                        0
+                    ]
+                ]
+                
+            ], nr_define_closure, {
+               all: false
+            });
+        }
+        
+        
     });
 });
 
