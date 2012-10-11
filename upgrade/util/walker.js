@@ -1,10 +1,12 @@
+'use strict';
+
 /**
  * enhanced ast walker based on uglifyjs
  */
 
 var
 
-NR = require('../../lib/neuron/seed'),
+NR = require('../../lib/neuron'),
 
 lang = require('./lang'),
 
@@ -18,29 +20,6 @@ ast_walker = pro.ast_walker(),
 Walker = exports,
 
 REGEX_MATCH_DOT = /\.(?!$)/;
-
-
-/**
- * @param {Object} obj
- * @param {Object} condition
- */
-function isConditionMatched(obj, condition){
-    var pass = true;
-    
-    Object.keys(condition).forEach(function(key, index){
-        var rule = this[key],
-            value = obj[key];
-    
-        pass = pass && (
-            NR.isFunction(rule) ? 
-              rule(value)
-            : lang.isEqual(value, rule)
-        );
-            
-    }, condition);
-    
-    return pass;
-};
 
 
 function adaptWalkers(walkers, current_item, current_sub_ast){
@@ -80,6 +59,7 @@ function adaptWalkers(walkers, current_item, current_sub_ast){
     
  */
 exports.walk = function(ast, type, interator){
+    var walkers;
 
     // walk(ast, type, walker)
     if(NR.isString(type)){
@@ -139,13 +119,42 @@ exports.walk_file = function(file, type, interator){
 
 
 /**
+ * @param {Object} obj
+ * @param {Object} condition
+ */
+function isConditionMatched(obj, condition){
+    var pass = true;
+    
+    Object.keys(condition).forEach(function(key, index){
+        var rule = this[key],
+            value = obj[key];
+    
+        pass = pass && (
+            NR.isFunction(rule) ? 
+              rule(value)
+            : lang.isEqual(value, rule)
+        );
+            
+    }, condition);
+    
+    return pass;
+};
+
+
+/**
  * @param {Object=} condition {
         fnName: {string},
         args: {Array.<string>}
     }
  * @returns {Array}
  */
-exports.get_fn_content = function(ast, callback, condition){
+exports.is_fn = function(ast, callback, condition){
+    var operator;
+    
+    if(!NR.isArray(ast) || !NR.isString(operator = ast[0])){
+        return;
+    }
+
     condition || (condition = {});
     
     var fnName = condition.fnName;
@@ -268,7 +277,7 @@ exports.get_fn_content = function(ast, callback, condition){
                         content: content[1][3],
                         ast: sub_ast,
                         type: 'var'
-                    })
+                    });
                 }
             }
         },
@@ -298,10 +307,20 @@ exports.get_fn_content = function(ast, callback, condition){
                 type: 'function'
             });
         }
-    };
-
+    },
     
-    Walker.walk(ast, fn_walkers, filter);  
+    key;
+    
+    for(key in fn_walkers){
+        operator === key && fn_walkers[key](ast);
+    }
+};
+
+
+exports.fn_content = function(ast, callback, condition){
+    Walker.walk_ast(ast, function(sub_item, env){
+        Walker.is_fn(sub_item, callback, condition);
+    });
 };
 
 
@@ -371,10 +390,11 @@ exports.remove_sub_ast = function(sub_ast, from, options){
     }, options);
 
     Walker.walk_ast(from, function(current, env){
-        if(options.strict ? current === sub_ast : lang.isEqual(sub_ast, current)){
-            var index = env.ast.indexOf(sub_ast);
+    
+        if(options.strict ? current === sub_ast : lang.isEqual(current, sub_ast)){
+            var index = env.ast.indexOf(current);
             
-            env.ast.splice(index, 1);
+            options.replace ? env.ast.splice(index, 1, options.replace) : env.ast.splice(index, 1);
             
             if(!options.all){
                 env.stop();
@@ -384,10 +404,19 @@ exports.remove_sub_ast = function(sub_ast, from, options){
 };
 
 
+exports.replace_sub_ast = function(replace, to, from, options){
+    options || (options = {});
+
+    options.replace = to;
+    
+    Walker.remove_sub_ast(replace, from, options);
+};
+
+
 /**
  * get parent ast
  */
-exports.get_parent_ast = function(sub_ast, full_ast){
+exports.parent_ast = function(sub_ast, full_ast){
     var parent;
     
     if(NR.isArray(sub_ast) && NR.isArray(full_ast)){
@@ -420,6 +449,10 @@ var ENV_PROPS = {
     // if true, traverser will pop the current stack and continue traverse the next sub ast
     _skipped: {
         value: false,
+        writable: true
+    },
+    
+    depth: {
         writable: true
     },
     
@@ -470,57 +503,87 @@ function createEnv(parent){
         emumerable: true
     });
     
+    if(parent){
+        env.depth = parent.depth + 1;
+    }
+    
     return env;
 };
 
 
 /**
- * walk an ast with manual traverser
+ * walk an ast with manual traverser (uglify ast_walker could not walk a sub-ast)
+  
  * @param {Array} ast uglifyjs ast
- * @param {function()}
+ * @param {function()} traverser
  */
 exports.walk_ast = function(ast, traverser){
 
     // during 
-    if(!NR.isArray(ast)){
+    if(!NR.isArray(ast) || ast.length === 0){
         return;
     }
     
     var
     
     // internal use
-    env = arguments[2],
+    parent_env = arguments[2],
+    no_env = arguments[3],
     
     i = 0,
     len = ast.length,
-    sub_item;
+    sub_item,
     
-    if(!env){
-        env = createEnv();
+    env;
+    
+    if(!no_env){
+        env = createEnv(parent_env);
+        
+        // so that we can use the current ast with env.ast inside `traverser`
+        env.ast = ast;
     }
     
-    // so that we can use the current ast with env.ast inside `traverser`
-    env.ast = ast;
-    
     for(; i < len; i ++){
-        sub_item = ast[i]; // console.log('sub_item', sub_item)
-         
-        if(env.isStopped()){ console.log('stopped!!!!!!!!!!!!!!!')
+        sub_item = ast[i];
+        
+        if(env.isStopped()){
             break;
         }
         
-        if(env.isSkipped()){ console.log('skipped!!!!!!!!!!!!!!!')
+        if(env.isSkipped()){
             env.resume();
             break;
-        }
-        
+        }    
+
         traverser(sub_item, env);
         
         // if sub_item may be an ast
         if(NR.isArray(sub_item)){
-            Walker.walk_ast(sub_item, traverser, createEnv(env));
+            Walker.walk_ast(sub_item, traverser, env, no_env);
         }
     }
+};
+
+
+/**
+ * @returns {boolean} true if ast contains sub_ast
+ */
+exports.contains = function(ast, sub_ast){
+    var contains = false;
+    
+    Walker.walk_ast(ast, function(current, env){
+        if(current === sub_ast){
+            contains = true;
+            env.stop();
+        }
+    });
+    
+    return contains;
+};
+
+
+exports.closest_parent_ast = function(sub_ast, callback, condition){
+    
 };
 
 
