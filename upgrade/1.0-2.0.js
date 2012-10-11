@@ -295,9 +295,12 @@ METHOD_TO_CHANGE = [
         name: 'get',
         to: 'eq',
         condition: function(stat){
-            var arg = stat.arg;
+            var arg = stat.arg,
+                first_arg = arg[0];
             
-            return arg.length === 0 || arg.length === 1 && NR.isNumber(arg[0]);
+            // nr_element.get()
+            // nr_element.get(0)
+            return arg.length === 0 || arg.length === 1 && first_arg[0] === 'num';
         }
         
     }, {
