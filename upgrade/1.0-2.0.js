@@ -1,3 +1,5 @@
+'use strict';
+
 var
 
 FILE = '1.0-2.0-res.js',
@@ -19,30 +21,40 @@ var
 
 ast = parser.parse(fs.readFileSync(FILE).toString());
 
-
+////////////////////////////////////////////////////////////////////////////////////////////
 // all changes below will affect the origin `ast`
+////////////////////////////////////////////////////////////////////////////////////////////
+
+
+var 
+
+STR_NR = 'NR';
 
 /**
- * 'DP' -> 'NR'
- * 'KM' -> 'NR'
+ * dealing with NR namespace ------------------------------------------------->
+ */
+
+
+/**
+ * 'DP' -> STR_NR
+ * 'KM' -> STR_NR
  * ['name', 'DP']
  * first of all, we must change namespace which will affect all invocations 
  */ 
-/*
-walker.walk(ast, 'name', function(stat){
-    if(stat[1] === 'DP'){
-        stat[1] = 'NR';
+
+walker.walk(ast, 'name', function(sub_ast){
+    if(sub_ast[1] === 'DP'){
+        sub_ast[1] = STR_NR;
     }
 });
-*/
-
 
 
 var 
 
 // @type {string} the local name of NR within module wrappings
-// DP.define(function(K){})  -> 'K'
+// NR.define(function(K){})  -> 'K'
 local_nr_name,
+nr_define_closure,
 
 nr_dot_define = [
     "dot",
@@ -53,15 +65,13 @@ nr_dot_define = [
     "define"
 ],
 
-nr_define_count = 0,
-count = 0;
+nr_define_count = 0;
+
 
 /**
- * 
+ * NR.define(function(K){})  -> NR.define(function(NR){})
  */
 walker.walk(ast, 'call', function(stat){
-
-    console.log('call <<<<<<<<<<<<<<<<<<<<<')
     
     var fn_name = stat[1],
         args_ast;
@@ -72,48 +82,340 @@ walker.walk(ast, 'call', function(stat){
         
         nr_define_count ++;
         
-        console.log('begin log fn >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-        debugger;
-        walker.get_fn_content(args_ast, function(stat){ console.log(++ count)
-            console.log('fn: args_ast', args_ast);
-            console.log('fn: stat', stat);
-        });
+        walker.fn_content(args_ast, function(stat){
         
-        console.log('end get fn >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
+            // NR.define(function(K){})  -> 'K'
+            local_nr_name = stat.args[0];
+            stat.args[0] = STR_NR;
+            
+            nr_define_closure = stat.content;
+        });
     }
-    
-    console.log('end walker.walk >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 });
 
-console.log('end >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 
-/*
 if(nr_define_count !== 1){
     console.log('Error: NR.define must be used once and only once within a single module'.red);
-    // throw 'error occurs';
+    throw 'error occurs';
 }
-*/
+
+
+// ['name', local_nr_name] -> ['name', NR]
+walker.walk(ast, 'name', function(sub_ast){
+    if(sub_ast[1] === local_nr_name){
+        sub_ast[1] = STR_NR;
+    }
+});
+
+
+
+var
+
+// those asts which declare a local NR object
+nr_var_asts_removing = [],
+
+// @type {Array.<>}
+var_names_assigned_to_dollar = [],
+
+AST_NAME_NR = ['name', STR_NR],
+AST_NAME_DOLLAR = ['name', '$'];
+
+
+walker.walk(ast, {
+
+    /**
+     var DP;
+     [
+        "var",
+        [
+            [
+                "DP"
+            ]
+        ]
+     ]
+     
+     var DP = NR;
+     [
+        "var",
+        [
+            [
+                "DP",
+                [
+                    "name",
+                    "NR"
+                ]
+            ]
+        ]
+     ]
+     
+     */
+    'var': function(sub_ast){
+        var 
+        
+        name_arr = sub_ast[1][0],
+        var_name = name_arr[0],
+        assigned_to = name_arr[1];
+        
+        // 
+        if(var_name === 'DP' || var_name === local_nr_name){
+            nr_var_asts_removing.push(sub_ast);
+    
+    /**
+            var assigned = name_arr[1];
+        
+            if(!assigned){
+            
+                // var DP; -> var NR;
+                name_arr[0] = STR_NR;
+                
+            }else if(lang.isEqual(assigned, AST_NAME_NR)){
+                nr_var_asts_removing.push(sub_ast);
+            }
+    */
+        
+        }else if(var_name === '$'){
+            nr_var_asts_removing.push(sub_ast);
+        }
+        
+        if(lang.isEqual(assigned_to, AST_NAME_DOLLAR)){
+            nr_var_asts_removing.push(sub_ast);
+            var_names_assigned_to_dollar.push(var_name);
+        }
+        
+        // TODO:
+        // remove var NR
+        // remove var k = NR (formerly, var k = K)
+    
+    },
+    
+    /**
+     [
+        "assign",
+        true,
+        [
+            "name",
+            "$"
+        ],
+        [
+            "name",
+            "DP"
+        ]
+     ]
+     */
+    'assign': function(sub_ast){
+        var be_assigned = sub_ast[2],
+            assigned_to = sub_ast[3];
+        
+        if(lang.isEqual(be_assigned, AST_NAME_DOLLAR)){
+            nr_var_asts_removing.push(sub_ast);
+        }
+        
+        if(lang.isEqual(assigned_to, AST_NAME_DOLLAR)){
+            nr_var_asts_removing.push(sub_ast);
+            var_names_assigned_to_dollar.push(be_assigned[1]);
+        }
+    }
+    
+});
+
+
+// removing all unnecessary declaration
+nr_var_asts_removing.forEach(function(sub_ast){
+    walker.remove_sub_ast(sub_ast, ast);
+});
+
 
 
 /**
- * var DP; -> var NR
- * [ 'var', [ [ 'DP' ] ] ]
+ * dealing with $ ------------------------------------------------->
  */
-/*
-walker.walk(ast, 'var', function(stat){
-    var name_arr = stat[1][0];
+
+// NR.DOM -> $              
+walker.replace_sub_ast([
+        "dot",
+        [
+            "name",
+            "NR"
+        ],
+        "DOM"
+
+    ], [
+        "name",
+        "$"
+        
+    ], nr_define_closure, {
+        strict: false
+    }
+);
+
+walker.insert_code('var $ = NR.DOM', nr_define_closure, 0);
+
+walker.walk(ast, 'name', function(sub_ast){    
+    var name = sub_ast[1];
     
-    if(name_arr[0] === 'DP'){
-        name_arr[0] = 'NR';
+    if(var_names_assigned_to_dollar.indexOf(name) !== -1){
+        sub_ast[1] = '$';
     }
 });
 
-*/
 
 
+function get_all_fn_call(ast){
+    var sub_asts = [];
+    
+    walker.walk_ast(ast, function(sub_item, env){
+        if(sub_item === 'call'){
+            sub_asts.push(env.ast);
+            
+            // prevent traversing even deeper, so that we only get the whole calling chain without duplication
+            env.skip();
+        }
+    });
+    
+    return sub_asts;
+};
 
 
+var
 
+// 'fn' and 'method' are different, 
+// a fn is a individual function
+// a method is a object method
+
+// after $
+INSERT_EQ_AFTER_FN = ['$'],
+
+// before .prev()
+INSERT_EQ_BEFORE_METHOD = ['prev', 'prevAll', 'next', 'nextAll', 'children', 'parent', 'parents'],
+INSERT_EQ_BEFORE_METHOD_ASTS = [],
+
+
+METHOD_TO_CHANGE = [
+    {
+        name: 'get',
+        to: 'eq',
+        condition: function(stat){
+            var arg = stat.arg;
+            
+            return arg.length === 0 || arg.length === 1 && NR.isNumber(arg[0]);
+        }
+        
+    }, {
+        name: 'all',
+        to: 'find'
+        
+    }, {
+        name: 'el',
+        to: 'get'
+    }
+],
+
+METHOD_NAME_TO_CHANGE = METHOD_TO_CHANGE.map(function(config){
+    return config.name;
+}),
+
+COUNT_ASTS = []
+
+;
+
+
+get_all_fn_call(nr_define_closure).forEach(function(ast, i){
+    walker.walk(ast, 'call', function(sub_ast){
+        
+        /**
+         a.b();
+         
+         [
+            "call",
+            [
+                "dot",
+                [
+                    "name",
+                    "a"
+                ],
+                "b"
+            ],
+            [
+            ]
+         ]
+        
+         */
+    
+        var fn_name_ast = sub_ast[1],
+            fn_name = fn_name_ast[2],
+            fn_name_operator = fn_name_ast[0];
+            
+        if(fn_name_operator === 'dot'){
+            var index = METHOD_NAME_TO_CHANGE.indexOf(fn_name);
+        
+            if(index !== -1){
+                var 
+                
+                stat = {
+                    arg: sub_ast[2]
+                },
+                
+                config = METHOD_TO_CHANGE[index];
+                
+                if(!config.condition || config.condition(stat)){
+                    fn_name_ast[2] = config.to;
+                }
+                
+            }else if(INSERT_EQ_BEFORE_METHOD.indexOf(fn_name) !== -1){
+                
+                var 
+                
+                // []
+                prev_sub_ast = fn_name_ast[1];
+                INSERT_EQ_BEFORE_METHOD_ASTS.push(prev_sub_ast);
+                
+            }else if(fn_name === 'count'){
+                
+                COUNT_ASTS.push({
+                    ast: sub_ast,
+                    former_result: fn_name_ast[1]
+                });
+            }
+        }
+    });
+});
+
+
+INSERT_EQ_BEFORE_METHOD_ASTS.forEach(function(sub_ast){
+
+    // .x(y) -> .eq(0).x(y)
+    walker.replace_sub_ast(sub_ast, [
+        "call",
+        [
+            "dot",
+            sub_ast,
+            "eq"
+        ],
+        [
+            [
+                "num",
+                0
+            ]
+        ]
+        
+    ], nr_define_closure, {
+        all: false
+    });
+});
+
+
+COUNT_ASTS.forEach(function(obj){
+
+    // .count() -> .length
+    walker.replace_sub_ast(obj.ast, [
+        "dot",
+        obj.former_result,
+        "length"
+        
+    ], nr_define_closure, {
+        all: false
+    });
+});
 
 
 var 
