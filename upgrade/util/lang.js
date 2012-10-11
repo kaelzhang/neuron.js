@@ -1,13 +1,13 @@
+'use strict';
+
 var
 
-NR = require('../../lib/neuron/seed'),
-
-lang = exports;
+NR = require('../../lib/neuron');
 
 /**
  * provide a deep comparison
  */
-lang.isEqual = function(compare, to){
+exports.isEqual = function(compare, to){
     var 
     
     equal = NR._type(compare) === NR._type(to);
@@ -17,7 +17,7 @@ lang.isEqual = function(compare, to){
             var v = compare[key];
         
             if(v === Object(v)){
-                equal = lang.isEqual(v, to[key]);
+                equal = exports.isEqual(v, to[key]);
                 
             }else{
                 equal = v === to[key];
