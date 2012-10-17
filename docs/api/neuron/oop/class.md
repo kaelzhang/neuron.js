@@ -6,7 +6,6 @@ Class
 - Property:Extends
 - Property:Implements
 - Property:initialize
-- Class.setAttrs
 
 Class Method: constructor
 ---------
@@ -91,35 +90,4 @@ Class Method: constructor
     var F2E = new Dapper(20);
     F2E.setName('Kael');
     alert(F2E.name); // alerts 'Kael'
-***
-
-### Class Static Method: setAttrs
-
-# 语法:
-
-***
-    {{lang:javascript}}
-    Class.setAttrs(class, properties);
-***
-
-## 参数:
- - class (class) 类
- - properties (object)用户自定义设置属性
-
-#### setAttrs Example:
-***
-    {{lang:javascript}}
-    var Dapper= Class({
-        Implements: 'attrs',
-        initialize: function(options){
-             this.set(options);
-        }
-    });
-    Class.setAttrs(Dapper, {
-        'name': {
-            value: ''
-        }
-    });
-    var F2E= new Dapper({ name: 'Kael'});
-    alert(F2E.get('name')); // alerts 'Kael'
 ***

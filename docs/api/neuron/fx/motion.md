@@ -136,9 +136,7 @@ Motion = K.Class({
 		
 		return self;
 	}
-});
-
-K.Class.setAttrs({
+}, {
 		
 	// frame per second, i.e. how many this.options.props per second
 	fps: {

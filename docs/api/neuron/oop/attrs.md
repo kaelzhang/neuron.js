@@ -106,10 +106,10 @@
         initialize: function (options) {
            this.set(options);
         }
-    });
-    Class.setAttrs(Dpper, {
+    }, {
         name:{}
     });
+    
     var F2E = new Dpper({ name: 'Kael'});
 	alert(F2E.get('name')); // alerts Kael
 ***
