@@ -431,8 +431,45 @@ describe('NR.Class ext: attrs', function(){
             expect(im.get('e')).toBe(5);
             expect(im.get('a')).toBe(undefined);
         });
+    
     });
     
+    
+    describe("attributes inheritance: special situations", function(){
+        var
+        
+        Parent = NR.Class({
+            Implements: 'attrs'   
+        }, {
+            a: {
+                value: 1
+            }
+            
+        }),
+        
+        Sub = NR.Class({
+            Extends: Parent
+        });
+    
+        it("if sub-class has no attrs, setter and getter should be properly initialized", function(){
+            
+            var 
+            
+            ins = new Sub;
+        
+            expect(ins.get('a')).toBe(1);
+        });
+        
+        it("if attributes of superclass changes after the declaration of sub-class, sub-class should not be affected", function(){
+            Parent.ATTRS.a.value = 2;
+            
+            var
+            
+            ins = new Sub;
+        
+            expect(ins.get('a')).toBe(1);
+        });
+    });
 });
 
 
