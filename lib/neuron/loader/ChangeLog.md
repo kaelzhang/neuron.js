@@ -8,6 +8,18 @@ marks:
 - * unimportant
 - ! important and of high priority
 
+
+milestone 6.0
+=============
+
+##### 2012-10-22  Kael:
+
+
+
+
+milestone 5.0
+=============
+
 ##### 2012-06-17  Kael:
 
 - TODO[06-08].A
