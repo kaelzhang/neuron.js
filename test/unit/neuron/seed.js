@@ -196,6 +196,7 @@ describe("type detection", function(){
     });
 });
  
+/*
 describe("NR._debugOn()", function(){
     it("will switch on debug mode", function(){
         NR._debugOn();
@@ -203,5 +204,6 @@ describe("NR._debugOn()", function(){
         expect(NR._env.debug).toBe(true);
     });
 });
+*/
     
 });
