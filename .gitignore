@@ -1,3 +1,7 @@
+# cortex
+.cortex/build/
+.cortex/latest-pack
+
 # PHP files
 index.php
 
