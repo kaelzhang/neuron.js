@@ -1,4 +1,4 @@
-describe('Neuron: loader-active', function (){
+describe('Neuron: loader', function (){
 
 
 describe("NR.define, feated with NR.provide", function(){
