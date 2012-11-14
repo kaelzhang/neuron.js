@@ -1,8 +1,8 @@
 {
-    dirs: [
+    "dirs": [
         {
-            dir: 'lib/',
-            to:  'lib/2.0/'
+            "dir": "lib/",
+            "to":  "lib/2.0/"
         }
     ]   
 }
