@@ -1,11 +1,6 @@
 'use strict';
 
-var
-
-FILE = '1.0-2.0-res.js',
-OUTPUT = '1.0-2.0-ouput.js';
-
-require('./util/colorize');
+require('../tools/colorize');
 
 var
 
@@ -17,9 +12,9 @@ uglifyjs = require('uglify-js'),
 parser = uglifyjs.parser,
 uglify = uglifyjs.uglify;
 
-var 
 
-ast = parser.parse(fs.readFileSync(FILE).toString());
+function convert(ast){
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // all changes below will affect the origin `ast`
@@ -74,7 +69,9 @@ nr_define_count = 0;
 walker.walk(ast, 'call', function(stat){
     
     var fn_name = stat[1],
-        args_ast;
+        args_ast,
+        first = true,
+        fn_method = fn_name[2];
     
     // whether is NR.define
     if(lang.isEqual(fn_name, nr_dot_define)){
@@ -83,13 +80,24 @@ walker.walk(ast, 'call', function(stat){
         nr_define_count ++;
         
         walker.fn_content(args_ast, function(stat){
-        
-            // NR.define(function(K){})  -> 'K'
-            local_nr_name = stat.args[0];
-            stat.args[0] = STR_NR;
-            
-            nr_define_closure = stat.content;
+            if(first){
+                first = false;
+                // NR.define(function(K){})  -> 'K'
+                local_nr_name = stat.args[0];
+                stat.args[0] = STR_NR;
+                
+                nr_define_closure = stat.content;
+            }
         });
+    
+    // .prevent() -> .preventDefault()
+    }else if(fn_method === 'prevent'){
+        fn_name[2] = 'preventDefault';
+    
+    // .stopBubble() -> .stopPropagation()
+    }else if(fn_method === 'stopBubble'){
+        fn_name[2] = 'stopPropagation';
+    
     }
 });
 
@@ -152,40 +160,59 @@ walker.walk(ast, {
     'var': function(sub_ast){
         var 
         
-        name_arr = sub_ast[1][0],
-        var_name = name_arr[0],
-        assigned_to = name_arr[1];
+        var_asts = sub_ast[1],
+        length = var_asts.length,
+        removing = [];
         
-        // 
-        if(var_name === 'DP' || var_name === local_nr_name){
-            nr_var_asts_removing.push(sub_ast);
-    
-    /**
-            var assigned = name_arr[1];
-        
-            if(!assigned){
+        var_asts.forEach(function(name_arr, i){
+            var 
             
-                // var DP; -> var NR;
-                name_arr[0] = STR_NR;
+            var_name = name_arr[0],
+            assigned_to = name_arr[1];
+            
+            // var DP = XXX;
+            // var K = XXX;
+            // var NR = XXX;
+            // var $ = XXX;
+            if(var_name === 'DP' || var_name === local_nr_name || var_name === 'NR' || var_name === '$'){
+                removing.push(name_arr);
+                length --;
+        
+        /**
+                var assigned = name_arr[1];
+            
+                if(!assigned){
                 
-            }else if(lang.isEqual(assigned, AST_NAME_NR)){
-                nr_var_asts_removing.push(sub_ast);
+                    // var DP; -> var NR;
+                    name_arr[0] = STR_NR;
+                    
+                }else if(lang.isEqual(assigned, AST_NAME_NR)){
+                    nr_var_asts_removing.push(sub_ast);
+                }
+        */
+            
             }
-    */
+            
+            // var _$ = $;
+            if(lang.isEqual(assigned_to, AST_NAME_DOLLAR)){
+                removing.push(name_arr);
+                var_names_assigned_to_dollar.push(var_name);
+                length --;
+            }
+            
+            // TODO:
+            // remove var NR
+            // remove var k = NR (formerly, var k = K)
+        });
         
-        }else if(var_name === '$'){
+        if(length > 0){
+            nr_var_asts_removing = nr_var_asts_removing.concat(removing);
+            
+        }else{
+        
+            // remove all var
             nr_var_asts_removing.push(sub_ast);
         }
-        
-        if(lang.isEqual(assigned_to, AST_NAME_DOLLAR)){
-            nr_var_asts_removing.push(sub_ast);
-            var_names_assigned_to_dollar.push(var_name);
-        }
-        
-        // TODO:
-        // remove var NR
-        // remove var k = NR (formerly, var k = K)
-    
     },
     
     /**
@@ -551,6 +578,7 @@ COUNT_ASTS.forEach(function(obj){
 });
 
 
+/*
 var 
 
 output = fs.openSync(OUTPUT, 'w+');
@@ -559,3 +587,20 @@ fs.writeSync(output, uglify.gen_code(ast, {
     beautify: true
 }));
 fs.closeSync(output);
+*/
+
+return ast;
+
+};
+
+exports.parse = function(content){
+    return parser.parse(content);
+};
+
+exports.convert = convert;
+
+exports.gen_code = function(ast){
+    return uglify.gen_code(ast, {
+        beautify: true
+    });
+};

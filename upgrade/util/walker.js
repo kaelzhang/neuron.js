@@ -12,10 +12,7 @@ lang = require('./lang'),
 
 uglify = require('uglify-js'),
 parser = uglify.parser,
-pro = uglify.uglify,
 fs = require('fs'),
-
-ast_walker = pro.ast_walker(),
 
 Walker = exports,
 
@@ -81,31 +78,7 @@ exports.walk = function(ast, type, interator){
         adaptWalkers(walkers, sub_item, env.ast);
     });
 };
- 
-/*
-exports.walk = function(ast, type, interator){
-    var walkers,
-        ret;
-    
-    if(NR.isString(type)){
-        walkers = {};
-    
-        walkers[type] = function(){
-            interator(this);
-        };
-        
-    }else if(NR.isObject(type)){
-        walkers = type;
-        
-    }else{
-        return;
-    }
-    
-    return ast_walker.with_walkers(walkers, function(){
-        return ast_walker.walk(ast);
-    });
-};
-*/
+
 
 /**
  * read a file, parse it to ast, then use `Walker.walk`
@@ -585,6 +558,13 @@ exports.contains = function(ast, sub_ast){
 exports.closest_parent_ast = function(sub_ast, callback, condition){
     
 };
+
+
+exports.walk_scope = function(ast){
+    
+};
+
+
 
 
 
