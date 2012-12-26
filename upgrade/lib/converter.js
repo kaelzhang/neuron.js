@@ -40,7 +40,13 @@ converter = {
 
     printCode: function(ast){
         var stream = UglifyJS.OutputStream({
-                beautify: true
+                indent_start: 0,
+                indent_level: 4,
+                space_colon: true,
+                ascii_only: false,
+                bracketize: true,
+                beautify: true,
+                comments: true
             });
         
         ast.print(stream);
