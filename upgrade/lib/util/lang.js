@@ -2,7 +2,7 @@
 
 var
 
-NR = require('../../lib/neuron');
+NR = require('../../../lib/neuron');
 
 /**
  * provide a deep comparison
