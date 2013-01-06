@@ -5,59 +5,74 @@ neuron = require('../../../lib/neuron'),
 UglifyJS = require('uglify-js'),
 
 RELATED_PROP = {
-    'AST_Call':     ['args', 'expression', 'body'],
-    'AST_Defun':    ['argnames', 'name', 'body'],
-    'AST_Var':      ['definitions'],
-    'AST_VarDef':   ['name', 'value'] //,
+    'AST_Function'      : ['name', 'argnames', 'body'],
+    'AST_SymbolFunarg'  : ['name'],
+    'AST_Dot'           : ['expression', 'property'],
+    'AST_Call'          : ['args', 'expression', 'body'],
+    'AST_Defun'         : ['argnames', 'name', 'body'],
+    'AST_Var'           : ['definitions'],
+    'AST_VarDef'        : ['name', 'value'] //,
     // 'AST_SymbolVar':['scope']
-}
-
-function getFuntionName(fn){
-    return String(fn).match(/^function ([^\(]+)/)[1];
 };
 
 
-function walk(ast, space, extra, is_final){
+var
+
+fn_arg_def,
+ref_def;
+
+
+function write(msg, stack){
+    // process.stdout.write(msg);
+    stack.push(msg);
+};
+
+
+function walk(ast, stack, space, extra, is_final){
     space = space || '';
     
+    write(space, stack);
+    write(extra ? extra + ': ' : '', stack);
+    
+    if(neuron.isString(ast)){
+        write('string ' + ast + '\r\n', stack);
+        
+        return;
+    }
+    
     var constructor = ast.CTOR,
-        type = getFuntionName(constructor);
+        type = constructor.name;
     
-    process.stdout.write(space);
-    process.stdout.write((extra ? extra + ': ' : '') + type + ' ' );
+    write(type + ' ', stack);
     
-    if(neuron.isString(ast.name)){
-        // console.log('astname', ast.name)
-        process.stdout.write(ast.name);
-    }
+    write('\r\n', stack);
     
-    if(type === 'AST_SymbolFunarg'){
-        console.log(ast.thedef.CTOR);
-    }
-    
-    process.stdout.write('\r\n');
-    
-    var props = RELATED_PROP[type] || ['body'];
+    var props = RELATED_PROP[type] || ['body', 'name'];
     
     props.forEach(function(prop){
         var sub = ast[prop];
         
         if(neuron.isArray(sub) && sub.length === 0){
-            process.stdout.write(space + '  ');
-            process.stdout.write(prop+ ': ' + type + ' []' );
+            write(space + '  ', stack);
+            write(prop+ ': ' + type + ' []', stack);
             
-            process.stdout.write('\r\n');
+            write('\r\n', stack);
              
         }else{
             neuron.makeArray(ast[prop]).forEach(function(node){
-                walk(node, space + '  ', prop);
+                walk(node, stack, space + '  ', prop);
             });
         }        
         
     });
-    
 };
 
 
-module.exports = walk;
+module.exports = function(ast){
+    var stack = [];
+    
+    walk(ast, stack);
+    
+    return stack.join('');
+};
 
