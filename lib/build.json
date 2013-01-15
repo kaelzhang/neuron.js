@@ -30,37 +30,10 @@
 			"dom/create.js",
 			"dom/domready.js",
 			
-			"loader/assets.js",
-			"loader/config.js",
-			"loader/core.js",
-			
-			"biz/biz.js",
-
-			"cleaner.js"
-		]
-	}, {
-		"folder": "neuron",
-		"output": "neuron-jq.js",
-		"relativepath": true,
-		"maintainorder": true,
-		"path":[
-			"seed.js",
-			"lang/native.js",
-			"lang/enhance.js",
-			"lang/web.js",
-
-			"oop/class.js",
-			"oop/attrs.js",
-			"oop/events.js",
-
-			"ua/ua.js",
-			
-			"jquery/jquery.js",
-			"jquery/adapter.js",
+			"mod-manager/core.js",
 			
 			"loader/assets.js",
-			"loader/active.js",
-			"loader/active-config.js",
+			"loader/mod.js",
 			
 			"biz/biz.js",
 
