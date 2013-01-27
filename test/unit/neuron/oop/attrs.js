@@ -297,10 +297,12 @@ describe('NR.Class ext: attrs', function(){
                 }
             });
         
-        var my = new myClass({a: 2, b: 2}),
+        var my = new myClass({a: 2, b: 2});
         
-            // force to initializing
-            my2 = new myClass2({a: 2, b: 2});
+        // force to initializing
+        
+        console.log('my2');
+        var my2 = new myClass2({a: 2, b: 2});
     
     
         it('controller: readOnly', function(){
@@ -329,6 +331,44 @@ describe('NR.Class ext: attrs', function(){
         });
         
     })();
+    
+    describe("returnValue of .set()", function(){
+        var 
+        
+        myClass = Class({
+            Implements: 'attrs'
+        }, {
+            a: {
+                validator: NR.isNumber
+            },
+            
+            b: {
+                validator: NR.isString
+            }
+        }),
+        
+        m = new myClass();
+        
+    
+        it("returns whether the current key has been successfully set", function(){
+            expect(m.set('a', 1)).toBe(true);
+            expect(m.set('a', '1')).toBe(false);
+        });
+        
+        it("returns true if all values have been successfully set", function(){
+            expect(m.set({
+                a: 1,
+                b: '1'
+            })).toBe(true);
+        });
+        
+        it("returns false if there's even one value fail to set", function(){
+            expect(m.set({
+                a: 1,
+                b: 1
+            })).toBe(false);
+        });
+    });
     
     describe(".addAttr()", function(){
         var myClass = Class({
