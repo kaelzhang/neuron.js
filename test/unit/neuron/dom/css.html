@@ -255,17 +255,17 @@ describe(".css()", function(){
     describe("can't get background-position in IE<9", function () {
         var div = create("div");
         units = [
-    		"0 0",
-    		"12px 12px",
-    		"13px 12em",
-    		"12em 13px",
-    		"12em center",
-    		"+12em center",
-    		"12.2em center",
-    		"center center"
-    	],
-    	l = units.length,
-    	i = 0;
+            "0 0",
+            "12px 12px",
+            "13px 12em",
+            "12em 13px",
+            "12em center",
+            "+12em center",
+            "12.2em center",
+            "center center"
+        ],
+        l = units.length,
+        i = 0;
     
         div.inject($('#dom-css-display-block'));
     
