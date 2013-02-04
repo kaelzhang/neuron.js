@@ -1,43 +1,43 @@
 {
-	"name":"neuron",
-	"concat":[{
-		"folder": "neuron",
-		"output": "neuron.js",
-		"relativepath": true,
-		"maintainorder": true,
-		"path":[
-			"seed.js",
-			"lang/native.js",
-			"lang/enhance.js",
-			"lang/web.js",
+    "name":"neuron",
+    "concat":[{
+        "folder": "neuron",
+        "output": "neuron.js",
+        "relativepath": true,
+        "maintainorder": true,
+        "path":[
+            "seed.js",
+            "lang/native.js",
+            "lang/enhance.js",
+            "lang/web.js",
 
-			"oop/class.js",
-			"oop/attrs.js",
-			"oop/events.js",
+            "oop/class.js",
+            "oop/attrs.js",
+            "oop/events.js",
 
-			"slick/finder.js",
-			"slick/parser.js",
-			"slick/adapter.js",
+            "slick/finder.js",
+            "slick/parser.js",
+            "slick/adapter.js",
 
-			"ua/ua.js",
+            "ua/ua.js",
 
-			"dom/core.js",
-			"dom/feature.js",
-			"dom/event.js",
-			"dom/css.js",
-			"dom/traverse.js",
-			"dom/manipulate.js",
-			"dom/create.js",
-			"dom/domready.js",
-			
-			"loader/assets.js",
-			"loader/mod.js",
-			
-			"mod-manager/core.js",
-			
-			"biz/biz.js",
+            "dom/core.js",
+            "dom/feature.js",
+            "dom/event.js",
+            "dom/css.js",
+            "dom/traverse.js",
+            "dom/manipulate.js",
+            "dom/create.js",
+            "dom/domready.js",
+            
+            "loader/assets.js",
+            "loader/mod.js",
+            
+            "mod-manager/core.js",
+            
+            "biz/biz.js",
 
-			"cleaner.js"
-		]
-	}]
+            "cleaner.js"
+        ]
+    }]
 }
