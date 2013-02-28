@@ -301,7 +301,6 @@ describe('NR.Class ext: attrs', function(){
         
         // force to initializing
         
-        console.log('my2');
         var my2 = new myClass2({a: 2, b: 2});
     
     
