@@ -104,7 +104,7 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 
 ### Arguments
 #### index
-{number} 元素的数组位置。
+{number} 元素的数组位置。若 index < 0, 则会获取该集合中，从右向左第 |index| (绝对值)个元素。
 
 ### Returns
 {NR.DOM} Neuron DOM 对象
