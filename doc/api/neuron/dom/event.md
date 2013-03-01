@@ -2,6 +2,13 @@ Neuron: DOM/event
 ====
 Neuron 的事件绑定不支持 namespace
 
+Outline
+----
+- on
+- off
+- NR.ready
+
+
 本文档参数
 ----
 #### type
@@ -158,6 +165,22 @@ javascript（注：不同的代码段之间没有关联）
 .off(typeMap [, selector])
 ----
 为当前集合中的每个元素，移除多个事件或事件代理。
+
+
+NR.ready(callback)
+----
+注册一个回调函数，它会在页面 domready 的时候触发。若调用该方法的时候，页面的 domready 已经触发过，则该回调会立即执行。
+
+# 特别说明
+
+- domready 是页面中所有的 DOM 元素都可以被安全操作的标志，这个时候：
+	- 页面中所有同步载入的元素，都可以被正常获取到
+	- 你可以安全地对元素进行修改、遍历、和移动操作
+	
+- 若 domready 与 `window` 的 "load" 事件被同时 事件一定会在 之后触发；
+- 使用 `NR.ready()`注册的回调函数，会在触发后被自动释放。
+
+
 
 
 

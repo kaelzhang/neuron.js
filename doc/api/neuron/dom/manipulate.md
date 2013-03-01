@@ -9,6 +9,7 @@ Outline
 - html
 - attr
 - data
+- removeData
 - addClass
 - removeClass
 - toggleClass
@@ -39,6 +40,45 @@ Outline
 .text(): getter
 ----
 当 `.text()` 没有参数的时候，将返回当前集合中第一个元素的文本内容，若当前集合中没有元素，则会返回 null
+
+
+.data(): setter
+----
+在存储一个或一组多个数据，并将这些数据与当前的 DOM 节点关联到一起。之后可以用 getter 来获取这些数据
+
+### Syntax
+	
+	.data(key, value)
+	.data(dataObject)
+	
+### Arguments
+#### key
+{string} 数据的名字
+
+#### value
+{mixed} 数据的值
+
+#### dataObject
+{Object} 包含 <key: value> 的对象，相当于 Hash-map
+
+### Returns
+{NR.DOM} 原 Neuron DOM 对象
+
+
+.data(key): getter
+----
+读取一个关联的数据，若当前的 Neuron DOM 对象集合中包含多个元素，则仅获取与第一个元素关联的数据
+
+### Returns
+{mixed} 对应 key 的值
+
+
+.removeData(key): getter
+----
+移除当前集合中所有元素中，名为 `key` 的数据
+
+### Returns
+{NR.DOM} 原 Neuron DOM 对象
 
 
 .html(html): setter
