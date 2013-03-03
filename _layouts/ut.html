@@ -2,12 +2,40 @@
 
 <script type="text/javascript" src="/tools/jasmine/jasmine.js"></script>
 <script type="text/javascript" src="/tools/jasmine/jasmine-html.js"></script>
+<script>
+// tools
+
+function provide(name, loaded){
+    var args;
+
+    name = NR.makeArray(name);
+
+    runs(function() {
+        NR.provide(name, function(NR, Mod) {
+            args = arguments;
+        });
+    });
+
+    waitsFor(function() {
+        return !!args;
+    });
+
+    runs(function() {
+        loaded.apply(null, args);
+    });
+};
+
+</script>
 <link rel="stylesheet" href="/tools/jasmine/jasmine.css" />
 </head>
 <body>
+
 {{{page.content}}}
+
 <script type="text/javascript">
 (function () {
+    jasmine.CATCH_EXCEPTIONS = false;
+
     var jasmineEnv = jasmine.getEnv();
     jasmineEnv.updateInterval = 1000;
     var htmlReporter = new jasmine.HtmlReporter();
