@@ -26,7 +26,7 @@ DOM 遍历相关的方法，这些方法全部都不会修改原对象，而会�
 获取当前集合中每一个元素的**第一个**符合条件的向前的兄弟元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector
@@ -63,7 +63,7 @@ javascript
 获取当前集合中每一个元素的**所有**符合条件的向前的兄弟元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector
@@ -100,7 +100,7 @@ javascript
 获取当前集合中每一个元素的**第一个**符合条件的向后的兄弟元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector
@@ -113,7 +113,7 @@ javascript
 获取当前集合中每一个元素的**所有**符合条件的向后的兄弟元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector
@@ -126,7 +126,7 @@ javascript
 获取当前集合中每一个元素的**第一个**符合条件的祖辈元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector
@@ -139,7 +139,7 @@ javascript
 获取当前集合中每一个元素的**所有**符合条件的祖辈元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector
@@ -152,7 +152,7 @@ javascript
 获取当前集合中每一个元素的**所有**符合条件的直接子元素，并集合在一起，去除重复的元素后，包装为 Neuron DOM 对象。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 ### Arguments
 #### selector

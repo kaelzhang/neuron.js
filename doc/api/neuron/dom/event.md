@@ -33,7 +33,7 @@ Outline
 	.on(type, selector, handler);
 
 ### Returns
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 	
 ### Usage
 若传递了 `selector` 参数，则会进行事件代理
@@ -66,7 +66,7 @@ javascript
 为当前的集合绑定同时绑定多个事件
 
 ### Returns
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 ### Example
 	

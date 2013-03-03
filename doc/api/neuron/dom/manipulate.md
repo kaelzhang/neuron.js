@@ -62,7 +62,7 @@ Outline
 {Object} 包含 <key: value> 的对象，相当于 Hash-map
 
 ### Returns
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 
 .data(key): getter
@@ -78,7 +78,7 @@ Outline
 移除当前集合中所有元素中，名为 `key` 的数据
 
 ### Returns
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 
 .html(html): setter
@@ -110,7 +110,7 @@ Outline
 
 ### Returns
 
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 ### Example
 	
@@ -132,7 +132,7 @@ Outline
 
 ### Returns
 
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 ### Example
 	
@@ -155,7 +155,7 @@ Outline
 
 ### Returns
 
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 ### Example
 	
@@ -178,7 +178,7 @@ Outline
 {Element} 目标 DOM 节点
 
 #### neuronDOMObject
-{NR.DOM} 目标节点 (Neuron DOM 对象)，若集合中包含多个 DOM节点，则会插入到第一个 DOM 节点的目标位置
+{Object} 目标节点 (Neuron DOM 对象)，若集合中包含多个 DOM节点，则会插入到第一个 DOM 节点的目标位置
 
 #### cssSelector
 {CSS Selector} 目标节点的 CSS 选择符，若该 CSS 选择符获取的元素不唯一，则会插入到第一个元素的目标位置
@@ -193,7 +193,7 @@ Outline
 
 ### Returns
 
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 ### Example
 
@@ -230,7 +230,7 @@ Outline
 ### Arguments
 
 #### element
-{NR.DOM} 需要插入的节点 (Neuron DOM 对象)
+{Object} 需要插入的节点 (Neuron DOM 对象)
 
 #### elements
 {Element} 需要插入的节点的数组
@@ -239,7 +239,7 @@ Outline
 {CSS Selector} CSS 选择符，会将匹配到的所有元素都插入到目标位置
 
 #### neuronDOMObject
-{NR.DOM} 会将 `neuronDOMObject` 集合中所有的元素都插入到目标位置
+{Object} 会将 `neuronDOMObject` 集合中所有的元素都插入到目标位置
 
 #### where
 {string="bottom"} 在目标节点的什么位置插入，接受:
@@ -251,7 +251,7 @@ Outline
 
 ### Returns
 
-{NR.DOM} 原 Neuron DOM 对象
+{Object} 原 Neuron DOM 对象
 
 ### Example
 	

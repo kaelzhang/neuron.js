@@ -14,7 +14,7 @@ return K.Class({
 	initialize: function(element, options){
 		var self = this;
 		
-		// @type {NR.DOM}
+		// @type {Object}
 		self.element = self.subject = $.findOne(element);
 		
 		Fx.call(self, options);

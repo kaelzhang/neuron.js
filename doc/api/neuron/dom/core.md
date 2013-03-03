@@ -18,7 +18,7 @@ DOM 核心方法
 {Array.\<Element\>|NodeList} 包含原生 DOM 对象的数组，或者 NodeList。若改数组中包含非原生 DOM 对象的成员，则会被过滤掉。
 
 #### neuronDOMObject
-{NR.DOM} Neuron DOM 实例
+{Object} Neuron DOM 实例
 
 
 NR.DOM()
@@ -38,7 +38,7 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 
 
 ### Returns
-{NR.DOM} Neuron DOM 对象（请注意并不是 `NR.DOM` 的实例）
+{Object} Neuron DOM 对象（请注意并不是 `NR.DOM` 的实例）
 
 ### Example
 
@@ -67,7 +67,7 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 	.find(element)
 
 ### Returns
-{NR.DOM} 新的 Neuron DOM 对象
+{Object} 新的 Neuron DOM 对象
 
 ### 特别说明
 我们来说说 .find() 的工作原理。假若有如下的结构
@@ -107,7 +107,7 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 {number} 元素的数组位置。若 index < 0, 则会获取该集合中，从右向左第 |index| (绝对值)个元素。
 
 ### Returns
-{NR.DOM} Neuron DOM 对象
+{Object} Neuron DOM 对象
 
 .get(index=)
 ----
@@ -141,7 +141,7 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 	.add(neuronDOMObject)
 
 ### Returns
-{NR.DOM} Neuron DOM 对象。
+{Object} Neuron DOM 对象。
 
 NR.DOM.noConflict()
 ----
