@@ -966,12 +966,12 @@ describe('semi-private: NR._memoize(fn)', function(){
 });
 
 
-describe("semi-private: NR._pushUnique(array, host)", function(){
+describe("semi-private: NR.pushUnique(array, host)", function(){
     it("always returns the host", function(){
         var host = [1],
             array = [1,2,3];
     
-        expect(NR._pushUnique(host, array)).toBe(host);
+        expect(NR.pushUnique(host, array)).toBe(host);
     });
     
     it("host can be an Object", function(){
@@ -981,7 +981,7 @@ describe("semi-private: NR._pushUnique(array, host)", function(){
             array = [1,2,3]
         
         
-        expect(NR._pushUnique(obj_host, array)).toBe(obj_host);
+        expect(NR.pushUnique(obj_host, array)).toBe(obj_host);
         expect(obj_host[0]).toBe(1);
         expect(obj_host[1]).toBe(2);
         expect(obj_host.length).toBe(3);
@@ -991,7 +991,7 @@ describe("semi-private: NR._pushUnique(array, host)", function(){
         var host = [1, 2],
             array = [2, 3];
             
-        NR._pushUnique(host, array);
+        NR.pushUnique(host, array);
     
         expect(host.length).toBe(3);
         expect(host.indexOf(2)).toBe(host.lastIndexOf(2));
@@ -1005,7 +1005,7 @@ describe("semi-private: NR._pushUnique(array, host)", function(){
         host[1] = 2;
         host.length = 2;
             
-        NR._pushUnique(host, array);
+        NR.pushUnique(host, array);
     
         expect(host.length).toBe(3);
     });

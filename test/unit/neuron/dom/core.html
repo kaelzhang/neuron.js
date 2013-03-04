@@ -54,6 +54,10 @@
 
 describe("Neuron: dom/core", function(){
 
+var
+
+$ = NR.DOM;
+
 
 describe("Test env requirements", function(){
     it("document.getElementById", function(){
@@ -351,11 +355,14 @@ describe("$.extend()", function(){
 });
 
 describe("$.noConflict()", function(){
-    var DOM = NR.DOM,
-        ret = DOM.noConflict();
+    var DOM = NR.DOM, ret;
+
+    window.$ = DOM;
+
+    ret = DOM.noConflict();
 
     it("could relinquish neuron's ctrl of the $ variable", function(){
-        expect($()).toBe('blah');
+        expect(window.$()).toBe('blah');
     });
     
     it("will return NR.DOM", function(){

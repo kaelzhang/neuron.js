@@ -10,14 +10,14 @@ neuron/lang/enhance
 
 NR.mix
 ----
-***
-### 语法
+
+### Syntax
 	NR.mix(receiver, sender, override, copylist)
 	
-### 返回值
+### Returns
 {Object} mix 之后的 receiver 引用
 
-### 参数
+### Arguments
 
 #### receiver
 {Object} mix 操作的接收者
@@ -34,8 +34,8 @@ NR.mix
 
 NR.guid
 ----
-***
-### 返回值
+
+### Returns
 {number} 全局的唯一id值
 
 
@@ -43,10 +43,10 @@ NR.each
 ----
 与 for-in 不同，NR.each 不会遍历原型中的属性。
 
-### 语法
+### Syntax
 	NR.each(obj, fn, context)
 	
-### 参数
+### Arguments
 
 #### obj
 {Object|Array} 需要遍历的对象，
@@ -66,13 +66,13 @@ NR.each
 
 NR.clone
 ----
-***
-创建一个 shadow copy
 
-### 语法
+创建一个 shadow copy，并切断与之前对象的引用关系
+
+### Syntax
 	NR.clone(obj, filter)
 	
-### 参数
+### Arguments
 
 #### obj
 {Object} 被 clone 的对象
@@ -92,16 +92,16 @@ NR.clone
 
 NR.bind
 ----
-***
+
 绑定一个函数的上下文
 
-### 语法
+### Syntax
 	NR.bind(fn, bind)
 	
-### 返回值
+### Returns
 {function()} 绑定后的函数
 
-### 参数(模式一)
+### Arguments(模式一)
 
 #### fn
 {function()} 需要绑定的函数
@@ -109,7 +109,7 @@ NR.bind
 #### bind
 {Object} fn 需要被绑定的 this
 
-### 参数(模式二)
+### Arguments(模式二)
 
 #### fn
 {string} 需要绑定的函数，对应的属性名
@@ -118,18 +118,53 @@ NR.bind
 {Object} 对应的对象
 
 
-NR.makeArray
+NR.makeArray(subject, host=)
 ----
-****
-将目标包装，转化成数组
+将目标包装，转化成数组。常见的情形是用于某些参数的重载中。
 
-### 语法
-	NR.makeArray(array, host)
+这个方法完整的行为比较复杂，功能也会比较强大，下面会详细说明。
+
+### Syntax
+	NR.makeArray(subject, host=)
 	
-### 返回
+### Returns
 {Array} 包装或者转化为的数组
 
-### 参数
+### Arguments
+#### subject
+{mixed} 需要包装为数组的事物
+
+- {Array} 若本身为数组，则不做任何转化，中间状态的数组为原数组
+- {NodeList|NR.DOM} 若对象为 "类数组" 的对象，则会转化为纯净的数组（作为中间状态的数组）
+- {other} 其他类型的变量，会转化为一个包含该变量的数组（作为中间状态的数组）
+
+这里用到了 "转化" 这个词眼，是为了让读者容易理解其中工作的过程，这里数到的转化后的数组只是一个中间过程，最终的返回值还跟参数 `host` 有关。
+
+
+#### host
+{(Array|Object)=}
+
+若该参数缺省，则直接会返回转化后的数组；
+
+若该传递了该参数，则会尝试将中间状态的数组使用 NR.makeArray.merge 合并到 `host` 对象中。
+
+
+NR.makeArray.merge(array, host)
+----
+将一个数组，合并到一个对象中
+
+### Syntax
+#### array
+{Array} 需要合并到目标中的对象
+
+#### host
+{Array|Object} 
+
+
+NR.pushUnique(host, array)
+----
+
+
 
 	
 

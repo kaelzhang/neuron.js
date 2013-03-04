@@ -17,9 +17,11 @@ NR.DOM.create()
 #### attributes
 {Object} 需要创建的元素的属性，**需要特别注意的是**，`attributes` 必须是 HTML 中能够包含的属性（attributeNode），因此，下列参数不能作为 `attributes` 的成员：
 	
-	- text
-	- html
-	- val
+- text
+- html
+- val
+	
+请使用 `.text()`, `.html()`, `.val()` 方法来替代，用法具体见 ./manipulate.md。
 
 具体见下面的示例。
 
