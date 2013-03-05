@@ -25,6 +25,67 @@ function provide(name, loaded){
     });
 };
 
+function async(mod, loaded, options, events){
+    var 
+    EVENTS = ['success', 'error'],
+
+    method, res,
+
+    need_async = arguments.length === 4,
+    
+    succeed,
+
+    fake_events = {},
+
+    event_res = {},
+
+    final_event_type;
+
+    EVENTS.forEach(function(type) {
+        fake_events[type] = function() {
+            event_res[type] = arguments;
+            final_event_type = type;
+        };
+    });
+
+    runs(function() {
+        NR.provide(mod, function(NR, Method) {
+            method = Method;
+        });
+    });
+
+    waitsFor(function() {
+        return !!method;
+    });
+
+    runs(function() {
+        if(loaded){
+            loaded(method);
+        }
+
+        if(need_async){
+            new method(options).on(fake_events).send();
+        }
+    });
+
+    if(need_async){
+        waitsFor(function() {
+            return !!final_event_type;
+        });
+
+        runs(function() {
+            EVENTS.forEach(function(type) {
+                var
+                callback = events[type];
+
+                if(type === final_event_type){
+                    callback && callback.apply(null, event_res[type]);
+                }
+            });
+        });
+    }
+};
+
 </script>
 <link rel="stylesheet" href="/tools/jasmine/jasmine.css" />
 </head>
