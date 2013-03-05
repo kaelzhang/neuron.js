@@ -34,7 +34,7 @@ Ajax: Constructor
 
 - url {string} 请求地址
 - method {string=} 发送请求的方式，可选择 `'GET'` or `'POST'`，默认为 `'GET'` (大小写不区分)
-- data {(Object|string)=} ajax 发送的query，可以为 query string 或者 object
+- data {Object=} ajax 发送的query，可以为 query string 或者 object
 
 **高级参数**
 
@@ -139,7 +139,7 @@ Ajax: Constructor
 ### Arguments
 
 #### data
-{(Object|string)=} 该 Ajax 发送的query，该参数为可选，如果不传递，则会使用 `options.data`，若 `options.data` 未定义，则该请求不包含query
+{Object=} 该 Ajax 发送的query，该参数为可选，如果不传递，则会使用 `options.data`，若 `options.data` 未定义，则该请求不包含query
 
 
 Event: success
