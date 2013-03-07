@@ -1,166 +1,57 @@
-<markdown>
+Neuron: oop/events
+====
+为一个类提供事件支持。
+使用本文档中的方法，需要在你的类声明中加入 `Implements: "options"`
 
-# Events Method: on
+使用事件机制，可以提供一种很好的 "热插拔" 的插件支持
 
-##   语法:
+Outline
+----
+- on
+- off
+- fire
+- Examples
 
-***
-    {{lang:javascript}}
-	MyClass.on(types);
 
-	//or
+本文档参数
+----
+#### event
+{string} 事件的名称
 
-    MyClass.on(type, fn);
-***
+#### handler
+{function()} 事件的回调函数
 
-##   参数:
- - 1个参数
-- types (object) 事件集合
- - 2个参数
-- type (string) 事件名
-- fn (function) 事件方法
+#### eventMap
+{Object} 包含 `event: handler` 的对象
 
-##   返回值:
-- (instance) 实例
+#### args
+{mixed|Array.<mixed>} 回调函数的参数
 
-####   on Example -One Argument:
-***
-    {{lang:javascript}}
-    var Dpper = Class({
-         Implements: 'events',
-         say: function () {
-            this.fire('whisper');
-            this.fire('cry');
-         }
-    });
-    var F2E = new Dpper().on({
-        'whisper': function () {
-            alert('F2E');
-        },
-        'cry': function () {
-            alert('Kael');
-        }
-    });
-    F2E.say(); // alerts F2E then alerts Kael
-***
 
-####   on Example -Two Arguments:
-***
-    {{lang:javascript}}
-    var Dpper = Class({
-        Implements: 'events',
-        say: function () {
-            this.fire('whisper');
-        }
-    });
-    var F2E = new Dpper().on('whisper', function () {
-        alert('F2E');
-    });
-    F2E.say(); // alerts F2E
-***
+.on(event, handler)
+----
+为类的实例注册一个事件
 
-# Events Method: off
+.on(eventMap)
+----
+为类的实例注册一组事件
 
-##   语法:
 
-***
-    {{lang:javascript}}
-    MyClass.off(type);
+.off(event, handler)
+----
+移除一个事件
 
-	//or
+.off(event)
+----
+移除所有名为 `event` 的事件
 
-    MyClass.off(type, fn);
-***
+.off()
+----
+移除所有事件
 
-##   参数:
- - 1个参数 - 解除该事件名上的所有绑定方法
-- type (object) 事件名
- - 2个参数 - 解除该事件名上的对应方法
-- type (string) 事件名
-- fn (function) 事件方法
+.fire(event [, args])
+----
+触发一个事件
 
-##   返回值:
-- (instance) 实例
-
-####   off Example -One Argument:
-***
-    {{lang:javascript}}
-    var Dpper = Class({
-         Implements: 'events',
-         say: function () {
-            this.fire('whisper');
-         }
-    });
-    var F2E = new Dpper().on({
-        'whisper': function () {
-            alert('F2E');
-        }
-    });
-    F2E.say(); // alerts F2E
-    F2E.off('whisper');
-    F2E.say(); // nothing
-***
-
-####   off Example -Two Arguments:
-***
-    {{lang:javascript}}
-    var Dpper = Class({
-        Implements: 'events',
-        say: function () {
-            this.fire('whisper');
-        }
-    });
-    function whisper() {
-        alert('F2E');
-    };
-    var F2E = new Dpper().on('whisper', whisper).on(
-          'whisper', function () {
-            alert('Kael');
-        }
-    );
-    F2E.off('whisper', whisper);
-    F2E.say(); // alerts Kael
-***
-
-# Events Method: fire
-##   语法:
-
-***
-    {{lang:javascript}}
-	MyClass.fire(type);
-
-	//or
-
-    MyClass.fire(type, args);
-***
-
-##   参数:
- - 1个参数
-- type (string) 事件名
- - 2个参数
-- type (string) 事件名
-- args (function) 参数数组
-
-##   返回值:
-- (instance) 实例
-
-####   fire Example -One Argument:
-***
-    {{lang:javascript}}
-    //参见 on、off 示例
-***
-
-####   fire Example -Two Arguments:
-***
-    {{lang:javascript}}
-	var Dpper = Class({
-        Implements: 'events'
-    });
-    var F2E = new Dpper().on(
-        'whisper', function (v) {
-          alert(v + 'Kael');
-        }
-    );
-    F2E.fire('whisper', ['F2E-']); // alerts F2E-Kael
-***
-</markdown>
+Examples
+----
