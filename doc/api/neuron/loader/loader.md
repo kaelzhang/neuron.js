@@ -11,6 +11,8 @@ Outline
 
 NR.define
 ----
+Will be deprecated in Neuron 2.1
+
 见 module-defining.md
 
 
