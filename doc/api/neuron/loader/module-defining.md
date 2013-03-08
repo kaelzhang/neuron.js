@@ -6,11 +6,11 @@ NR.define
 
 ### 语法
 
-	// 包含三种重载方式
-	NR.define(factory);
-	NR.define(dependencies, factory);
-	NR.define(exports);
-	
+    // 包含三种重载方式
+    NR.define(factory);
+    NR.define(dependencies, factory);
+    NR.define(exports);
+    
 
 ### 返回值
 {undefined}
@@ -36,25 +36,25 @@ NR.define
 
 ### 语法
 
-	// 1
-	function(D, require){
-		var Ajax = require('io/ajax');
-		
-		return {
-			method: function(){
-				// ...
-			}
-		};
-	};
-	
-	// 2
-	function(D, require, exports){
-		var Ajax = require('io/ajax');
-		
-		exports.method = function(){
-			// ...
-		}
-	};
+    // 1
+    function(D, require){
+        var Ajax = require('io/ajax');
+        
+        return {
+            method: function(){
+                // ...
+            }
+        };
+    };
+    
+    // 2
+    function(D, require, exports){
+        var Ajax = require('io/ajax');
+        
+        exports.method = function(){
+            // ...
+        }
+    };
 
 ### 返回值
 {function()|Object} factory 的返回值，即为当前模块的 API。
@@ -85,19 +85,19 @@ dependency {string} 需要获取的模块的 identifier
 
 a >. 模块不包含依赖，指定工厂函数
 
-	NR.define(factory);
-	
+    NR.define(factory);
+    
 **特别说明** 
 
 1. **目前**上面这种方式，如果在 factory 中尝试使用 require 来获取依赖项的 API，则可能发生模块获取不到的异常，这是因为现阶段从性能上考虑，loader 并没有主动去尝试分析依赖。
-	
+    
 b >. 模块不包含依赖，直接指定模块的 API
-	
-	NR.define(exports);
-	
+    
+    NR.define(exports);
+    
 c >. 指定包含依赖（或显式指定不包含依赖），指定工厂函数
-	
-	NR.define(dependencies, factory);
+    
+    NR.define(dependencies, factory);
 
 
 代码示例
