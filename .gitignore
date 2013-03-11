@@ -1,3 +1,7 @@
+# Folders for Dev & 
+dev/
+env/
+
 # cortex
 .cortex/build/
 .cortex/latest-pack
