@@ -16,7 +16,9 @@ var docs = {{{site.docsjson}}};
 var tests = {{{site.testsjson}}};
 </script>
 <script type="text/javascript">
-	function renderList(wrap,data,renderItem){
+
+(function($) {
+    function renderList(wrap,data,renderItem){
 		var wrap = $(wrap);
 		var ul;
 		var el;
@@ -39,18 +41,20 @@ var tests = {{{site.testsjson}}};
 		}else{
 			renderItem(data,wrap);
 		}
-	}
-
-
-
+	};
 
 	renderList("#docs",docs,function(data,parent){
 		$.create("a").attr("href",data.path).html(data.basename).inject(parent);
 	});
+	
 	renderList("#test",tests,function(data,parent){
 		$.create("a").attr("href",data.path).html(data.basename).inject(parent);
 		$.create("a").attr("href","/jscoverage_lib/jscoverage.html?"+data.path).css("margin-left",10).html("cov").inject(parent);
 	});
+
+    
+})(NR.DOM);
+
 </script>
 </body>
 </html>
