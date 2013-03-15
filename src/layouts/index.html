@@ -1,0 +1,32 @@
+{{> head.html}}
+
+</head>
+<body>
+
+<div class="container">
+    <div id="menus" class="menus"></div>
+    <div id="content" class="content"></div>
+</div>
+
+<div>
+{{{page.content}}}
+</div>
+
+<script id="text/x-neurontpl"><?js
+       
+
+?></script>
+
+<script type="text/javascript">
+
+NR.require({
+    mod: "nc::index",
+    config: {
+        docs: {{{site.docsjson}}},
+        tests: {{{site.testsjson}}}
+    }
+});
+
+</script>
+</body>
+</html>

@@ -1,5 +1,7 @@
 {
-	"tpl":"_layouts",
-	"libbase":"lib",
-	"jscoverage_libbase":"jscoverage_lib"
+	"tpl": "src/layouts",
+    "assets": "src/assets",
+	"libbase": "lib",
+    "appbase": "src/app",
+	"jscoverage_libbase": "jscoverage_lib"
 }
