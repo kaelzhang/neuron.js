@@ -7,24 +7,12 @@
 
 ## Getting Started
 
-### 1st: git clone nerveCentre
+### Install
+	make && make install
 
-	git clone git@f2e.dp:nervecentre.git
-	cd path/to/nervecentre/
-	npm link
-	cd path/to/neuron/
-	neuron start .
+### Visit Documentations
 
-### 2nd: 访问主页
+	neuron start . 1337
 
-visit: [http://localhost:1337](http://localhost:1337)
+then visit: [http://localhost:1337](http://localhost:1337)
 
-## 相关页面（临时）
-[公共主页](http://f2e.dp:1337)
-
-[所有单元测试用例](http://f2e.dp:1337/test/unit/neuron.html)
-
-
-## 帮助
-
-[NerveCentre 使用手册文档连接](https://docs.google.com/a/dianping.com/document/d/1BGAwakGRIgp06RkyASa5f0MZx9VBJlpY-pvQc8XA3y4/edit)
