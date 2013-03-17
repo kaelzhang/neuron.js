@@ -12,8 +12,22 @@
 {{{page.content}}}
 </div>
 
-<script id="text/x-neurontpl"><?js
-       
+<script type="text/x-neurontpl" id="J_tpl-menu-lis"><?js
+
+    it.forEach(function(li) {
+        if(li.has_children){
+            ?><li class="item"><span class="text">@{li.name}</span><?js 
+            
+            if(it.path){
+                ?><a href="@{li.path}" class="J_menu-link"></a><?js
+            }
+            ?></li><?js
+
+        }else{
+            ?><li class="item"><a href="@{li.path}" class="J_menu-link">@{li.name}</a></li><?js
+        }
+        
+    });
 
 ?></script>
 
