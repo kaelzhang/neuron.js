@@ -13,7 +13,7 @@ milestone 6.0
 =============
 
 ##### 2013-03-17  Kael:
-- fix a bug that `NR._env.loader` will loose connection with loader.mods
+- fix a bug that `NR._env.loader` will loose connection with `loader.mods`
 
 ##### 2012-10-22  Kael:
 - refractor all functionalities of loader, including:
