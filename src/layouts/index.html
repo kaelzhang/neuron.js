@@ -3,39 +3,7 @@
 </head>
 <body>
 
-<div class="container">
-    <div id="menus" class="menus"></div>
-    <div id="content" class="content markdown-body"></div>
-</div>
+<a href="/docs.html">Documentations</a> <a href="/tests.html">Unit Tests</a> <a href="/demos.html">Demos</a>
 
-<script type="text/x-neurontpl" id="J_tpl-menu-lis"><?js
-    it.forEach(function(li) {
-        if(li.children){
-            ?><li class="item"><span class="text">@{li.name}<?js 
-            
-            if(it.path){
-                ?><a href="@{li.path}" class="J_menu-link"></a><?js
-            }
-            ?></span>@{li.html_children}</li><?js
-
-        }else{
-            ?><li class="item"><a href="@{li.path}" class="J_menu-link">@{li.name}</a></li><?js
-        }
-        
-    });
-
-?></script>
-
-<script type="text/javascript">
-
-NR.require({
-    mod: "nc::index",
-    config: {
-        docs: {{{site.docsjson}}},
-        tests: {{{site.testsjson}}}
-    }
-});
-
-</script>
 </body>
 </html>
