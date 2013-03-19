@@ -8,11 +8,11 @@
 ## Getting Started
 
 ### Install
-	make && make install
+	sh install.sh
 
 ### Visit Documentations
 
-	neuron start . 1337
+	neuron start
 
 then visit: [http://localhost:1337](http://localhost:1337)
 
