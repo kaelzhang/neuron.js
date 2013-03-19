@@ -22,7 +22,12 @@ module.exports = {
 
                     content.empty();
 
-                    $.create('iframe', {src: link}).inject(content);
+                    $.create('iframe', {
+                        src: link,
+                        frameborder: 0,
+                        scrolling: "no"
+
+                    }).inject(content);
 
                 }
             });

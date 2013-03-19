@@ -1,0 +1,36 @@
+
+
+
+.container: after{
+    content: "\20"; display: block; height: 0; clear: both;
+}
+
+.container{
+    zoom: 1;
+}
+
+
+
+
+
+
+.container{
+    width: 1000px;
+}
+
+
+.menus{
+    float: left;
+    width: 300px;
+}
+
+.content{
+    float: left;
+    margin-right: -300px;
+    width: 700px;
+}
+
+.content iframe{
+    width: 700px;
+    height: 1000px;
+}
