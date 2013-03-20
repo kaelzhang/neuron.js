@@ -8,6 +8,8 @@
 ## Getting Started
 
 ### Install
+
+    # may be you should use `sudo`
 	sh install.sh
 
 ### Visit Documentations
