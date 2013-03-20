@@ -23,6 +23,16 @@ NR.UA.\<engine\>
 
 其他同理
 
+### Example
+
+要判断是否为 IE6-7，可以用：
+
+	if(NR.UA.ie < 8){
+		// code...
+	}
+	
+	# 为什么可以不用 NR.UA.ie && NR.UA.ie < 8，读者可以思考一下。
+
 NR.UA.version
 ----
 {int=} 当前浏览器引擎核心的主版本
