@@ -1,0 +1,24 @@
+{
+  "name": "neuronjs",
+  "version": "0.0.1",
+  "description": "__   _   _____   _   _   _____    _____   __   _   \t|  \\ | | | ____| | | | | |  _  \\  /  _  \\ |  \\ | |  \t|   \\| | | |__   | | | | | |_| |  | | | | |   \\| |  \t| |\\   | |  __|  | | | | |  _  /  | | | | | |\\   |  \t| | \\  | | |___  | |_| | | | \\ \\  | |_| | | | \\  |  \t|_|  \\_| |_____| \\_____/ |_|  \\_\\ \\_____/ |_|  \\_|",
+  "main": "lib/neuron",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaelzhang/neuron.git"
+  },
+  "keywords": [
+    "neuron"
+  ],
+  "author": "kael",
+  "license": "BSD",
+  "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
+  "readmeFilename": "README.md"
+}

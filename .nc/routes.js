@@ -5,65 +5,53 @@ var
 
 routes = [
     {
-        name:"icon",
-        test: /^\/favicon.ico/
+        test: /^\/favicon.ico/,
+        action: "favicon"
 
     }, {
-        name:"index",
-        test: /^\/$/ 
+        test: /^\/$/,
+        template: "index.html"
 
     }, {
-        name:"doc.simple",
         test: /^\/doc\/.*\.simple\.html/,
-        action: "doc",
-        dataGetter: function(){
-            return {
-                doc: this.position.replace(".simple.html", ".md")
-            }
-        }
+        model: "doc",
+        template:"doc.simple.html"
 
     }, {
-        name:"doc",
         test: /^\/doc\/.*\.html/,
-        dataGetter: function(){
-            return {
-                doc: this.position.replace(".html", ".md")
-            }
-        }
+        template: "doc"
 
     }, {
-        name: "docs",
         test: /^\/docs\.html/,
-        action: "index"
+        model: "index",
+        template: "docs"
     
     }, {
-        name: "tests",
         test: /^\/tests\.html/,
-        action: "index"
+        model: "index",
+        template: "tests"
 
     }, {
-        name: "demos",
         test: /^\/demos\.html/,
-        action: "index"
+        model: "index",
+        template: "demos"
 
     }, {
-        name: "ut",
-        test: /^\/test\/unit.*\.html/
+        test: /^\/test\/unit.*\.html/,
+        template: "ut"
     
     }, {
-        name: "demo",
         test: /^\/demo\/.*\.html/,
-        action: "ut"
+        model: "ut",
+        template: "demo"
 
     }, {
-        name:"utcases",
-        test: /^\/testcases.json/
+        test: /^\/testcases.json/,
+        model: "utcases"
     }
 ];
 
-routes["default"] = {
-    name: "neuron"
-};
+routes.default_template = "neuron";
 
 module.exports = routes;
 
