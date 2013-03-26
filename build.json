@@ -1,0 +1,43 @@
+{
+	"name":"neuron",
+	"concat":[{
+		"folder":"neuron",
+		"output":"neuron.js",
+		"relativepath":true,
+		"maintainorder":true,
+		"path":[
+			"seed.js",
+			"lang/native.js",
+			"lang/enhance.js",
+			"lang/web.js",
+
+			"oop/class.js",
+			"oop/attrs.js",
+			"oop/events.js",
+
+			"selector/finder.js",
+			"selector/parser.js",
+			"selector/adapter.js",
+
+			"ua/ua.js",
+
+			"dom/dom.js",
+			"dom/feature.js",
+			"dom/event.js",
+			"dom/css.js",
+			"dom/traverse.js",
+			"dom/manipulate.js",
+			"dom/create.js",
+			"dom/domready.js",
+			
+			"mod-manager/core.js",
+
+			"loader/assets.js",
+			"loader/mod.js",
+			
+			"biz/biz.js",
+
+			"cleaner.js"
+		]
+	}]
+}
