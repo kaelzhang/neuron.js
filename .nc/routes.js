@@ -23,8 +23,8 @@ routes = [
 
     }, {
         test: /^\/docs\.html/,
-        model: "index",
-        template: "docs"
+        model: "doc",
+        template: "docs.html"
     
     }, {
         test: /^\/tests\.html/,
@@ -51,7 +51,9 @@ routes = [
     }
 ];
 
-routes.default_template = "neuron";
+routes.default_route = {
+    action: "neuron"
+};
 
 module.exports = routes;
 
