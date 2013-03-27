@@ -114,3 +114,31 @@ NR.DOM.all()
 {undefined} 若元素未找到，则返回 undefined
 
 {Array.\<Element\>} 若该方法没有传递参数，则返回包含当前 NR.DOM 对象中所有原生 DOM 对象的数组。
+
+
+.forEach(callback)
+----
+遍历当前的集合的元素。
+
+### Syntax
+	
+	.forEach(function(element, index){})
+	
+### Arguments
+#### callback
+{function(element, index)} 回调函数, 其中
+
+#### element
+{DOMElement} 为原生的DOM元素，因此在使用 Neuron 的方法的时候，需要使用 `$` 后再使用
+
+#### index
+{number} 当前元素在数组中的下标
+
+### Example
+将页面中所有的 \<div\> 都加上一像素的黑色边框
+
+	$.all('div').forEach( function(element, index){
+		$(element).css({
+			border: '1px solid black'
+		})
+	} );
