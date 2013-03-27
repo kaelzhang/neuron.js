@@ -13,17 +13,16 @@ routes = [
         template: "index.html"
 
     }, {
-        test: /^\/doc\/.*\.simple\.html/,
-        model: "doc",
-        template:"doc.simple.html"
-
-    }, {
+        // doc
         test: /^\/doc\/.*\.html/,
-        template: "doc"
+        model: "doc",
+        template: "doc.html"
 
     }, {
+
+        // docs
         test: /^\/docs\.html/,
-        model: "doc",
+        model: "docs",
         template: "docs.html"
     
     }, {
