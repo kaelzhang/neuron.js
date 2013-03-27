@@ -143,13 +143,30 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 ### Returns
 {Object} Neuron DOM 对象。
 
-NR.DOM.noConflict()
+
+.forEach(callback)
 ----
+遍历当前的集合的元素。
 
-让 Neuron 交出对 `$` 的控制权，使用该方法后。你就必须使用 NR.DOM 来使用 Neuron DOM 相关的方法
+### Syntax
+	
+	.forEach(function(element, index){})
+	
+### Arguments
+#### callback
+{function(element, index)} 回调函数, 其中
 
-### Returns
-{function()} 会返回 `NR.DOM` 方法本身
+#### element
+{DOMElement} 为原生的DOM元素，因此在使用 Neuron 的方法的时候，需要使用 `$` 包裹元素后再使用这些方法。
 
-### 特别说明
-建议在**任何时候**，都使用 `NR.DOM` 来替代 `window.$`。
+#### index
+{number} 当前元素在数组中的下标
+
+### Example
+将页面中所有的 \<div\> 都加上一像素的黑色边框
+
+	$.all('div').forEach( function(element, index){
+		$(element).css({
+			border: '1px solid black'
+		})
+	} );
