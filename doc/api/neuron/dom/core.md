@@ -1,6 +1,10 @@
-Neuron: DOM/core (jQuerified)
+Neuron: DOM/core (1.0)
 ====
 DOM 核心方法
+
+注意，Neuron 1.0 的语法与 jQuery 不同，使用的时候需要注意。请详见文档中的描述。
+
+Neuron 2.0 将使用语法分析自动完成，业务开发者不用担心。
 
 本文档的参数
 ----
@@ -24,9 +28,9 @@ DOM 核心方法
 NR.DOM()
 ----
 
-Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
+Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`. 但与 jQuery
 
-`NR.DOM()` 会查找所有符合条件的 DOM 对象，并将他们包装为 Neuron DOM 对象，并可以使用 Neuron DOM 的所有方法。
+`NR.DOM()` 会查找第一个符合条件的 DOM 对象，并将他们包装为 Neuron DOM 对象，并可以使用 Neuron DOM 的所有方法。
 
 
 ### Syntax
@@ -55,47 +59,27 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 2. NR.DOM 不提供 domready 事件的绑定，如果需要绑定 domready 事件，可以使用 `NR.ready(fn)` 方法
 
 
-.find()
+.all()
 ----
-
-查找当前集合中元素的子元素，依次使用每个字元素来获取所有符合条件的元素，并集合在一起，并在**去除重复**之后，包裹为 Neuron DOM 对象。
+查找当前集合中 **第一个** 元素的所有符合条件的子元素，并包装为 Neuron DOM 对象。
 
 使用该方法，不会修改原对象，而会创建一个新的 Neuron DOM 对象。
 
 ### Syntax
-	.find(selector)
-	.find(element)
+	.all(selector)
+	.all(element)
 
 ### Returns
 {Object} 新的 Neuron DOM 对象
 
-### 特别说明
-我们来说说 .find() 的工作原理。假若有如下的结构
 
-	<div id="div-1">
-		<div id="div-2">
-			<div id="div-3">
-		</div>
-	</div>
-	
-那么：
-
-	// 它包含 div#div-1, div#div-2, div#div-3
-	var divs = NR.DOM('div'); 
-	
-	divs.find('div');
-	// 它实际包含 div#div-2, div#div-3
-	// 如何得到这个结果的呢？过程是这样的：
-	
-	// div#div-1 -> find('div') -> [div#div-2, div#div-3]
-	// div#div-2 -> find('div') -> [div#div-3]
-	// div#div-3 -> find('div') -> []
-	
-	// 接下来，将三者的结果集合起来，并去除重复的元素，得到：
-	// [div#div-2, div#div-3]
+.one()
+----
+查找当前集合中 **第一个** 元素的子元素中第一个符合条件的项，并包装为 Neuron DOM 对象。
+使用该方法，不会修改原对象，而会创建一个新的 Neuron DOM 对象。
 	
 
-.eq(index)
+.get(index)
 ----
 
 获取当前集合中，指定位置的元素，并包裹为 Neuron DOM 对象。若位于 index 处的元素不存在，则会返回空的 Neuron DOM 对象。
@@ -109,7 +93,7 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 ### Returns
 {Object} Neuron DOM 对象
 
-.get(index=)
+.el(index=)
 ----
 
 获取当前集合中，指定位置的元素，并返回该元素。若元素不存在，则返回 undefined
@@ -124,32 +108,3 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`.
 {undefined} 若元素未找到，则返回 undefined
 
 {Array.\<Element\>} 若该方法没有传递参数，则返回包含当前 NR.DOM 对象中所有原生 DOM 对象的数组。
-
-
-.add()
-----
-
-创建一个新的集合，这个集合除了包含原有集合中的元素外，还会增添一个或多个元素指定的元素。可以理解为，向新的集合中，加入了 `NR.DOM(subject)` 包含的所有元素。
-
-使用该方法，不会修改原对象，而会创建一个新的 Neuron DOM 对象。
-
-### Syntax
-
-	.add(element)
-	.add(selector)
-	.add(elementArray)
-	.add(neuronDOMObject)
-
-### Returns
-{Object} Neuron DOM 对象。
-
-NR.DOM.noConflict()
-----
-
-让 Neuron 交出对 `$` 的控制权，使用该方法后。你就必须使用 NR.DOM 来使用 Neuron DOM 相关的方法
-
-### Returns
-{function()} 会返回 `NR.DOM` 方法本身
-
-### 特别说明
-建议在**任何时候**，都使用 `NR.DOM` 来替代 `window.$`。
