@@ -30,10 +30,10 @@
             "dom/create.js",
             "dom/domready.js",
             
+            "mod-manager/core.js",
+
             "loader/assets.js",
             "loader/mod.js",
-            
-            "mod-manager/core.js",
             
             "biz/biz.js",
 
