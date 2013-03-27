@@ -26,12 +26,11 @@ module.exports = {
                 menuClick: function(e) {
                     var 
 
-                    link = e.link,
-                    simple_doc = link.replace(/\.html$/, ".simple.html");
+                    link = e.link;
 
                     if(link){
                         new Ajax({
-                            url: link,
+                            url: '/model?data=doc.html&url=' + link,
                             dataType: 'text'
                         
                         }).on({
