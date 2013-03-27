@@ -59,6 +59,12 @@ Neuron DOM 最核心的方法，相当于 jQuery 中的 `$`. 但与 jQuery
 2. NR.DOM 不提供 domready 事件的绑定，如果需要绑定 domready 事件，可以使用 `NR.ready(fn)` 方法
 
 
+NR.DOM.all()
+----
+获取所有符合条件的 DOM 对象，并将他们包装为 Neuron DOM 对象。
+
+
+
 .all()
 ----
 查找当前集合中 **第一个** 元素的所有符合条件的子元素，并包装为 Neuron DOM 对象。
