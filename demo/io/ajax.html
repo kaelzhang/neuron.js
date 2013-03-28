@@ -1,0 +1,62 @@
+
+
+
+<script>
+
+		NR.provide(["io/ajax"],function(K,Ajax){
+
+				new Ajax({
+			    url: 'ajax.json',
+
+
+
+			    /**   注释消去后,返回字符串转换为json格式,执行success函数
+					
+
+					//当接受到后台传递过来的字符串后,为防止不是json格式，
+			    //而进行的相关字符串替换
+					santitizer: function(response){
+						//并不严谨替换,比如当内容中有',也会被替换成"
+							return response.replace(/'/g, '"');
+					},
+
+
+					**/
+
+
+					//默认GET
+					method:"GET",
+					
+			    data: {
+
+					}
+
+
+					}).on({
+							//当向服务器发送ajax请求时,请求发送成功,
+							//http-status 在[200, 300)内
+							//执行回调函数success								
+					 
+					    success: function(json){
+					    		var code =  json.code,
+					    				data = json.msg || "";
+					    		//当后台返回的json数据中,code值为200时候,执行下步操作
+
+					        if(code && code === 200){
+					          alert(data.info);
+					        }
+					        //某些场合,由于业务约定,返回的code值不一定为200
+					        else{
+					           
+					        }
+					    },
+
+					    //当http-status 不在[200, 300)内或者返回的数据不是json格式时
+					    error: function(){
+					        alert("并不是json格式的返回")
+					    }
+					}).send();
+
+		});
+
+</script>

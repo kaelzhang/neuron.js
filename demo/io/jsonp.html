@@ -1,0 +1,41 @@
+<script>
+
+	NR.provide(["io/jsonp"],function(K,Jsonp){
+
+		new Jsonp({
+		    url: 'tes1t.jsonp',
+		    data: {
+		        
+		    }
+		}).on({
+
+				//执行success函数最重要的是后台传递过来的字符串必须为
+				//NR._JSONPRequest._?(参数)
+				//每向后台发送一次jsonp请求(全局存储,即使两个jsonp请求在不同的两个业务js中)
+				//后台返回的标志符递增
+				//比如第一次返回为NR._JSONPRequest._1(参数),第二次为NR._JSONPRequest._2(参数)
+		    
+		    success: function(data){
+
+		    	alert(data.info)
+
+		    },
+
+
+
+		    //当success不执行时刻,多注意后台传递过来的数据格式是否正确
+		    //以及你请求地址是否有误
+
+
+
+
+		    //请求资源超时
+		    error:function(){
+		    	alert("请求超时");
+		    }
+
+		}).send();
+  
+  });
+
+</script>
