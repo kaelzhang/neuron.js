@@ -13,7 +13,7 @@ UglifyJS = require('uglify-js'),
 
 TRANSFORMER_ROOT = './transformer/',
 
-PRESET_TRANSFORMERS = ['nr', '$'];
+PRESET_TRANSFORMERS = [ 'nr', 'exports' ];
 
 
 
@@ -109,13 +109,11 @@ converter = {
      */
     _applyTransformers: function(ast, array){
 
+        var env = {};
+
         // tree transformers
         array.forEach(function(handler){
             var tt;
-
-            var env = {
-                // global_scope: converter.global_scope 
-            };
         
             if(neuron.isString(handler)){
                 handler = require(TRANSFORMER_ROOT + handler);
