@@ -32,11 +32,16 @@ handler = {
         }
 
         // prevent descending inner function scope
-        // AST_Lambda including all function declarations
+        // AST_Lambda includes all function declarations, such as
+        // - AST_Defun
+        // - AST_Accessor
+        // - AST_Function
         if(node instanceof UglifyJS.AST_Lambda){
             return node;
         }
 
+        // there might be more than one `return`s
+        // @see simple.js
         if(node.CTOR === UglifyJS.AST_Return){
             return new UglifyJS.AST_Assign({
                 left: new UglifyJS.AST_Dot({
