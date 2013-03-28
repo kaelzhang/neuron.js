@@ -11,8 +11,8 @@ RELATED_PROP = {
     'AST_Call'          : ['args', 'expression', 'body'],
     'AST_Defun'         : ['argnames', 'name', 'body'],
     'AST_Var'           : ['definitions'],
-    'AST_VarDef'        : ['name', 'value'] //,
-    // 'AST_SymbolVar':['scope']
+    'AST_VarDef'        : ['name', 'value'], //,
+    // 'AST_SymbolVar'     : ['name']
 };
 
 
@@ -54,7 +54,7 @@ function walk(ast, stack, space, extra, is_final){
         
         if(neuron.isArray(sub) && sub.length === 0){
             write(space + '  ', stack);
-            write(prop+ ': ' + type + ' []', stack);
+            write(prop + ': ' + type + ' []', stack);
             
             write('\r\n', stack);
              

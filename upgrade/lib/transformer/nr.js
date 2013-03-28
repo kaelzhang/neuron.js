@@ -28,9 +28,30 @@ handler = {
                 }
             }
         }
-        
+    },
+
+    after: function(node){
+
+        // define(function(K, ..){})
+        // K -> NR
+        if(node.cloned_from === handler.local_nr){
+            return new UglifyJS.AST_SymbolFunarg({
+                name: 'NR' 
+            });
+        }
+
         if(node.CTOR === UglifyJS.AST_VarDef){
-            if(node.name.name === 'NR' && node.name.thedef.scope !== handler.global_scope){
+
+            // 
+            if(node.name.name === 'DP'){
+                return new UglifyJS.AST_VarDef({
+                    name: new UglifyJS.AST_SymbolVar({
+                        name: 'DP_local'
+                    })
+                });
+            }
+
+            if(node.name.name === 'NR'){
                 return new UglifyJS.AST_VarDef({
                     name: new UglifyJS.AST_SymbolVar({
                         name: 'NR_local'
@@ -38,27 +59,13 @@ handler = {
                 });
             }
         }
-    },
-
-    after: function(node){
-        var nr_define;
-
-        if(node.cloned_from === handler.local_nr){
-            return new UglifyJS.AST_SymbolFunarg({
-                name: 'NR' 
-            });
-        }
     
         // if it's a reference of global variable
         if(node.CTOR === UglifyJS.AST_SymbolRef){
             if(node.name === 'DP'){
-                if(node.thedef.scope === handler.global_scope){
-                    
-                    return new UglifyJS.AST_SymbolRef({
-                        name: 'NR'
-                    });
-                    
-                }
+                return new UglifyJS.AST_SymbolRef({
+                    name: node.undeclared() ? 'NR': 'DP_local'
+                });
             }
             
             if(handler.local_nr && node.name === handler.local_nr.name && node.thedef === handler.local_nr.thedef){
@@ -67,16 +74,12 @@ handler = {
                 });
             }
             
-            if(node.name === 'NR' && node.thedef.scope !== handler.global_scope){
+            if(node.name === 'NR' && !node.undeclared()){
                 return new UglifyJS.AST_SymbolRef({
                     name: 'NR_local'
                 });
             }
         }
-    },  
-    
-    setup: function(){
-        handler.env.global_vars = handler.env.global_scope.enclosed;
     }
 };
 

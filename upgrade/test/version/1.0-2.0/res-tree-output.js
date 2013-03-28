@@ -179,7 +179,7 @@ AST_Toplevel
               args: AST_Call []
               expression: AST_Dot 
                 expression: AST_SymbolRef 
-                  name: string NR_local
+                  name: string NR
                 property: string mix
         body: AST_EmptyStatement 
       expression: AST_Dot 

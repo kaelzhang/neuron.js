@@ -32,6 +32,6 @@ DP.define([], function(D, require, exports) {
         var DP = K;
         DP.mix();
         // should be NR_local.mix...
-        NR_local.mix();
+        NR.mix();
     }
 });

@@ -1,3 +1,3 @@
-var DP, $;
+var DP_local, $;
 
-NR.a();
+DP_local.a();
