@@ -99,7 +99,7 @@ converter = {
     },
     
     _removeGlobalVarDef: function(ast){
-        ast.body.shift();
+        // ast.body.shift();
     
         return ast;
     },
@@ -111,8 +111,10 @@ converter = {
 
         // tree transformers
         array.forEach(function(handler){
-            var tt, env = {
-                global_scope: converter.global_scope 
+            var tt;
+
+            var env = {
+                // global_scope: converter.global_scope 
             };
         
             if(neuron.isString(handler)){
