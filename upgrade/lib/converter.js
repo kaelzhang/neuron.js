@@ -58,12 +58,12 @@ converter = {
         
         if(ast instanceof UglifyJS.AST_Toplevel){
         
-            converter._addGlobalVarDef(ast);
+            // converter._addGlobalVarDef(ast);
             
             // figure out scope so that we will never do harmfull replacement
             ast.figure_out_scope();
             
-            converter._globalScope();
+            // converter._globalScope();
         }
     },
     
