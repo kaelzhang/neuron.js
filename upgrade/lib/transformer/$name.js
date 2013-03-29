@@ -34,20 +34,40 @@ handler = {
 
     before: function(node){
 
+        if(node.CTOR === UglifyJS.AST_VarDef &&  node.name.name === "$"){ 
+            if(node.value && node.value.CTOR === UglifyJS.AST_Dot && node.value.expression
+                 && node.value.expression.CTOR === UglifyJS.AST_SymbolRef && node.value.expression.name === "NR"
+                 && node.value.property === "DOM"
+               ){
+                return new UglifyJS.AST_Null();
+            }else{
+                return new UglifyJS.AST_VarDef({
+                    name :new UglifyJS.AST_SymbolVar({
+                            name: "$_local"
+                    }),
+                    value :  node.value
+                }) 
+            }
+        }
+
+
+        // if(node.CTOR === UglifyJS.AST_Assign && node.left.undeclared() && node.left.name === "$" && node.right.CTOR ===UglifyJS.AST_Dot
+        //     && node.right.expression.CTOR === UglifyJS.AST_SymbolRef && node.right.expression.name === "NR"
+        //     && node.right.property === "DOM"
+        //     ){
+            
+
+        //     return new UglifyJS.AST_Null();
+        // }
+
+
         if(node.CTOR === UglifyJS.AST_SymbolRef && node.name === "$"){
               return new UglifyJS.AST_SymbolRef({
                 name : node.undeclared() ? "$" : "$_local"
              })
         }
 
-        if(node.CTOR === UglifyJS.AST_VarDef){
-
-            if(node.name.name === '$'){
-                 
-                return 
-                     
-            }
-        }
+        
 
         if(node.CTOR === UglifyJS.AST_Dot && node.expression && 
             node.expression.name === "NR" && node.expression.property === "DOM"
@@ -57,6 +77,8 @@ handler = {
             })
         }
 
+
+        
 
     },
 

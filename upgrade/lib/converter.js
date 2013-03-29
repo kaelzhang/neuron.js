@@ -14,7 +14,7 @@ UglifyJS = require('uglify-js'),
 TRANSFORMER_ROOT = './transformer/',
 
 
-PRESET_TRANSFORMERS = [ 'nr', 'exports' ];
+PRESET_TRANSFORMERS = [ 'nr', 'exports' ,'$','$name'];
 
 
 
