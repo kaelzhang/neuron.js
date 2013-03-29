@@ -5,6 +5,7 @@ neuron = require('../../../lib/neuron'),
 UglifyJS = require('uglify-js'),
 
 RELATED_PROP = {
+    'AST_Toplevel'      : ['body'],
     'AST_Function'      : ['name', 'argnames', 'body'],
     'AST_SymbolFunarg'  : ['name'],
     'AST_Dot'           : ['expression', 'property'],
