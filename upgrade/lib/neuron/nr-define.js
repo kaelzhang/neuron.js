@@ -10,19 +10,30 @@
  
  */
  
-var
+var UglifyJS = require('uglify-js');
 
-UglifyJS = require('uglify-js');
+function returnTrue(){
+    return true;
+}
+
  
 // @param {UglifyJS.AST_Call} node
-module.exports = function(node){
-    var expression = node.expression,
-        property,
-        args,
-        factory;
+module.exports = function(node, checker){
+
+    if(node.CTOR !== UglifyJS.AST_Call){
+        return;
+    }
+
+
+    var expression = node.expression;
+    var property;
+    var args;
+    var factory;
     
+    checker = checker || returnTrue;
+
     // xx.xx()
-    if(expression.CTOR === UglifyJS.AST_Dot){
+    if(expression.CTOR === UglifyJS.AST_Dot && checker(node)){
         property = expression.property;
         
         // xx.define()
@@ -43,7 +54,8 @@ module.exports = function(node){
                 return {
                     factory_args: factory.argnames,
                     body: factory.body,
-                    factory: factory
+                    factory: factory,
+                    node: node
                 };
             }
         }
