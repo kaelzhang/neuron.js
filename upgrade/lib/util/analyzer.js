@@ -12,6 +12,8 @@ RELATED_PROP = {
     'AST_Defun'         : ['argnames', 'name', 'body'],
     'AST_Var'           : ['definitions'],
     'AST_VarDef'        : ['name', 'value'], //,
+    'AST_Return'        : ['value'],
+    'AST_Assign'        : ['left', 'operator', 'right']
     // 'AST_SymbolVar'     : ['name']
 };
 

@@ -19,11 +19,10 @@ module.exports = function(node){
     var expression = node.expression,
         property,
         args,
-        factory,
-        first_arg;
+        factory;
     
     // xx.xx()
-    if(expression instanceof UglifyJS.AST_Dot){
+    if(expression.CTOR === UglifyJS.AST_Dot){
         property = expression.property;
         
         // xx.define()
@@ -43,7 +42,8 @@ module.exports = function(node){
             })){
                 return {
                     factory_args: factory.argnames,
-                    body: factory.body
+                    body: factory.body,
+                    factory: factory
                 };
             }
         }

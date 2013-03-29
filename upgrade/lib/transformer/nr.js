@@ -1,42 +1,40 @@
-var
+//////////////////////////////////////////////////////////////////
+// manage global NR definitions and references
+//////////////////////////////////////////////////////////////////
 
-UglifyJS = require('uglify-js'),
-
-get_local_nr = require('../neuron/nr-define'),
-
+var UglifyJS = require('uglify-js');
+var get_local_nr = require('../neuron/nr-define');
 
 handler = {
-    before: function(node){
-        var nr_define,
-            local_nr;
+    before: function(node, descend){
+        var nr_define;
+        var local_nr = handler.local_nr;
     
         // must be executed within handler.before
-        if(!handler.local_nr){
+        if(!local_nr){
             if(node.CTOR === UglifyJS.AST_Call){
                 nr_define = get_local_nr(node);
                 
                 if(nr_define){
-                    handler.nr_define = local_nr = nr_define.factory_args[0];
-                    
-                    if(local_nr){
-                        
-                        // .define(function(K, require, exports){})
-                        // handler.local_nr = <K>
-                        handler.env.local_nr = local_nr;
-                        handler.env.local_body = nr_define.body;
-                    }
+
+                    // .define(function(K, require, exports){})
+                    // handler.local_nr = <K>
+                    handler.local_nr = nr_define.factory_args[0];
+
+                    descend(node, this);
+
+                    // prevent descending again, important!
+                    return node;
                 }
             }
         }
-    },
 
-    after: function(node){
 
-        // define(function(K, ..){})
+        // define(function(K , ...){})
         // K -> NR
-        if(node.cloned_from === handler.local_nr){
+        if(local_nr && node === local_nr){
             return new UglifyJS.AST_SymbolFunarg({
-                name: 'NR' 
+                name: 'NR'
             });
         }
 
@@ -73,14 +71,14 @@ handler = {
             }
             
             // K -> NR
-            if(handler.local_nr && node.name === handler.local_nr.name && node.thedef === handler.local_nr.thedef){
+            if(local_nr && node.name === local_nr.name && node.thedef === local_nr.thedef){
                 return new UglifyJS.AST_SymbolRef({
                     name: 'NR'
                 });
             }
             
             // local NR -> NR_local
-            if(node.name === 'NR' && !node.undeclared()){
+            if(node.name === 'NR' && !node.undeclared() ){
                 return new UglifyJS.AST_SymbolRef({
                     name: 'NR_local'
                 });
