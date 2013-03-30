@@ -5,7 +5,7 @@
 var UglifyJS = require('uglify-js');
 var get_local_nr = require('../neuron/nr-define');
 
-handler = {
+var handler = {
     before: function(node, descend){
         var nr_define;
 
@@ -14,21 +14,24 @@ handler = {
     
         // must be executed within handler.before
         if(!local_factory){
-            if(node.CTOR === UglifyJS.AST_Call){
-                nr_define = get_local_nr(node);
+            nr_define = get_local_nr(node);
                 
-                if(nr_define){
-
-                    handler.local_factory = nr_define.factory;
-                }
+            if(nr_define){
+                handler.local_factory = nr_define.factory;
             }
         }
 
         if(node === local_factory){
             descend(node, this);
+            delete handler.local_factory;
 
             // prevent descending again
             return node;
+        }
+
+        // only walk the AST of the factory function 
+        if(!handler.local_factory){
+            return;
         }
 
         // prevent descending inner function scope
