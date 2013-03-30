@@ -1,3 +1,8 @@
+//////////////////////////////////////////////////////////////////
+// NR.DOM = > jquery--$
+//////////////////////////////////////////////////////////////////
+
+
 var
 
 UglifyJS = require('uglify-js'),
@@ -24,6 +29,8 @@ handler = {
                     var  _property = dotAST.property || "";
                    
                       switch(_property){
+
+                        // $.forEach = > 不变
                           case "forEach":
                               return node;
 
@@ -31,7 +38,7 @@ handler = {
 
                           default:
                               var _expression;
-
+                          //$.count() = >$.length
                               if(_property === "count"){
 
                                   return new UglifyJS.AST_Dot({
@@ -40,7 +47,7 @@ handler = {
                                           });
                               }
 
-
+                              
                               if(_property === "one" || _property === "all" || !map[_property]){
                                    _expression = new UglifyJS.AST_Call({
 
