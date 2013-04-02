@@ -10,7 +10,6 @@ var
 	analyzer = require('../util/analyzer'),
 	wrapdefine = require('./wrapdefine');
 
-
 var server = http.createServer(function(req,response){
 		 var queryObject = querystring.parse(url.parse(req.url).query),
 		 // 	file_content = require(file['url'] || "");
@@ -54,7 +53,7 @@ var server = http.createServer(function(req,response){
 
 						  		 response.writeHead(200);
 						  		 
-						  		 response.write(wrapdefine(code));
+						  		 response.write(wrapdefine(code, req.url));
 
 						  		 response.end();
 
