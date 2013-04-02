@@ -27,13 +27,7 @@ var server = http.createServer(function(req,response){
 
 				urlA = urlReg.exec(file);
 
-				// var opts = {
-				// 　　host: urlA[1] || "",
-				// 　　port: '',
-				// 　　path: urlA[2] || ""	
-				// 		};
-
-
+	
 				var content = "";
 
 				http.get(urlA[1]+urlA[2], function(res) {
@@ -62,6 +56,7 @@ var server = http.createServer(function(req,response){
 						  		 
 						  		 response.write(wrapdefine(code));
 
+						  		 response.end();
 
 						});
 
