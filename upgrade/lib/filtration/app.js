@@ -1,8 +1,8 @@
 var 
-  http = require("http"),
-  fs = require('fs'),
-  url = require('url'),
-  querystring = require('querystring');
+	http = require("http"),
+	fs = require('fs'),
+	url = require('url'),
+	querystring = require('querystring');
 
 var 
 	UglifyJS = require('uglify-js'),
@@ -30,7 +30,7 @@ var server = http.createServer(function(req,response){
 
 	var content = "";
 
-	http.get(urlA[1]+urlA[2], function(res) {
+	http.get(urlA[1] + urlA[2], function(res) {
 
 		res.setEncoding('utf8');
 		
