@@ -4,42 +4,56 @@
 var 
 
 routes = [
+
     {
+        // favicon
         test: /^\/favicon.ico/,
         action: "favicon"
+    },
 
-    }, {
+    {
         test: /^\/$/,
         template: "index.html"
-
-    }, {
-        // doc
-        test: /^\/doc\/.*\.html/,
-        model: "doc",
-        template: "doc.html"
-
-    }, {
-
+    },
+    
+    // doc ----------------------
+    {
         // docs
         test: /^\/docs\.html/,
         model: "docs",
-        template: "docs.html"
-    
-    }, {
+        template: "doc.html"
+    },
+
+    {
+        // doc
+        test: /^\/doc\/.*\.html/,
+        model: ["docs", "doc"],
+        template: "doc.html"
+    },
+
+    // test ----------------------
+    {
+        // tests
         test: /^\/tests\.html/,
-        model: "index",
-        template: "tests"
+        model: "tests",
+        template: "tests.html"
+    }, 
 
-    }, {
-        test: /^\/demos\.html/,
-        model: "index",
-        template: "demos"
-
-    }, {
+    {
+        // test
         test: /^\/test\/unit.*\.html/,
-        template: "ut"
-    
-    }, {
+        model: "test",
+        template: "test.html"
+    },
+
+    // demo -----------------------
+    {
+        test: /^\/demos\.html/,
+        model: "demos",
+        template: "demos.html"
+    }, 
+
+    {
         test: /^\/demo\/.*\.html/,
         model: "ut",
         template: "demo"
