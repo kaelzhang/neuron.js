@@ -5,17 +5,17 @@
 <meta charset="UTF-8">
 <title>Neuron</title>
 
-<link rel="stylesheet" href="/{{site.assets}}/reset.css" />
-<link rel="stylesheet" href="/{{site.assets}}/markdown.css" />
-<link rel="stylesheet" href="/{{site.assets}}/layout.css" />
-<link rel="stylesheet" href="/{{site.assets}}/menu.css" />
+<link rel="stylesheet" href="/{{config.assets}}/reset.css" />
+<link rel="stylesheet" href="/{{config.assets}}/markdown.css" />
+<link rel="stylesheet" href="/{{config.assets}}/layout.css" />
+<link rel="stylesheet" href="/{{config.assets}}/menu.css" />
 
 <script>
 var 
 __loaderConfig = {
-    appBase: "{{site.appbase}}/",
-    libBase: "{{#page.jscoverage}}jscoverage_{{/page.jscoverage}}{{site.libbase}}/",
-    server:"{{site.server}}"
+    appBase: "{{config.appbase}}/",
+    libBase: "{{#page.jscoverage}}jscoverage_{{/page.jscoverage}}{{config.libbase}}/",
+    server:"{{config.server}}"
 };
 
 </script>
@@ -32,5 +32,5 @@ OLD_NR = NR;
 
 </script>
 
-<script src="/{{#page.jscoverage}}jscoverage_{{/page.jscoverage}}{{site.libbase}}/neuron.js"></script>
+<script src="/{{#page.jscoverage}}jscoverage_{{/page.jscoverage}}{{config.libbase}}/neuron.js"></script>
 <script>NR.__loader.init();</script>
