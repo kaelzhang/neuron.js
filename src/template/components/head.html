@@ -14,7 +14,7 @@
 var 
 __loaderConfig = {
     appBase: "{{config.appbase}}/",
-    libBase: "{{#page.jscoverage}}jscoverage_{{/page.jscoverage}}{{config.libbase}}/",
+    libBase: "{{config.libbase}}/",
     server:"{{config.server}}"
 };
 
@@ -32,5 +32,5 @@ OLD_NR = NR;
 
 </script>
 
-<script src="/{{#page.jscoverage}}jscoverage_{{/page.jscoverage}}{{config.libbase}}/neuron.js"></script>
+<script src="/{{config.libbase}}/neuron.js"></script>
 <script>NR.__loader.init();</script>
