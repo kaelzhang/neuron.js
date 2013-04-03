@@ -1,6 +1,25 @@
 {{> components/head.html}}
+
 </head>
-<body class="markdown-body">
-  {{{doc.html}}}
+<body>
+
+<div class="container">
+    <ul id="menus" class="menus"></ul>
+    <div id="content" class="content markdown-body">{{{doc.html}}}</div>
+</div>
+
+
+{{> components/menu.html}}
+
+<script type="text/javascript">
+
+NR.require({
+    mod: "nc::docs",
+    config: {
+        docs: {{{docs.json}}}
+    }
+});
+
+</script>
 </body>
 </html>
