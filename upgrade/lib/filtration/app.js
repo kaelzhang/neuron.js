@@ -92,7 +92,7 @@
 
 
 
-				res.on('end',function(data){
+				res.on('end',function(){
 								
 					var _code;
 
@@ -120,6 +120,38 @@
 
 
 			}).end();
+		}else{
+			http.get(file, function(res) {
+
+				res.setEncoding('utf8');
+				
+				res.on('data',function(chunk){
+							 
+					content+=chunk;
+
+				});
+
+
+
+				res.on('end',function(){
+					
+					response.writeHead(200);	
+			  		 
+			  		response.write(content);
+
+			  		response.end();
+
+				});
+
+				res.on('error',function(chunk){
+
+					console.log("文件地址有误");
+
+				});
+
+
+			}).end();
+
 		}
 	}).listen(2000);
 
