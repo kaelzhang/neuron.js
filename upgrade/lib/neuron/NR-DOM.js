@@ -5,7 +5,7 @@
 NR.DOM
  
  */
- 
+
 var
 
 UglifyJS = require('uglify-js');
