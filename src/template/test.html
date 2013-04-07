@@ -1,0 +1,25 @@
+{{> components/head.html}}
+
+</head>
+<body>
+
+<div class="container">
+    <ul id="menus" class="menus"></ul>
+    <div id="content" class="content markdown-body"></div>
+</div>
+
+
+{{> components/menu.html}}
+
+<script type="text/javascript">
+
+NR.require({
+    mod: "nc::tests",
+    config: {
+        tests: {{{tests.json}}}
+    }
+});
+
+</script>
+</body>
+</html>
