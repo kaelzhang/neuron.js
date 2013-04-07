@@ -1,3 +1,9 @@
+<!--
+
+template file for unit test meta page
+
+-->
+
 {{> components/head.ut.html}}
 
 <script type="text/javascript" src="/tools/jasmine/jasmine.js"></script>
@@ -91,10 +97,12 @@ function async(mod, loaded, options, events){
 </head>
 <body>
 
-{{{page.content}}}
+{{{ut.content}}}
 
 <script type="text/javascript">
 (function () {
+
+    // disable global "try-cache"
     jasmine.CATCH_EXCEPTIONS = false;
 
     var jasmineEnv = jasmine.getEnv();

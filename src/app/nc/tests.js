@@ -9,6 +9,7 @@ module.exports = {
         NR.ready(function(){
             var content = $('#content');
 
+            // initialize side menu
             new Menu({
                 tree: config.tests.children,
 
@@ -23,7 +24,7 @@ module.exports = {
                     content.empty();
 
                     $.create('iframe', {
-                        src: link,
+                        src: link + '?ut',
                         frameborder: 0,
                         scrolling: "no"
 
@@ -31,6 +32,18 @@ module.exports = {
 
                 }
             });
+
+            // initialize ut
+            var init_ut_link = /tests\.html/.test( location.pathname ) ? 
+                '/test/unit/neuron.html' : location.pathname;
+
+            $.create('iframe', {
+                src: init_ut_link + '?ut',
+                frameborder: 0,
+                scrolling: "no"
+
+            }).inject(content);
+            
         });
     }
 };
