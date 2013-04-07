@@ -2,6 +2,8 @@
 // manage global NR definitions and references
 //////////////////////////////////////////////////////////////////
 
+"use strict";
+
 var UglifyJS = require('uglify-js');
 var get_local_nr = require('../neuron/nr-define');
 
@@ -37,7 +39,6 @@ var handler = {
 
         if(node.CTOR === UglifyJS.AST_VarDef){
 
-            
             if(node.name.name === 'DP'){
                 return new UglifyJS.AST_VarDef({
                     name: new UglifyJS.AST_SymbolVar({
@@ -91,6 +92,10 @@ var handler = {
                 });
             }
         }
+    },
+
+    setup: function() {
+        delete handler.local_nr;
     }
 };
 
