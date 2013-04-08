@@ -122,7 +122,9 @@ converter = {
             }
             
             if(neuron.isObject(handler)){
-                handler.env = env;                
+                handler.env = env;
+                env.ast = ast;
+                             
                 handler.setup && handler.setup();
             
                 tt = new UglifyJS.TreeTransformer(handler.before || null, handler.after || null);
