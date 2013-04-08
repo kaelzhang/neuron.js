@@ -29,7 +29,9 @@ module.exports = {
                     link = e.link;
 
                     if(link){
-                        new Ajax({
+                        this.ajax && this.ajax.cancel();
+
+                        this.ajax = new Ajax({
                             url: '/model?data=doc.html&url=' + link,
                             dataType: 'text'
                         
