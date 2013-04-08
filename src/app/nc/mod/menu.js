@@ -15,7 +15,7 @@ module.exports = NR.Class({
     walkTree: function(tree, depth, template, parser){
         var self = this;
 
-        tree = parser(tree);
+        tree = parser(tree, depth);
 
         tree.forEach(function(li) {
             if(li.children){

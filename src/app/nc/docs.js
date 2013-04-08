@@ -4,46 +4,60 @@ Menu = require('~/mod/menu'),
 Ajax = require('io/ajax');
     
 
-module.exports = {
-    init: function(config) {
-        NR.ready(function(){
-            var content = $('#content');
+exports.init = function(config) {
+    var docs = config.docs;
+    var menu_map = config.menu_map;
 
-            new Menu({
-                tree: config.docs.children,
+    NR.ready(function(){
+        var content = $('#content');
 
-                parser: function(t) {
-                    t.forEach(function(li) {
-                        if(li.children){
-                            delete li.path;
-                        }
-                    });
+        new Menu({
+            tree: docs.children,
 
-                    return t;
-                }
+            parser: function(t, depth) {
+                t.forEach(function(li) {
+                    li.name = li.name.replace(/\.md$/, '');
 
-            }).on({
-                menuClick: function(e) {
-                    var 
+                    var menu_config = menu_map[li.name] || {};
 
-                    link = e.link;
-
-                    if(link){
-                        this.ajax && this.ajax.cancel();
-
-                        this.ajax = new Ajax({
-                            url: '/model?data=doc.html&url=' + link,
-                            dataType: 'text'
-                        
-                        }).on({
-                            success: function(response){
-                                content.html(response);
-                            }
-
-                        }).send();
+                    if(menu_config.depth !== undefined && menu_config.depth !== depth){
+                        menu_config = {};
                     }
+
+                    li.prior = menu_config.prior || 0;
+                    li.name = menu_config.cn || li.name;
+
+                    if(li.children){
+                        delete li.path;
+                    }
+                });
+
+                return t.sort(function(a, b) {
+                    return b.prior - a.prior;
+                });
+            }
+
+        }).on({
+            menuClick: function(e) {
+                var 
+
+                link = e.link;
+
+                if(link){
+                    this.ajax && this.ajax.cancel();
+
+                    this.ajax = new Ajax({
+                        url: '/model?data=doc.html&url=' + link,
+                        dataType: 'text'
+                    
+                    }).on({
+                        success: function(response){
+                            content.html(response);
+                        }
+
+                    }).send();
                 }
-            });
+            }
         });
-    }
+    });
 };
