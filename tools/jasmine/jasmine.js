@@ -51,12 +51,10 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
  */
 jasmine.CATCH_EXCEPTIONS = true;
 
-jasmine.getGlobal = function() {
-  function getGlobal() {
-    return this;
-  }
+jasmine._this = this;
 
-  return getGlobal();
+jasmine.getGlobal = function() {
+  return jasmine._this;
 };
 
 /**
