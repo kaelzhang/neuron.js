@@ -127,6 +127,8 @@ converter = {
             
                 tt = new UglifyJS.TreeTransformer(handler.before || null, handler.after || null);
                 ast = ast.transform(tt);
+
+                handler.tearDown && handler.tearDown();
             }
         });
         
