@@ -33,31 +33,52 @@ map_2 = {
 
 
 handler = {
-    before: function(node){
+    before: function(node,descend){
 
         //判断为.()类型的
         if(node.CTOR === UglifyJS.AST_Call){
-            
+            var _expression;
             var dotAST = node.expression || "";
             var _property = dotAST.property || "";
             
             //判断为$("")类型的
             if(dotAST && (map_1[_property] || map_2[_property])){
+
+                 if(dotAST.expression.CTOR === UglifyJS.AST_SymbolRef && _property ==="all"){
+                      
+                      _expression = new UglifyJS.AST_Call({
+                            expression : new UglifyJS.AST_SymbolRef({
+                                name:"$"
+                             }),
+                            args : node.args
+                        });
+
+                      descend(_expression,this);
+
+                      return _expression;
+                 } 
+
+
                  if(!neuronDom.is(dotAST)){
-                      log(dotAST);
+                      //log(dotAST);
                   }
                 // $.forEach = > 不变
                 if(_property === "forEach"){
+                    descend(dotAST,this);
                     return node;
                 }else{
-                    var _expression;
+                    
                     //$.count() = >$.length
                     if(_property === "count"){
+                               
+                           _expression = new UglifyJS.AST_Dot({
+                                         expression : dotAST.expression,
+                                         property : "length"
+                          });
 
-                        return new UglifyJS.AST_Dot({
-                                      expression : dotAST.expression,
-                                      property : "length"
-                                });
+                           descend(_expression,this);
+
+                           return _expression;
                     }
                     
                     if(map_2[_property] || _property === "one" || _property === "all"){
@@ -87,7 +108,7 @@ handler = {
                                                   property : map_1[_property]
 
                                                }),
-                                              args : node.args
+                                              args : node.args 
                                       })
                     }
 
@@ -106,7 +127,7 @@ handler = {
                             ]                                                                                                      
                           });
                     }
-
+                    descend(_expression,this);
                     return _expression;
                                              
                 }

@@ -26,7 +26,7 @@
 		// 文件url
 		var file =  queryObject.url || "";
 		
-		
+		console.log(file);
 
 		//url相关参数对象		
 		var url_object = mod_url.parse(file);
@@ -46,40 +46,42 @@
 
   
 			//lib文件处理
-      	if((index = url_object.pathname.indexOf(LIB_BASE)) !== -1 ){
+   //    	if((index = url_object.pathname.indexOf(LIB_BASE)) !== -1 ){
        
-        	fileId = url_object.pathname.slice( index + LIB_BASE.length ).replace(/\.js$/, '');
+   //      	fileId = url_object.pathname.slice( index + LIB_BASE.length ).replace(/\.js$/, '');
    			
-        	http.get("http://localhost:1337/lib/"+fileId+".js", function(res) {
+   //      	http.get("http://localhost:1337/lib/"+fileId+".js", function(res) {
 
-				res.setEncoding('utf8');
+			// 	res.setEncoding('utf8');
 				
-				res.on('data',function(chunk){
+			// 	res.on('data',function(chunk){
 							 
-					content+=chunk;
+			// 		content+=chunk;
 
-				});
+			// 	});
 
-				res.on('end',function(){										
+			// 	res.on('end',function(){										
 			  		 
-			  		response.write(content);
+			//   		response.write(content);
 
-			  		response.end();
+			//   		response.end();
 
-				});
+			// 	});
 
-				res.on('error',function(chunk){
+			// 	res.on('error',function(chunk){
 
-					console.log("文件地址有误");
+			// 		console.log("文件地址有误");
 
-				});
+			// 	});
 
-			}).end();
-      	//app文件处理	    
-	    }else if( (index = url_object.pathname.indexOf(APP_BASE)) !== -1){
-	        
-	        fileId = url_object.pathname.slice( index + APP_BASE.length ).replace(/\.js$/, '').replace('/', '::');
-	    					
+			// }).end();
+   //    	//app文件处理	    
+	  //   }else 
+		 	if( (index = url_object.pathname.indexOf(APP_BASE)) !== -1){        
+		        fileId = url_object.pathname.slice( index + APP_BASE.length ).replace(/\.js$/, '').replace('/', '::');
+		   	}else if((index = url_object.pathname.indexOf(LIB_BASE)) !== -1 ){     
+	         	fileId = url_object.pathname.slice( index + LIB_BASE.length ).replace(/\.js$/, '');
+	   		}						
 			http.get(file, function(res) {
 
 				res.setEncoding('utf8');
@@ -120,39 +122,39 @@
 
 
 			}).end();
-		}else{
-			http.get(file, function(res) {
+		// }else{
+		// 	http.get(file, function(res) {
 
-				res.setEncoding('utf8');
+		// 		res.setEncoding('utf8');
 				
-				res.on('data',function(chunk){
+		// 		res.on('data',function(chunk){
 							 
-					content+=chunk;
+		// 			content+=chunk;
 
-				});
+		// 		});
 
 
 
-				res.on('end',function(){
+		// 		res.on('end',function(){
 					
-					response.writeHead(200);	
+		// 			response.writeHead(200);	
 			  		 
-			  		response.write(content);
+		// 	  		response.write(content);
 
-			  		response.end();
+		// 	  		response.end();
 
-				});
+		// 		});
 
-				res.on('error',function(chunk){
+		// 		res.on('error',function(chunk){
 
-					console.log("文件地址有误");
+		// 			console.log("文件地址有误");
 
-				});
+		// 		});
 
 
-			}).end();
+		// 	}).end();
 
-		}
+		//}
 	}).listen(2000);
 
 	console.log('Server was started!');
