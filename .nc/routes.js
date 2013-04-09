@@ -41,14 +41,14 @@ routes = [
 
     {
         // atom page for unit testing
-        test: /^\/test\/unit.*\.html\?ut/,
+        test: /^\/test\/unit\/.*\.html\?ut/,
         model: "ut",
         template: "ut.html"
     },
 
     {
         // test
-        test: /^\/test\/unit.*\.html/,
+        test: /^\/test\/unit\/.*\.html/,
         model: "tests",
         template: "test.html"
     },
@@ -57,18 +57,26 @@ routes = [
     {
         test: /^\/demos\.html/,
         model: "demos",
-        template: "demos.html"
+        template: "demo.html"
     }, 
 
     {
-        test: /^\/demo\/.*\.html/,
-        model: "ut",
-        template: "demo"
+        test: /^\/demo\/.*\.html\?slice/,
+        model: "demoslice",
+        template: "demo-slice.html"
+    },
 
-    }, {
-        test: /^\/testcases.json/,
-        model: "utcases"
+    {
+        test: /^\/demo\/.*\.html/,
+        // model: "",
+        template: "demo.html"
+
     }
+
+    // , {
+    //     test: /^\/testcases.json/,
+    //     model: "utcases"
+    // }
 ];
 
 routes.default_route = {
