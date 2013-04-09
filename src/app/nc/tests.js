@@ -15,7 +15,7 @@ module.exports = {
 
                 parser: function(t, depth) {
                     return t.filter(function(t) {
-                        return depth !== 0 || t.name === 'unit';
+                        return !/\..+$/.test(t.name) || /\.html$|\.js$/.test( t.name );
                     });
                 }
 
