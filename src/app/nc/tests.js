@@ -39,8 +39,8 @@ module.exports = {
 
             $.create('iframe', {
                 src: init_ut_link + '?ut',
-                frameborder: 0,
-                scrolling: "no"
+                // scrolling: "no",
+                frameborder: 0
 
             }).inject(content);
             

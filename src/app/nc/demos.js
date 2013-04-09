@@ -9,6 +9,7 @@ module.exports = {
         NR.ready(function(){
             var content = $('#content');
 
+            // initialize side menu
             new Menu({
                 tree: config.demos.children,
 
@@ -29,7 +30,7 @@ module.exports = {
                     content.empty();
 
                     $.create('iframe', {
-                        src: link,
+                        src: link + '?slice',
                         frameborder: 0,
                         scrolling: "no"
 
@@ -37,6 +38,18 @@ module.exports = {
 
                 }
             });
+
+            return;
+
+            if ( !/demos\.html/.test( location.pathname ) ) {
+                $.create('iframe', {
+                    src: location.pathname + '?slice',
+                    // scrolling: "no",
+                    frameborder: 0
+
+                }).inject(content);
+            }
+            
         });
     }
 };
