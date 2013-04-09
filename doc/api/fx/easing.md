@@ -1,16 +1,6 @@
 fx/easing
 ======
-
-Outline
-------
-
-- Object
-
-
-fx/easing: Object
-------
-
-返回包含一些预设的过渡函数的对象,除Easing.linear函数外都包含了easeIn（缓入），easeOut（缓出），easeInOut（缓入缓出）的效果
+返回包含一些预设的缓动方程的对象,除Easing.linear函数外都包含了easeIn（缓入），easeOut（缓出），easeInOut（缓入缓出）的效果。使用前需要require('fx/easing')。[缓动方程的参考文章](http://www.chipwreck.de/blog/2010/02/17/mootools-transitions-explained/)
 
 ### Returns
 {Object} Easing 实例
@@ -20,6 +10,8 @@ fx/easing: Object
 - linear 线性
 
 ### Example
+    
+    var Easing = require('fx/easing');
 
     var myFx = new Tween($('myDiv'), {
         property: 'height',
@@ -32,6 +24,8 @@ fx/easing: Object
 - Pow 幂
 	
 ### Example
+    
+    var Easing = require('fx/easing');
 
     var myFx = new Tween($('myDiv'), {
         property: 'height',
@@ -44,6 +38,8 @@ fx/easing: Object
 - Expo 指数
 	
 ### Example
+    
+    var Easing = require('fx/easing');
 
     var myFx = new Tween($('myDiv'), {
         property: 'height',
@@ -56,6 +52,8 @@ fx/easing: Object
 - Circ 圆形
 	
 ### Example
+    
+    var Easing = require('fx/easing');
 
     var myFx = new Tween($('myDiv'), {
         property: 'height',
