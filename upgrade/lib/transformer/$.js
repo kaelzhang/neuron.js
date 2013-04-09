@@ -10,7 +10,7 @@ UglifyJS = require('uglify-js'),
 
 is_NR_DOM =  require('../neuron/nr-dom'),
 
-
+removeID = "",
 
 $_keys = ['true'],
 
@@ -49,12 +49,11 @@ handler = {
             $_keys.push($_keys[index])
         }
 
+
         if(node.CTOR === UglifyJS.AST_VarDef &&  node.name.name === "$"){ 
             if(node.value  && is_NR_DOM(node.value)
                ){
                 $_keys[index] = "true";
-
-                return new UglifyJS.AST_Null()
             }else{
                 $_keys[index] = "false";
                 return new UglifyJS.AST_VarDef({
@@ -71,8 +70,8 @@ handler = {
         if(node.CTOR === UglifyJS.AST_Assign && node.left.name === "$" && node.operator === "="
             && is_NR_DOM(node.right)
             ){
-            return new UglifyJS.AST_Null();
-        }
+                return new UglifyJS.AST_True();
+             }
 
         // if(node.CTOR === UglifyJS.AST_Assign && node.left.undeclared() && node.left.name === "$" && node.right.CTOR ===UglifyJS.AST_Dot
         //     && node.right.expression.CTOR === UglifyJS.AST_SymbolRef && node.right.expression.name === "NR"
@@ -118,6 +117,30 @@ handler = {
                  name : "$"
             })
         }
+
+
+        if(node.CTOR === UglifyJS.AST_Var){
+            var _index = node.definitions.length-1,
+                stack = [],
+                _childNode,
+                _newNode;
+
+            for(;_index+1;_index--){
+                _childNode = node.definitions[_index];
+                if(_childNode.CTOR === UglifyJS.AST_VarDef &&  _childNode.name.name === "$" && _childNode.value  && is_NR_DOM(_childNode.value)){
+                    continue;
+                }
+                stack.unshift(_childNode);
+            }
+            _newNode = new UglifyJS.AST_Var({
+                definitions:stack
+            });
+
+            descend(_newNode,this);
+
+            return _newNode;
+
+        }
        // console.log(node.CTOR.toString()+"\nbefor")
  //console.log(node.CTOR.toString()+"\n")
         
@@ -134,6 +157,10 @@ handler = {
         }
 
          
+    },
+
+    tearDown: function(){
+        $_keys = ['true'];
     }
 };
 
