@@ -13,8 +13,10 @@ module.exports = {
             new Menu({
                 tree: config.tests.children,
 
-                parser: function(t) {
-                    return t;
+                parser: function(t, depth) {
+                    return t.filter(function(t) {
+                        return depth !== 0 || t.name === 'unit';
+                    });
                 }
 
             }).on({
