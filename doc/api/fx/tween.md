@@ -12,10 +12,10 @@ Outline
 - resume
 
 
-fx/tween: Constructor
+Tween: Constructor
 ------
 
-渐变动画，使对象的某一项CSS属性的值渐变
+通过渐变一个DOM对象的某一项CSS属性的值，使对象产生动画效果
 
 ### Syntax
 
@@ -32,14 +32,9 @@ fx/tween: Constructor
 #### options
 {Object} 构造器的参数
 
-**常用参数**
 
 - property {string} 执行动画的对象属性
 - duration {number=500} 动画时长（毫秒），默认值500
-
-
-**其他参数**
-
 - fps {number=60} 帧率，默认60帧/秒
 - unit {string=false} 单位，默认false，可选'px', 'em', or '%'
 - frames {number=null} 动画帧数，默认为根据duration和fps计算出
