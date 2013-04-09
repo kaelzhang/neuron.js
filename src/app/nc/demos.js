@@ -13,14 +13,16 @@ module.exports = {
             new Menu({
                 tree: config.demos.children,
 
-                parser: function(t) {
+                parser: function(t, depth) {
                     t.forEach(function(li) {
                         if(li.children){
                             delete li.path;
                         }
                     });
 
-                    return t;
+                    return t.filter(function(t) {
+                        return depth === 0 || /\.html$/.test(t.name);
+                    });
                 }
 
             }).on({
@@ -38,8 +40,6 @@ module.exports = {
 
                 }
             });
-
-            return;
 
             if ( !/demos\.html/.test( location.pathname ) ) {
                 $.create('iframe', {

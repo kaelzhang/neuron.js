@@ -68,7 +68,7 @@ routes = [
 
     {
         test: /^\/demo\/.*\.html/,
-        // model: "",
+        model: "demos",
         template: "demo.html"
 
     }
