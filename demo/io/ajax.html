@@ -10,18 +10,17 @@
 
 
 
-			    /**   注释消去后,返回字符串转换为json格式,执行success函数
+			    /**   下例函数注释掉后,返回字符串不为json格式,不会执行success函数  **/
 					
 
-					//当接受到后台传递过来的字符串后,为防止不是json格式，
-			    //而进行的相关字符串替换
+					//当接受到后台传递过来的字符串后,为防止属性或值用单引号 ' 包裹，而不是json格式，
+			        //而进行的相关字符串替换
 					santitizer: function(response){
-						//并不严谨替换,比如当内容中有',也会被替换成"
 							return response.replace(/'/g, '"');
 					},
 
 
-					**/
+				
 
 
 					//默认GET
@@ -40,12 +39,12 @@
 					    success: function(json){
 					    		var code =  json.code,
 					    				data = json.msg || "";
-					    		//当后台返回的json数据中,code值为200时候,执行下步操作
+					    		//当后台返回的json数据中,code属性值为200时候,执行下步操作
 
 					        if(code && code === 200){
 					          alert(data.info);
 					        }
-					        //某些场合,由于业务约定,返回的code值不一定为200
+					        //某些场合,由于业务约定,返回的code属性值不一定为200,执行下例操作
 					        else{
 					           
 					        }
