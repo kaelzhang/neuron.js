@@ -3,17 +3,21 @@
 	NR.provide(["io/jsonp"],function(K,Jsonp){
 
 		new Jsonp({
-		    url: 'tes1t.jsonp',
+		    url: 'test.jsonp',
 		    data: {
 		        
-		    }
+		    },
+
+
+		    //定义传递给后台get请求参数名，默认为callback
+		    //后台根据get请求参数名获的一个对应值,返回一个包裹的执行函数字符串,例如下例返回
+		    //get参数对应值 + '('+ 传入返回执行函数的参数值+')'
+
+
+		    callbackKey: "name",
+
 		}).on({
 
-				//执行success函数最重要的是后台传递过来的字符串必须为
-				//NR._JSONPRequest._?(参数)
-				//每向后台发送一次jsonp请求(全局存储,即使两个jsonp请求在不同的两个业务js中)
-				//后台返回的标志符递增
-				//比如第一次返回为NR._JSONPRequest._1(参数),第二次为NR._JSONPRequest._2(参数)
 		    
 		    success: function(data){
 
