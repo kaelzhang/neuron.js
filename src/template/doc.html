@@ -2,11 +2,19 @@
 
 </head>
 <body>
-
+<div class="nav">
+	<ul>
+		<li><a href="docs.html" title="">Documentations</a></li>
+		<li><a href="test.html" title="">Unit Tests</a></li>
+		<li><a href="demos.html" title="">Demos</a></li>
+	</ul>
+</div>
+<div class="crumbs"><a href="/">&laquo; 回到首页</a></div>
 <div class="container">
     <div class="menu-wrap">
-        <a href="/">&laquo; 回到首页</a>
+		<div class="menus-box">
         <ul id="menus" class="menus"></ul>
+		</div>
     </div>
     
     <div id="content" class="content markdown-body">{{#doc}}{{{doc.html}}}{{/doc}}</div>

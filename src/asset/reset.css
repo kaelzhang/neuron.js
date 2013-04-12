@@ -121,3 +121,7 @@ sub {
 legend {
 	color: #000;
 }
+.nav{ background: -moz-linear-gradient(top, #111, #333 78%);background: -webkit-gradient(linear, 0 0, 0 63%, from(#111), to(#333)); background-color:#333;  height:40px; padding-top:20px;}
+.nav li{ float:left; padding:0 10px;}
+.nav li a{ color:#fff; text-decoration:none;}
+.nav li a:hover{ text-decoration:underline;}
