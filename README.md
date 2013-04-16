@@ -14,7 +14,7 @@
 
 ### Visit Documentations
 
-	neuron start
+	nc start
 
 then visit: [http://localhost:1337](http://localhost:1337)
 
