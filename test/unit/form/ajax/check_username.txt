@@ -1,1 +1,0 @@
-{"code":200,"msg":{"hint":"user name exist","passed":true}}
