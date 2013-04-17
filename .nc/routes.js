@@ -41,7 +41,7 @@ routes = [
 
     {
         // atom page for unit testing
-        test: /^\/test\/unit\/.*\.html\?ut/,
+        test: /^\/test\/unit.*\.html\?ut/,
         model: "ut",
         template: "ut.html"
     },
