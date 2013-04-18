@@ -942,31 +942,7 @@ describe('semi-private: NR._onceBefore()', function(){
 });
 
 
-describe('semi-private: NR._memoize(fn)', function(){
-    it('could memoize the result of a function with number params', function(){
-        function foo(){
-            exec_counter ++;
-            
-            return Array.prototype.join.call(arguments, '_');
-        };
-        
-        var exec_counter = 1,
-            memoized_foo = NR._memoize( foo );
-        
-        memoized_foo(1, 2, 3); // exec_counter:2
-        
-        expect( memoized_foo(1, 2, 3) ).toBe('1_2_3');
-        expect( memoized_foo(1, 2, 3) ).toBe('1_2_3');
-        expect( exec_counter ).toBe(2);
-        
-        expect( memoized_foo(1, 2, 4) ).toBe('1_2_4');
-        expect( exec_counter ).toBe(3);
-        
-    });
-});
-
-
-describe("semi-private: NR.pushUnique(array, host)", function(){
+describe("NR.pushUnique(array, host)", function(){
     it("always returns the host", function(){
         var host = [1],
             array = [1,2,3];
