@@ -4,15 +4,17 @@
         "output": "neuron.js",
         "path":[
             "snippet/intro.js",
-            "snippet/common.js",
 
             "seed.js",
-            "event.js",
+
+            "snippet/common.js",
 
             "lang/native.js",
             "lang/type.js",
             "lang/enhance.js",
             "lang/web.js",
+
+            "event.js",
 
             "loader/module-manager.js",
             "loader/assets.js",
