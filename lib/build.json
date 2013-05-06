@@ -4,24 +4,14 @@
         "output": "neuron.js",
         "path":[
             "snippet/intro.js",
-
+            "ecma5.js",
+            
             "seed.js",
-
             "snippet/common.js",
-
-            "lang/native.js",
-            "lang/type.js",
-            "lang/enhance.js",
-            "lang/web.js",
-
+            
             "event.js",
-
-            "loader/module-manager.js",
-            "loader/assets.js",
-
-            "ua.js",
+            "loader/core.js",
             "biz.js",
-
             "snippet/outro.js"
         ]
     }]

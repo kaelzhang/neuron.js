@@ -11,24 +11,14 @@ module.exports = function( grunt ) {
                 dest: "dist/neuron.js",
                 src: [
                     "lib/snippet/intro.js",
-
+                    "lib/ecma5.js",
+                    
                     "lib/seed.js",
-
                     "lib/snippet/common.js",
-
-                    "lib/lang/native.js",
-                    "lib/lang/type.js",
-                    "lib/lang/enhance.js",
-                    "lib/lang/web.js",
-
+                    
                     "lib/event.js",
-
-                    "lib/loader/module-manager.js",
-                    "lib/loader/assets.js",
-
-                    "lib/ua.js",
+                    "lib/loader/core.js",
                     "lib/biz.js",
-
                     "lib/snippet/outro.js"
                     // { flag: "sizzle", src: "src/selector-sizzle.js", alt: "src/selector-native.js" }
                 ]
@@ -39,7 +29,7 @@ module.exports = function( grunt ) {
 
     grunt.registerMultiTask(
         'build',
-        'blah-blah',
+        'build files',
         function() {
             var version = grunt.config( "pkg.version" );
             var data = this.data;
