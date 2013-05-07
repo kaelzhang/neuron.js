@@ -5,6 +5,8 @@
 	| | \  | | |___  | |_| | | | \ \  | |_| | | | \  | 
 	|_|  \_| |_____| \_____/ |_|  \_\ \_____/ |_|  \_|
 
+A very simple and rude CommonJS module loader.
+
 ## Getting Started
 
 ### Install
