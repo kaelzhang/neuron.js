@@ -1,6 +1,6 @@
 var
 
-Menu = require('~/mod/menu'),
+Menu = require('./mod/menu'),
 Ajax = require('io/ajax');
     
 
