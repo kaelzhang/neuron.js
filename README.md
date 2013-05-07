@@ -25,7 +25,7 @@ CommonJS module path, like `NODE_PATH`
 
 Server root location, default to `location.origin` (protocol + host). 
 
-If no protocal is specified for a server, neuron will use `http://` as the default protocol.
+If no protocol is specified for a server, neuron will use `http://` as the default protocol.
 
 ### Example
 
