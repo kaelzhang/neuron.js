@@ -8,6 +8,7 @@
             
             "seed.js",
             "snippet/common.js",
+            "snippet/lang.js",
             
             "event.js",
             "loader/core.js",
