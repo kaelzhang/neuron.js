@@ -9,12 +9,24 @@
 
 ### Install
 
-    # may be you should use `sudo`
-	sh install.sh
+	npm install
+	grunt
 
-### Visit Documentations
+### Usage
 
-	nc start
+	<script src="/dist/neuron-with-active-config.js" id="G_NR" data-path="mod" data-server="localhost"></script>
+	
 
-then visit: [http://localhost:1337](http://localhost:1337)
+#### path
 
+CommonJS module path, like `NODE_PATH`
+
+#### server
+
+Server root location, default to `location.origin` (protocol + host). 
+
+If no protocal is specified for a server, neuron will use `http://` as the default protocol.
+
+### Example
+
+For the example above, module `'abc@0.1.1'` will be located at `http://localhost/mod/abc/0.1.1/main.js` 
