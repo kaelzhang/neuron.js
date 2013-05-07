@@ -10,16 +10,16 @@ module.exports = function( grunt ) {
             all: {
                 dest: 'dist/neuron.js',
                 src: [
-                    'lib/snippet/intro.js',
+                    'lib/intro.js',
                     'lib/ecma5.js',
 
                     'lib/seed.js',
-                    'lib/snippet/lang.js',
+                    'lib/lang.js',
                     
                     'lib/event.js',
-                    'lib/loader/core.js',
+                    'lib/module-manager.js',
                     'lib/biz.js',
-                    'lib/snippet/outro.js'
+                    'lib/outro.js'
                     // { flag: 'sizzle', src: 'src/selector-sizzle.js', alt: 'src/selector-native.js' }
                 ]
             }

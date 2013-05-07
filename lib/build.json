@@ -3,17 +3,16 @@
     "concat":[{
         "output": "neuron.js",
         "path":[
-            "snippet/intro.js",
-            "ecma5.js",
+            "lib/intro.js",
+            "lib/ecma5.js",
+
+            "lib/seed.js",
+            "lib/lang.js",
             
-            "seed.js",
-            "snippet/common.js",
-            "snippet/lang.js",
-            
-            "event.js",
-            "loader/core.js",
-            "biz.js",
-            "snippet/outro.js"
+            "lib/event.js",
+            "lib/module-manager.js",
+            "lib/biz.js",
+            "lib/outro.js"
         ]
     }]
 }
