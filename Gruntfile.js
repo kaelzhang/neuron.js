@@ -7,8 +7,8 @@ module.exports = function( grunt ) {
         pkg: grunt.file.readJSON('package.json'),
 
         build: {
-            all: {
-                dest: 'dist/neuron.js',
+            alone: {
+                dest: 'dist/neuron-alone.js',
                 src: [
                     'lib/intro.js',
                     'lib/ecma5.js',
@@ -22,12 +22,28 @@ module.exports = function( grunt ) {
                     'lib/outro.js'
                     // { flag: 'sizzle', src: 'src/selector-sizzle.js', alt: 'src/selector-native.js' }
                 ]
+            },
+
+            active: {
+                dest: 'dist/neuron-with-active-config.js',
+                src: [
+                    'dist/neuron-alone.js',
+                    'lib/loader/config-active.js'
+                ]
+            },
+
+            passive_timeout: {
+                dest: 'dist/neuron-with-passive-config.js',
+                src: [
+                    'dist/neuron-alone.js',
+                    'lib/loader/config-passive-timeout.js'
+                ]
             }
         },
 
         jshint: {
             dist: {
-                src: [ 'dist/neuron.js' ],
+                src: [ 'dist/neuron-alone.js' ],
                 options: require('./grunt/jshint/dist-rc')
             },
 
@@ -40,7 +56,7 @@ module.exports = function( grunt ) {
         uglify: {
             all: {
                 files: {
-                    "dist/neuron.min.js": [ "dist/neuron.js" ]
+                    "dist/neuron-alone.min.js": [ "dist/neuron-alone.js" ]
                 },
                 options: {
                     // Keep our hard-coded banner
