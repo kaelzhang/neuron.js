@@ -53,6 +53,16 @@ module.exports = function( grunt ) {
             }
         },
 
+        mocha: {
+            all: ['test/*.html'],
+            options: {
+                reporter: 'Spec',
+                run: false,
+                ignoreLeaks: false,
+                timeout:5000
+            }
+        },
+
         uglify: {
             all: {
                 files: {
@@ -127,10 +137,9 @@ module.exports = function( grunt ) {
     );
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks("grunt-mocha");
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-
-    grunt.registerTask('default', ['build', 'jshint', 'uglify']);
-
+    grunt.registerTask('default', ['build', 'jshint', 'mocha', 'uglify']);
 
 };
