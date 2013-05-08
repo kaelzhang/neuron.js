@@ -1,6 +1,0 @@
-{
-    "template"          : "src/template",
-    "assets"            : "src/asset",
-    "libbase"           : "lib",
-    "appbase"           : "src/app"
-}
