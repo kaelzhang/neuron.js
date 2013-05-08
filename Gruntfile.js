@@ -18,25 +18,42 @@ module.exports = function( grunt ) {
                     
                     'lib/event.js',
                     'lib/module-manager.js',
-                    'lib/biz.js',
+                    // 'lib/biz.js',
                     'lib/outro.js'
-                    // { flag: 'sizzle', src: 'src/selector-sizzle.js', alt: 'src/selector-native.js' }
                 ]
             },
 
             active: {
                 dest: 'dist/neuron-with-active-config.js',
                 src: [
-                    'dist/neuron-alone.js',
-                    'lib/loader/config-active.js'
+                    'lib/intro.js',
+                    'lib/ecma5.js',
+
+                    'lib/seed.js',
+                    'lib/lang.js',
+                    
+                    'lib/event.js',
+                    'lib/module-manager.js',
+                    // 'lib/biz.js',
+                    'lib/loader/config-active.js',
+                    'lib/outro.js'
                 ]
             },
 
             passive_timeout: {
                 dest: 'dist/neuron-with-passive-config.js',
                 src: [
-                    'dist/neuron-alone.js',
-                    'lib/loader/config-passive-timeout.js'
+                    'lib/intro.js',
+                    'lib/ecma5.js',
+
+                    'lib/seed.js',
+                    'lib/lang.js',
+                    
+                    'lib/event.js',
+                    'lib/module-manager.js',
+                    // 'lib/biz.js',
+                    'lib/loader/config-passive-timeout.js',
+                    'lib/outro.js'
                 ]
             }
         },
@@ -140,6 +157,6 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks("grunt-mocha");
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['build', 'jshint', 'mocha', 'uglify']);
+    grunt.registerTask('default', ['build', 'jshint', /* 'mocha' */, 'uglify']);
 
 };
