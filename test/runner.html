@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+
+<script src="../dist/neuron-with-active-config.js" id="G_NR" data-path="localhost/Users/Kael/Codes/neuron/test/mod"></script>
+
+<link rel="stylesheet" href="tool/mocha.css" />
+<script src="./tool/chai.js"></script>
+<script src="./tool/mocha.js"></script>
+
+</head>
+
+<body>
+
+<div id="mocha"></div>
+
+<script>
+
+var assert = chai.assert;
+var expect = chai.expect;
+
+chai.should();
+
+!window.PHANTOMJS && mocha.setup("bdd");
+    
+</script>
+<script src="./spec/require.js"></script>
+<!-- <script src="./spec/define.js"></script> -->
+
+<script>
+
+mocha.run();
+
+</script>
+
+</body>
+
+</html>
