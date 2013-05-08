@@ -1,3 +1,5 @@
+console.log('require/latest loaded');
+
 module_require_loaded = true;
 
 NR.define('require', [], function(require, exports, module){

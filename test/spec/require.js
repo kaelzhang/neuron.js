@@ -6,12 +6,12 @@ var module_require_2_inited;
 
 var module_require_3_inited;
 
-describe("NR.require", function(){
+describe("NR.facade", function(){
 
     var POLL_INTERVAL = 300;
 
-    describe("NR.require(mod)", function(){
-        NR.require('require');
+    describe("NR.facade(mod)", function(){
+        NR.facade('require');
 
         it("could load a neuron module", function(done){
             var timer = setInterval(function() {
@@ -36,8 +36,8 @@ describe("NR.require", function(){
     });
 
 
-    describe("NR.require({mod}), to suppress interference, we use a new module", function(){
-        NR.require({
+    describe("NR.facade({mod}), to suppress interference, we use a new module", function(){
+        NR.facade({
             mod: 'require-2'
         });
 
@@ -64,10 +64,10 @@ describe("NR.require", function(){
     
     });
 
-    describe("NR.require({mod, config})", function(){
+    describe("NR.facade({mod, config})", function(){
         var atom = {};
 
-        NR.require({
+        NR.facade({
             mod: 'require-3',
             config: {
                 value: atom

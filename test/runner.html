@@ -2,7 +2,18 @@
 <head>
 <meta charset="UTF-8">
 
-<script src="../dist/neuron-with-active-config.js" id="G_NR" data-path="localhost/Users/Kael/Codes/neuron/test/mod"></script>
+<script src="../dist/neuron-with-active-config.js" id="G_NR" data-path="mod"></script>
+<script>
+NR.Loader.on({
+    provide: function(e) {
+        console.log('event: provide', e.mod.id);
+    },
+
+    load: function(e) {
+        console.log('event: load', e.mod.id);
+    }
+});
+</script>
 
 <link rel="stylesheet" href="tool/mocha.css" />
 <script src="./tool/chai.js"></script>

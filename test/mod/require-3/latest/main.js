@@ -1,3 +1,5 @@
+console.log('require-3/latest loaded');
+
 NR.define('require-3', [], function(require, exports, module){
 
 
