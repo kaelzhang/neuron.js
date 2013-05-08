@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8">
 
-<script src="../dist/neuron-with-active-config.js" id="G_NR" data-path="mod"></script>
+<script src="../dist/neuron-with-active-config.js" id="neuron-js" data-path="mod"></script>
 <script>
 NR.Loader.on({
     provide: function(e) {
@@ -40,7 +40,9 @@ chai.should();
 
 <script>
 
-mocha.run();
+window.onload = function() {
+    mocha.run();
+};
 
 </script>
 
