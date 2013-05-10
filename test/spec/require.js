@@ -8,7 +8,7 @@ var module_require_3_inited;
 
 describe("NR.facade", function(){
 
-    var POLL_INTERVAL = 300;
+    var POLL_INTERVAL = 50;
 
     describe("NR.facade(mod)", function(){
         NR.facade('require');
