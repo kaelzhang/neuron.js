@@ -2,7 +2,7 @@
 
 var
 
-FILE = 'simple.js',
+FILE = 'var.js',
 // FILE = 'simple.js',
 // FILE = 'fn-arg.js',
 

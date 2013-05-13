@@ -1,6 +1,6 @@
 var
 
-neuron = require('../../../lib/neuron'),
+neuron = require('./lang'),
 
 UglifyJS = require('uglify-js'),
 
@@ -14,7 +14,8 @@ RELATED_PROP = {
     'AST_Var'           : ['definitions'],
     'AST_VarDef'        : ['name', 'value'], //,
     'AST_Return'        : ['value'],
-    'AST_Assign'        : ['left', 'operator', 'right']
+    'AST_Assign'        : ['left', 'operator', 'right'],
+    'AST_Sub'           : ['expression', 'property']
     // 'AST_SymbolVar'     : ['name']
 };
 
@@ -38,17 +39,23 @@ function walk(ast, stack, space, extra, is_final){
     write(extra ? extra + ': ' : '', stack);
     
     if(neuron.isString(ast)){
-        write('string ' + ast + '\r\n', stack);
+        write('string ' + ast + '\n', stack);
         
         return;
     }
     
-    var constructor = ast.CTOR,
-        type = constructor.name;
+    var constructor = ast.CTOR;
+
+    if(!constructor){
+        write(ast + '(noc)\n', stack);
+        return;
+    }
+
+    var type = constructor.name;
     
     write(type + ' ', stack);
     
-    write('\r\n', stack);
+    write('\n', stack);
     
     var props = RELATED_PROP[type] || ['body', 'name'];
     
@@ -59,7 +66,7 @@ function walk(ast, stack, space, extra, is_final){
             write(space + '  ', stack);
             write(prop + ': ' + type + ' []', stack);
             
-            write('\r\n', stack);
+            write('\n', stack);
              
         }else{
             neuron.makeArray(ast[prop]).forEach(function(node){

@@ -7,7 +7,7 @@ var
 lang = require('./util/lang'),
 fs = require('fs'),
 path = require('path'),
-neuron = require('../../lib/neuron'),
+// neuron = require('../../lib/neuron'),
 
 UglifyJS = require('uglify-js'),
 
@@ -117,11 +117,11 @@ converter = {
         array.forEach(function(handler){
             var tt;
         
-            if(neuron.isString(handler)){
+            if(typeof handler === 'string'){
                 handler = require(TRANSFORMER_ROOT + handler);
             }
             
-            if(neuron.isObject(handler)){
+            if( Object(handler) === handler ){
                 handler.env = env;
                 env.ast = ast;
                              
