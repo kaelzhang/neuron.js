@@ -134,7 +134,7 @@ module.exports = function( grunt ) {
             // Embed Date
             compiled = compiled
                 .replace( /@VERSION/g, version )
-                .replace( '@DATE', function () {
+                .replace( /@DATE/g, function () {
                     // YYYY-MM-DD
                     return ( new Date() ).toISOString().replace( /T.*/, '' );
                 });
