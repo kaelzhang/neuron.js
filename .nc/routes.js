@@ -13,7 +13,8 @@ routes = [
 
     {
         test: /^\/$/,
-        template: "index.html"
+        model: "docs",
+        template: "doc.html"
     },
     
     // doc ----------------------
