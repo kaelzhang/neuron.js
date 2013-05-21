@@ -14,29 +14,22 @@ Outline
 #### type
 {string} 需要绑定的事件的类型，如 "click", "mouseenter" 等
 
-#### selector
-{string} css选择符
-
 #### handler
 {function()} 事件的回调函数
 
 #### typeMap
 {Object} 包含多个 \<type: handler\> 的对象。
 
-.on(type [, selector], handler)
+.on(type, handler)
 ----
 绑定一个事件或事件代理
 
 ### Syntax
 	
 	.on(type, handler);
-	.on(type, selector, handler);
 
 ### Returns
 {Object} 原 Neuron DOM 对象
-	
-### Usage
-若传递了 `selector` 参数，则会进行事件代理
 
 ### Example
 
@@ -55,13 +48,7 @@ javascript
 		// do something...
 	});
 
-	// 为 #container 中所有的 .trigger 代理 click 事件
-	NR.DOM('#container').on('click', '.trigger', function(e){
-		e.preventDefault();
-		// do something...
-	});
-
-.on(typeMap [, selector] )
+.on(typeMap)
 ----
 为当前的集合绑定同时绑定多个事件
 
@@ -80,7 +67,7 @@ javascript
 		}
 	});
 	
-.off(type [, selector], handler)
+.off(type, handler)
 ----
 为当前集合中的每个元素，移除一个**满足条件的**事件或事件代理
 
@@ -91,11 +78,7 @@ javascript
 	.off(type, '**', handler)
 	
 ### 特别说明
-1. 被移除的事件，必须同时匹配 `type`, `selector`(若被定义), 且 handler 是该事件回调的**引用**，具体见 #Example-1
-
-2. 若未传递 `selector`，则不会移除非事件代理事件，具体见 #Example-2
-
-3. 若 `selector` 为 `"**"`，则会匹配每个元素中，事件类型为 `type` 的所有 selector
+被移除的事件，必须同时匹配 `type`, 且 handler 是该事件回调的函数 **引用**，具体见 #Example-1
 
 ### Example-1
 
@@ -125,17 +108,6 @@ javascript（注：不同的代码段之间没有关联）
 			console.log('mouseenter');
 		});
 		
-不正常的使用方式：
-
-	var handler = function(){
-		console.log('mouseenter')
-	};
-	
-	NR.DOM('#container')
-		.on('mouseenter', '.item', handler)
-		
-		// 实际上，这里没有移除任何事件，因为 selector 不匹配
-		.off('mouseenter', '.box', handler)
 		
 正常的使用方式：
 	
@@ -146,25 +118,22 @@ javascript（注：不同的代码段之间没有关联）
 	NR.DOM('#container')
 		.on('mouseenter', handler)
 		.off('mouseenter', handler) // 事件被成功移除
-		.on('mouseenter', '.item', handler)
-		.off('mouseenter', '.item', handler); // 事件代理被成功移除
 	
 
 
-.off(type [, selector])
+.off(type)
 ----
 移除所有类型为 `type` 的事件；
 
-若传递了 selector 参数，则会移除所有类型为 `type`，代理给CSS选择符为 `selector` 的所有事件。
 
 .off()
 ----
-若 `.off()` 方法没有传递任何参数，则移除所有事件和所有事件代理，**请谨慎使用**。
+若 `.off()` 方法没有传递任何参数，则移除所有事件，**请谨慎使用**。
 
 
-.off(typeMap [, selector])
+.off(typeMap)
 ----
-为当前集合中的每个元素，移除多个事件或事件代理。
+为当前集合中的每个元素，移除多个事件。
 
 
 NR.ready(callback)

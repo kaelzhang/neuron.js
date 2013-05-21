@@ -7,7 +7,7 @@ NR.UA
 {Object} Neuron UA 对象，它包含如下属性
 
 
-NR.UA.[engine]
+NR.UA.\<engine\>
 ----
 {int=} 它包括
 
@@ -42,7 +42,7 @@ NR.UA.fullVersion
 ----
 {string} 当前浏览器核心的完整版本
 
-NR.UA.[platform]
+NR.UA.\<platform\>
 ----
 {true=} 它包括
 
