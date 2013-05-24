@@ -1,7 +1,9 @@
+# Neuron specified
+dist/
+
 # Folders for Dev & 
 dev/
 env/
-dist/
 
 # cortex
 .cortex/build/
