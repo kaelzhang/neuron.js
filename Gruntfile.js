@@ -6,25 +6,29 @@ module.exports = function( grunt ) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-        build: {
-            alone: {
-                dest: 'dist/neuron-alone.js',
-                src: [
-                    'lib/intro.js',
-                    'lib/ecma5.js',
+        clean: {
+            test: ['dist/**/*.js']
+        },
 
-                    'lib/seed.js',
-                    'lib/lang.js',
+        build: {
+            // alone: {
+            //     dest: 'dist/neuron-alone.js',
+            //     src: [
+            //         'lib/intro.js',
+            //         'lib/ecma5.js',
+
+            //         'lib/seed.js',
+            //         'lib/lang.js',
                     
-                    'lib/event.js',
-                    'lib/module-manager.js',
-                    // 'lib/biz.js',
-                    'lib/outro.js'
-                ]
-            },
+            //         'lib/event.js',
+            //         'lib/module-manager.js',
+            //         // 'lib/biz.js',
+            //         'lib/outro.js'
+            //     ]
+            // }, 
 
             active: {
-                dest: 'dist/neuron-with-active-config.js',
+                dest: 'dist/neuron.js',
                 src: [
                     'lib/intro.js',
                     'lib/ecma5.js',
@@ -35,27 +39,29 @@ module.exports = function( grunt ) {
                     'lib/event.js',
                     'lib/module-manager.js',
                     // 'lib/biz.js',
-                    'lib/loader/config-active.js',
-                    'lib/outro.js'
+                    'lib/config/config-active.js',
+                    'lib/explode.js',
+                    'lib/outro.js',
+                    
                 ]
             },
 
-            passive_timeout: {
-                dest: 'dist/neuron-with-passive-config.js',
-                src: [
-                    'lib/intro.js',
-                    'lib/ecma5.js',
+            // passive_timeout: {
+            //     dest: 'dist/neuron-with-passive-config.js',
+            //     src: [
+            //         'lib/intro.js',
+            //         'lib/ecma5.js',
 
-                    'lib/seed.js',
-                    'lib/lang.js',
+            //         'lib/seed.js',
+            //         'lib/lang.js',
                     
-                    'lib/event.js',
-                    'lib/module-manager.js',
-                    // 'lib/biz.js',
-                    'lib/loader/config-passive-timeout.js',
-                    'lib/outro.js'
-                ]
-            }
+            //         'lib/event.js',
+            //         'lib/module-manager.js',
+            //         // 'lib/biz.js',
+            //         'lib/loader/config-passive-timeout.js',
+            //         'lib/outro.js'
+            //     ]
+            // },
         },
 
         jshint: {
@@ -83,7 +89,7 @@ module.exports = function( grunt ) {
         uglify: {
             all: {
                 files: {
-                    "dist/neuron-alone.min.js": [ "dist/neuron-alone.js" ]
+                    "dist/neuron.min.js": [ "dist/neuron.js" ]
                 },
                 options: {
                     // Keep our hard-coded banner
@@ -153,10 +159,10 @@ module.exports = function( grunt ) {
 
     );
 
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks("grunt-mocha");
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask('default', ['build', 'jshint', /* 'mocha' */, 'uglify']);
+    grunt.registerTask('default', ['clean', 'build', 'jshint', /* 'mocha' */, 'uglify']);
 
 };
