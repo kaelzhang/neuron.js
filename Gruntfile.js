@@ -42,7 +42,6 @@ module.exports = function( grunt ) {
                     'lib/config/config-active.js',
                     'lib/explode.js',
                     'lib/outro.js',
-                    
                 ]
             },
 
