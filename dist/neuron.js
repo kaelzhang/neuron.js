@@ -6,7 +6,7 @@
  'use strict';
 
 // version 2.0.1
-// build 2013-06-05
+// build 2013-06-06
 
 // including sequence: see ../build.json
 
@@ -385,7 +385,7 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-06-05';
+// NR.build = '2.0.1 2013-06-06';
 
 // common code slice
 // ----
@@ -1019,7 +1019,7 @@ NR.facade = function(){
         }
         
         module && provide(module.mod, function(method){
-            method.init && method.init(module.config);
+            method.init && method.init(module.data);
         });
     });
 };
