@@ -40,7 +40,7 @@ module.exports = function( grunt ) {
                     'lib/module-manager.js',
                     // 'lib/biz.js',
                     'lib/config/config-active.js',
-                    'lib/explode.js',
+                    'lib/exports.js',
                     'lib/outro.js',
                 ]
             },

@@ -6,7 +6,7 @@
  'use strict';
 
 // version 2.0.1
-// build 2013-06-06
+// build 2013-06-10
 
 // including sequence: see ../build.json
 
@@ -385,7 +385,7 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-06-06';
+// NR.build = '2.0.1 2013-06-10';
 
 // common code slice
 // ----
@@ -555,7 +555,7 @@ function getEventStorageByType(host, type){
 }
 
 
-NR.Event = {
+var Event = {
     on: overloadSetter(function(type, fn){
         if(isFunction(fn)){
             var storage = getEventStorageByType(this, type);
@@ -662,10 +662,10 @@ NR.Event = {
 
 
 // stack, config or flag for modules
-var loader = makeSureObject(NR, 'Loader');
+var Loader = makeSureObject(NR, 'Loader');
 
 // map -> identifier: module
-var __mods = makeSureObject(loader, 'mods');
+var __mods = makeSureObject(Loader, 'mods');
 
 // abc/def        -> abc
 var REGEX_DIR_MATCHER = /.*(?=\/.*$)/;
@@ -681,23 +681,23 @@ var STR_VERSION_SPLITTER = '@';
 // @private
  
 // @param {string} identifier (optional) module identifier
-// @param {Array.<string>} dependencies
+// @param {Array.<string>} dependencies ATTENSION! dependencies must be array of standard module identifier
+//  there will be fault tolerance for argument `dependencies`. be carefull!
 // @param {function(...[number])} factory
  
 // @returns {undefined=}
 function define(identifier, dependencies, factory){
     if(typeof identifier === 'string' && isArray(dependencies) && isFunction(factory) ){
         var mod = getModById(identifier);
-    
-        // a single module might be defined more than once.
-        // use this trick to prevent module redefining, avoiding the subsequent side effect
-        if(!mod._){
 
-            // @type {boolean} true if the module is already defined
-            mod._ = true;
-            
+        // a single module might be defined more than once.
+        // use this trick to prevent module redefining, avoiding the subsequent side effect.
+        // mod.f        -> already defined
+        // mod.exports  -> the module initialization is done
+        if(!mod.f && !mod.exports){
             mod.f = factory;
             
+            // if has dependencies
             if ( dependencies.length ) {
                 _provide(
                     dependencies,
@@ -706,22 +706,23 @@ function define(identifier, dependencies, factory){
                     }, mod, true
                 );
 
+                // ['a@0.0.1']  -> {'a' -> 'a@0.0.1'}
                 generateModuleVersionMap(dependencies, mod.v);
-
             }else{
+                // for standalone modules, run factory immediately.
                 generateExports(mod);
             }
 
-            loader.fire('define', {
+            Loader.fire('define', {
                 mod: mod
             });
         }
-        
     }
 }
 
 
 // @private
+// create version info of the dependencies of current module into current sandbox
 // @param {Array.<string>} modules no type detecting
 function generateModuleVersionMap(modules, host){
     modules.forEach(function(mod) {
@@ -739,13 +740,16 @@ function generateExports(mod){
             exports: exports
         };
 
-    var factory = mod.f;
-        
+    // clean module properties, free memory
+
     // to keep the object mod away from the executing context of factory,
     // use `factory` instead `mod.f`,
     // preventing user from fetching runtime data by 'this'
+    var factory = mod.f;
     factory(createRequire(mod), exports, module);
-        
+    delete mod.f;
+
+    // during the execution of `factory`, `module.exports` might be changed
     // exports:
     // TWO ways to define the exports of a module
     // 1. 
@@ -760,9 +764,23 @@ function generateExports(mod){
 
     // priority: 2 > 1
     mod.exports = module.exports;
-    tidyModuleData(mod);
     
-    loader.fire('load', {
+    // execute pending callbacks and clean
+    mod.p.forEach(function(c){
+        c();
+    });
+    mod.p.length = 0;
+    delete mod.p;
+
+    // never delete `mod.v`, coz `require` method might be executed after module factory executed
+
+    //      module.exports = {
+    //          abc: function() {
+    //              return require('b'); 
+    //          }
+    //      }
+    
+    Loader.fire('ready', {
         mod: mod
     });
 }
@@ -824,6 +842,9 @@ function _provide(dependencies, callback, env, noCallbackArgs){
                     
                     if(counter === 0){
                         cb();
+                        args.length = 0;
+                        // prevent memleak
+                        cb = callback = args = null;
                     }
                 }
             });
@@ -845,31 +866,27 @@ function registerModLoad(mod, callback){
         callback()
       : mod.p.push(callback);
     
-    // prevent duplicate loading
-    loader.fire('use', {
+    // everytime we encounter a module which is depended by the other module, `'use'` event fires 
+    Loader.fire('use', {
         mod: mod,
 
+        // prevent duplicate loading
         // @type {boolean=} whether the module is already fetched, i.e. we don't need to fetch it from the remote server
-        fetched: loaded || mod._
+        fetched: loaded || !!mod.f
     });
 }
 
 
-// specify the environment for every id that required in the current module
-// including
-// - reference uri which will be set as the current module's uri 
- 
+// use the sandbox to specify the environment for every id that required in the current module 
 // @param {Object} envMod mod
 function createRequire(env){
     return function(id){
-        var mod = getModById(env.v[id] || id, env);
-        
-        return mod.exports;
+        return getModById(env.v[id] || id, env).exports;
     };
 }
 
 
-// get a module by id. if not exists, it will be created 
+// get a module by id. if not exists, a ghost module(which will be filled after its first `define`) will be created
 // @param {string} id
 // @param {Object} env the environment module
 function getModById(id, env){
@@ -881,10 +898,9 @@ function getModById(id, env){
         // 'io/ajax'        -> 'io/ajax'
         id = realpath(id, env.id);
     }
-    
+
     return __mods[id] || (__mods[id] = {
-        // @type {string} standard module identifier, must be something like:
-        //  'path/to/module'
+        // @type {string} standard module identifier
         id  : id,
         
         // @type {Array.<function()>} pending callbacks
@@ -893,33 +909,6 @@ function getModById(id, env){
         // @type {Object} version map of the current module
         v   : {}
     });
-}
-
-
-// @param {string} id
-// @returns {string=}
-// function getModuleNamespaceById(id){
-//    var idsplit = id.split(APP_NAMESPACE_SPLITTER);
-    
-    // 'promo::index' -> 'promo'
-    // 'io/ajax' -> undefined
-//    return idsplit[1] && idsplit[0];
-// };
-
-
-// free
-// however, to keep the code clean, 
-// tidy the data of a module at the final stage instead of each intermediate process    
-function tidyModuleData(mod){
-    mod.p.forEach(function(c){
-        c();
-    });
-    
-    mod.p.length = 0;
-    
-    delete mod.p;
-    delete mod.f;
-    delete mod._;
 }
 
 
@@ -979,50 +968,7 @@ function realpath(path, env_id) {
 // ----------------------------------------------------------------------------------
 
 // event support
-mix(loader, NR.Event);
-
-// use extend method to add public methods, 
-// so that google closure will NOT minify Object properties
-
-// define a module
-NR.define = define;
-
-// attach a module
-NR.use = provide;
-
-
-/**
- * attach a module for business requirement, for configurations of inline scripts
- * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
- * @usage: 
- <code>
-     
-     // require biz modules with no config
-     NR.require('Index::common', 'Index::food');
- 
-     // require biz modules with configs
-     NR.require('Index::common', {
-         mod: 'Index::food',
-         config: {
-             icon: 'http://kael.me/u/2012-03/icon.png'
-         }
-     });
- 
- </code>
- */
-NR.facade = function(){
-    makeArray(arguments).forEach(function(module){
-        if(typeof module === 'string'){
-            module = {
-                mod: module
-            };
-        }
-        
-        module && provide(module.mod, function(method){
-            method.init && method.init(module.data);
-        });
-    });
-};
+mix(Loader, Event);
 
 
 /**
@@ -1177,8 +1123,43 @@ NR.Loader.on({
 
 
 
-ENV.define = NR.define;
-ENV.facade = NR.facade;
+ENV.define = NR.define = define;
+
+// avoid using this method in product environment
+ENV.use = NR.use = provide;
+
+/**
+ * attach a module for business requirement, for configurations of inline scripts
+ * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
+ * @usage: 
+ <code>
+     
+     // require biz modules with no config
+     facade('Index::common', 'Index::food');
+ 
+     // require biz modules with configs
+     facade('Index::common', {
+         mod: 'Index::food',
+         data: {
+             icon: 'http://kael.me/u/2012-03/icon.png'
+         }
+     });
+ 
+ </code>
+ */
+ENV.facade = NR.facade = function(){
+    makeArray(arguments).forEach(function(module){
+        if(typeof module === 'string'){
+            module = {
+                mod: module
+            };
+        }
+        
+        module && provide(module.mod, function(method){
+            method.init && method.init(module.data);
+        });
+    });
+};
 
 })(this);
 
