@@ -6,7 +6,7 @@
  'use strict';
 
 // version 2.0.1
-// build 2013-06-10
+// build 2013-06-14
 
 // including sequence: see ../build.json
 
@@ -385,7 +385,7 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-06-10';
+// NR.build = '2.0.1 2013-06-14';
 
 // common code slice
 // ----
@@ -869,7 +869,7 @@ function registerModLoad(mod, callback){
 
         // prevent duplicate loading
         // @type {boolean=} whether the module is already fetched, i.e. we don't need to fetch it from the remote server
-        fetched: loaded || !!mod.f
+        defined: loaded || !!mod.f
     });
 }
 
@@ -924,7 +924,7 @@ function dirname(uri){
 
     // abc/def  -> abc
     // abc      -> abc
-    return (m ? m[0] : uri);
+    return m ? m[0] : uri;
 }
 
 
@@ -1077,6 +1077,8 @@ function generateModuleURL(id){
         info[1] = 'latest';
     }
 
+    // TODO:
+    // if version -> 'latest', add timestamp
     var rel = info.join('/') + '/index.js';
 
     return absolutizeURL(rel);
@@ -1108,7 +1110,7 @@ var retry_counters = {};
 
 NR.Loader.on({
     use: function(e) {
-        !e.fetched && loadModuleAndSetTimout(e.mod.id);
+        !e.defined && loadModuleAndSetTimout(e.mod.id);
     },
 
     define: function(e) {
