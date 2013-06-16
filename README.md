@@ -74,4 +74,9 @@ Neuron supplies no high-level APIs, which means that neuron core only cares abou
 
 You could do all these things in your will. Nevertheless, neuron have a basic configuration file which located at `lib/config/config-active.js`.
 
+## Related Projects
+
+- [cortex](https://github.com/kaelzhang/cortex)
+- [neocortex](https://github.com/kaelzhang/neocortex)
+
 
