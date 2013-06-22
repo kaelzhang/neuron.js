@@ -9,13 +9,16 @@ Neuron will be more powerful if working with [cortex](https://github.com/kaelzha
 
 ### Install
 
-	npm install
-	grunt
+```bash
+npm install
+grunt
+```
 
 ### Usage
 
-	<script src="/dist/neuron.js" id="neuron-js" data-path="mod" data-server="localhost"></script>
-	
+```html
+<script src="/dist/neuron.js" id="neuron-js" data-path="mod" data-server="localhost"></script>
+```	
 
 #### path
 
@@ -43,16 +46,20 @@ First of all, neuron is not designed for developers to use. Most commonly, it wo
 ### define()
 With [cortex](https://github.com/kaelzhang/cortex), you might never use this method.
 
-	define(identifier, dependencies, factory);
+```js
+define(identifier, dependencies, factory);
+```
 	
 ### facade()
 
-	facade(identifier);
-	
-	facade({
-		mod: identifier,
-		data: data
-	});
+```js
+facade(identifier);
+
+facade({
+	mod: identifier,
+	data: data
+});
+```
 	
 Method `facade` loads a module. If the `module.exports` has a method named `init`, `facade` method will run the `init` method.
 
