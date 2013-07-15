@@ -6,7 +6,7 @@
  'use strict';
 
 // version 2.0.1
-// build 2013-06-14
+// build 2013-07-04
 
 // including sequence: see ../build.json
 
@@ -385,7 +385,7 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-06-14';
+// NR.build = '2.0.1 2013-07-04';
 
 // common code slice
 // ----
