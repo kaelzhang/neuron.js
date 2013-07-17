@@ -1,7 +1,7 @@
 {
   "name": "neuronjs",
   "version": "2.0.1",
-  "description": "__   _   _____   _   _   _____    _____   __   _   \t|  \\ | | | ____| | | | | |  _  \\  /  _  \\ |  \\ | |  \t|   \\| | | |__   | | | | | |_| |  | | | | |   \\| |  \t| |\\   | |  __|  | | | | |  _  /  | | | | | |\\   |  \t| | \\  | | |___  | |_| | | | \\ \\  | |_| | | | \\  |  \t|_|  \\_| |_____| \\_____/ |_|  \\_\\ \\_____/ |_|  \\_|",
+  "description": "Neuron is a very simple and rude [CommonJS](http://wiki.commonjs.org) module loader",
   "main": "lib/neuron",
   "directories": {
     "doc": "doc",
