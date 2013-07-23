@@ -1090,8 +1090,9 @@ function generateModuleURL(id){
 }
 
 
-function loadModuleAndSetTimout(id){
-    loadJS( generateModuleURL(id) );
+// @param {boolean} check check if the module is already specified and loaded by the backend
+function loadModuleAndSetTimout(id, check){
+    ( !check || !checkIfAlreadyLoadedByServer(id) ) && loadJS( generateModuleURL(id) );
 
     if(!(id in retry_counters) ){
         retry_counters[id] = 1;
@@ -1107,7 +1108,26 @@ function loadModuleAndSetTimout(id){
 
         }, RETRY_TIMEOUT);
     }
-};
+}
+
+var module_list;
+
+function checkIfAlreadyLoadedByServer(id){
+    if(!module_list){
+        module_list = getModuleList();
+    }
+
+    return module_list ? ~ module_list.indexOf(id) : false;
+}
+
+
+function getModuleList(){
+    var container = DOC.getElementById('neuron-mods');
+
+    if(container){
+        return container.innerHTML.split(',').filter(Boolean);
+    }
+}
 
 
 var retry_timers = {};
@@ -1115,7 +1135,7 @@ var retry_counters = {};
 
 NR.Loader.on({
     use: function(e) {
-        !e.defined && loadModuleAndSetTimout(e.mod.id);
+        !e.defined && loadModuleAndSetTimout(e.mod.id, 1);
     },
 
     define: function(e) {
