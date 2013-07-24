@@ -6,7 +6,7 @@
  'use strict';
 
 // version 2.0.1
-// build 2013-07-23
+// build 2013-07-24
 
 // including sequence: see ../build.json
 
@@ -385,7 +385,7 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-07-23';
+// NR.build = '2.0.1 2013-07-24';
 
 // common code slice
 // ----
@@ -1090,6 +1090,9 @@ function generateModuleURL(id){
 }
 
 
+
+
+
 // @param {boolean} check check if the module is already specified and loaded by the backend
 function loadModuleAndSetTimout(id, check){
     ( !check || !checkIfAlreadyLoadedByServer(id) ) && loadJS( generateModuleURL(id) );
@@ -1102,7 +1105,7 @@ function loadModuleAndSetTimout(id, check){
 
     if(retry_counters[id] ++ <= MAX_RETRY_TIMES){
         retry_timers[id] = setTimeout(function(){
-            window.console && console.log('timeout load', id, 'retry');
+            window.console && console.log('timeout:', id);
 
             loadModuleAndSetTimout(id);
 
@@ -1133,18 +1136,15 @@ function getModuleList(){
 var retry_timers = {};
 var retry_counters = {};
 
-NR.Loader.on({
+Loader.on({
     use: function(e) {
-        !e.defined && loadModuleAndSetTimout(e.mod.id, 1);
+        !e.defined && loadModuleAndSetTimout(e.mod.id, true);
     },
 
     define: function(e) {
         clearTimeout( retry_timers[e.mod.id] );
     }
 });
-
-
-
 
 
 
