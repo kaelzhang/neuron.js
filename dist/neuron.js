@@ -3,10 +3,19 @@
  *   author i@kael.me
  */
 
+// Goal
+// 1. Implement safe native ecma5 methods for they are basic requirements which, nevertheless, is pluggable
+// 2. Manage module dependencies and initialization 
+
+// Non-goal
+// > What neuron will never do
+// 1. Neuron will never care about non-browser environment
+// 2. Neuron core will never care about module loading
+
  'use strict';
 
 // version 2.0.1
-// build 2013-07-24
+// build 2013-07-25
 
 // including sequence: see ../build.json
 
@@ -14,6 +23,8 @@
 // @param {Object} ENV environment
 // @param {undefined=} undefined
 ;(function(ENV, undefined){
+
+var DOC = document;
 
 
 
@@ -385,19 +396,12 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-07-24';
+// NR.build = '2.0.1 2013-07-25';
 
 // common code slice
 // ----
 //     - constants
 //     - common methods
-
-// var DOC = ENV.document;
-// var EMPTY = '';
-
-
-// no-operation
-// function NOOP(){};
 
 
 // A very simple `mix` method
@@ -661,7 +665,7 @@ var Event = {
 
 
 // stack, config or flag for modules
-var Loader = makeSureObject(NR, 'Loader');
+var Loader = {};
 
 // map -> identifier: module
 var __mods = makeSureObject(Loader, 'mods');
@@ -979,6 +983,81 @@ mix(Loader, Event);
  
  */
 
+// Manage configurations
+// It is not the core functionalities of neuron, since this module.
+
+// Never use `location.hash` to store configurations.
+// Evil guys may use that to obtain user private informations or execute authorized commands
+//      by using hash configurations to inject remote modules and sending these urls to
+//      the other users
+
+// #neuron/path=mod,server=http://localhost:8765,
+function configInCookie(){
+    var match = DOC.cookie.match(/(?:^|;)\s*neuron=([^;]*)/);
+    return match ? parseQuery(match[1]) : {};
+}
+
+
+var QUERY_VALUE_CONVERT = {
+    'false': false,
+    'true': true
+};
+
+
+// 'a=b,c=1,
+function parseQuery(str){
+    var obj = {};
+
+    decodeURIComponent(str).split(',').forEach(function(key_value) {
+        var pair = key_value.split('=');
+        var value = pair[1];
+        obj[pair[0]] = value in QUERY_VALUE_CONVERT ? QUERY_VALUE_CONVERT[value] : value; 
+    });
+
+    return obj;
+}
+
+
+var neuron_script = DOC.getElementById('neuron-js');
+
+var CONF_KEYS = [
+    // The server where loader will fetch modules from
+    'server', 
+    // The path
+    // 'path', 
+    // By default, the public methods of neuron will be exploded to global context.
+    // But you can force neuron to mix certain methods to a certain namespace.
+    // If the namespace is not exists, neuron will initialize it as an empty object.
+    'ns'
+];
+
+
+// <script src="/dist/neuron.js" id="neuron-js" 
+//      data-path="mod" 
+//      data-server="localhost"
+// ></script>
+function configOnScriptNode(key) {
+    return neuron_script.getAttribute('data-' + key);
+}
+
+
+function combineConfig(){
+
+    // cookie has the highest priority
+    var conf = configInCookie();
+
+    CONF_KEYS.forEach(function(key) {
+        if( !(key in conf) ){
+            conf[key] = configOnScriptNode(key);
+        }
+    });
+
+    return conf;
+}
+
+var NEURON_CONF = combineConfig();
+
+
 // <script 
 // src="http://localhost:8765/mod/neuronjs/2.0.1/neuron.js" 
 // id="neuron-js" 
@@ -986,36 +1065,7 @@ mix(Loader, Event);
 // data-server="localhost:8765"
 // ></script>
 
-var DOC = document;
 var HEAD = DOC.getElementsByTagName('head')[0];
-
-var neuron_script = DOC.getElementById('neuron-js');
-
-// '' -> 'mod/'
-// 'mod' -> 'mod/'
-var path = ( neuron_script.getAttribute('data-path') || 'mod' ).replace(/\/$/, '') + '/';
-var server = neuron_script.getAttribute('data-server');
-var RETRY_TIMEOUT = 3000;
-var MAX_RETRY_TIMES = 3;
-
-if(server){
-    server = parseServer(server);
-}
-
-function parseServer(server){
-    if(server.indexOf('://') === -1){
-        server = 'http://' + server;
-    }
-
-    // remove ending '/'
-    return server.replace(/\/$/, '');
-}
-
-
-function hasher(str){
-    return str.length % 3 + 1;
-}
-
 
 function loadJS(src){
     var node = DOC.createElement('script');
@@ -1052,27 +1102,35 @@ var jsOnload = DOC.createElement('script').readyState ?
         node.addEventListener('load', callback, false);
     };
 
+var server = parseServer(NEURON_CONF.server);
 
-var absolutizeURL = !server || path.indexOf('../') === 0 || path.indexOf('./') === 0 ?
+var RETRY_TIMEOUT = 3000;
+var MAX_RETRY_TIMES = 3;
 
-    // if relative path, or no server specified
-    // server: 'http://localhost', path: '../abc/'
-    // -> ../abc/<rel>
+function parseServer(server){
+    if(server.indexOf('://') === -1){
+        server = 'http://' + server;
+    }
 
-    // server: undefined, path: 'abc/'
-    // -> abc/<rel>
-    function(rel) {
-        return path + rel;
-    } :
-
-    // server: 'http://localhost',
-    // path: 'abc/'
-    // -> http://localhost/abc/<rel>
-    function(rel) {
-        return server.replace( '{n}', hasher(rel) ) + '/' + path + rel;
-    };
+    // remove ending '/'
+    return server.replace(/\/+$/, '');
+}
 
 
+function hasher(str){
+    return str.length % 3 + 1;
+}
+
+// server: 'http://localhost/abc',
+// -> http://localhost/abc/<relative>
+
+// @param {string} relative relative module url
+function absolutizeURL(relative) {
+    return server.replace( '{n}', hasher(relative) ) + '/' + relative;
+};
+
+
+// Generate absolute url of a certain id
 // @param {string} id, standard identifier, such as '<name>@<version>'
 function generateModuleURL(id){
     var info = id.split('@');
@@ -1080,6 +1138,8 @@ function generateModuleURL(id){
 
     if(!info[1]){
         info[1] = 'latest';
+
+        // force reload
         search = '?' + Date.now();
     }
 
@@ -1088,9 +1148,6 @@ function generateModuleURL(id){
 
     return absolutizeURL(rel);
 }
-
-
-
 
 
 // @param {boolean} check check if the module is already specified and loaded by the backend
@@ -1148,23 +1205,44 @@ Loader.on({
 
 
 
-ENV.define = NR.define = define;
+// Explode public methods
 
-// avoid using this method in product environment
-ENV.use = NR.use = provide;
+var ns_name = NEURON_CONF.ns;  
+
+
+// ''       -> [window]
+// 'NR'     -> ['NR']       -> [window.NR]
+// 'NR,'    -> ['NR', '']   -> [window.NR, window]
+var hosts = ns_name ? 
+    ns_name.split('|').map(function(name) {
+        return name && makeSureObject(ENV, name) || ENV;
+
+    }) : [ENV];
+
+
+hosts.forEach(function(host) {
+    host.define = define;
+
+    // avoid using this method in product environment
+    host.use = provide;
+
+    host.facade = facade;
+
+    host.loader = Loader;
+});
+
 
 /**
  * attach a module for business requirement, for configurations of inline scripts
  * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
  * @usage: 
  <code>
-     
      // require biz modules with no config
-     facade('Index::common', 'Index::food');
+     facade('app-main-citylist', 'app-main-header-bar');
  
      // require biz modules with configs
-     facade('Index::common', {
-         mod: 'Index::food',
+     facade('app-main-citylist', {
+         mod: 'app-main-header-bar',
          data: {
              icon: 'http://kael.me/u/2012-03/icon.png'
          }
@@ -1172,7 +1250,7 @@ ENV.use = NR.use = provide;
  
  </code>
  */
-ENV.facade = NR.facade = function(){
+function facade(){
     makeArray(arguments).forEach(function(module){
         if(typeof module === 'string'){
             module = {
@@ -1186,5 +1264,7 @@ ENV.facade = NR.facade = function(){
     });
 };
 
+
+// Simply use `this`, and never detect the current environment
 })(this);
 
