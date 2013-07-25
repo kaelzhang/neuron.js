@@ -31,6 +31,8 @@ module.exports = function( grunt ) {
                 dest: 'dist/neuron.js',
                 src: [
                     'lib/intro.js',
+
+                    // Neuron core
                     'lib/ecma5.js',
 
                     'lib/seed.js',
@@ -38,8 +40,12 @@ module.exports = function( grunt ) {
                     
                     'lib/event.js',
                     'lib/module-manager.js',
-                    // 'lib/biz.js',
-                    'lib/config/config-active.js',
+
+                    // Neuron peripheral
+                    'lib/config.js',
+                    'lib/loader.js',
+
+                    // Exports
                     'lib/exports.js',
                     'lib/outro.js',
                 ]
