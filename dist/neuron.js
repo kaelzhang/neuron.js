@@ -1063,13 +1063,7 @@ var neuron_script = DOC.getElementById('neuron-js');
 // ></script>
 // 
 function configOnScriptNodeByKey(key) {
-    var value = neuron_script.getAttribute('data-' + key);
-
-    if(value in QUERY_VALUE_CONVERT){
-        value = QUERY_VALUE_CONVERT[value];
-    }
-
-    return value;
+    return neuron_script.getAttribute('data-' + key);
 }
 
 
@@ -1103,7 +1097,7 @@ function combineConfig(){
             }
 
             conf[key] = value;
-        }        
+        }
     });
 
     return conf;
@@ -1122,11 +1116,12 @@ var CONF_ATTRIBUTES = {
     // The server where loader will fetch modules from
     // if use `'localhost'` as `base`, switch on debug mode
     base: function(base) {
-        if(!base.indexOf(LOCALHOST) || ~ base.indexOf('://' + localhost)){
+        if(!base.indexOf(LOCALHOST) || ~ base.indexOf('://' + LOCALHOST)){
             NEURON_CONF.debug = true;
         }
 
-        return base;
+        // remove ending slash(`/`)
+        return base.replace(/\/+$/, '');
     },
 
     // We don't allow this, just use facade configurations and manage it on your own
@@ -1160,11 +1155,11 @@ var CONF_ATTRIBUTES = {
 function splitIfNotArray(subject) {
     var arr = [];
 
-    if(typeof loaded === 'string'){
-        arr = loaded.split(',').filter(Boolean);
+    if(typeof subject === 'string'){
+        arr = subject.split(',').filter(Boolean);
 
-    }else if(isArray(loaded)){
-        arr = loaded;
+    }else if(isArray(subject)){
+        arr = subject;
     }
 
     return arr;
@@ -1186,7 +1181,6 @@ function config(conf) {
 }
 
 config( combineConfig() );
-
 
 function hasher(str){
     return str.length % 3 + 1;
@@ -1276,12 +1270,7 @@ function facade(){
 Loader.config = config;
 
 
-var hosts = NEURON_CONF.ns.split('|').map(function(name) {
-        return name && makeSureObject(ENV, name) || ENV;
-    });
-
-
-hosts.forEach(function(host) {
+NEURON_CONF.ns.forEach(function(host) {
     host.define = define;
 
     // avoid using this method in product environment
@@ -1291,6 +1280,8 @@ hosts.forEach(function(host) {
 
     host.loader = Loader;
 });
+
+NEURON_CONF.ns.length = 0;
 
 
 // Simply use `this`, and never detect the current environment
