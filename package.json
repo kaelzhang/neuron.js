@@ -1,8 +1,8 @@
 {
   "name": "neuronjs",
-  "version": "2.0.1",
-  "description": "Neuron is a very simple and rude [CommonJS](http://wiki.commonjs.org) module loader",
-  "main": "lib/neuron",
+  "version": "2.1.0",
+  "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
+  "main": "dist/neuron",
   "directories": {
     "doc": "doc",
     "test": "test"
