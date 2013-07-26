@@ -15,7 +15,7 @@
  'use strict';
 
 // version 2.0.1
-// build 2013-07-25
+// build 2013-07-26
 
 // including sequence: see ../build.json
 
@@ -396,7 +396,7 @@ var NR = makeSureObject(ENV, 'NR');
 /**
  * build time will be replaced when packaging and compressing
  */
-// NR.build = '2.0.1 2013-07-25';
+// NR.build = '2.0.1 2013-07-26';
 
 // common code slice
 // ----
@@ -983,81 +983,6 @@ mix(Loader, Event);
  
  */
 
-// Manage configurations
-// It is not the core functionalities of neuron, since this module.
-
-// Never use `location.hash` to store configurations.
-// Evil guys may use that to obtain user private informations or execute authorized commands
-//      by using hash configurations to inject remote modules and sending these urls to
-//      the other users
-
-// #neuron/path=mod,server=http://localhost:8765,
-function configInCookie(){
-    var match = DOC.cookie.match(/(?:^|;)\s*neuron=([^;]*)/);
-    return match ? parseQuery(match[1]) : {};
-}
-
-
-var QUERY_VALUE_CONVERT = {
-    'false': false,
-    'true': true
-};
-
-
-// 'a=b,c=1,
-function parseQuery(str){
-    var obj = {};
-
-    decodeURIComponent(str).split(',').forEach(function(key_value) {
-        var pair = key_value.split('=');
-        var value = pair[1];
-        obj[pair[0]] = value in QUERY_VALUE_CONVERT ? QUERY_VALUE_CONVERT[value] : value; 
-    });
-
-    return obj;
-}
-
-
-var neuron_script = DOC.getElementById('neuron-js');
-
-var CONF_KEYS = [
-    // The server where loader will fetch modules from
-    'server', 
-    // The path
-    // 'path', 
-    // By default, the public methods of neuron will be exploded to global context.
-    // But you can force neuron to mix certain methods to a certain namespace.
-    // If the namespace is not exists, neuron will initialize it as an empty object.
-    'ns'
-];
-
-
-// <script src="/dist/neuron.js" id="neuron-js" 
-//      data-path="mod" 
-//      data-server="localhost"
-// ></script>
-function configOnScriptNode(key) {
-    return neuron_script.getAttribute('data-' + key);
-}
-
-
-function combineConfig(){
-
-    // cookie has the highest priority
-    var conf = configInCookie();
-
-    CONF_KEYS.forEach(function(key) {
-        if( !(key in conf) ){
-            conf[key] = configOnScriptNode(key);
-        }
-    });
-
-    return conf;
-}
-
-var NEURON_CONF = combineConfig();
-
-
 // <script 
 // src="http://localhost:8765/mod/neuronjs/2.0.1/neuron.js" 
 // id="neuron-js" 
@@ -1102,19 +1027,165 @@ var jsOnload = DOC.createElement('script').readyState ?
         node.addEventListener('load', callback, false);
     };
 
-var server = parseServer(NEURON_CONF.server);
 
-var RETRY_TIMEOUT = 3000;
-var MAX_RETRY_TIMES = 3;
+// Manage configurations
+// It is not the core functionalities of neuron, since this module.
 
-function parseServer(server){
-    if(server.indexOf('://') === -1){
-        server = 'http://' + server;
+// Never use `location.hash` to store configurations.
+// Evil guys may use that to obtain user private informations or execute authorized commands
+//      by using hash configurations to inject remote modules and sending these urls to
+//      the other users
+
+function configInCookie(){
+    var match = DOC.cookie.match(/(?:^|;)\s*neuron=([^;]*)/);
+    return match ? parseQuery(match[1]) : {};
+}
+
+// 'base=localhost'
+function parseQuery(str){
+    var obj = {};
+
+    decodeURIComponent(str).split(',').forEach(function(key_value) {
+        var pair = key_value.split('=');
+        obj[pair[0]] = pair[1];
+    });
+
+    return obj;
+}
+
+
+var neuron_script = DOC.getElementById('neuron-js');
+
+
+// <script src="/dist/neuron.js" id="neuron-js" 
+//      data-path="mod" 
+//      data-server="localhost"
+// ></script>
+// 
+function configOnScriptNodeByKey(key) {
+    var value = neuron_script.getAttribute('data-' + key);
+
+    if(value in QUERY_VALUE_CONVERT){
+        value = QUERY_VALUE_CONVERT[value];
     }
 
-    // remove ending '/'
-    return server.replace(/\/+$/, '');
+    return value;
 }
+
+
+function configByDefault() {
+    var src = neuron_script.src;
+    var index = src.indexOf('neuron');
+    var base = src.substr(index);
+
+    return {
+        base: base,
+        ns: '',
+    };
+}
+
+
+function combineConfig(){
+    var conf = configByDefault();
+    var cookie_conf = configInCookie();
+
+    Object.keys(CONF_ATTRIBUTES).forEach(function(key) {
+
+        // priority:
+        // cookie > script attributes > default
+        if( key in cookie_conf ){
+            conf[key] = cookie_conf[key];
+        }else{
+            var value = configOnScriptNodeByKey(key);
+
+            if( value === '' || value === null ){
+                value = conf[key];
+            }
+
+            conf[key] = value;
+        }        
+    });
+
+    return conf;
+}
+
+
+var neuron_loaded = [];
+var NEURON_CONF = {
+    loaded: neuron_loaded
+};
+
+var LOCALHOST = 'localhost'
+
+var CONF_ATTRIBUTES = {
+
+    // The server where loader will fetch modules from
+    // if use `'localhost'` as `base`, switch on debug mode
+    base: function(base) {
+        if(!base.indexOf(LOCALHOST) || ~ base.indexOf('://' + localhost)){
+            NEURON_CONF.debug = true;
+        }
+
+        return base;
+    },
+
+    // We don't allow this, just use facade configurations and manage it on your own
+    // 'vars',
+    // var: {
+    // },
+
+    // By default, the public methods of neuron will be exploded to global context.
+    // But you can force neuron to mix certain methods to a certain namespace.
+    // If the namespace is not exists, neuron will initialize it as an empty object.
+    ns: function(ns) {
+
+        // ''       -> [window]
+        // 'NR'     -> ['NR']       -> [window.NR]
+        // 'NR,'    -> ['NR', '']   -> [window.NR, window]
+        return typeof ns === 'string' ? ns.split('|').map(function(name) {
+            return name && makeSureObject(ENV, name) || ENV;
+        }) : ns;
+    },
+
+    loaded: function(loaded) {
+        neuron_loaded.push.apply(neuron_loaded, splitIfNotArray(loaded));
+    },
+
+    preload: function(preload) {
+        !NEURON_CONF.debug && splitIfNotArray(preload).forEach(loadJS);
+    }
+};
+
+
+function splitIfNotArray(subject) {
+    var arr = [];
+
+    if(typeof loaded === 'string'){
+        arr = loaded.split(',').filter(Boolean);
+
+    }else if(isArray(loaded)){
+        arr = loaded;
+    }
+
+    return arr;
+}
+
+
+function config(conf) {
+    var key;
+    var value;
+
+    for(key in conf){
+        if(key in CONF_ATTRIBUTES){
+            value = CONF_ATTRIBUTES[key]( conf[key] );
+            if(value !== undefined){
+                NEURON_CONF[key] = value;
+            }
+        }
+    }
+}
+
+config( combineConfig() );
 
 
 function hasher(str){
@@ -1126,7 +1197,7 @@ function hasher(str){
 
 // @param {string} relative relative module url
 function absolutizeURL(relative) {
-    return server.replace( '{n}', hasher(relative) ) + '/' + relative;
+    return NEURON_CONF.base.replace( '{n}', hasher(relative) ) + '/' + relative;
 };
 
 
@@ -1139,7 +1210,7 @@ function generateModuleURL(id){
     if(!info[1]){
         info[1] = 'latest';
 
-        // force reload
+        // if has no version, force reload with timestamp
         search = '?' + Date.now();
     }
 
@@ -1150,56 +1221,18 @@ function generateModuleURL(id){
 }
 
 
-// @param {boolean} check check if the module is already specified and loaded by the backend
-function loadModuleAndSetTimout(id, check){
-    ( !check || !checkIfAlreadyLoadedByServer(id) ) && loadJS( generateModuleURL(id) );
-
-    if(!(id in retry_counters) ){
-        retry_counters[id] = 1;
-    }else{
-        clearTimeout(retry_timers[id]);
-    }
-
-    if(retry_counters[id] ++ <= MAX_RETRY_TIMES){
-        retry_timers[id] = setTimeout(function(){
-            window.console && console.log('timeout:', id);
-
-            loadModuleAndSetTimout(id);
-
-        }, RETRY_TIMEOUT);
+// @param {string} id module identifier
+function loadByModule(id) {
+    if(! ~ neuron_loaded.indexOf(id) ){
+        neuron_loaded.push(id);
+        loadJS( generateModuleURL(id) );
     }
 }
 
-var module_list;
-
-function checkIfAlreadyLoadedByServer(id){
-    if(!module_list){
-        module_list = getModuleList();
-    }
-
-    return module_list ? ~ module_list.indexOf(id) : false;
-}
-
-
-function getModuleList(){
-    var container = DOC.getElementById('neuron-mods');
-
-    if(container){
-        return container.innerHTML.split(',').filter(Boolean);
-    }
-}
-
-
-var retry_timers = {};
-var retry_counters = {};
 
 Loader.on({
     use: function(e) {
-        !e.defined && loadModuleAndSetTimout(e.mod.id, true);
-    },
-
-    define: function(e) {
-        clearTimeout( retry_timers[e.mod.id] );
+        !e.defined && loadByModule(e.mod.id);
     }
 });
 
@@ -1207,34 +1240,9 @@ Loader.on({
 
 // Explode public methods
 
-var ns_name = NEURON_CONF.ns;  
-
-
-// ''       -> [window]
-// 'NR'     -> ['NR']       -> [window.NR]
-// 'NR,'    -> ['NR', '']   -> [window.NR, window]
-var hosts = ns_name ? 
-    ns_name.split('|').map(function(name) {
-        return name && makeSureObject(ENV, name) || ENV;
-
-    }) : [ENV];
-
-
-hosts.forEach(function(host) {
-    host.define = define;
-
-    // avoid using this method in product environment
-    host.use = provide;
-
-    host.facade = facade;
-
-    host.loader = Loader;
-});
-
-
 /**
- * attach a module for business requirement, for configurations of inline scripts
- * if wanna a certain biz module to automatically initialized, the module's exports should contain a method named 'init'
+ * Attach a module for business facade, for configurations of inline scripts
+ * if you want a certain biz module to be initialized automatically, the module's exports should contain a method named 'init'
  * @usage: 
  <code>
      // require biz modules with no config
@@ -1263,6 +1271,26 @@ function facade(){
         });
     });
 };
+
+
+Loader.config = config;
+
+
+var hosts = NEURON_CONF.ns.split('|').map(function(name) {
+        return name && makeSureObject(ENV, name) || ENV;
+    });
+
+
+hosts.forEach(function(host) {
+    host.define = define;
+
+    // avoid using this method in product environment
+    // host.use = provide;
+
+    host.facade = facade;
+
+    host.loader = Loader;
+});
 
 
 // Simply use `this`, and never detect the current environment
