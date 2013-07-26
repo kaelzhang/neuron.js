@@ -40,10 +40,10 @@ module.exports = function( grunt ) {
                     
                     'lib/event.js',
                     'lib/module-manager.js',
+                    'lib/asset.js',
 
                     // Neuron peripheral
                     'lib/config.js',
-                    'lib/loader.js',
 
                     // Exports
                     'lib/exports.js',
