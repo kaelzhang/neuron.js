@@ -18,7 +18,7 @@
     "neuron"
   ],
   "author": "kael",
-  "license": "BSD",
+  "license": "MIT",
   "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
   "readmeFilename": "README.md",
   "devDependencies": {
