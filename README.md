@@ -111,9 +111,9 @@ Whether the module is already `define`()d.
 ****
 # Developer Guide
 
-Neuron supplies no high-level APIs, which means that neuron core only cares about module dependencies and module wrapping while will do nothing about things such as fetching modules from remote server and injecting them into the current document, and never cares about where a specific module should come from.
+**Neuron CORE** supplies no high-level APIs, which means that neuron core only cares about module dependencies and module wrapping while will do nothing about things such as fetching modules from remote server and injecting them into the current document, and never cares about where a specific module should come from.
 
-You could do all these things in your will. Nevertheless, neuron have a basic configuration file which located at `lib/config.js`.
+You could do all these things in your will (by write your own `lib/config.js` and adjust `Gruntfile.js`). Nevertheless, neuron have a basic configuration file which located at `lib/config.js`.
 
 ## Configuration Hierarchies
 
