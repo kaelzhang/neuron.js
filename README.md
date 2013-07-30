@@ -75,6 +75,46 @@ module name with version, seperated with `'@'`. For example: `'async@0.1.0'`
 If `data` is defined, data will be passed as the parameter of the `init` method.
 
 
+## Events
+
+### Event: define
+
+Emitted after the `define` method of a module is called.
+
+#### event.mod `Object`
+
+The module object.
+
+Notice that never change this object, and treat it as readonly object.
+
+### Event: ready
+
+Emitted when a module is complete ready to `require`() which means the source file of the module is downloaded and executed, and all dependencies are also "ready".
+
+#### event.mod `Object`
+
+The module object.
+
+### Event: use
+
+Emitted when a module is provided or `require`() by another module.
+
+#### event.mod `Object`
+
+The module object.
+
+#### event.defined `boolean`
+
+Whether the module is already `define`()d.
+
+ 
+****
+# Developer Guide
+
+Neuron supplies no high-level APIs, which means that neuron core only cares about module dependencies and module wrapping while will do nothing about things such as fetching modules from remote server and injecting them into the current document, and never cares about where a specific module should come from.
+
+You could do all these things in your will. Nevertheless, neuron have a basic configuration file which located at `lib/config.js`.
+
 ## Configuration Hierarchies
 
 We can configure our settings in three places: with `loader.config()` method, in cookie, or as attributes on script node, of which the priority is:
@@ -151,11 +191,17 @@ The node should have an id equal to `'neuron-js'`.
 data-path="http://localhost" data-ns="NR|"
 ```
 
-## Developer Guide
+### loader.config(options)
 
-Neuron supplies no high-level APIs, which means that neuron core only cares about module dependencies and module wrapping while will do nothing about things such as fetching modules from remote server and injecting them into the current document, and never cares about where a specific module should come from.
+#### Example
 
-You could do all these things in your will. Nevertheless, neuron have a basic configuration file which located at `lib/config.js`.
+```js
+loader.config({
+	path: 'http://localhost/mod'
+});
+```
+
+Notice that not all options could take effect using `loader.config`, such as `ns`. And also, `path` and `loaded` could not affect modules which are already loaded.
 
 ## Related Projects
 
