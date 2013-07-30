@@ -42,7 +42,7 @@ module `'abc@0.1.1'` will be located at `'http://localhost/mod/abc/0.1.1/abc.js'
 
 ## Methods
 
-First of all, neuron is not designed for human developers to use directly. Most commonly, it works with [cortex](https://github.com/kaelzhang/cortex) together.
+First of all, **neuron is not designed for human developers to use directly**. Most commonly, it works with [cortex](https://github.com/kaelzhang/cortex) together.
 
 ### define()
 With [cortex](https://github.com/kaelzhang/cortex), you might never use this method.
