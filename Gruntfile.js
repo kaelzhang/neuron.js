@@ -35,11 +35,11 @@ module.exports = function( grunt ) {
                     // Neuron core
                     'lib/ecma5.js',
 
-                    'lib/seed.js',
+                    // 'lib/seed.js',
                     'lib/lang.js',
                     
-                    'lib/event.js',
                     'lib/module-manager.js',
+                    'lib/event.js',
                     'lib/asset.js',
 
                     // Neuron peripheral
