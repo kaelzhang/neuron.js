@@ -15,7 +15,7 @@
  'use strict';
 
 // version 2.1.0
-// build 2013-07-26
+// build 2013-08-06
 
 // including sequence: see ../build.json
 
@@ -205,7 +205,7 @@ implement(Array, {
         return false;
     },
 
-    reduce: function (fn /* [, initialValue ] */) {
+    reduce: function (fn) {
         if(typeof fn !== 'function') {
             throw new TYPE_ERROR(fn + ' is not an function');
         }
@@ -241,7 +241,7 @@ implement(Array, {
         return ret;
     },
     
-    reduceRight: function (fn /* [, initialValue ] */) {
+    reduceRight: function (fn) {
         if(typeof fn !== 'function') {
             throw new TYPE_ERROR(fn + ' is not an function');
         }
@@ -388,16 +388,6 @@ implement(String, {
  
  */
 
-
-// module seed
-
-var NR = makeSureObject(ENV, 'NR');
-
-/**
- * build time will be replaced when packaging and compressing
- */
-// NR.build = '2.1.0 2013-07-26';
-
 // common code slice
 // ----
 //     - constants
@@ -409,19 +399,19 @@ var NR = makeSureObject(ENV, 'NR');
 // @param {Object} receiver
 // @param {Object} supplier
 // @returns {mixed} receiver
-function mix(receiver, supplier) {
+// function mix(receiver, supplier) {
 
-    if (receiver && supplier){
+//     if (receiver && supplier){
 
-        var c;
+//         var c;
 
-        for (c in supplier) {
-            receiver[c] = supplier[c];
-        }
-    }
+//         for (c in supplier) {
+//             receiver[c] = supplier[c];
+//         }
+//     }
 
-    return receiver;
-}
+//     return receiver;
+// }
 
 
 // make sure `host[key]` is an object
@@ -431,15 +421,8 @@ function makeSureObject(host, key){
     return host[key] || (host[key] = {});
 }
 
-
-var OP_toString = Object.prototype.toString;
-
 function isArray(obj){
-    return OP_toString.call(obj) === '[object Array]';
-}
-
-function isFunction(obj) {
-    return typeof obj === 'function';
+    return Object.prototype.toString.call(obj) === '[object Array]';
 }
 
 function isObject(obj){
@@ -453,30 +436,30 @@ function isObject(obj){
 
  * @param {function()} fn
  */
-function overloadSetter(fn){
+// function overloadSetter(fn){
 
-    // @return {undefined} setter method will always return this, 
-    // for the sake of potential chain-style invocations
-    return function(key, value){
+//     // @return {undefined} setter method will always return this, 
+//     // for the sake of potential chain-style invocations
+//     return function(key, value){
 
-        var k;
-        var ret = this;
+//         var k;
+//         var ret = this;
 
-        if ( isObject(key) ){
-            for ( k in key ) {
-                fn.call(this, k, key[k]);
-            }
+//         if ( isObject(key) ){
+//             for ( k in key ) {
+//                 fn.call(this, k, key[k]);
+//             }
             
-        }else if( typeof key === 'string' ){
+//         }else if( typeof key === 'string' ){
         
-            // use apply instead of fn.call(self, key, value)
-            // so the overloaded function could receive more arguments
-            ret = fn.apply(this, arguments);
-        }
+//             // use apply instead of fn.call(self, key, value)
+//             // so the overloaded function could receive more arguments
+//             ret = fn.apply(this, arguments);
+//         }
         
-        return ret;
-    };
-}
+//         return ret;
+//     };
+// }
 
 
 // A simple and imperfect `makeArray` method
@@ -538,112 +521,6 @@ function makeArray(array){
 
 
 
-/**
- * Preset of Class Extensions: 'events'
- */
-
-// @returns {Object}
-function getEventStorage(host){
-    return host.__ev || (host.__ev = {});
-}
-
-
-// @param {this} self
-// @param {string} type
-// @returns {Array.<function()>}
-function getEventStorageByType(host, type){
-    var storage = getEventStorage(host);
-    
-    return type ? storage[type] || (storage[type] = []) : [];
-}
-
-
-var Event = {
-    on: overloadSetter(function(type, fn){
-        if(isFunction(fn)){
-            var storage = getEventStorageByType(this, type);
-            
-            storage.push(fn);
-        }
-    
-        return this;
-    }),
-    
-    off: function(type, fn){
-        var self = this;
-        var args = arguments;
-        var storage;
-        var s;
-        
-        // remove all attached events
-        // only deal with .off()
-        if(!args.length){
-            storage = getEventStorage(this);
-            
-            for(type in storage){
-                s = storage[type];
-                s && (s.length = 0);
-            }
-            
-            return self;
-        }
-        // else:
-        // ignore: .off(undefined, undefined)
-        // invocation like .off(undefined, undefined) shall be ignored, which must be a runtime logic exception
-        
-        
-        // ignore: .off(undefined, fn);
-        // ignore: .off(undefined)
-        if(typeof type === 'string'){
-            s = getEventStorageByType(self, type);
-            
-            // .off(type)
-            if(args.length === 1){
-                s.length = 0;
-            
-            // .off(type, fn)
-            
-            // ignore: .off(type, undefined)
-            }else if(isFunction(fn)){
-                for(var i = 0, len = s.length; i < len; i ++){
-                    if(s[i] === fn){
-                        s.splice(i, 1);
-                    }
-                }
-            }
-        }
-        
-        return self;
-    },
-    
-    fire: function(type, args){
-        var self = this;
-        
-        if(typeof type === 'string'){
-            args = makeArray(args);
-            
-            getEventStorageByType(self, type).forEach(function(fn){
-                fn.apply(self, args);
-            });
-        }
-        
-        return self;
-    }
-};
-
-/**
- change log
- 
- 2012-08-02  Kael:
- - improved the stablility of function overloading, prevent user mistakes
- - optimized calling chain
- 
- 2011-02-24  Kael:
- TODO:
- A. add .after and .before
- 
- */
-
 // Passive Mode - a very simple version of loader, which
  
 // - event supported
@@ -686,7 +563,7 @@ var __mods = makeSureObject(Loader, 'mods');
  
 // @returns {undefined=}
 function define(identifier, dependencies, factory){
-    if(typeof identifier === 'string' && isArray(dependencies) && isFunction(factory) ){
+    if(typeof identifier === 'string' && isArray(dependencies) && typeof factory === 'function' ){
         var mod = getModById(identifier);
 
         // a single module might be defined more than once.
@@ -714,7 +591,7 @@ function define(identifier, dependencies, factory){
                 generateExports(mod);
             }
 
-            Loader.fire('define', {
+            Loader.emit('define', {
                 mod: mod
             });
         }
@@ -784,7 +661,7 @@ function generateExports(mod){
     //          }
     //      }
     
-    Loader.fire('ready', {
+    Loader.emit('ready', {
         mod: mod
     });
 }
@@ -823,7 +700,7 @@ function _provide(dependencies, callback, env, noCallbackArgs){
     var args = [];
     var cb;
 
-    if(isFunction(callback)){
+    if(typeof callback === 'function'){
         cb = noCallbackArgs ?
             callback
         : 
@@ -871,7 +748,7 @@ function registerModLoad(mod, callback){
       : mod.p.push(callback);
     
     // everytime we encounter a module which is depended by the other module, `'use'` event fires 
-    Loader.fire('use', {
+    Loader.emit('use', {
         mod: mod,
 
         // prevent duplicate loading
@@ -894,8 +771,6 @@ function createRequire(env){
 // @param {string} id
 // @param {Object} env the environment module
 function getModById(id, env){
-    id = id.toLowerCase();
-    
     if(env){
 
         // 'promo::index'   -> 'promo::index'
@@ -973,7 +848,7 @@ function realpath(path, env_id) {
 // ----------------------------------------------------------------------------------
 
 // event support
-mix(Loader, Event);
+// mix(Loader, Event);
 
 
 /**
@@ -982,6 +857,49 @@ mix(Loader, Event);
  import ./ChangeLog.md;
  
  */
+
+
+
+// @param {this} self
+// @param {string} type
+// @returns {Array.<function()>}
+function getEventStorageByType(type){
+    var storage = Loader.__ev || (Loader.__ev = {});
+    
+    return type ? storage[type] || (storage[type] = []) : [];
+}
+
+
+Loader.on = function(type, fn){
+    if(fn){
+        var storage = getEventStorageByType(type);
+        storage.push(fn);
+    }
+
+    return Loader;
+};
+    
+Loader.emit = function(type, args){
+    args = makeArray(args);
+        
+    getEventStorageByType(type).forEach(function(fn){
+        fn.apply(this, args);
+    }, Loader);
+};
+
+/**
+ change log
+ 
+ 2012-08-02  Kael:
+ - improved the stablility of function overloading, prevent user mistakes
+ - optimized calling chain
+ 
+ 2011-02-24  Kael:
+ TODO:
+ A. add .after and .before
+ */
+ 
+ 
 
 // <script 
 // src="http://localhost:8765/mod/neuronjs/2.0.1/neuron.js" 
@@ -1074,7 +992,7 @@ function configByDefault() {
 
     return {
         base: base,
-        ns: '',
+        ns: ''
     };
 }
 
@@ -1189,16 +1107,12 @@ var CONF_ATTRIBUTES = {
 // If is not an array, split it
 // @returns {Array}
 function splitIfNotArray(subject) {
-    var arr = [];
-
     if(typeof subject === 'string'){
-        arr = subject.split('|').filter(Boolean);
+        return subject.split('|').filter(Boolean);
 
-    }else if(isArray(subject)){
-        arr = subject;
+    }else{
+        return makeArray(subject);
     }
-
-    return arr;
 }
 
 
@@ -1262,10 +1176,8 @@ function loadByModule(id) {
 }
 
 
-Loader.on({
-    use: function(e) {
-        !e.defined && loadByModule(e.mod.id);
-    }
+Loader.on('use', function(e) {
+    !e.defined && loadByModule(e.mod.id);
 });
 
 
@@ -1317,6 +1229,8 @@ NEURON_CONF.ns.forEach(function(host) {
 });
 
 NEURON_CONF.ns.length = 0;
+
+
 
 
 // Simply use `this`, and never detect the current environment
