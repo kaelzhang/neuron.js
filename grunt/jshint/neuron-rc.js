@@ -35,4 +35,4 @@ module.exports = {
         exports: true,
         define: true
     }
-}
+};

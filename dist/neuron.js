@@ -15,7 +15,7 @@
  'use strict';
 
 // version 2.1.0
-// build 2013-08-06
+// build 2013-10-22
 
 // including sequence: see ../build.json
 

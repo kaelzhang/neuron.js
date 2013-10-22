@@ -90,7 +90,6 @@ module.exports = function( grunt ) {
                 timeout:5000
             }
         },
-
         uglify: {
             all: {
                 files: {
