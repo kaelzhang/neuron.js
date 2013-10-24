@@ -14,8 +14,8 @@
 
  'use strict';
 
-// version 2.1.0
-// build 2013-10-22
+// version 3.1.0
+// build 2013-10-24
 
 // including sequence: see ../build.json
 
@@ -502,23 +502,6 @@ function makeArray(array){
 }
 
 
-// @private
-// function definePrivateProperty(obj, key, value){
-//     if(Object.defineProperty){
-//         Object.defineProperty(obj, key, {
-//           enumerable: false,
-//           configurable: false,
-//           writable: false,
-//           value: value
-//         });
-
-//     }else{
-//         obj[key] = value;
-//     }
-// };
-
-
-
 
 
 // Passive Mode - a very simple version of loader, which
@@ -605,11 +588,51 @@ var STR_VERSION_SPLITTER = '@';
 // @private
 // create version info of the dependencies of current module into current sandbox
 // @param {Array.<string>} modules no type detecting
+
+// ['a@~0.1.0', 'b@~2.3.9']
+// -> 
+// {
+//     a: '~0.1.0',
+//     b: '~2.3.9'
+// }
 function generateModuleVersionMap(modules, host){
     modules.forEach(function(mod) {
         var name = mod.split(STR_VERSION_SPLITTER)[0];
         host[name] = mod;
     });
+}
+
+
+// note that we must use '\-' rather than '-', becase '-' presents a range within brackets
+//                       0  1   2 3      4       5    6               7
+var REGEX_MATCH_SERVER = /^(\D*)((\d+)\.(\d+))\.(\d+)([a-z0-9\.\-+]*)(\/.*)?$/i;
+
+function parseSemver (version) {
+    var match = version.match(REGEX_MATCH_SERVER);
+    var ret = {
+        origin: version
+    };
+
+    console.log('match', match)
+
+    if ( match ) {
+        var decorator = match[1] || '~';
+        // ret.decorator = match[2] || '';
+        // ret.major = match[3];
+        // ret.minor = match[4];
+        // ret.patch = match[5];
+        // ret.extra = match[6];
+
+        // We convert the semver to a widest range
+        // '~1.3.9-alpha'
+        // -> '~1.3.0'
+        ret.base = match[2] + '.0';
+        // -> '~1.3.0'
+        ret.range = decorator + ret.base;
+        ret.path = match[7] || '';
+    }
+
+    return ret;
 }
 
 
@@ -770,23 +793,46 @@ function createRequire(env){
 // get a module by id. if not exists, a ghost module(which will be filled after its first `define`) will be created
 // @param {string} id
 // @param {Object} env the environment module
-function getModById(id, env){
+function getModById(raw_id, env){
     if(env){
 
-        // 'promo::index'   -> 'promo::index'
-        // 'io/ajax'        -> 'io/ajax'
-        id = realpath(id, env.id);
+        // pathResolve('align', 'jquery')   -> 'jquery'
+        // pathResolve('align', './')
+        raw_id = pathResolve(env.raw, raw_id);
     }
+
+    var splitted = raw_id.split(STR_VERSION_SPLITTER);
+    var name = splitted[0];
+
+    // '~0.1.3-alpha/inner' -> 
+    // {
+    //     origin: '~0.1.3-alpha/inner',
+    //     decorator: '~',
+    //     major: '0',
+    //     minor: '1',
+    //     patch: '3',
+    //     extra: '-alpha',
+    //     base: '0.1.0'
+    //     range: '~0.1.0',
+    //     path: '/inner'
+    // }
+    var version = parseSemver(splitted[1]);
+
+    // -> 'a@~0.1.0/inner'
+    var id = name + STR_VERSION_SPLITTER + version.range + version.path;
 
     return __mods[id] || (__mods[id] = {
         // @type {string} standard module identifier
-        id  : id,
+        raw     : raw_id,
+        id      : id,
+        name    : name,
+        version : version,
         
         // @type {Array.<function()>} pending callbacks
-        p   : [],
+        p       : [],
         
         // @type {Object} version map of the current module
-        v   : {}
+        v       : {}
     });
 }
 
@@ -806,30 +852,28 @@ function dirname(uri){
 
     // abc/def  -> abc
     // abc      -> abc
+    // abc/     -> abc
     return m ? m[0] : uri;
 }
 
 
 // Canonicalize path
+// similar to path.resolve() of node.js
  
-// realpath('a/b/c') ==> 'a/b/c'
-// realpath('a/b/../c') ==> 'a/c'
-// realpath('a/b/./c') ==> '/a/b/c'
-// realpath('a/b/c/') ==> 'a/b/c/'
-// realpath('a//b/c') ==> 'a//b/c'   - for 'a//b/c' is a valid uri
+// pathResolve('a/b/c') ==> 'a/b/c'
+// pathResolve('a/b/../c') ==> 'a/c'
+// pathResolve('a/b/./c') ==> '/a/b/c'
+// pathResolve('a/b/c/') ==> 'a/b/c/'
+// pathResolve('a//b/c') ==> 'a//b/c'   - for 'a//b/c' is a valid uri
 
-function realpath(path, env_id) {
-
+function pathResolve(from, to) {
     // relative
-    if(path.indexOf('./') === 0 || path.indexOf('../') === 0){
-        var old = (dirname(env_id) + '/' + path).split('/'),
-            ret = [];
+    if(to.indexOf('./') === 0 || to.indexOf('../') === 0){
+        var old = (dirname(from) + '/' + to).split('/');
+        var ret = [];
             
         old.forEach(function(part){
             if (part === '..') {
-                // if (ret.length === 0) {
-                //      error(530);
-                // }
                 ret.pop();
                 
             } else if (part !== '.') {
@@ -837,10 +881,10 @@ function realpath(path, env_id) {
             }
         });
         
-        path = ret.join('/');
+        to = ret.join('/');
     }
     
-    return path;
+    return to;
 }
 
 
@@ -1150,17 +1194,13 @@ function absolutizeURL(relative) {
 // @param {string} id, standard identifier, such as '<name>@<version>'
 function generateModuleURL(id){
     var info = id.split('@');
-    var search = '';
 
     if(!info[1]){
         info[1] = 'latest';
-
-        // if has no version, force reload with timestamp
-        search = '?' + Date.now();
     }
 
     // 'a@0.1.0' -> 'a/0.1.0/a.js'
-    var rel = info.join('/') + '/' + info[0] + '.js' + search;
+    var rel = info.join('/') + '/' + info[0] + '.js';
 
     return absolutizeURL(rel);
 }

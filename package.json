@@ -1,6 +1,6 @@
 {
-  "name": "neuronjs",
-  "version": "2.1.0",
+  "name": "neuron",
+  "version": "3.1.0",
   "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
   "main": "dist/neuron",
   "directories": {
@@ -15,7 +15,11 @@
     "url": "https://github.com/kaelzhang/neuron.git"
   },
   "keywords": [
-    "neuron"
+    "neuron",
+    "commonjs",
+    "loader",
+    "module",
+    "web"
   ],
   "author": "kael",
   "license": "MIT",
