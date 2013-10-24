@@ -1,7 +1,8 @@
 # Neuron
-> Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
 Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader, and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
+
+> Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
 With [Cortex](https://github.com/kaelzhang/cortex) and Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [AMD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
 
@@ -9,7 +10,7 @@ You could remove all those annoying and noisy things out of your mind, and, just
 
 Neuron is designed to run in the background without your concern, **UNLIKE** [RequireJS](https://github.com/jrburke/requirejs) and many other loaders.
 
-> We're trying to return to the origin of commonjs. There should be only ONE proposal, that is, Module/1.0.
+> We're trying to return to the origin of commonjs. There should be only ONE standard, that is, Module/1.0.
 
 ## Getting Started
 
@@ -206,6 +207,6 @@ Notice that not all options could take effect using `loader.config`, such as `ns
 ## Related Projects
 
 - [cortex](https://github.com/kaelzhang/cortex)
-- [neocortex](https://github.com/kaelzhang/neocortex)
+- [neocortex-sync](https://github.com/kaelzhang/neocortex-sync)
 
 
