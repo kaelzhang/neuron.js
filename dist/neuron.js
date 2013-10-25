@@ -15,7 +15,7 @@
  'use strict';
 
 // version 3.1.0
-// build 2013-10-24
+// build 2013-10-25
 
 // including sequence: see ../build.json
 
@@ -602,7 +602,7 @@ function generateModuleVersionMap(modules, host){
     });
 }
 
-
+// Ref: [semver](http://semver.org/)
 // note that we must use '\-' rather than '-', becase '-' presents a range within brackets
 //                       0  1   2 3      4       5    6               7
 var REGEX_MATCH_SERVER = /^(\D*)((\d+)\.(\d+))\.(\d+)([a-z0-9\.\-+]*)(\/.*)?$/i;
@@ -613,20 +613,21 @@ function parseSemver (version) {
         origin: version
     };
 
-    console.log('match', match)
-
     if ( match ) {
         var decorator = match[1] || '~';
-        // ret.decorator = match[2] || '';
-        // ret.major = match[3];
-        // ret.minor = match[4];
-        // ret.patch = match[5];
-        // ret.extra = match[6];
 
         // We convert the semver to a widest range
         // '~1.3.9-alpha'
         // -> '~1.3.0'
         ret.base = match[2] + '.0';
+
+        // ret.major = match[3];
+        // ret.minor = match[4];
+        // ret.patch = match[5];
+
+        // version.extra contains `-<pre-release>+<build>`
+        ret.extra = match[6];
+
         // -> '~1.3.0'
         ret.range = decorator + ret.base;
         ret.path = match[7] || '';
@@ -793,15 +794,15 @@ function createRequire(env){
 // get a module by id. if not exists, a ghost module(which will be filled after its first `define`) will be created
 // @param {string} id
 // @param {Object} env the environment module
-function getModById(raw_id, env){
-    if(env){
+function getModById(raw, env){
+    var resolved = env ?
+            // pathResolve('align', 'jquery')   -> 'jquery'
+            // pathResolve('align', './')
+            pathResolve(env.id, raw) :
 
-        // pathResolve('align', 'jquery')   -> 'jquery'
-        // pathResolve('align', './')
-        raw_id = pathResolve(env.raw, raw_id);
-    }
+            raw;
 
-    var splitted = raw_id.split(STR_VERSION_SPLITTER);
+    var splitted = resolved.split(STR_VERSION_SPLITTER);
     var name = splitted[0];
 
     // '~0.1.3-alpha/inner' -> 
@@ -819,13 +820,21 @@ function getModById(raw_id, env){
     var version = parseSemver(splitted[1]);
 
     // -> 'a@~0.1.0/inner'
-    var id = name + STR_VERSION_SPLITTER + version.range + version.path;
+    var pkg = name + STR_VERSION_SPLITTER + version.range;
+    var id = pkg + version.path;
 
     return __mods[id] || (__mods[id] = {
-        // @type {string} standard module identifier
-        raw     : raw_id,
+        // raw identifier that be required directly
+        // raw identifier varies from time to time, so never store it
+        // raw     : raw,
+
+        // resolved and parsed id
         id      : id,
+        // the package name which the current module belongs to
+        pkg     : pkg,
+        // package name
         name    : name,
+        // package version
         version : version,
         
         // @type {Array.<function()>} pending callbacks
@@ -1208,7 +1217,7 @@ function generateModuleURL(id){
 
 // Load the script file of a module into the current document
 // @param {string} id module identifier
-function loadByModule(id) {
+function loadByModule(id) { console.log('load', id)
     if(! ~ neuron_loaded.indexOf(id) ){
         neuron_loaded.push(id);
         loadJS( generateModuleURL(id) );
@@ -1217,7 +1226,7 @@ function loadByModule(id) {
 
 
 Loader.on('use', function(e) {
-    !e.defined && loadByModule(e.mod.id);
+    !e.defined && loadByModule(e.mod.pkg);
 });
 
 
