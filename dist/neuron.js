@@ -1217,7 +1217,7 @@ function generateModuleURL(id){
 
 // Load the script file of a module into the current document
 // @param {string} id module identifier
-function loadByModule(id) { console.log('load', id)
+function loadByModule(id) {
     if(! ~ neuron_loaded.indexOf(id) ){
         neuron_loaded.push(id);
         loadJS( generateModuleURL(id) );
