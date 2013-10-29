@@ -15,7 +15,7 @@
  'use strict';
 
 // version 3.1.0
-// build 2013-10-25
+// build 2013-10-29
 
 // including sequence: see ../build.json
 
@@ -1270,7 +1270,7 @@ NEURON_CONF.ns.forEach(function(host) {
     host.define = define;
 
     // avoid using this method in product environment
-    // host.use = provide;
+    host._use = provide;
 
     host.facade = facade;
 
