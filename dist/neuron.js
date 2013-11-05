@@ -15,7 +15,7 @@
  'use strict';
 
 // version 3.1.0
-// build 2013-10-29
+// build 2013-11-05
 
 // including sequence: see ../build.json
 
@@ -25,6 +25,7 @@
 ;(function(ENV, undefined){
 
 var DOC = document;
+var neuron = makeSureObject(ENV, 'neuron');
 
 
 
@@ -488,7 +489,7 @@ function makeArray(array){
         // false.length     -> undefined    -> [false]
         array.length != null &&
             
-        // NR.isObject(arguments) -> true(all browsers)
+        // isObject(arguments) -> true(all browsers)
         
         // Object.prototype.toString.call(arguments);
         // -> [object Arguments]    if Chrome, IE >= 9, Firefox >= 4
@@ -525,10 +526,10 @@ function makeArray(array){
 
 
 // stack, config or flag for modules
-var Loader = {};
+var loader = {};
 
 // map -> identifier: module
-var __mods = makeSureObject(Loader, 'mods');
+var __mods = makeSureObject(loader, 'mods');
 
 
 // module define
@@ -574,7 +575,7 @@ function define(identifier, dependencies, factory){
                 generateExports(mod);
             }
 
-            Loader.emit('define', {
+            loader.emit('define', {
                 mod: mod
             });
         }
@@ -685,7 +686,7 @@ function generateExports(mod){
     //          }
     //      }
     
-    Loader.emit('ready', {
+    loader.emit('ready', {
         mod: mod
     });
 }
@@ -772,7 +773,7 @@ function registerModLoad(mod, callback){
       : mod.p.push(callback);
     
     // everytime we encounter a module which is depended by the other module, `'use'` event fires 
-    Loader.emit('use', {
+    loader.emit('use', {
         mod: mod,
 
         // prevent duplicate loading
@@ -901,7 +902,7 @@ function pathResolve(from, to) {
 // ----------------------------------------------------------------------------------
 
 // event support
-// mix(Loader, Event);
+// mix(loader, Event);
 
 
 /**
@@ -917,27 +918,27 @@ function pathResolve(from, to) {
 // @param {string} type
 // @returns {Array.<function()>}
 function getEventStorageByType(type){
-    var storage = Loader.__ev || (Loader.__ev = {});
+    var storage = loader.__ev || (loader.__ev = {});
     
     return type ? storage[type] || (storage[type] = []) : [];
 }
 
 
-Loader.on = function(type, fn){
+loader.on = function(type, fn){
     if(fn){
         var storage = getEventStorageByType(type);
         storage.push(fn);
     }
 
-    return Loader;
+    return loader;
 };
     
-Loader.emit = function(type, args){
+loader.emit = function(type, args){
     args = makeArray(args);
         
     getEventStorageByType(type).forEach(function(fn){
         fn.apply(this, args);
-    }, Loader);
+    }, loader);
 };
 
 /**
@@ -1132,25 +1133,38 @@ var CONF_ATTRIBUTES = {
             // ''       -> [window]
             // 'NR'     -> ['NR']       -> [window.NR]
             // 'NR,'    -> ['NR', '']   -> [window.NR, window]
-            return typeof ns === 'string' ? ns.split('|').map(function(name) {
-                return name && makeSureObject(ENV, name) || ENV;
-            }) : ns;
+            ns = typeof ns === 'string' ? ns.split('|').map(function(name) {
+                        return name && makeSureObject(ENV, name) || ENV;
+                    }) : 
+                    isArray(ns) ? ns :
+                        [];
+
+            // There should always be a `neuron` namespace
+            if ( ! ~ ns.indexOf(neuron) ) {
+                ns.push(neuron);
+            }
+
+            return ns;
         }
     },
+
+    // preload: {
+    //     S: function(preload) {
+    //         !NEURON_CONF.debug && splitIfNotArray(preload).forEach(neuron._load);
+    //     },
+
+    //     // Loading javascript url from cookie is forbidden
+    //     C: function() {
+    //         return false;
+    //     }
+    // },
 
     loaded: {
-        S: function(loaded) {
+        S: function (loaded) {
             neuron_loaded.push.apply(neuron_loaded, splitIfNotArray(loaded));
-        }
-    },
-
-    preload: {
-        S: function(preload) {
-            !NEURON_CONF.debug && splitIfNotArray(preload).forEach(loadJS);
         },
 
-        // Loading javascript url from cookie is forbidden
-        C: function() {
+        C: function (){
             return false;
         }
     }
@@ -1183,7 +1197,7 @@ function config(conf) {
     }
 }
 
-Loader.config = config;
+loader.config = config;
 config( combineConfig() );
 
 function hasher(str){
@@ -1220,12 +1234,12 @@ function generateModuleURL(id){
 function loadByModule(id) {
     if(! ~ neuron_loaded.indexOf(id) ){
         neuron_loaded.push(id);
-        loadJS( generateModuleURL(id) );
+        neuron._load( generateModuleURL(id) );
     }
 }
 
 
-Loader.on('use', function(e) {
+loader.on('use', function(e) {
     !e.defined && loadByModule(e.mod.pkg);
 });
 
@@ -1266,6 +1280,9 @@ function facade(){
 };
 
 
+
+console.log(NEURON_CONF.ns)
+
 NEURON_CONF.ns.forEach(function(host) {
     host.define = define;
 
@@ -1274,7 +1291,9 @@ NEURON_CONF.ns.forEach(function(host) {
 
     host.facade = facade;
 
-    host.loader = Loader;
+    host.loader = loader;
+
+    host._load = loadJS;
 });
 
 NEURON_CONF.ns.length = 0;
