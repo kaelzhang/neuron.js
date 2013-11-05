@@ -7,7 +7,7 @@ function test(){
 test();
 
 
-NR.define([], function(K, require, exports){
+define([], function(K, require, exports){
 
 // code ...
 K.xxx();

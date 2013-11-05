@@ -1,4 +1,4 @@
-NR.define([], function(D, require, exports){
+define([], function(D, require, exports){
 
 
 var 

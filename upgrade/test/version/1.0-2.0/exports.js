@@ -6,7 +6,7 @@ var DP;
 
 DP.a();
 
-NR.define([], function(K, require, exports){
+define([], function(K, require, exports){
 
 // local DP
 // expect: DP -> DP_local

@@ -35,8 +35,8 @@ module.exports = function(origin,id){
     
 
     if(reqs.length >0){
-        return "NR.define(\"" + id + "\", ["+reqs.join(",")+"], function(require, exports, module){var $ = NR.DOM;\n"+origin+"\n});";
+        return "define(\"" + id + "\", ["+reqs.join(",")+"], function(require, exports, module){var $ = NR.DOM;\n"+origin+"\n});";
     }else{
-        return "NR.define(\"" + id + "\", [], function(require, exports, module){var $ = NR.DOM;\n"+origin+"\n});";
+        return "define(\"" + id + "\", [], function(require, exports, module){var $ = NR.DOM;\n"+origin+"\n});";
     }
 }

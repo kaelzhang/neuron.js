@@ -21,7 +21,7 @@ var handler = {
 
                 var statement_body;
 
-                // `NR.define` is always inside a AST_SimpleStatement node
+                // `define` is always inside a AST_SimpleStatement node
                 if( statement.CTOR === UglifyJS.AST_SimpleStatement ){
                     statement_body = statement.body;
 
@@ -37,7 +37,7 @@ var handler = {
             }) ){
 
                 if ( node.CTOR !== UglifyJS.AST_Toplevel ) {
-                    console.log('Fatal Error: NR.define in non-toplevel is seriously forbidden');
+                    console.log('Fatal Error: define in non-toplevel is seriously forbidden');
                     console.log('Please manually upgrade your code');
 
                     process.exit(1);
