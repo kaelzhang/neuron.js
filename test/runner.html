@@ -4,13 +4,17 @@
 
 <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script>
 <script>
-NR.Loader.on({
-    provide: function(e) {
-        console.log('event: provide', e.mod.id);
+neuron.loader.on({
+    define: function(e) {
+        console.log('event: define', e);
     },
 
-    load: function(e) {
-        console.log('event: load', e.mod.id);
+    use: function(e){
+        console.log('event: use', e);
+    },
+
+    ready: function(e) {
+        console.log('event: ready', e);
     }
 });
 </script>

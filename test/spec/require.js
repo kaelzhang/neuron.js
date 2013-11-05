@@ -6,12 +6,12 @@ var module_require_2_inited;
 
 var module_require_3_inited;
 
-describe("NR.facade", function(){
+describe("facade", function(){
 
     var POLL_INTERVAL = 50;
 
-    describe("NR.facade(mod)", function(){
-        NR.facade('require');
+    describe("facade(mod)", function(){
+        facade('require');
 
         it("could load a neuron module", function(done){
             var timer = setInterval(function() {
@@ -21,7 +21,6 @@ describe("NR.facade", function(){
                     clearInterval(timer);
                 }
             }, POLL_INTERVAL);
-
         });
         
         it("will run `init` method if exists", function(done){
@@ -36,8 +35,8 @@ describe("NR.facade", function(){
     });
 
 
-    describe("NR.facade({mod}), to suppress interference, we use a new module", function(){
-        NR.facade({
+    describe("facade({mod}), to suppress interference, we use a new module", function(){
+        facade({
             mod: 'require-2'
         });
 
@@ -64,10 +63,10 @@ describe("NR.facade", function(){
     
     });
 
-    describe("NR.facade({mod, config})", function(){
+    describe("facade({mod, config})", function(){
         var atom = {};
 
-        NR.facade({
+        facade({
             mod: 'require-3',
             config: {
                 value: atom
