@@ -1,1 +1,0 @@
-window.test_require_no_init = true;
