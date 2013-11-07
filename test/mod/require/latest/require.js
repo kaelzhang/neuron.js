@@ -1,5 +1,3 @@
-console.log('require/latest loaded');
-
 module_require_loaded = true;
 
 define('require', [], function(require, exports, module){

@@ -1,7 +1,12 @@
+var module_require_3_load_count = 0;
+
 describe("_use()", function(){
-    describe("could prevent duplicate loading", function(){
-        it("description", function(done){
-            
-        });
+    it("could prevent duplicate loading", function(done){
+        _use('require-3', function () {
+            _use('require-3', function () {
+                expect(module_require_3_load_count === 1);
+                done();
+            })
+        })
     });
 });
