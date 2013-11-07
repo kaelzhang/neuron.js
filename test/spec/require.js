@@ -10,29 +10,29 @@ describe("facade", function(){
 
     var POLL_INTERVAL = 50;
 
-    describe("facade(mod)", function(){
-        facade('require');
+    // describe("facade(mod)", function(){
+    //     facade('require');
 
-        it("could load a neuron module", function(done){
-            var timer = setInterval(function() {
-                if(module_require_loaded){
-                    expect( module_require_loaded === true );
-                    done();
-                    clearInterval(timer);
-                }
-            }, POLL_INTERVAL);
-        });
+    //     it("could load a neuron module", function(done){
+    //         var timer = setInterval(function() {
+    //             if(module_require_loaded){
+    //                 expect( module_require_loaded === true );
+    //                 done();
+    //                 clearInterval(timer);
+    //             }
+    //         }, POLL_INTERVAL);
+    //     });
         
-        it("will run `init` method if exists", function(done){
-            var timer = setInterval(function() {
-                if(module_require_inited){
-                    expect( module_require_inited === true );
-                    done();
-                    clearInterval(timer);
-                }
-            }, POLL_INTERVAL);
-        });
-    });
+    //     it("will run `init` method if exists", function(done){
+    //         var timer = setInterval(function() {
+    //             if(module_require_inited){
+    //                 expect( module_require_inited === true );
+    //                 done();
+    //                 clearInterval(timer);
+    //             }
+    //         }, POLL_INTERVAL);
+    //     });
+    // });
 
 
     describe("facade({mod}), to suppress interference, we use a new module", function(){
@@ -68,7 +68,7 @@ describe("facade", function(){
 
         facade({
             mod: 'require-3',
-            config: {
+            data: {
                 value: atom
             }
         });
