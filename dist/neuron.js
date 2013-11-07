@@ -1122,7 +1122,7 @@ var NEURON_CONF = {
     loaded: neuron_loaded
 };
 
-var LOCALHOST = '://localhost'
+var LOCALHOST = '://localhost';
 
 var CONF_ATTRIBUTES = {
 
@@ -1301,7 +1301,7 @@ function facade(item){
     Object(item) === item && provide(item.mod, function(method){
         method.init && method.init(item.data);
     });
-};
+}
 
 
 NEURON_CONF.ns.forEach(function(host) {
