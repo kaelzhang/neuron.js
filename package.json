@@ -1,5 +1,6 @@
 {
   "name": "neuron",
+  "": "",
   "version": "3.2.1",
   "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
   "main": "dist/neuron",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-uglify": "~0.2.0"
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-clean": "~0.5.0"
   }
 }
