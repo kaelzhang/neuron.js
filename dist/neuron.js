@@ -15,7 +15,7 @@
  'use strict';
 
 // version 3.2.1
-// build 2013-11-07
+// build 2013-11-12
 
 // including sequence: see ../build.json
 
@@ -1193,7 +1193,19 @@ var CONF_ATTRIBUTES = {
 
     loaded: {
         S: function (loaded) {
-            neuron_loaded.push.apply(neuron_loaded, splitIfNotArray(loaded));
+            neuron_loaded.push.apply(
+                neuron_loaded, 
+                splitIfNotArray(loaded).map(function (pkg) {
+                    var splitted = pkg.split(STR_VERSION_SPLITTER);
+                    var name = splitted[0];
+                    var version = parseSemver(splitted[1]);
+
+                    if ( version ) {
+                        return name + STR_VERSION_SPLITTER + version.range;
+                    }
+
+                }).filter(Boolean)
+            );
         },
 
         C: function (){
