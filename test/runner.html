@@ -37,11 +37,17 @@ var expect = chai.expect;
 chai.should();
 
 !window.PHANTOMJS && mocha.setup("bdd");
-    
+
+neuron.loader.config({
+    loaded: ['combo-a@0.0.0']
+});
+
 </script>
+<script src="mod/combo/a.js"></script>
 <script src="./spec/require.js"></script>
 <script src="./spec/define.js"></script>
 <script src="./spec/use.js"></script>
+<script src="./spec/combo.js"></script>
 
 
 <script>
