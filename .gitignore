@@ -49,7 +49,6 @@ thumbs.db
 .idea
 node_modules
 build/
-combo/
 reference/
 jscoverage_lib/
 temp/
