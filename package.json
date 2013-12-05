@@ -1,34 +1,39 @@
 {
-  "name": "neuron",
-  "version": "3.3.0",
-  "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
-  "main": "dist/neuron",
-  "directories": {
-    "doc": "doc",
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kaelzhang/neuron.git"
-  },
-  "keywords": [
-    "neuron",
-    "commonjs",
-    "loader",
-    "module",
-    "web"
-  ],
-  "author": "kael",
-  "license": "MIT",
-  "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
-  "readmeFilename": "README.md",
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-jshint": "~0.4.3",
-    "grunt-contrib-uglify": "~0.2.0",
-    "grunt-contrib-clean": "~0.5.0"
-  }
+    "name": "neuron",
+    "version": "3.3.0",
+    "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
+    "main": "dist/neuron",
+    "directories": {
+        "doc": "doc",
+        "test": "test"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/kaelzhang/neuron.git"
+    },
+    "keywords": [
+        "neuron",
+        "commonjs",
+        "loader",
+        "module",
+        "web"
+    ],
+    "author": "kael",
+    "license": "MIT",
+    "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
+    "readmeFilename": "README.md",
+    "devDependencies": {
+        "grunt": "~0.4.1",
+        "grunt-contrib-jshint": "~0.4.3",
+        "grunt-contrib-uglify": "~0.2.0",
+        "grunt-contrib-clean": "~0.5.0"
+    },
+    "cortex": {
+        "scripts": {
+            "build": "grunt"
+        }
+    }
 }
