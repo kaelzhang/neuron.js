@@ -14,8 +14,8 @@
 
 'use strict';
 
-// version 3.3.0
-// build 2013-12-04
+// version 3.3.1
+// build 2013-12-06
 
 // including sequence: see ../build.json
 
@@ -1221,7 +1221,7 @@ var CONF_ATTRIBUTES = {
         }
     },
 
-    range: {
+    ranges: {
         S: function (map) {
             if ( map ) {
                 NEURON_CONF.transform = rangeMapping;
