@@ -34,6 +34,9 @@
     "cortex": {
         "scripts": {
             "build": "grunt"
+        },
+        "directories": {
+            "dist": "dist"
         }
     }
 }
