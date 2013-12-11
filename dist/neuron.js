@@ -14,8 +14,8 @@
 
 'use strict';
 
-// version 3.3.1
-// build 2013-12-06
+// version 3.3.2
+// build 2013-12-11
 
 // including sequence: see ../build.json
 
@@ -546,15 +546,19 @@ var __mods = makeSureObject(loader, 'mods');
 // @param {function(...[number])} factory
  
 // @returns {undefined=}
-function define(identifier, dependencies, factory){
-    if(typeof identifier === 'string' && isArray(dependencies) && typeof factory === 'function' ){
+function define(identifier, dependencies, factory, options){
+    if( 
+        typeof identifier === 'string' && 
+        isArray(dependencies) && 
+        typeof factory === 'function'
+    ){
         var mod = getModById(identifier);
 
         // a single module might be defined more than once.
         // use this trick to prevent module redefining, avoiding the subsequent side effect.
         // mod.f        -> already defined
         // mod.exports  -> the module initialization is done
-        if(!mod.f && !mod.exports){
+        if( !mod.f && !mod.exports ){
             mod.f = factory;
             
             // if has dependencies
@@ -752,9 +756,15 @@ function registerModLoad(mod, callback){
 // use the sandbox to specify the environment for every id that required in the current module 
 // @param {Object} envMod mod
 function createRequire(env){
-    return function(id){
+    var require = function(id){
         return getModById(env.v[id] || id, env).exports;
     };
+
+    require.async = function (dependencies, callback) {
+        _provide(makeArray(dependencies), callback, env);
+    };
+
+    return require;
 }
 
 
