@@ -1,6 +1,6 @@
 module_require_2_loaded = true;
 
-define('require-2', [], function(require, exports, module){
+define('require-2@latest', [], function(require, exports, module){
 
 module.exports = {
     init: function() {

@@ -1,4 +1,4 @@
-define('exports-priority', [], function(require, exports, module){
+define('exports-priority@latest', [], function(require, exports, module){
 
     exports.a = 2;
 
