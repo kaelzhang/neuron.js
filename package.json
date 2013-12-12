@@ -1,6 +1,6 @@
 {
     "name": "neuron",
-    "version": "3.5.0",
+    "version": "3.5.1",
     "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
     "main": "dist/neuron",
     "directories": {
@@ -33,7 +33,10 @@
     },
     "cortex": {
         "scripts": {
-            "build": "grunt"
+            "build": [
+                "npm install",
+                "grunt"
+            ]
         },
         "directories": {
             "dist": "dist"
