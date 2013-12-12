@@ -14,8 +14,8 @@
 
 'use strict';
 
-// version 3.3.2
-// build 2013-12-11
+// version 3.4.0
+// build 2013-12-12
 
 // including sequence: see ../build.json
 
@@ -505,25 +505,37 @@ function makeArray(array){
 
 
 
-// Passive Mode - a very simple version of loader, which
- 
+// ## Passive Mode - a very simple version of loader, which
 // - event supported
 // - No longer concern module loading or business configurations. All things could be done outside of loader.
-// - No longer parse module identifier
-// - No longer support anonymous module definition
 // - No longer support directly define an object as module.exports
 // - When user provide a module with its identifier, 
 //     - loader of passive mode only register callback function which relavant to the identifier into the pending queue. 
 //     - Once the module and its dependencies is defined, the callback function will execute immediately 
  
-// Functionalities:
-
+// ## Functionalities:
 // 1. emit module-load event after module defining
 // 2. provide event interface for each key sub-process
 
 // CommonJS::Modules/Wrappings-Explicit-Dependencies    >> http://kael.me/-cmwed
 // Google closure compiler advanced mode strict
 
+// ## Naming Conventions
+// `'a@1.0.0/relative'`
+
+// ### package 
+// The package which the current module belongs to: 'a@1.0.0'
+// A package only contains `name` and `version` and the `'@'` as the splitter.
+
+// ### module
+// A package is consist of several modules.
+// For example, `'a@1.0.0/relative'` is a module id(entifier)
+
+// ### name
+// Package name: 'a'
+
+// ### version
+// Package version: '1.0.0'
 
 // stack, config or flag for modules
 var loader = {};
@@ -546,7 +558,7 @@ var __mods = makeSureObject(loader, 'mods');
 // @param {function(...[number])} factory
  
 // @returns {undefined=}
-function define(identifier, dependencies, factory, options){
+function define (identifier, dependencies, factory, options){
     if( 
         typeof identifier === 'string' && 
         isArray(dependencies) && 
@@ -566,6 +578,9 @@ function define(identifier, dependencies, factory, options){
                 
                 // ['a@0.0.1']  -> {'a' -> 'a@0.0.1'}
                 generateModuleVersionMap(dependencies, mod.v);
+                if ( options && options.asyncDeps ) {
+                    generateModuleVersionMap(options.asyncDeps, mod.v);
+                }
 
                 _provide(
                     dependencies,
@@ -600,7 +615,7 @@ var STR_VERSION_SPLITTER = '@';
 //     a: '~0.1.0',
 //     b: '~2.3.9'
 // }
-function generateModuleVersionMap(modules, host){
+function generateModuleVersionMap (modules, host){
     modules.forEach(function(mod) {
         var name = mod.split(STR_VERSION_SPLITTER)[0];
         host[name] = mod;
@@ -608,9 +623,10 @@ function generateModuleVersionMap(modules, host){
 }
 
 
+// \stable
 // generate the exports if the module status is 'ready'
 // @param {Object} mod
-function generateExports(mod){
+function generateExports (mod){
     var exports = {};
     var module = {
             exports: exports
@@ -674,7 +690,7 @@ var GLOBAL_ENV = {
 // @public
 // @param {Array.<String>} dependencies
 // @param {(function(...[number]))=} callback (optional)
-function provide(dependencies, callback){
+function provide (dependencies, callback){
     dependencies = makeArray(dependencies);
     
     _provide(dependencies, callback, GLOBAL_ENV);
@@ -690,15 +706,14 @@ function provide(dependencies, callback){
 //         n: {string} namespace of the current module
 //     }
 // @param {boolean=} noCallbackArgs whether callback method need arguments, for inner use
-function _provide(dependencies, callback, env, noCallbackArgs){
+function _provide (dependencies, callback, env, noCallbackArgs, async){
     var counter = dependencies.length;
     var args = [];
     var cb;
 
     if(typeof callback === 'function'){
         cb = noCallbackArgs ?
-            callback
-        : 
+            callback : 
             function(){
                 callback.apply(null, args);
             };
@@ -707,6 +722,10 @@ function _provide(dependencies, callback, env, noCallbackArgs){
     dependencies.forEach(function(dep, i){
         if (dep) {
             var mod = getModById(dep, env);
+
+            if ( async ) {
+                mod.async = true;
+            }
 
             registerModLoad(mod, function(){
                 if(cb){
@@ -734,7 +753,7 @@ function _provide(dependencies, callback, env, noCallbackArgs){
 // @private
 // @param {Object} mod
 // @param {function()} callback
-function registerModLoad(mod, callback){
+function registerModLoad (mod, callback){
     var loaded = !!mod.exports;
     
     // if mod is ready, it will initialize its factory function
@@ -755,13 +774,13 @@ function registerModLoad(mod, callback){
 
 // use the sandbox to specify the environment for every id that required in the current module 
 // @param {Object} envMod mod
-function createRequire(env){
+function createRequire (env){
     var require = function(id){
         return getModById(env.v[id] || id, env).exports;
     };
 
     require.async = function (dependencies, callback) {
-        _provide(makeArray(dependencies), callback, env);
+        _provide(makeArray(dependencies), callback, env, false, true);
     };
 
     return require;
@@ -770,21 +789,21 @@ function createRequire(env){
 
 // get a module by id. if not exists, a ghost module(which will be filled after its first `define`) will be created
 // @param {string} id
-// @param {Object} env the environment module
-function getModById(raw, env){
-    var id = env ?
-            // pathResolve('align', 'jquery')   -> 'jquery'
-            // pathResolve('align', './')
-            pathResolve(env.id, raw) :
+// @param {Object} env the environment module, 
+function getModById (id, env){
+    var parsed;
 
-            raw;
+    // `env` exists, which means
+    if ( env ) {
+        // pathResolve('align', 'jquery')   -> 'jquery'
+        // pathResolve('align', './')
+        id = pathResolve(env.id, id);
 
-    var parsed = parseModuleId(id);
-    id = parsed.n + STR_VERSION_SPLITTER + parsed.v + parsed.p;
+        // 'a@1.0.0'    -> 'a@1.0.0'
+        // 'a'          -> 'a@latest'
+        // 'a/inner'    -> 'a@latest/inner'
+        parsed = parseModuleId(id);
 
-    var mod = __mods[id];
-
-    if ( !mod ) {
         // Suppose:
         // {
         //     'a': {
@@ -796,27 +815,29 @@ function getModById(raw, env){
         // so several modules may point to a same exports
 
         // `NEURON_CONF` is generated by `loader.config`
-        var transformed_version = NEURON_CONF.transform(parsed.v, parsed.n);
-        var transformed_pkg     = parsed.n + STR_VERSION_SPLITTER + transformed_version;
-        var transformed_id      = transformed_pkg + parsed.p;
+        parsed.v = NEURON_CONF.transform(parsed.v, parsed.n);
+        id = formatModuleId(parsed);
 
-        mod = __mods[transformed_id];
+    } else {
+        parsed = parseModuleId(id);
+    }
 
-        if ( !mod ) {
-            // initialize transformed module
-            mod = __mods[transformed_id] = {
-                // @type {Array.<function()>} pending callbacks
-                p       : [],
-                
-                // @type {Object} version map of the current module
-                v       : {},
-                id      : transformed_id,
-                pkg     : transformed_pkg
-            };
-        }
+    var mod = __mods[id];
 
-        // assign the origin module
-        __mods[id] = mod;
+    if ( !mod ) {
+        // initialize transformed module
+        mod = __mods[id] = {
+            name    : parsed.n,
+            version : parsed.v,
+            path    : parsed.p,
+            id      : id,
+            pkg     : formatModulePkg(parsed),
+
+            // @type {Array.<function()>} pending callbacks
+            p       : [],
+            // @type {Object} version map of the current module
+            v       : {}
+        };
     }
 
     return mod;
@@ -842,9 +863,18 @@ function parseModuleId (resolved) {
     return {
         n: name,
         v: version,
-        p: path,
-        i: name + STR_VERSION_SPLITTER + version + path
+        p: path
     };
+}
+
+
+function formatModulePkg (parsed){
+    return parsed.n + STR_VERSION_SPLITTER + parsed.v;
+}
+
+
+function formatModuleId (parsed) {
+    return formatModulePkg(parsed) + parsed.p;
 }
 
 
@@ -858,7 +888,7 @@ var REGEX_DIR_MATCHER = /.*(?=\/.*$)/;
 //
 // http://jsperf.com/regex-vs-split/2
 // vs: http://jsperf.com/regex-vs-split
-function dirname(uri){
+function dirname (uri){
     var m = uri.match(REGEX_DIR_MATCHER);
 
     // abc/def  -> abc
@@ -876,7 +906,7 @@ function dirname(uri){
 // pathResolve('a/b/./c') ==> '/a/b/c'
 // pathResolve('a/b/c/') ==> 'a/b/c/'
 // pathResolve('a//b/c') ==> 'a//b/c'   - for 'a//b/c' is a valid uri
-function pathResolve(from, to) {
+function pathResolve (from, to) {
     // relative
     if(to.indexOf('./') === 0 || to.indexOf('../') === 0){
         var old = (dirname(from) + '/' + to).split('/');
@@ -1108,22 +1138,18 @@ function parseSemver (version) {
         // For example:
         // '~1.3.9-alpha/lang'
         if ( match ) {
-            var decorator = match[1] || '~';
+            ret.decorator = match[1];
 
-            // '1.3.0'
-            ret.base  = match[2] + '.0';
+            // minor version
+            // '1.3'
+            ret.vminor  = match[2];
 
-            ret.major = match[3];
-            ret.minor = match[4];
-            ret.patch = match[5];
+            // ret.major = match[3];
+            // ret.minor = match[4];
+            // ret.patch = match[5];
 
-            // version.extra contains `-<pre-release>+<build>`
-            ret.extra = match[6];
-
-            // The most basic range relevant to the semantic version
-            // We convert the semver to a widest range
-            // -> '~1.3.0'
-            ret.range = decorator + ret.base;
+            // // version.extra contains `-<pre-release>+<build>`
+            // ret.extra = match[6];
         }
     }
 
@@ -1134,9 +1160,15 @@ function parseSemver (version) {
 var neuron_loaded = [];
 var NEURON_CONF = {
     loaded: neuron_loaded,
+
+    // By default, we only cook ranges
     transform: function (version) {
-        // '1.2.3' -> '~1.2.0'
-        return parseSemver(version).range || version;
+        var parsed = parseSemver(version);
+        return parsed.decorator ? 
+            // '~1.2.3'     -> '~1.2.0'
+            parsed.decorator + parsed.vminor + '.0' :
+            // '1.2.3'      -> '1.2.3'
+            version;
     }
 };
 
@@ -1290,15 +1322,25 @@ function absolutizeURL(relative) {
 
 // Generate absolute url of a certain id
 // @param {string} id, standard identifier, such as '<name>@<version>'
-function generateModuleURL(id){
-    var info = id.split('@');
+function generateModuleURL(mod){
+    var rel = (
+        mod.async && mod.path ? 
+            // if is an async module, we will load the source file by module id
+            mod.id : 
 
-    if(!info[1]){
-        info[1] = 'latest';
-    }
+            // if is a normal module, we will load the source file by package
+            
+            // 1.
+            // on use: 'a@1.0.0' (async or sync)
+            // -> 'a/1.0.0/a.js'
 
-    // 'a@0.1.0' -> 'a/0.1.0/a.js'
-    var rel = info.join('/') + '/' + info[0] + '.js';
+            // 2.
+            // on use: 'a@1.0.0/relative' (sync)
+            // -> not an async module, so the module is already packaged inside:
+            // -> 'a/1.0.0/a.js'
+            mod.pkg + '/' + mod.name
+
+    ).replace('@', '/') + '.js';
 
     return absolutizeURL(rel);
 }
@@ -1306,16 +1348,17 @@ function generateModuleURL(id){
 
 // Load the script file of a module into the current document
 // @param {string} id module identifier
-function loadByModule(id) {
+function loadByModule(mod) {
+    var id = mod.id;
     if(! ~ neuron_loaded.indexOf(id) ){
         neuron_loaded.push(id);
-        neuron._load( generateModuleURL(id) );
+        neuron._load( generateModuleURL(mod) );
     }
 }
 
 
 loader.on('use', function(e) {
-    !e.defined && loadByModule(e.mod.pkg);
+    !e.defined && loadByModule(e.mod);
 });
 
 
