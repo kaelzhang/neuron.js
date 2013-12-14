@@ -32,12 +32,7 @@
         "grunt-contrib-clean": "~0.5.0"
     },
     "cortex": {
-        "scripts": {
-            "build": [
-                "npm install",
-                "grunt"
-            ]
-        },
+        "scripts": {},
         "directories": {
             "dist": "dist"
         }
