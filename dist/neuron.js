@@ -14,8 +14,8 @@
 
 'use strict';
 
-// version 3.5.1
-// build 2013-12-13
+// version 3.5.3
+// build 2013-12-19
 
 // including sequence: see ../build.json
 
@@ -1177,7 +1177,10 @@ var range_map = {};
 
 function rangeMapping (range, name) {
     var ranges = range_map[name] || {};
-    return ranges[range];
+    return ranges[range] || 
+
+        // if `range` is a normal version, or not specified, remain the origin.
+        range;
 }
 
 
