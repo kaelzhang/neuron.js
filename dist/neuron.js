@@ -14,7 +14,7 @@
 
 'use strict';
 
-// version 3.5.5
+// version 3.5.6
 // build 2014-01-02
 
 // including sequence: see ../build.json
@@ -1162,22 +1162,26 @@ var NEURON_CONF = {
     loaded: neuron_loaded,
 
     // By default, we only cook ranges
-    transform: function (version) {
-        var parsed = parseSemver(version);
-        return parsed.decorator ? 
-            // '~1.2.3'     -> '~1.2.0'
-            parsed.decorator + parsed.vminor + '.0' :
-            // '1.2.3'      -> '1.2.3'
-            version;
-    }
+    transform: getBaseRange
 };
+
+
+function getBaseRange (version){
+    var parsed = parseSemver(version);
+    return parsed.decorator ? 
+        // '~1.2.3'     -> '~1.2.0'
+        parsed.decorator + parsed.vminor + '.0' :
+        // '1.2.3'      -> '1.2.3'
+        version;
+}
 
 
 var range_map = {};
 
 function rangeMapping (range, name) {
+    var base = getBaseRange(range);
     var ranges = range_map[name] || {};
-    return ranges[range] || 
+    return ranges[base] || 
 
         // if `range` is a normal version, or not specified, remain the origin.
         range;
@@ -1255,6 +1259,7 @@ var CONF_ATTRIBUTES = {
         S: function (map) {
             if ( map ) {
                 NEURON_CONF.transform = rangeMapping;
+                cleanRanges(map);
                 range_map = map;
             }
         },
@@ -1264,6 +1269,57 @@ var CONF_ATTRIBUTES = {
         }
     }
 };
+
+
+function cleanRanges (ranges) {
+    var name;
+
+    for(name in ranges){
+        cleanRangeMap(ranges[name]);
+    }
+}
+
+
+// Suppose:
+
+// package:
+// {
+//     "name": "a",
+//     "dependencies": {
+//         "b": "~1.2.3"
+//     }
+// }
+
+// ranges: 
+// {
+//     "b": {
+//         // actually there's something wrong with the data
+//         "~1.2.4": "1.2.12"
+//         clean -> "~1.2.0": "1.2.12"
+//     }
+// }
+
+// 1. define("a", ["b@~1.2.3"], ...);
+// 2. predefine "b@~1.2.3"
+// 3. transform: "b@~1.2.3" -> "b@1.2.12".
+// 4. define: "b@1.2.12", you must notice that 
+//     if we haven't cleaned the ranges just now, we will get a "b@~1.2.3" defined
+// 5. check whether "b@1.2.12" is loaded
+function cleanRangeMap (map) {
+    var range;
+    var key;
+    var parsed;
+
+    for(range in map){
+        // '1.2.3'  -> '1.2.3'
+        // '~1.2.3' -> '~1.2.0'
+        // 'latest' -> 'latest'
+        key = getBaseRange(range);
+        if ( !(key in map) ) {
+            map[key] = map[range];
+        }
+    }
+}
 
 
 // If is not an array, split it
@@ -1337,11 +1393,17 @@ function generateModuleURL(mod){
 // Load the script file of a module into the current document
 // @param {string} id module identifier
 function loadByModule(mod) {
-    var id = mod.id;
-    if(! ~ neuron_loaded.indexOf(id) ){
-        neuron_loaded.push(id);
-        neuron._load( generateModuleURL(mod) );
+    // The whole package is not loaded
+    if(! ~ neuron_loaded.indexOf(mod.pkg) ){
+        neuron_loaded.push(mod.pkg);
+
+    // If the main entrance of the package is already loaded 
+    // and the current module is not an async module, skip loading.
+    } else if ( !mod.async ) {
+        return;
     }
+
+    neuron._load( generateModuleURL(mod) );
 }
 
 
