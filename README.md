@@ -152,19 +152,31 @@ loader.config({
 });
 ```
 
-#### preload `String|Array.<url>`
+#### ranges `Object`
 
-By default, loader will only load module script file only if we positively provide it or the module is depent by other modules.
+Defines the map which describes the explicit verison to each range.
 
-To prevent starecase-like waterfall of network, we could load specific modules ahead of time in parallel.
+This config often generates by server-side services.
 
 ```js
 loader.config({
-	preload: [
-		'http://mydomain.com/mod/jquery/0.9.2/jquery.min.js'
-	]
+	ranges: {
+		"async": {
+			"latest": "0.2.9"
+		},
+		"jquery": {
+			"~1.9.0": "1.9.10"
+		}
+	}
 });
 ```
+
+#### ext `String`
+
+Defines the file extension of the module file, default to `'.js'`.
+
+Sometimes you want to load compressed files, then you can set it to `'.min.js'` or something.
+
 
 ### Settings in cookie
 
