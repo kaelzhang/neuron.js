@@ -216,6 +216,24 @@ loader.config({
 
 Notice that not all options could take effect using `loader.config`, such as `ns`. And also, `path` and `loaded` could not affect modules which are already loaded.
 
+## Use neuron as an inline Script
+
+Just put the file content of 'dist/neuron.js' inside `<script></script>` of the html.
+
+But **NOTICE** that, by this, you must configure `path` explicitly.
+
+```html
+<script>
+// neuron javascript content
+</script>
+<script>
+loader.config({
+	path: '/mod'
+});
+</script>
+```
+
+
 ## Related Projects
 
 - [cortex](https://github.com/kaelzhang/cortex)

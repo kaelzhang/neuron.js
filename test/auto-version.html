@@ -2,7 +2,13 @@
 <head>
 <meta charset="UTF-8">
 
-<script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script>
+<!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
+<script src="../dist/neuron.js"></script>
+<script>
+    loader.config({
+        path: 'mod'
+    });
+</script>
 <script>
 neuron.loader.on({
     define: function(e) {
