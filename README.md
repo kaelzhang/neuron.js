@@ -1,6 +1,6 @@
 # Neuron
 
-Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader, and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
+Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader which is used by [dianping.com](http://www.dianping.com), and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
 
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
