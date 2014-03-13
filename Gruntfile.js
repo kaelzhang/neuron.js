@@ -44,6 +44,7 @@ module.exports = function( grunt ) {
 
                     // Neuron peripheral
                     'lib/config.js',
+                    'lib/load.js',
 
                     // Exports
                     'lib/exports.js',
