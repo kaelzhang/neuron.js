@@ -118,10 +118,10 @@ You could do all these things in your will (by write your own `lib/config.js` an
 
 ## Configuration Hierarchies
 
-We can configure our settings in three places: with `loader.config()` method, in cookie, or as attributes on script node, of which the priority is:
+We can configure our settings in three places: with `neuron.config()` method, in cookie, or as attributes on script node, of which the priority is:
 
 ```js
-loader.config() > cookie > attributes
+neuron.config() > cookie > attributes
 ```
 
 ### Settings
@@ -130,16 +130,6 @@ loader.config() > cookie > attributes
 
 As same as above.
 
-#### ns `String|Array`
-
-The namespace where neuron public methods will be mixed into, default to `window`. But you could use this configuration to change that.
-
-`'NR'` -> Neuron will explode methods to `NR`.
-
-We could divide several namespaces with `'|'`, or use string arrays.
-
-`'NR|'` or `['NR', window]` -> will explode methods to `NR` and `window` simultaneously.
-
 #### loaded `String|Array.<id>`
 
 To tell neuron loader that those modules are already loaded, and prevent duplicate loading.
@@ -147,7 +137,7 @@ To tell neuron loader that those modules are already loaded, and prevent duplica
 If `String`, we can separate different ids with `'|'` (comma).
 
 ```js
-loader.config({
+neuron.config({
 	loaded: ['jquery@1.9.2', 'async@0.2.9']
 });
 ```
@@ -159,7 +149,7 @@ Defines the map which describes the explicit verison to each range.
 This config often generates by server-side services.
 
 ```js
-loader.config({
+neuron.config({
 	ranges: {
 		"async": {
 			"latest": "0.2.9"
@@ -201,20 +191,20 @@ The node should have an id equal to `'neuron-js'`.
 #### Example
 
 ```html
-data-path="http://localhost" data-ns="NR|"
+data-path="http://localhost"
 ```
 
-### loader.config(options)
+### neuron.config(options)
 
 #### Example
 
 ```js
-loader.config({
+neuron.config({
 	path: 'http://localhost/mod'
 });
 ```
 
-Notice that not all options could take effect using `loader.config`, such as `ns`. And also, `path` and `loaded` could not affect modules which are already loaded.
+Notice that not all options could take effect using `neuron.config`, such as `ns`. And also, `path` and `loaded` could not affect modules which are already loaded.
 
 ## Use neuron as an inline Script
 
@@ -227,7 +217,7 @@ But **NOTICE** that, by this, you must configure `path` explicitly.
 // neuron javascript content
 </script>
 <script>
-loader.config({
+neuron.config({
 	path: '/mod'
 });
 </script>

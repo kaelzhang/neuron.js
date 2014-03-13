@@ -5,12 +5,12 @@
 <!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
 <script src="../dist/neuron.js"></script>
 <script>
-    loader.config({
+    neuron.config({
         path: 'mod'
     });
 </script>
 <script>
-neuron.loader.on({
+neuron.on({
     define: function(e) {
         console.log('event: define', e);
     },
@@ -44,7 +44,7 @@ chai.should();
 
 !window.PHANTOMJS && mocha.setup("bdd");
 
-neuron.loader.config({
+neuron.config({
     loaded: ['combo-a@0.0.0']
 });
 
