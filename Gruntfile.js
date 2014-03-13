@@ -11,21 +11,30 @@ module.exports = function( grunt ) {
         },
 
         build: {
-            // alone: {
-            //     dest: 'dist/neuron-alone.js',
-            //     src: [
-            //         'lib/intro.js',
-            //         'lib/ecma5.js',
+            alone: {
+                dest: 'dist/neuron-noes5.js',
+                src: [
+                    'lib/intro.js',
 
-            //         'lib/seed.js',
-            //         'lib/lang.js',
+                    // Neuron core
+                    // 'lib/ecma5.js',
+
+                    // 'lib/seed.js',
+                    'lib/lang.js',
                     
-            //         'lib/event.js',
-            //         'lib/module-manager.js',
-            //         // 'lib/biz.js',
-            //         'lib/outro.js'
-            //     ]
-            // }, 
+                    'lib/module-manager.js',
+                    'lib/event.js',
+                    'lib/asset.js',
+
+                    // Neuron peripheral
+                    'lib/config.js',
+                    'lib/load.js',
+
+                    // Exports
+                    'lib/exports.js',
+                    'lib/outro.js',
+                ]
+            }, 
 
             active: {
                 dest: 'dist/neuron.js',

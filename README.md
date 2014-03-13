@@ -49,7 +49,7 @@ First of all, **neuron is not designed for human developers to use directly**. M
 With [cortex](https://github.com/kaelzhang/cortex), you might never use this method.
 
 ```js
-define(identifier, dependencies, factory);
+define(identifier, dependencies, factory, options);
 ```
 	
 ### facade()
