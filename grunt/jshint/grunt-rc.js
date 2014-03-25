@@ -16,7 +16,6 @@ module.exports = {
     sub: true,
 
     browser: true,
-    es5: true,
 
     // Defining each variables with a `var` statement is more convenient for coding
     onevar: false,
@@ -25,9 +24,10 @@ module.exports = {
     lastsemic: false,
 
     // Report JSHint errors but not fail the task
-    force: true,
+    // force: true,
 
-
+    // allow global "use strict"
+    globalstrict: true,
 
     globals: {
         require: true,

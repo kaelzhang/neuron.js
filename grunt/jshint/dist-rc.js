@@ -19,7 +19,6 @@ module.exports = {
     sub: true,
 
     browser: true,
-    es5: true,
 
     // Defining each variables with a `var` statement is more convenient for coding
     onevar: false,
@@ -29,7 +28,14 @@ module.exports = {
 
     // Report JSHint errors but not fail the task,
     // JShint is a only creature of obsessive compulsive disorder, IMO.
-    force: true,
+    // force: true,
+
+    // do not check line breaking
+    laxbreak: true,
+
+    // allow global "use strict"
+    globalstrict: true,
+    validthis: true,
 
     globals: { 
     }
