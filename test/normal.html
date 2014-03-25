@@ -11,18 +11,15 @@
     });
 </script>
 <script>
-neuron.on({
-    define: function(e) {
-        console.log('event: define', e);
-    },
-
-    use: function(e){
-        console.log('event: use', e);
-    },
-
-    ready: function(e) {
-        console.log('event: ready', e);
-    }
+neuron
+.on('define', function(e) {
+    console.log('event: define', e);
+})
+.on('use', function(e){
+    console.log('event: use', e);
+})
+.on('ready', function(e) {
+    console.log('event: ready', e);
 });
 </script>
 

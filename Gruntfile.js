@@ -98,7 +98,7 @@ module.exports = function( grunt ) {
                 options: {
                     run: true,
                     timeout:5000,
-                    log: true,
+                    // log: true,
                     logErrors: true,
                     reporter: 'Spec'
                 },
