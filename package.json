@@ -34,7 +34,7 @@
   "cortex": {
     "scripts": {
       "prebuild": [
-        "grunt"
+        "grunt build"
       ]
     },
     "directories": {

@@ -10,7 +10,7 @@ module.exports = function( grunt ) {
             test: ['dist/**/*.js']
         },
 
-        build: {
+        concat: {
             alone: {
                 dest: 'dist/neuron-noes5.js',
                 src: [
@@ -136,7 +136,7 @@ module.exports = function( grunt ) {
 
 
     grunt.registerMultiTask(
-        'build',
+        'concat',
         'build files',
         function() {
             var version = grunt.config( 'pkg.version' );
@@ -183,8 +183,13 @@ module.exports = function( grunt ) {
     // grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-mocha');
 
-    grunt.registerTask('default', [
+
+    grunt.registerTask('build', [
         'clean', 
+        'concat',
+    ]);
+
+    grunt.registerTask('default', [
         'build', 
         'jshint', 
         'mocha', 
