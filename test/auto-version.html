@@ -6,7 +6,8 @@
 <script src="../dist/neuron.js"></script>
 <script>
     neuron.config({
-        path: 'mod'
+        path: 'mod',
+        loaded: ['combo-a@0.0.0']
     });
 </script>
 <script>
@@ -26,8 +27,12 @@ neuron.on({
 </script>
 
 <link rel="stylesheet" href="tool/mocha.css" />
-<script src="./tool/chai.js"></script>
 <script src="./tool/mocha.js"></script>
+<script src="./tool/chai.js"></script>
+<script>
+mocha.setup("bdd");
+var expect = chai.expect;
+</script>
 
 </head>
 
@@ -35,20 +40,6 @@ neuron.on({
 
 <div id="mocha"></div>
 
-<script>
-
-var assert = chai.assert;
-var expect = chai.expect;
-
-chai.should();
-
-!window.PHANTOMJS && mocha.setup("bdd");
-
-neuron.config({
-    loaded: ['combo-a@0.0.0']
-});
-
-</script>
 <script src="mod/combo/a.js"></script>
 
 <script src="./spec/require.js"></script>
@@ -59,9 +50,7 @@ neuron.config({
 
 <script>
 
-window.onload = function() {
-    mocha.run();
-};
+!window.PHANTOMJS && mocha.run();
 
 </script>
 
