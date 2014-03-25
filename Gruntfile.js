@@ -102,7 +102,7 @@ module.exports = function( grunt ) {
                     logErrors: true,
                     reporter: 'Spec'
                 },
-                src: ['test/auto-version.html'],
+                src: ['test/*.html'],
             }
         },
         // uglify: {
