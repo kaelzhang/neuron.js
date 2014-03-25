@@ -1,6 +1,6 @@
 # Changelog
 
-- 4.2.0: Supports dynamic combo. #66
+- 4.2.0: Supports dynamic combo. Refractors inner logic and reduces total size. #66
 - 4.1.0: Adds a new distribution file without the polyfill of ECMAScript5.
 - 4.0.0: Changes APIs. loader -> neuron. Removed `config.ns`.
 - 3.7.0: Completely refractored path calculation and fixes the problem that `require.async` might load a wrong module.

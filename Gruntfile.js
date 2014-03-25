@@ -20,7 +20,7 @@ module.exports = function( grunt ) {
                     // 'lib/ecma5.js',
 
                     // 'lib/seed.js',
-                    'lib/lang.js',
+                    'lib/util.js',
                     
                     'lib/module-manager.js',
                     'lib/event.js',
@@ -28,10 +28,11 @@ module.exports = function( grunt ) {
 
                     // Neuron peripheral
                     'lib/config.js',
-                    'lib/load.js',
+                    'lib/analysis.js',
 
                     // Exports
                     'lib/exports.js',
+                    'lib/load.js',
                     'lib/outro.js',
                 ]
             }, 
@@ -45,7 +46,7 @@ module.exports = function( grunt ) {
                     'lib/ecma5.js',
 
                     // 'lib/seed.js',
-                    'lib/lang.js',
+                    'lib/util.js',
                     
                     'lib/module-manager.js',
                     'lib/event.js',
@@ -53,10 +54,11 @@ module.exports = function( grunt ) {
 
                     // Neuron peripheral
                     'lib/config.js',
-                    'lib/load.js',
+                    'lib/analysis.js',
 
                     // Exports
                     'lib/exports.js',
+                    'lib/load.js',
                     'lib/outro.js',
                 ]
             },
