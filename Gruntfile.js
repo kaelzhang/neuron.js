@@ -83,7 +83,7 @@ module.exports = function( grunt ) {
 
         jshint: {
             dist: {
-                src: [ 'dist/neuron-alone.js' ],
+                src: [ 'dist/*.js' ],
                 options: require('./grunt/jshint/dist-rc')
             },
 
@@ -94,41 +94,44 @@ module.exports = function( grunt ) {
         },
 
         mocha: {
-            all: ['test/*.html'],
-            options: {
-                reporter: 'Spec',
-                run: false,
-                ignoreLeaks: false,
-                timeout:5000
+            test: {
+                options: {
+                    run: true,
+                    timeout:5000,
+                    log: true,
+                    logErrors: true,
+                    reporter: 'Spec'
+                },
+                src: ['test/auto-version.html'],
             }
         },
-        uglify: {
-            all: {
-                files: {
-                    "dist/neuron.min.js": [ "dist/neuron.js" ]
-                },
-                options: {
-                    // Keep our hard-coded banner
-                    preserveComments: "some",
-                    // sourceMap: "dist/neuron.min.map",
-                    // sourceMappingURL: "neuron.min.map",
-                    report: "gzip",
-                    beautify: {
-                        ascii_only: true
-                    },
-                    compress: {
-                        hoist_funs: false,
-                        join_vars: false,
-                        loops: false,
-                        unused: false
-                    },
-                    mangle: {
-                        // saves some bytes when gzipped
-                        except: [ "undefined" ]
-                    }
-                }
-            }
-        }
+        // uglify: {
+        //     all: {
+        //         files: {
+        //             "dist/neuron.min.js": [ "dist/neuron.js" ]
+        //         },
+        //         options: {
+        //             // Keep our hard-coded banner
+        //             preserveComments: "some",
+        //             // sourceMap: "dist/neuron.min.map",
+        //             // sourceMappingURL: "neuron.min.map",
+        //             report: "gzip",
+        //             beautify: {
+        //                 ascii_only: true
+        //             },
+        //             compress: {
+        //                 hoist_funs: false,
+        //                 join_vars: false,
+        //                 loops: false,
+        //                 unused: false
+        //             },
+        //             mangle: {
+        //                 // saves some bytes when gzipped
+        //                 except: [ "undefined" ]
+        //             }
+        //         }
+        //     }
+        // }
     });
 
 
@@ -177,8 +180,14 @@ module.exports = function( grunt ) {
 
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
+    // grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-mocha');
 
-    grunt.registerTask('default', ['clean', 'build', 'jshint', /* 'mocha' */, 'uglify']);
-
+    grunt.registerTask('default', [
+        'clean', 
+        'build', 
+        'jshint', 
+        'mocha', 
+        // 'uglify'
+    ]);
 };
