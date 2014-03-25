@@ -11,5 +11,5 @@ define('combo-a@0.0.0', ['./a'], function (require, exports, module) {
 define('combo-a@0.0.0/a', [], function (require, exports, module) {
     exports.a = function(n){
         return n;
-    } 
+    }
 });
