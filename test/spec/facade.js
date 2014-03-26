@@ -64,16 +64,16 @@ describe("facade", function(){
     });
 
     describe("facade({mod, config})", function(){
-        var atom = {};
-
-        facade({
-            mod: 'require-3',
-            data: {
-                value: atom
-            }
-        });
-
         it("could assign the value of the argument of `init` by `config`", function(done){
+            var atom = {};
+
+            facade({
+                mod: 'require-3',
+                data: {
+                    value: atom
+                }
+            });
+
             var timer = setInterval(function() {
                 if(module_require_2_inited){
                     expect( module_require_2_inited === true );
@@ -82,6 +82,17 @@ describe("facade", function(){
                 }
 
             }, POLL_INTERVAL);
+        });
+
+        // test #72:
+        it("should apply ranges when facading a package", function(done){
+            facade({
+                mod: 'range',
+                data: function (n) {
+                    expect(n).to.equal(1);
+                    done();
+                }
+            });
         });
     });
 
