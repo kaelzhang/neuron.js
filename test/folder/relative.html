@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+
+<!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
+<script src="../../dist/neuron.js"></script>
+<script>
+    neuron.config({
+        path: '../mod',
+        loaded: ['combo-a@0.0.0'],
+        ranges: {
+            'range': {
+                'latest': '0.0.0'
+            }
+        }
+    });
+</script>
+<script>
+neuron
+.on('define', function(e) {
+    console.log('event: define', e);
+})
+.on('use', function(e){
+    console.log('event: use', e);
+})
+.on('ready', function(e) {
+    console.log('event: ready', e);
+});
+</script>
+
+<link rel="stylesheet" href="../tool/mocha.css" />
+<script src="../tool/mocha.js"></script>
+<script src="../tool/chai.js"></script>
+<script>
+mocha.setup("bdd");
+var expect = chai.expect;
+</script>
+
+</head>
+
+<body>
+
+<div id="mocha"></div>
+
+<script src="../mod/combo/a.js"></script>
+
+<script src="../spec/facade.js"></script>
+<script src="../spec/define.js"></script>
+<script src="../spec/use.js"></script>
+<script src="../spec/combo.js"></script>
+<script src="../spec/async.js"></script>
+
+<script>
+
+!window.PHANTOMJS && mocha.run();
+
+</script>
+
+</body>
+
+</html>
