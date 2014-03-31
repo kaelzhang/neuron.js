@@ -25,6 +25,8 @@ module.exports = {
 
     asi: false,
     lastsemic: false,
+    es3: true,
+    // es5: true,
 
     // Report JSHint errors but not fail the task,
     // JShint is a only creature of obsessive compulsive disorder, IMO.
