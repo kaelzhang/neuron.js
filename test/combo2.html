@@ -69,7 +69,10 @@ var expect = chai.expect;
 
 <script>
 
-!window.PHANTOMJS && mocha.run();
+if ( !window.PHANTOMJS ) {
+    mocha.NO_CATCH_EXCEPTIONS = true;
+    mocha.run();
+}
 
 </script>
 
