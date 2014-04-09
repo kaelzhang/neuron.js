@@ -1,5 +1,7 @@
 # Changelog
 
+- 4.4.0: Removes support for configurations on script node.
+- 4.3.0: `require` method will throw an error if module is not found.
 - 4.2.0: Supports dynamic combo(#66). Refractors inner logic and reduces total size. `require.async` will no longer accept array as the first argument.
 - 4.1.0: Adds a new distribution file without the polyfill of ECMAScript5.
 - 4.0.0: Changes APIs. loader -> neuron. Removed `config.ns`.
