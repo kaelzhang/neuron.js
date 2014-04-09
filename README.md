@@ -26,7 +26,12 @@ grunt
 Frequent configurations, for more, just see `Configuration Hierarchies` section.
 
 ```html
-<script src="/dist/neuron.js" id="neuron-js" data-path="http://localhost/mod"></script>
+<script src="/dist/neuron.js"></script>
+<script>
+neuron.config({
+	path: 'http://localhost/mod'
+})
+</script>
 ```	
 
 #### path
@@ -118,11 +123,13 @@ You could do all these things in your will (by write your own `lib/load.js` and 
 
 ## Configuration Hierarchies
 
-We can configure our settings in three places: with `neuron.config()` method, in cookie, or as attributes on script node, of which the priority is:
+We can configure our settings in two places: with `neuron.config()` method, or in cookie, of which the priority is:
 
 ```js
-neuron.config() > cookie > attributes
+cookie > neuron.config()
 ```
+
+So, neuron has no mode for debugging which you could help yourself by setting the cookies.
 
 ### Settings
 
@@ -184,15 +191,6 @@ document.cookie = 'neuron=' +
 	);
 ```
 
-### Settings as attributes
-
-The node should have an id equal to `'neuron-js'`.
-
-#### Example
-
-```html
-data-path="http://localhost"
-```
 
 ### neuron.config(options)
 
@@ -204,7 +202,7 @@ neuron.config({
 });
 ```
 
-Notice that not all options could take effect using `neuron.config`, such as `ns`. And also, `path` and `loaded` could not affect modules which are already loaded.
+Notice that not all options could take effect using `neuron.config`. And also, `path` and `loaded` could not affect modules which are already loaded.
 
 ## Use neuron as an inline Script
 
