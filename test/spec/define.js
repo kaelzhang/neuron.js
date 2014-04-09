@@ -30,7 +30,17 @@ describe("define, feated with _use", function(){
             });
         
         });
-    });
-        
+    });        
 });
+
+
+describe("require", function(){
+  it("should throw error if module not found", function(done){
+    _use('mod-not-found', function (e) {
+      expect(/Cannot find module/i.test(e.message)).to.equal(true);
+      done();
+    });
+  });
+});
+
 
