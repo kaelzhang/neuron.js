@@ -30,7 +30,7 @@ describe("define, feated with _use", function(){
             });
         
         });
-    });        
+    });
 });
 
 
