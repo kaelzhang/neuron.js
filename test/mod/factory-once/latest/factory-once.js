@@ -1,45 +1,26 @@
 var factory_count = {
   main: -1,
-  booooooom: -1,
-  ok: -1
+  booooooom: -1
 }
 
-define('factory-once@latest/ok', ['./booooooom'], function(require, exports, module){
 
-  // required by two module
+define('factory-once@latest/dep', ['./booooooom'], function(require, exports, module){
   require('./booooooom');
-
-  if (!factory_count.ok) {
-    throw new Error('factory-once/booooooom invoked more than once');
-  }
-
-  ++ factory_count.ok;
 });
 
 
-define('factory-once@latest/abc', [], function(require, exports, module){
+define('factory-once@latest/booooooom', [], function(require, exports, module){
   if (!factory_count.booooooom) {
     throw new Error('factory-once/booooooom invoked more than once');
   }
 
   ++ factory_count.booooooom
+
+  require.async('./dep', function () {});
 });
 
 
-define('factory-once@latest/booooooom', ['./abc'], function(require, exports, module){
-  require('./abc');
-
-  if (!factory_count.booooooom) {
-    throw new Error('factory-once/booooooom invoked more than once');
-  }
-
-  ++ factory_count.booooooom
-});
-
-
-define('factory-once@latest', ['./booooooom', './ok'], function(require, exports, module){
-
-  require('./ok');
+define('factory-once@latest/index', ['./booooooom'], function(require, exports, module){
   require('./booooooom');
 
   if (!factory_count.main) {
