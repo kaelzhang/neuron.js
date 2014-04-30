@@ -1,6 +1,9 @@
 # Changelog
 
-- 4.5.0: Factory functions now only executes when `require()`d.
+
+When version <= 5.0.0, all applications are under complete control by us, so the increasement of versions goes a little fast.
+
+- 5.0.0: <del>4.5.0:</del> Factory functions now only executes when `require()`d. Updates major version that it might affected circular dependencies. Fixes circular dependencies, #83 - #85.
 - 4.4.0: Removes support for configurations on script node.
 - 4.3.0: `require` method will throw an error if module is not found.
 - 4.2.0: Supports dynamic combo(#66). Refractors inner logic and reduces total size. `require.async` will no longer accept array as the first argument.

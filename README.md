@@ -83,35 +83,26 @@ If `data` is defined, data will be passed as the parameter of the `init` method.
 
 ## Events
 
-### Event: define
-
-Emitted after the `define` method of a module is called.
-
-#### event.mod `Object`
-
-The module object.
-
-Notice that never change this object, and treat it as readonly object.
-
-### Event: ready
-
-Emitted when a module is complete ready to `require`() which means the source file of the module is downloaded and executed, and all dependencies are also "ready".
-
-#### event.mod `Object`
-
-The module object.
-
 ### Event: use
 
+- event `Object`
+	- mod `Object` the module object.
+	- defined `boolean` whether the module is already `define`()d.
+ 
 Emitted when a module is provided or `require`() by another module.
 
-#### event.mod `Object`
+```js
+neuron.on('use', function(e){
+	console.log('use', e.mod.id);
+});
+```
 
-The module object.
+### Event: circular
 
-#### event.defined `boolean`
+- event `Object`
+	- mod `Object` the module object.
 
-Whether the module is already `define`()d.
+Emitted when neuron find a circular dependency.
 
  
 ****
