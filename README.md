@@ -1,5 +1,7 @@
 # Neuron [![Build Status](https://travis-ci.org/kaelzhang/neuron.svg?branch=master)](https://travis-ci.org/kaelzhang/neuron)
 
+First of all, **neuron is not designed for human developers to use directly**. Most usually, it works together with [cortex](https://github.com/kaelzhang/cortex).
+
 Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader which is used by [dianping.com](http://www.dianping.com), and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
 
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
@@ -30,7 +32,7 @@ Frequent configurations, for more, just see `Configuration Hierarchies` section.
 <script>
 neuron.config({
 	path: 'http://localhost/mod'
-})
+});
 </script>
 ```	
 
@@ -47,8 +49,6 @@ For the example above:
 module `'abc@0.1.1'` will be located at `'http://localhost/mod/abc/0.1.1/abc.js'`
 
 ## Methods
-
-First of all, **neuron is not designed for human developers to use directly**. Most commonly, it works with [cortex](https://github.com/kaelzhang/cortex) together.
 
 ### define()
 With [cortex](https://github.com/kaelzhang/cortex), you might never use this method.
