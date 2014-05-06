@@ -16,7 +16,7 @@ Neuron is designed to run in the background without your concern, **UNLIKE** [Re
 
 ## Getting Started
 
-### Install
+### Installation
 
 ```bash
 npm install
@@ -35,12 +35,6 @@ neuron.config({
 });
 </script>
 ```	
-
-#### path
-
-CommonJS module path, like `NODE_PATH`, default to 'the root directory of neuronjs'.
-
-Pay attension that `path` will not be resolved to absolute url. So if you don't want a relative `path`, don't forget `'http://'`.
 
 ### Example
 
@@ -122,11 +116,20 @@ cookie > neuron.config()
 
 So, neuron has no mode for debugging which you could help yourself by setting the cookies.
 
-### Settings
+### neuron.config(settings)
+
+```js
+neuron.config({
+	path: 'http://localhost/mod'
+});
+```
 
 #### path `String`
 
-As same as above.
+CommonJS module path, like `NODE_PATH`, default to 'the root directory of neuronjs'.
+
+Pay attension that `path` will not be resolved to absolute url. So if you don't want a relative `path`, don't forget `'http://'`.
+
 
 #### loaded `String|Array.<id>`
 
@@ -183,34 +186,7 @@ document.cookie = 'neuron=' +
 ```
 
 
-### neuron.config(options)
-
-#### Example
-
-```js
-neuron.config({
-	path: 'http://localhost/mod'
-});
-```
-
 Notice that not all options could take effect using `neuron.config`. And also, `path` and `loaded` could not affect modules which are already loaded.
-
-## Use neuron as an inline Script
-
-Just put the file content of 'dist/neuron.js' inside `<script></script>` of the html.
-
-But **NOTICE** that, by this, you must configure `path` explicitly.
-
-```html
-<script>
-// neuron javascript content
-</script>
-<script>
-neuron.config({
-	path: '/mod'
-});
-</script>
-```
 
 
 ## Related Projects
