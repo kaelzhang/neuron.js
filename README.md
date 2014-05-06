@@ -123,12 +123,12 @@ neuron.on('use', function(e){
 });
 ```
 
-### Event: circular
+### Event: cyclic
 
 - event `Object`
 	- mod `Object` the module object.
 
-Emitted when neuron find a circular dependency.
+Emitted when neuron find a cyclic dependency.
 
  
 ****
