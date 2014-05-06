@@ -4,6 +4,10 @@ First of all, **neuron is not designed for human developers to use directly**. M
 
 Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader which is used by [dianping.com](http://www.dianping.com), and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
 
+- Implements commonjs [Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0) standard.
+- Implements [semver](http://semver.org) and [semver ranges](https://github.com/mojombo/semver/issues/113): `~a.b.c` and `^a.b.c`(coming...)
+- Implements `require.resolve()` which is similar to node.js.
+
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
 With [Cortex](https://github.com/kaelzhang/cortex) and Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [AMD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
@@ -36,16 +40,44 @@ neuron.config({
 </script>
 ```	
 
-### Example
-
 For the example above:
 
 module `'abc@0.1.1'` will be located at `'http://localhost/mod/abc/0.1.1/abc.js'`
 
 ## Methods
 
+### require(id)
+ 
+- id `String` module identifier.
+
+To require modules. See [CommonJS Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0)
+
+
+### require.async(id, callback)
+
+- id `String` module identifier.
+- callback `function(exports)` callback must be passed, or `require.async` will do nothing.
+
+Asynchronously loads a module by `id`, and then passes the module `exports` to `callback`.
+
+You should always pass the `callback` parameter because neuron can not make sure the exact time when a module is loaded asynchronously.
+
+It is **NOT** a good practice if the logic of your code relies on the result of the `require.async()`d module without a callback.
+
+
+### require.resolve(path)
+
+- path `String` the relative path to be resolved according to the current module.
+
+Returns the resolved absolute path of the resource. 
+
+Returns `undefined` if `path` is not a relative path.
+
+Returns `undefined` if `path` is even outside the current package.
+
+
 ### define()
-With [cortex](https://github.com/kaelzhang/cortex), you might never use this method.
+With [cortex](https://github.com/kaelzhang/cortex), you might **NEVER** use this method.
 
 ```js
 define(identifier, dependencies, factory, options);
