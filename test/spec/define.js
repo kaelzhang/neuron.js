@@ -41,6 +41,13 @@ describe("require", function(){
       done();
     });
   });
+
+  it("should throw error if require an id with `@`", function(done){
+    _use('require-at', function (e) {
+      expect(/prohibited/.test(e.message)).to.equal(true);
+      done();
+    });
+  });
 });
 
 
