@@ -1,6 +1,7 @@
 # Neuron specified
 dist/
 upgrade/
+test/node/
 
 # Folders for Dev & 
 dev/
