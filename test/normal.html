@@ -20,8 +20,8 @@ neuron
 .on('use', function(e){
     console.log('event: use', e.mod.id);
 })
-.on('circular', function (e) {
-  console.log('circular found', e.mod.id);
+.on('cyclic', function (e) {
+  console.log('cyclic found', e.mod.id);
 });
 </script>
 
