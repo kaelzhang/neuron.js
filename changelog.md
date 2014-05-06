@@ -3,6 +3,7 @@
 
 When version <= 5.0.0, all applications are under complete control by us, so the increasement of versions goes a little fast.
 
+- 5.1.0: Supports `require.resolve`; Supports to facade an entry; Prohibits to load a module id with version.
 - 5.0.0: <del>4.5.0:</del> Factory functions now only executes when `require()`d. Updates major version that it might affected circular dependencies. Fixes circular dependencies, #83 - #85.
 - 4.4.0: Removes support for configurations on script node.
 - 4.3.0: `require` method will throw an error if module is not found.
