@@ -51,3 +51,10 @@ describe("require", function(){
 });
 
 
+describe("require.resolve()", function(){
+  // it("could return the resolved filename", function(done){
+  //   _use('')
+  // });
+});
+
+
