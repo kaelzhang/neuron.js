@@ -5,7 +5,7 @@ First of all, **neuron is not designed for human developers to use directly**. M
 Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader which is used by [dianping.com](http://www.dianping.com), and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
 
 - Implements commonjs [Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0) standard.
-- Implements [semver](http://semver.org) and [semver ranges](https://github.com/mojombo/semver/issues/113): `~a.b.c` and `^a.b.c`(coming...)
+- Implements [semver](http://semver.org) and [semver ranges](https://github.com/mojombo/semver/issues/113): `^a.b.c`(coming...) and `~a.b.c`.
 - Implements `require.resolve()` which is similar to node.js.
 
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
@@ -175,23 +175,18 @@ neuron.config({
 });
 ```
 
-#### ranges `Object`
+#### tree `Object`
 
-Defines the map which describes the explicit verison to each range.
+Tree of the simple shrinkwrap, could be parsed by [neuron-tree](https://www.npmjs.org/package/neuron-tree).
 
-This config often generates by server-side services.
-
-```js
-neuron.config({
-	ranges: {
-		"async": {
-			"latest": "0.2.9"
-		},
-		"jquery": {
-			"~1.9.0": "1.9.10"
-		}
-	}
-});
+```
+<name>: {
+  <version>: {
+    <dep-name>: {
+      <dep-range>: <dep-version>
+    }
+  } 
+}
 ```
 
 #### ext `String`
