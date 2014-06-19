@@ -122,14 +122,6 @@ neuron.on('use', function(e){
 	console.log('use', e.mod.id);
 });
 ```
-
-### Event: cyclic
-
-- event `Object`
-	- mod `Object` the module object.
-
-Emitted when neuron find a cyclic dependency.
-
  
 ****
 # Developer Guide
