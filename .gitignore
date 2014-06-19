@@ -10,6 +10,7 @@ env/
 # cortex
 .cortex/build/
 .cortex/latest-pack
+neurons
 
 # PHP files
 index.php
