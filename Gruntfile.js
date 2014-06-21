@@ -23,7 +23,7 @@ module.exports = function( grunt ) {
                     'lib/util.js',
                     
                     'lib/module-manager.js',
-                    'lib/event.js',
+                    // 'lib/event.js',
                     'lib/asset.js',
 
                     // Neuron peripheral
@@ -49,7 +49,7 @@ module.exports = function( grunt ) {
                     'lib/util.js',
                     
                     'lib/module-manager.js',
-                    'lib/event.js',
+                    // 'lib/event.js',
                     'lib/asset.js',
 
                     // Neuron peripheral
