@@ -5,23 +5,16 @@
 <!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
 <script src="../dist/neuron.js"></script>
 <script>
-    neuron.config({
-        path: 'mod',
-        loaded: ['combo-a@0.0.0'],
-        ranges: {
-            'range': {
-                'latest': '0.0.0'
-            }
-        }
-    });
-</script>
-<script>
-neuron
-.on('use', function(e){
-    console.log('event: use', e.mod.id);
-})
-.on('cyclic', function (e) {
-  console.log('cyclic found', e.mod.id);
+neuron.config({
+  path: 'mod',
+  loaded: ['combo-a@0.0.0'],
+  tree: {
+    _: {
+      "range": {
+        "latest": "0.0.0"
+      }
+    }
+  }
 });
 </script>
 
@@ -53,8 +46,8 @@ var expect = chai.expect;
 <script>
 
 if ( !window.PHANTOMJS ) {
-    mocha.NO_CATCH_EXCEPTIONS = true;
-    mocha.run();
+  mocha.NO_CATCH_EXCEPTIONS = true;
+  mocha.run();
 }
 
 </script>
