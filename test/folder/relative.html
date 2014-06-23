@@ -5,26 +5,16 @@
 <!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
 <script src="../../dist/neuron.js"></script>
 <script>
-    neuron.config({
-        path: '../mod',
-        loaded: ['combo-a@0.0.0'],
-        ranges: {
-            'range': {
-                'latest': '0.0.0'
-            }
-        }
-    });
-</script>
-<script>
-neuron
-.on('define', function(e) {
-    console.log('event: define', e);
-})
-.on('use', function(e){
-    console.log('event: use', e);
-})
-.on('ready', function(e) {
-    console.log('event: ready', e);
+neuron.config({
+  path: '../mod',
+  loaded: ['combo-a@0.0.0'],
+  tree: {
+    _: {
+      'range': {
+        'latest': '0.0.0'
+      }
+    }
+  }
 });
 </script>
 

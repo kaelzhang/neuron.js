@@ -5,49 +5,31 @@
 <!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
 <script src="../dist/neuron.js"></script>
 <script>
-    neuron.config({
-        path: 'mod',
-        combo: function generateComboURL (mods) {
-            return '../concat/' + mods.map(function (mod) {
-                return '~mod~' + (mod.pkg + '/' + mod.name).replace(/\/|@/g, '~') + '.js';
-            }).join(',');
-        },
-        depTree: {
-            'a': {
-                '0.0.0': [
-                    {
-                        // explicit version
-                        'b': '1.0.0'
-                    }
-                ]
-            },
-
-            'b': {
-                '1.0.0': [
-                    {
-                        'c': '~1.1.0'
-                    }
-                ]
-            }
-        },
-
-        ranges: {
-            'c': {
-                '~1.1.0': '1.1.9'
-            }
+neuron.config({
+  path: 'mod',
+  combo: function generateComboURL(mods) {
+    return '../concat/' + mods.map(function(mod) {
+      return '~mod~' + (mod.pkg + '/' + mod.name).replace(/\/|@/g, '~') + '.js';
+    }).join(',');
+  },
+  tree: {
+    'a': {
+      '0.0.0': [{
+        // explicit version
+        'b': {
+          '1.0.0': '1.0.0'
         }
-    });
-</script>
-<script>
-neuron
-.on('define', function(e) {
-    console.log('event: define', e);
-})
-.on('use', function(e){
-    console.log('event: use', e);
-})
-.on('ready', function(e) {
-    console.log('event: ready', e);
+      }]
+    },
+
+    'b': {
+      '1.0.0': [{
+        'c': {
+          '~1.1.0': '1.1.9'
+        }
+      }]
+    }
+  }
 });
 </script>
 
@@ -70,8 +52,8 @@ var expect = chai.expect;
 <script>
 
 if ( !window.PHANTOMJS ) {
-    mocha.NO_CATCH_EXCEPTIONS = true;
-    mocha.run();
+  mocha.NO_CATCH_EXCEPTIONS = true;
+  mocha.run();
 }
 
 </script>
