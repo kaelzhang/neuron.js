@@ -174,9 +174,14 @@ Tree of the simple shrinkwrap, could be parsed by [neuron-tree](https://www.npmj
 ```
 <name>: {
   <version>: {
-    <dep-name>: {
-      <dep-range>: <dep-version>
-    }
+    <dep-name>: [
+      {
+        <sync-dep-range>: <sync-dep-version>
+      },
+      {
+        <async-dep-range>: <async-dep-version>
+      }
+    ]
   } 
 }
 ```

@@ -5,7 +5,8 @@ When version <= 5.0.0, all applications are under complete control by us, so the
 
 ### 6.x
 
-- 6.0.0: [#102][102] Better versioning. No dependency mediation, unlike Maven. Removes both `config.ranges` and `config.depTree`, and merge them into `config.tree`.
+- 6.1.0: [#108][108]: Neuron will never map ranges.
+- 6.0.0: [#102][102]: Better versioning. No dependency mediation, unlike Maven. Removes both `config.ranges` and `config.depTree`, and merge them into `config.tree`.
 
 ### 5.x
 
@@ -33,4 +34,5 @@ When version <= 5.0.0, all applications are under complete control by us, so the
 
 Oh, the changes are too old to track :p
 
+[108]: https://github.com/kaelzhang/neuron/issues/102
 [102]: https://github.com/kaelzhang/neuron/issues/102
