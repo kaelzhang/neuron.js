@@ -106,22 +106,6 @@ module name with version, seperated with `'@'`. For example: `'async@0.1.0'`
 
 If `data` is defined, data will be passed as the parameter of the `init` method.
 
-
-## Events
-
-### Event: use
-
-- event `Object`
-	- mod `Object` the module object.
-	- defined `boolean` whether the module is already `define`()d.
- 
-Emitted when a module is provided or `require`() by another module.
-
-```js
-neuron.on('use', function(e){
-	console.log('use', e.mod.id);
-});
-```
  
 ****
 # Developer Guide
@@ -130,32 +114,20 @@ neuron.on('use', function(e){
 
 You could do all these things in your will (by write your own `lib/load.js` and adjust `Gruntfile.js`). Nevertheless, neuron have a basic configuration file which located at `lib/load.js`.
 
-## Configuration Hierarchies
-
-We can configure our settings in two places: with `neuron.config()` method, or in cookie, of which the priority is:
+## Configuration
 
 ```js
-cookie > neuron.config()
+neuron.config(settings);
 ```
 
-So, neuron has no mode for debugging which you could help yourself by setting the cookies.
-
-### neuron.config(settings)
-
-```js
-neuron.config({
-	path: 'http://localhost/mod'
-});
-```
-
-#### path `String`
+#### settings.path `String`
 
 CommonJS module path, like `NODE_PATH`, default to 'the root directory of neuronjs'.
 
 Pay attension that `path` will not be resolved to absolute url. So if you don't want a relative `path`, don't forget `'http://'`.
 
 
-#### loaded `String|Array.<id>`
+#### settings.loaded `String|Array.<id>`
 
 To tell neuron loader that those modules are already loaded, and prevent duplicate loading.
 
@@ -167,7 +139,7 @@ neuron.config({
 });
 ```
 
-#### tree `Object`
+#### settings.tree `Object`
 
 Tree of the simple shrinkwrap, could be parsed by [neuron-tree](https://www.npmjs.org/package/neuron-tree).
 
@@ -186,31 +158,11 @@ Tree of the simple shrinkwrap, could be parsed by [neuron-tree](https://www.npmj
 }
 ```
 
-#### ext `String`
+#### settings.ext `String`
 
 Defines the file extension of the module file, default to `'.js'`.
 
 Sometimes you want to load compressed files, then you can set it to `'.min.js'` or something.
-
-
-### Settings in cookie
-
-Key: `'neuron'`
-
-Value syntax: `<setting-key>=<setting-value>,<setting-key>=<setting-value>`.
-
-#### Example
-
-```js
-document.cookie = 'neuron=' +
-	encodeURIComponent(
-		'path=http://localhost,' +
-		'loaded=jquery@1.9.2|async@0.2.9'
-	);
-```
-
-
-Notice that not all options could take effect using `neuron.config`. And also, `path` and `loaded` could not affect modules which are already loaded.
 
 
 ## Related Projects
