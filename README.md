@@ -170,4 +170,16 @@ Sometimes you want to load compressed files, then you can set it to `'.min.js'` 
 - [cortex](https://github.com/kaelzhang/cortex)
 - [neocortex-sync](https://github.com/kaelzhang/neocortex-sync)
 
+****
 
+## NPM module: neuronjs
+
+A package to get the JavaScript file of neuron.
+
+```js
+var neuron = require('neuronjs');
+neuron.version(); // 6.0.0
+neuron.content(function(err, content){
+  content; // The file content of neuron.js
+});
+```

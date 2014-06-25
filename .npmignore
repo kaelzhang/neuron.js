@@ -1,0 +1,63 @@
+# Neuron specified
+upgrade/
+test/node/
+/grunt/
+/lib/
+/neurons/
+/test/
+/.cortex/
+Gruntfile.js
+
+
+# Folders for Dev & 
+dev/
+env/
+
+# PHP files
+index.php
+
+# Numerous always-ignore extensions
+*.bak
+*.patch
+*.diff
+*.err
+*.orig  # temp file for git conflict merging
+*.log
+*.rej
+*.swo
+*.swp
+*.zip
+*.vi
+*~
+*.sass-cache
+*.tmp.html
+
+# OS or Editor folders
+.DS_Store
+._*
+.cache
+.project
+.settings
+.tmproj
+*.esproj
+*.sublime-project
+*.sublime-workspace
+nbproject
+thumbs.db
+
+# Folders to ignore
+.hg
+.svn
+.CVS
+.idea
+node_modules
+build/
+reference/
+jscoverage_lib/
+temp/
+*-notrack/
+
+# Filter old Folders
+unit-test/
+old/
+*-old/
