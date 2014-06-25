@@ -1,6 +1,6 @@
 {
   "name": "neuronjs",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "Neuron is a very simple CommonJS module loader.",
   "main": "index.js",
   "directories": {
@@ -33,6 +33,7 @@
     "grunt-contrib-clean": "~0.5.0"
   },
   "cortex": {
+    "version": "6.1.0",
     "scripts": {
       "prebuild": [
         "grunt build"
