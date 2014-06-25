@@ -5,7 +5,7 @@ When version <= 5.0.0, all applications are under complete control by us, so the
 
 ### 6.x
 
-- 6.1.0: [#108][108]: Neuron will never map ranges. No longer supports cookie configurations.
+- 6.1.0: [#108][108]: Neuron will never fake ranges. No longer supports cookie configurations. Removes `'latest'` range.
 - 6.0.0: [#102][102]: Better versioning. No dependency mediation, unlike Maven. Removes both `config.ranges` and `config.depTree`, and merge them into `config.tree`.
 
 ### 5.x
