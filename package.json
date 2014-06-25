@@ -1,8 +1,8 @@
 {
-  "name": "neuron",
-  "version": "6.0.0",
-  "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
-  "main": "dist/neuron",
+  "name": "neuronjs",
+  "version": "6.1.0",
+  "description": "Neuron is a very simple CommonJS module loader.",
+  "main": "index.js",
   "directories": {
     "doc": "doc",
     "test": "test"
@@ -30,15 +30,5 @@
     "grunt-contrib-jshint": "~0.9.2",
     "grunt-mocha": "~0.4.10",
     "grunt-contrib-clean": "~0.5.0"
-  },
-  "cortex": {
-    "scripts": {
-      "prebuild": [
-        "grunt build"
-      ]
-    },
-    "directories": {
-      "dist": "dist"
-    }
   }
 }
