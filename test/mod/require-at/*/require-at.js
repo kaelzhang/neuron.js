@@ -1,4 +1,4 @@
-define('require-at@latest', [], function(require, exports, module){
+define('require-at@*', [], function(require, exports, module){
   var error;
 
   try {

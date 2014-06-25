@@ -1,6 +1,6 @@
 module_require_loaded = true;
 
-define('require@latest', [], function(require, exports, module){
+define('require@*', [], function(require, exports, module){
 
 
 module.exports = {

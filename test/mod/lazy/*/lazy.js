@@ -1,4 +1,4 @@
-define('lazy@latest', ['./booooooom', './ok'], function(require, exports, module){
+define('lazy@*', ['./booooooom', './ok'], function(require, exports, module){
 
   if (true) {
     module.exports = require('./ok');
@@ -13,12 +13,12 @@ define('lazy@latest', ['./booooooom', './ok'], function(require, exports, module
 });
 
 
-define('lazy@latest/booooooom', [], function(require, exports, module){
+define('lazy@*/booooooom', [], function(require, exports, module){
   throw new Error('Boooooooom! The sky will fall upon over your head.');
 });
 
 
-define('lazy@latest/ok', [], function(require, exports, module){
+define('lazy@*/ok', [], function(require, exports, module){
   module.exports = {
     a: 1
   };

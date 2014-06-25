@@ -1,4 +1,4 @@
-define('mod-not-found@latest', [], function(require, exports, module){
+define('mod-not-found@*', [], function(require, exports, module){
   var error;
 
   try {

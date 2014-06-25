@@ -1,4 +1,4 @@
-define('range@latest', [], function(require, exports, module){
+define('range@*', [], function(require, exports, module){
 
 
 module.exports = {

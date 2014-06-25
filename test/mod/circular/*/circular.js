@@ -1,12 +1,12 @@
 var circular_booooooom_count = -1;
 var circular_static_count = -1;
 
-define('circular@latest/dep', ['./booooooom'], function(require, exports, module){
+define('circular@*/dep', ['./booooooom'], function(require, exports, module){
   require('./booooooom');
 });
 
 
-define('circular@latest/booooooom', [], function(require, exports, module){
+define('circular@*/booooooom', [], function(require, exports, module){
   if (!circular_booooooom_count) {
     throw new Error('circular/booooooom invoked more than once');
   }
@@ -18,12 +18,12 @@ define('circular@latest/booooooom', [], function(require, exports, module){
 });
 
 
-define('circular@latest/static-dep', ['./static-boom'], function(require, exports, module){
+define('circular@*/static-dep', ['./static-boom'], function(require, exports, module){
   require('./static-boom');
 });
 
 
-define('circular@latest/static-boom', ['./static-dep'], function(require, exports, module){
+define('circular@*/static-boom', ['./static-dep'], function(require, exports, module){
   if (!circular_static_count) {
     throw new Error('circular/static-boom invoked more than once');
   }
@@ -35,7 +35,7 @@ define('circular@latest/static-boom', ['./static-dep'], function(require, export
 });
 
 
-define('circular@latest/index', ['./booooooom'], function(require, exports, module){
+define('circular@*/index', ['./booooooom'], function(require, exports, module){
   // async circular
   require('./booooooom');
 
