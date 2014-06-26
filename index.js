@@ -16,7 +16,23 @@ exports.version = function () {
 };
 
 
-exports.write = function (dist, callback) {
+exports.write = function (dist, callback, force) {
   dist = node_path.join(dist, 'neuron', version, 'neuron.js');
-  fse.copy(file, dist, callback);
+  fs.exists(dist, function (exists) {
+    if (!exists) {
+      return fse.copy(file, dist, callback);
+    }
+
+    if (!force) {
+      return callback(null);
+    }
+
+    fse.remove(dist, function (err) {
+      if (err) {
+        return callback(err);
+      }
+
+      fse.copy(file, dist, callback);
+    });
+  });
 };
