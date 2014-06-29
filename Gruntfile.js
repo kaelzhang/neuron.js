@@ -139,7 +139,7 @@ module.exports = function( grunt ) {
         'concat',
         'build files',
         function() {
-            var version = grunt.config( 'pkg.version' );
+            var version = grunt.config( 'pkg.cortex.version' );
             var data = this.data;
             var src = data.src;
             var dest = data.dest;
