@@ -1,3 +1,7 @@
+define('dir@*/lib/dir/index.js', [], function (require, exports) {
+  exports.a = 1;
+});
+
 define('dir@*/lib/index.js', ['./dir'], function (require, exports) {
   exports.a = require('./dir').a;
 }, {
@@ -5,9 +9,4 @@ define('dir@*/lib/index.js', ['./dir'], function (require, exports) {
   alias: {
     './dir': './dir/index.js'
   }
-});
-
-
-define('dir@*/lib/dir/index.js', [], function (require, exports) {
-  exports.a = 1;
 });

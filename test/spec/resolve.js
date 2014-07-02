@@ -1,3 +1,7 @@
+define('dir-2@*/lib/dir/index.js', [], function (require, exports) {
+  exports.a = 1;
+});
+
 define('dir-2@*/lib/index.js', ['./dir'], function (require, exports) {
   exports.a = require('./dir').a;
 }, {
@@ -8,9 +12,6 @@ define('dir-2@*/lib/index.js', ['./dir'], function (require, exports) {
 });
 
 
-define('dir-2@*/lib/dir/index.js', [], function (require, exports) {
-  exports.a = 1;
-});
 
 
 describe("require a directory", function(){
@@ -29,6 +30,12 @@ describe("require a directory", function(){
   });
 });
 
+define('file-module2@*/lib/dir.json', [], function (require, exports, module) {
+  module.exports = {
+    "a": 1
+  };
+});
+
 
 define('file-module2@*/lib/index.js', ['./dir'], function (require, exports) {
   exports.a = require('./dir').a;
@@ -38,14 +45,6 @@ define('file-module2@*/lib/index.js', ['./dir'], function (require, exports) {
     './dir': './dir.json'
   }
 });
-
-
-define('file-module2@*/lib/dir.json', [], function (require, exports, module) {
-  module.exports = {
-    "a": 1
-  };
-});
-
 
 describe("file module fallback", function(){
   it("file-module, fallback to .js", function(done){
