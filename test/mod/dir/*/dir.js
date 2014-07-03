@@ -1,5 +1,7 @@
 define('dir@*/lib/dir/index.js', [], function (require, exports) {
   exports.a = 1;
+}, {
+  map: {}
 });
 
 define('dir@*/lib/index.js', ['./dir'], function (require, exports) {

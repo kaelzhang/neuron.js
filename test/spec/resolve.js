@@ -1,5 +1,7 @@
 define('dir-2@*/lib/dir/index.js', [], function (require, exports) {
   exports.a = 1;
+}, {
+  map: {}
 });
 
 define('dir-2@*/lib/index.js', ['./dir'], function (require, exports) {
@@ -35,6 +37,8 @@ define('file-module2@*/lib/dir.json', [], function (require, exports, module) {
   module.exports = {
     "a": 1
   };
+}, {
+  map: {}
 });
 
 
@@ -53,6 +57,8 @@ define('file-module3@*/lib/dir.json', [], function (require, exports, module) {
   module.exports = {
     "a": 1
   };
+}, {
+  map: {}
 });
 
 
@@ -71,6 +77,8 @@ define('file-module4-dep@*', [], function(require, exports, module){
   module.exports = {
     a: 1
   };
+}, {
+  map: {}
 });
 
 
@@ -78,6 +86,8 @@ define('file-module4-dep2@100.2.0', [], function(require, exports, module){
   module.exports = {
     b: 2
   };
+}, {
+  map: {}
 });
 
 
@@ -85,12 +95,16 @@ define('file-module4-dep3@1.1.0', [], function(require, exports, module){
   module.exports = {
     c: 3
   };
+}, {
+  map: {}
 });
 
 define('file-module4-dep3@3.1.0', [], function(require, exports, module){
   module.exports = {
     c: 4
   };
+}, {
+  map: {}
 });
 
 
@@ -133,6 +147,8 @@ define('file-module4@*/lib/entry.json', [], function(require, exports, module){
   module.exports = {
     d: 5
   };
+}, {
+  map: {}
 });
 
 
