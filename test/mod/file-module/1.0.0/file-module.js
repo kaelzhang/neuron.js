@@ -2,7 +2,7 @@ define('file-module@1.0.0/lib/index.js', ['./dir'], function (require, exports) 
   exports.a = require('./dir').a;
 }, {
   main: true,
-  alias: {
+  map: {
     './dir': './dir.js'
   }
 });

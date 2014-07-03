@@ -6,7 +6,7 @@ define('dir@*/lib/index.js', ['./dir'], function (require, exports) {
   exports.a = require('./dir').a;
 }, {
   main: true,
-  alias: {
+  map: {
     './dir': './dir/index.js'
   }
 });
