@@ -2,7 +2,8 @@ define('filename@*/lib/index.js', [], function (require, exports, module, __file
   exports.__filename = __filename;
   exports.__dirname = __dirname;
 }, {
-  main: true
+  main: true,
+  map: {}
 });
 
 
