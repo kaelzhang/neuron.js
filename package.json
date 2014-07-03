@@ -1,6 +1,6 @@
 {
   "name": "neuronjs",
-  "version": "7.0.1",
+  "version": "7.0.2",
   "description": "Neuron is a very simple CommonJS module loader.",
   "main": "index.js",
   "directories": {

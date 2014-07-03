@@ -5,18 +5,54 @@ First of all, **neuron is not designed for human developers to use directly**. M
 Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader which is used by [dianping.com](http://www.dianping.com), and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
 
 - Implements commonjs [Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0) standard.
-- Implements [semver](http://semver.org) and [semver ranges](https://github.com/mojombo/semver/issues/113): `^a.b.c`(coming...) and `~a.b.c`.
+- Fully supports [SemVer](http://semver.org) and [SemVer ranges](https://github.com/mojombo/semver/issues/113): `'^a.b.c'`, `'~a.b.c'`, `'>=a.b.c'`, etc.
 - Implements `require.resolve()` which is similar to node.js.
 
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
-With [Cortex](https://github.com/kaelzhang/cortex) and Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [AMD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
+With [Cortex](https://github.com/kaelzhang/cortex) and Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [*MD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
 
 You could remove all those annoying and noisy things out of your mind, and, just focus on the origin and code your web modules like node.js.
 
 Neuron is designed to run in the background without your concern, **UNLIKE** [RequireJS](https://github.com/jrburke/requirejs) and many other loaders.
 
 > We're trying to return to the origin of commonjs. There should be only ONE standard, that is, Module/1.0.
+
+****
+
+# NPM module: neuronjs
+
+A package to get the JavaScript file of neuron.
+
+```js
+var neuron = require('neuronjs');
+neuron.version(); // 6.0.0
+neuron.content(function(err, content){
+  content; // The file content of neuron.js
+});
+```
+
+### neuron.version();
+
+Returns `String` the version of neuron for browsers, not the version of npm module `neuronjs`
+
+### neuron.write(dest, callback)
+
+- dest `path`
+- callback `function(err)`
+
+Writes the content of neuron.js to the `dest`
+
+### neuron.content(callback)
+
+- callback `function(err, content)`
+- content `Buffer` the buffer of the content of neuron.js
+
+Gets the content of neuron.js
+
+****
+
+# Neuron Loader for Browsers
 
 ## Getting Started
 
@@ -169,36 +205,3 @@ Sometimes you want to load compressed files, then you can set it to `'.min.js'` 
 
 - [cortex](https://github.com/kaelzhang/cortex)
 - [neocortex-sync](https://github.com/kaelzhang/neocortex-sync)
-
-****
-
-## NPM module: neuronjs
-
-A package to get the JavaScript file of neuron.
-
-```js
-var neuron = require('neuronjs');
-neuron.version(); // 6.0.0
-neuron.content(function(err, content){
-  content; // The file content of neuron.js
-});
-```
-
-### neuron.version();
-
-Returns `String` the version of neuron for browsers, not the version of npm module `neuronjs`
-
-### neuron.write(dest, callback)
-
-- dest `path`
-- callback `function(err)`
-
-Writes the content of neuron.js to the `dest`
-
-### neuron.content(callback)
-
-- callback `function(err, content)`
-- content `Buffer` the buffer of the content of neuron.js
-
-Gets the content of neuron.js
-
