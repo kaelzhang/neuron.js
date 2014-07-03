@@ -17,7 +17,6 @@ exports.version = function () {
 
 
 exports.write = function (dist, callback, force) {
-  dist = node_path.join(dist, 'neuron', version, 'neuron.js');
   fs.exists(dist, function (exists) {
     if (!exists) {
       return fse.copy(file, dist, callback);
