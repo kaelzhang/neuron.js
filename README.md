@@ -183,3 +183,22 @@ neuron.content(function(err, content){
   content; // The file content of neuron.js
 });
 ```
+
+### neuron.version();
+
+Returns `String` the version of neuron for browsers, not the version of npm module `neuronjs`
+
+### neuron.write(dest, callback)
+
+- dest `path`
+- callback `function(err)`
+
+Writes the content of neuron.js to the `dest`
+
+### neuron.content(callback)
+
+- callback `function(err, content)`
+- content `Buffer` the buffer of the content of neuron.js
+
+Gets the content of neuron.js
+
