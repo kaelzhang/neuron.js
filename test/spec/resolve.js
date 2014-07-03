@@ -138,7 +138,7 @@ define('file-module4@*/lib/dir.json', ['file-module4-dep@*'], function (require,
     'file-module4-dep3': 'file-module4-dep3@1.1.0'
   },
   entries: [
-    'lib/entry.json'
+    'file-module4@*/lib/entry.json'
   ]
 });
 
