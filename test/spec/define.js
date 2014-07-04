@@ -52,9 +52,44 @@ describe("require", function(){
 
 
 describe("require.resolve()", function(){
-  // it("could return the resolved filename", function(done){
-  //   _use('')
-  // });
+  define('require-resolve@*/lib/main.js', [], function(require, exports, module){
+    exports.a = require.resolve('./a.png');
+  }, {
+    main: true,
+    map: {}
+  });
+
+  it("could return the resolved filename", function(done){
+    _use('require-resolve', function (r) {
+      expect(r.a).to.equal('mod/require-resolve/*/lib/a.png');
+      done();
+    });
+  });
+
+  define('require-resolve2@*/lib/main.js', [], function(require, exports, module){
+    exports.resolve = function (n) {
+      return require.resolve(n);
+    }
+  }, {
+    main: true,
+    map: {}
+  });
+
+  it("will throw if out of range", function(done){
+    _use('require-resolve2', function (r) {
+      try {
+        r.resolve('../a.png');
+      } catch(e) {
+        expect(true).to.equal(false);
+      }
+
+      try {
+        r.resolve('../../a.png');
+      } catch(e) {
+        return;
+      }
+      expect(true).to.equal(false);
+      done();
+    });
+  });
 });
-
-
