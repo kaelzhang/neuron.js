@@ -12,7 +12,7 @@ describe("facade", function() {
 
   describe("facade(mod)", function() {
     facade({
-      mod: 'require'
+      entry: 'require'
     });
 
     it("could load a neuron module", function(done) {
@@ -39,7 +39,7 @@ describe("facade", function() {
 
   describe("facade({mod}), to suppress interference, we use a new module", function() {
     facade({
-      mod: 'require-2'
+      entry: 'require-2'
     });
 
     it("could load a neuron module", function(done) {
@@ -65,12 +65,12 @@ describe("facade", function() {
 
   });
 
-  describe("facade({mod, config})", function() {
+  describe("facade({entry, config})", function() {
     it("could assign the value of the argument of `init` by `config`", function(done) {
       var atom = {};
 
       facade({
-        mod: 'require-3',
+        entry: 'require-3',
         data: {
           value: atom
         }
@@ -89,7 +89,7 @@ describe("facade", function() {
     // test #72:
     it("should apply ranges when facading a package", function(done) {
       facade({
-        mod: 'range',
+        entry: 'range',
         data: function(n) {
           expect(n).to.equal(1);
           done();
@@ -98,4 +98,79 @@ describe("facade", function() {
     });
   });
 
+  describe("facade({entry}), use a js file", function(){
+    define('facade@*/lib/main.js', [], function(require, exports, module){
+      exports.init = function (check) {
+        check(1);
+      };
+    }, {
+      main: true,
+      map: {}
+    });
+
+    it("load a package", function(done){
+      facade({
+        entry: 'facade',
+        data: function(n){
+          expect(n).to.equal(1);
+          done();
+        }
+      });
+    });
+
+    define('facade2@*/a.js', [], function(require, exports, module){
+      exports.init = function (check) {
+        check(1);
+      };
+    }, {
+      map: {}
+    });
+
+    define('facade2@*/a.js.js', [], function(require, exports, module){
+      exports.init = function (check) {
+        // Booooooooooom!
+        check(2);
+      };
+    }, {
+      map: {}
+    });
+
+    it("load a script", function(done){
+      facade({
+        entry: 'facade2/a.js',
+        data: function(n){
+          expect(n).to.equal(1);
+          done();
+        }
+      });
+    });
+
+
+    define('facade3@1.1.0/a.js', [], function(require, exports, module){
+      exports.init = function (check) {
+        check(1);
+      };
+    }, {
+      map: {}
+    });
+
+    define('facade3@1.1.0/a.js.js', [], function(require, exports, module){
+      exports.init = function (check) {
+        // Booooooooooom!
+        check(2);
+      };
+    }, {
+      map: {}
+    });
+
+    it("load a script with version", function(done){
+      facade({
+        entry: 'facade3@1.1.0/a.js',
+        data: function(n){
+          expect(n).to.equal(1);
+          done();
+        }
+      });
+    });
+  });
 });

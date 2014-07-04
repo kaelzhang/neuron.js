@@ -6,6 +6,7 @@ When version <= **5.0.0**, all applications are under complete control by us, so
 ### 6.x
 
 - **6.2.0**: 
+  - [#118][118]: Redesigns `facade`
   - [#114][114]: Redesigns and removes `config.ext`
   - [#96][96]: Supports [File Modules](http://nodejs.org/api/modules.html#modules_file_modules), `require()` directories, `__dirname` and `__filename`.
 - **6.1.0**: [#108][108]: Neuron will never fake ranges. No longer supports cookie configurations. Removes `'latest'` range.
@@ -37,6 +38,7 @@ When version <= **5.0.0**, all applications are under complete control by us, so
 
 Oh, the changes are too old to track :p
 
+[118]: https://github.com/kaelzhang/neuron/issues/118
 [96]: https://github.com/kaelzhang/neuron/issues/114
 [114]: https://github.com/kaelzhang/neuron/issues/114
 [108]: https://github.com/kaelzhang/neuron/issues/108
