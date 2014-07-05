@@ -57,7 +57,7 @@ describe("require.resolve()", function() {
 
   it("could return the resolved filename", function(done) {
     _use('require-resolve', function(r) {
-      expect(r.a).to.equal('mod/require-resolve/*/lib/a.png');
+      expect(r.a).to.equal( __root + '/require-resolve/*/lib/a.png');
       done();
     });
   });
@@ -73,7 +73,7 @@ describe("require.resolve()", function() {
 
   it("will throw if out of range", function(done) {
     _use('require-resolve2', function(r) {
-      expect(r.resolve('../a.png')).to.equal('mod/require-resolve2/*/a.png');
+      expect(r.resolve('../a.png')).to.equal(__root + '/require-resolve2/*/a.png');
       expect(r.resolve('../../a.png')).to.equal(undefined);
       done();
     });
