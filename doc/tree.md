@@ -62,3 +62,10 @@
 3. If there is any async deps, sync deps should always be output
 4. If no deps, no need to output them
 
+
+## Facades (pseudo codes)
+
+
+- If there is a `facade('A')`, there should be a `'A@*' -> '1.2.0'` map
+- If there is a `facade('A@^1.0.0')`, there should be a `'A@^1.0.0' -> '1.2.0'` map
+
