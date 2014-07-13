@@ -30,9 +30,9 @@
         "4.1.0",
         {
           "E@^1.0.0": [
-            // Notice that, B uses a different `D@4.1.0` with A
+            // Notice that, B uses a different `D@4.1.0` from A,
+            // the dependency maps of the two `D@4.1.0` are different.
             "1.9.0"
-            // 4
           ]
         }
       ],
