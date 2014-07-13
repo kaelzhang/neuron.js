@@ -5,10 +5,13 @@
 ## Dependency loading
 
 We say vertex X is ready, if
+- `X.ready === true`, or
 - has no dependencies, or
 - each dependency Y
   - is ready, or
   - there is a path directed from Y to A, which forms a [strongly connected graph](http://en.wikipedia.org/wiki/Strongly_connected_component), and each vertex on the path is loaded.
+
+If X is a vertex of a strongly connected graph, and X is ready, then all vertices of the graph are ready.
 
 ### The Static Situation
 
