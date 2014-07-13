@@ -9,7 +9,7 @@ We say vertex X is ready, if
 - has no dependencies, or
 - each dependency Y of X
   - is ready, or
-  - there is a path directed from Y to A, which forms a [strongly connected graph](http://en.wikipedia.org/wiki/Strongly_connected_component), and each vertex on the path is loaded.
+  - there is a path directed from Y to X, which forms a [strongly connected graph](http://en.wikipedia.org/wiki/Strongly_connected_component), and each vertex on the path is loaded.
 
 If X is a vertex of a strongly connected graph, and X is ready, then all vertices of the graph are ready.
 
