@@ -1,6 +1,6 @@
 # Graph
 
-> The developers's draft
+> The developers' draft
 
 ## Dependency loading
 
@@ -23,7 +23,7 @@ Suppose there is a dependency graph
    v
    C <──────┬──────> E(ready)
    |        |
-   └──────> D ─────> F ────── G
+   └──────> D ─────> F ─────> G
             ^                 |
             |                 |
             └─────────────────┘
@@ -33,7 +33,8 @@ We want to check if A is ready. So,
 
 `A.ready <==> C.ready`
 
-We are not sure if C is ready, and we found C has a dependency D, so
+We are not sure if C is ready, and we found C has a depe
+ndency D, so
 
 `C.read <==> D.ready`
 
@@ -45,4 +46,10 @@ D has 3 dependencies,
 So, D is ready, which indicates A is ready.
 
 
+### Dynamic
+
+Solution:
+
+If X is load, check if X is ready
+- If X is ready and in a graph, and set all modules as ready
 
