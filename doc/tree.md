@@ -17,7 +17,8 @@
         }
       ],
       // An empty array indicates `E^2.0.0` uses a common `E@2.3.0`,
-      // which means, A and B use a same `E^2.0.0`
+      // which means, A and B use a same `E^2.0.0`.
+      // Using a common dependency will avoid unnecessary execution of factory functions.
       "F@^2.0.0": []
     },
     // async deps
