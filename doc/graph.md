@@ -53,7 +53,7 @@ using object `refs` as optimization:
 ```js
 [
   ["2.1.0"],
-  [ "1.9.0"],
+  ["1.9.0"],
 
    // cycle 
   ["1.1.0", {
@@ -62,7 +62,7 @@ using object `refs` as optimization:
 
   ["1.1.0", {
     "Y@~1.1.0": 1
-  }],
+  }]
 ]
 ```
 
