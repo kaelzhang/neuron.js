@@ -13,8 +13,6 @@ We say vertex X is ready, if
 
 If X is a vertex of a strongly connected graph, and X is ready, then all vertices of the graph are ready.
 
-### The Static Situation
-
 Suppose there is a dependency graph
 
 ```
@@ -46,10 +44,59 @@ D has 3 dependencies,
 So, D is ready, which indicates A is ready.
 
 
-### Dynamic
+## Shrinkwrap
 
-Solution:
+using object `refs` as optimization:
 
-If X is load, check if X is ready
-- If X is ready and in a graph, and set all modules as ready
+### refs
 
+```js
+[
+  ["2.1.0"],
+  [ "1.9.0"],
+
+   // cycle 
+  ["1.1.0", {
+    "X@~1.1.0": 2
+  }],
+
+  ["1.1.0", {
+    "Y@~1.1.0": 1
+  }],
+]
+```
+
+### graph
+
+```js
+{
+  // cycle
+  "X@^1.0.0": 2,
+  "Y@^1.0.0": 1,
+
+  "A@1.2.0": [
+    "1.2.0",
+    {
+      "D@^4.0.0": [
+        "4.1.0", 
+        {
+          "E@^1.0.0": ["1.1.0"]
+        }
+      ],
+      "F@^2.0.0": 0
+    }
+  ],
+  "B@5.0.0": [
+    "5.0.0", 
+    {
+      "D@^4.0.0": [
+        "4.1.0", 
+        {
+          "E@^1.0.0": 1
+        }
+      ],
+      "F@^2.0.0": 0
+    }
+  ]
+}
+```
