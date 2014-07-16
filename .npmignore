@@ -2,7 +2,6 @@
 upgrade/
 test/node/
 /grunt/
-/lib/
 /neurons/
 /test/
 /.cortex/

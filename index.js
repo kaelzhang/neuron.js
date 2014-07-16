@@ -4,13 +4,18 @@ var fs = require('fs');
 var fse = require('fs-extra');
 var node_path = require('path');
 var file = node_path.join(__dirname, 'dist', 'neuron.js');
-var version = require('./package.json').cortex.version;
+var concat = require('./node/concat');
 
 exports.content = function (callback) {
   fs.readFile(file, callback);
 };
 
 
+// Methods to get the neuron core
+exports.core = concat.core;
+
+
+var version = require('./package.json').cortex.version;
 exports.version = function () {
   return version;
 };
