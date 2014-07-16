@@ -31,8 +31,7 @@ We want to check if A is ready. So,
 
 `A.ready <==> C.ready`
 
-We are not sure if C is ready, and we found C has a depe
-ndency D, so
+We are not sure if C is ready, and we found C has a dependency D, so
 
 `C.read <==> D.ready`
 
