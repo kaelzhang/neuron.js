@@ -30,15 +30,6 @@ describe("require a directory", function(){
 });
 
 
-define('file-module4@*/lib/entry.json', [], function(require, exports, module){
-  module.exports = {
-    d: 5
-  };
-}, {
-  map: {}
-});
-
-
 describe("file module fallback", function(){
   it("file-module, fallback to .js", function(done){
     _use('file-module@1.0.0', function (dir) {
@@ -132,6 +123,13 @@ describe("file-module4, complex", function(){
     map: {}
   });
 
+  define('file-module4@*/lib/entry.json', [], function(require, exports, module){
+    module.exports = {
+      d: 5
+    };
+  }, {
+    map: {}
+  });
 
   define('file-module4@*/lib/dir.json', ['file-module4-dep@*'], function (require, exports, module) {
     module.exports = {
