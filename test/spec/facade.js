@@ -8,7 +8,7 @@ var module_require_3_inited;
 
 describe("facade", function() {
 
-  var POLL_INTERVAL = 50;
+  var POLL_INTERVAL = 10;
 
   describe("facade(mod)", function() {
     facade({
