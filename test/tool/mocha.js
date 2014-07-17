@@ -42,7 +42,7 @@ require.relative = function (parent) {
         else if ('.' != seg) path.push(seg);
       }
 
-      return require(path.join('/'));
+      return require(path.join('/'));cat
     };
   };
 
@@ -4242,15 +4242,15 @@ Runnable.prototype.run = function(fn){
 
   // async
   if (this.async) {
-    try {
+    // try {
       this.fn.call(ctx, function(err){
         if (err instanceof Error || toString.call(err) === "[object Error]") return done(err);
         if (null != err) return done(new Error('done() invoked with non-Error: ' + err));
         done();
       });
-    } catch (err) {
-      done(err);
-    }
+    // } catch (err) {
+    //   done(err);
+    // }
     return;
   }
 
@@ -4259,13 +4259,13 @@ Runnable.prototype.run = function(fn){
   }
 
   // sync
-  try {
+  // try {
     if (!this.pending) this.fn.call(ctx);
     this.duration = new Date - start;
     fn();
-  } catch (err) {
-    fn(err);
-  }
+  // } catch (err) {
+  //   fn(err);
+  // }
 };
 
 }); // module: runnable.js
@@ -4628,14 +4628,14 @@ Runner.prototype.runTest = function(fn){
 
   if (this.asyncOnly) test.asyncOnly = true;
 
-  try {
+  // try {
     test.on('error', function(err){
       self.fail(test, err);
     });
     test.run(fn);
-  } catch (err) {
-    fn(err);
-  }
+  // } catch (err) {
+  //   fn(err);
+  // }
 };
 
 /**
