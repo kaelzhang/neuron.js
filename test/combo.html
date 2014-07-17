@@ -6,30 +6,7 @@
 <script src="../dist/neuron.js"></script>
 <script>
 neuron.config({
-  path: 'mod',
-  combo: function generateComboURL(mods) {
-    return '../concat/' + mods.map(function(mod) {
-      return '~mod~' + (mod.pkg + '/' + mod.name).replace(/\/|@/g, '~') + '.js';
-    }).join(',');
-  },
-  tree: {
-    'a': {
-      '0.0.0': [{
-        // explicit version
-        'b': {
-          '1.0.0': '1.0.0'
-        }
-      }]
-    },
-
-    'b': {
-      '1.0.0': [{
-        'c': {
-          '~1.1.0': '1.1.9'
-        }
-      }]
-    }
-  }
+  path: 'mod'
 });
 </script>
 <link rel="stylesheet" href="tool/mocha.css" />
@@ -46,7 +23,8 @@ var expect = chai.expect;
 
 <div id="mocha"></div>
 
-<script src="./spec/auto-combo.js"></script>
+<script src="./mod/combo/a.js"></script>
+<script src="./spec/combo.js"></script>
 
 <script>
 
