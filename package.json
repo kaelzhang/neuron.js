@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "grunt"
+    "test": "bash ./test.sh"
   },
   "repository": {
     "type": "git",
@@ -25,7 +25,9 @@
   "license": "MIT",
   "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
   "readmeFilename": "README.md",
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "^3.8.6"
+  },
   "cortex": {
     "version": "7.0.0",
     "scripts": {
