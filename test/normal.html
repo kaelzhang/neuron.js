@@ -2,18 +2,16 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
 <script src="../dist/neuron.js"></script>
 <script>
 var __root = 'mod'
 neuron.config({
   path: __root,
   loaded: ['combo-a@0.0.0'],
-  tree: {
+  graph: {
+    0: ["0.0.0"],
     _: {
-      "range": {
-        "*": "0.0.0"
-      }
+      "range@*": 0
     }
   }
 });
