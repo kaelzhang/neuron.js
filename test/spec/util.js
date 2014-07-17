@@ -25,7 +25,7 @@ var cases = [
 
 cases.forEach(function (c) {
   it(c.d, function(){
-    var r = normalizeArray(c.a);
+    var r = normalize_array(c.a);
     r = r.join('/')
     expect(r).to.equal(c.e);
   });
