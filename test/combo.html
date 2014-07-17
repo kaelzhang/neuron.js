@@ -14,6 +14,7 @@ neuron.config({
 <script src="./tool/chai.js"></script>
 <script>
 mocha.setup("bdd");
+mocha.bail(false);
 var expect = chai.expect;
 </script>
 
@@ -28,8 +29,9 @@ var expect = chai.expect;
 
 <script>
 
-if ( !window.PHANTOMJS ) {
-  mocha.NO_CATCH_EXCEPTIONS = true;
+if (window.mochaPhantomJS) {
+  mochaPhantomJS.run();
+} else {
   mocha.run();
 }
 
