@@ -2,6 +2,7 @@
 
 module.exports = concat;
 
+var async = require('async');
 var fs = require('fs');
 var node_path = require('path');
 var lib = node_path.join(__dirname, '..', 'lib');
@@ -33,7 +34,7 @@ function concat (options, callback) {
       return callback(err);
     }
 
-    var into = options.intro
+    var intro = options.intro
       ? options.intro + '\n\n\n'
       : '';
 
@@ -53,7 +54,11 @@ var core = [
   'module.js'
 ];
 
-var full = [].concat(core).push(
+var full = [
+     'intro.js',
+     // 'ecma5.js',
+      'util.js',
+    'module.js',
      'asset.js',
     'define.js',
       'load.js',
@@ -62,7 +67,7 @@ var full = [].concat(core).push(
     'config.js',
    'exports.js',
      'outro.js'
-);
+];
 
 concat.CORE = core;
 concat.FULL = full;
@@ -75,8 +80,8 @@ concat.core = function (callback) {
 concat.full = function (callback) {
   concat({
     intro: '(function(ENV){',
-    outro: '// Use `this`, and never cares about the environment.'
-      +    '})(this);'
+    outro: '// Use `this`, and never cares about the environment.\n'
+      +    '})(this);',
     files: full
   }, callback);
 };
