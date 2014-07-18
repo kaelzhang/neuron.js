@@ -2,7 +2,7 @@
 
 var concat = require('./concat');
 var node_path = require('path');
-var fs = require('fs');
+var fse = require('fs-extra');
 
 function get_version () {
   var package_json = node_path.join(__dirname, '..', 'package.json');
@@ -18,7 +18,7 @@ function write (type, filename) {
 
     var path = node_path.join(__dirname, '..', 'dist', filename);
     content = content.replace('@VERSION', get_version());
-    fs.writeFile(path, content, function (err) {
+    fse.outputFile(path, content, function (err) {
       if (err) {
         return console.error(err.stack || err);
       }
