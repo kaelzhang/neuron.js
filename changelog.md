@@ -3,6 +3,16 @@
 
 When version <= **5.0.0**, all applications are under complete control by us, so the increasement of versions goes a little fast.
 
+The main interfaces of neuron are not used by human users, and we completely separate logic of page configurations and static JavaScript files, so, actually developers will not aware about the API changes of neuron.
+
+So, we make every move clean and fast.
+
+### 7.x
+
+- **7.0.0**:
+  - [#127][127]: No longer supports dynamic combo
+  - [#121][121]: Supports cyclic dependencies and shadow module which could run modules according to different dependency graph.
+
 ### 6.x
 
 - **6.2.0**: 
@@ -38,6 +48,8 @@ When version <= **5.0.0**, all applications are under complete control by us, so
 
 Oh, the changes are too old to track :p
 
+[127]: https://github.com/kaelzhang/neuron/issues/127
+[121]: https://github.com/kaelzhang/neuron/issues/121
 [118]: https://github.com/kaelzhang/neuron/issues/118
 [96]: https://github.com/kaelzhang/neuron/issues/114
 [114]: https://github.com/kaelzhang/neuron/issues/114
