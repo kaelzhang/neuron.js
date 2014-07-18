@@ -101,7 +101,7 @@ using object `refs` as optimization:
   ],
 
   _: {
-    "A": 4,
+    "A@*": 4,
     "B@5.0.0": 5,
     "B^5.0.0": 5
   }
