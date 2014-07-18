@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+<meta charset="UTF-8">
+
+<script src="../dist/neuron.js"></script>
+<script>
+var __root = 'mod'
+neuron.config({
+  path: __root
+});
+</script>
+
+<link rel="stylesheet" href="tool/mocha.css" />
+<script src="./tool/mocha.js"></script>
+<script src="./tool/chai.js"></script>
+<script>
+mocha.setup("bdd");
+mocha.bail(false);
+var expect = chai.expect;
+</script>
+
+</head>
+
+<body>
+
+<div id="mocha"></div>
+
+<script src="./spec/cyclic.js"></script>
+
+<script>
+
+if (window.mochaPhantomJS) {
+  mochaPhantomJS.run();
+} else {
+  mocha.run();
+}
+
+</script>
+
+</body>
+
+</html>
