@@ -1,4 +1,4 @@
-describe("define, feated with _use", function() {
+describe("exports, feated with _use", function() {
   describe("1. `exports.xxx = xxx`", function() {
     it("module exports could be mixed into argument `exports`", function(done) {
 
