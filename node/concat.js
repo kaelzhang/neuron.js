@@ -62,7 +62,6 @@ var full = [
      'asset.js',
     'define.js',
       'load.js',
-  'analysis.js',
      'ready.js',
     'config.js',
    'exports.js',
