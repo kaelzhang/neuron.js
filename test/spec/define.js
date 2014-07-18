@@ -29,4 +29,22 @@ describe("define, feated with _use", function() {
 
     });
   });
+
+  it("module.exports.a", function(done){
+    define('exports-a@1.0.0/index.js', [], function(require, exports, module, __filename, __dirname){
+      module.exports = {};
+      module.exports.a = 1;
+    }, {
+      main: true,
+      map: {}
+    });
+
+    _use('exports-a@1.0.0', function (mod) {
+      expect(mod).to.deep.equal({
+        a: 1
+      });
+
+      done();
+    });
+  });
 });
