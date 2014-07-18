@@ -10,7 +10,7 @@ So, we make every move clean and fast.
 ### 7.x
 
 - **7.0.0**:
-  - [#127][127]: No longer supports dynamic combo
+  - [#127][127]: No longer supports dynamic combo, and removes `config.ext`.
   - [#121][121]: Supports cyclic dependencies and shadow module which could run modules according to different dependency graph.
 
 ### 6.x

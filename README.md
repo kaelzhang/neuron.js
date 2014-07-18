@@ -177,29 +177,9 @@ neuron.config({
 
 #### settings.tree `Object`
 
-Tree of the simple shrinkwrap, could be parsed by [neuron-tree](https://www.npmjs.org/package/neuron-tree).
+The [directed graph](http://en.wikipedia.org/wiki/Directed_graph) of all dependencies, which could be parsed by [neuron-graph](https://www.npmjs.org/package/neuron-graph).
 
-```
-<name>: {
-  <version>: {
-    <dep-name>: [
-      {
-        <sync-dep-range>: <sync-dep-version>
-      },
-      {
-        <async-dep-range>: <async-dep-version>
-      }
-    ]
-  }
-}
-```
-
-#### settings.ext `String`
-
-Defines the file extension of the module file, default to `'.js'`.
-
-Sometimes you want to load compressed files, then you can set it to `'.min.js'` or something.
-
+The arithmetics to generate the graph is complicated and hard to describe, see [https://github.com/kaelzhang/neuron/blob/master/doc/graph.md](https://github.com/kaelzhang/neuron/blob/master/doc/graph.md) for details (Too Long; Don't Read)
 
 ## Related Projects
 

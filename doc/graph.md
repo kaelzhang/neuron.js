@@ -1,4 +1,4 @@
-# Graph
+# TL;DR Graph
 
 > The developers' draft
 
