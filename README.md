@@ -175,7 +175,7 @@ neuron.config({
 });
 ```
 
-#### settings.tree `Object`
+#### settings.graph `Object`
 
 The [directed graph](http://en.wikipedia.org/wiki/Directed_graph) of all dependencies, which could be parsed by [neuron-graph](https://www.npmjs.org/package/neuron-graph).
 
