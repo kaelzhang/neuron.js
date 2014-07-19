@@ -2,9 +2,9 @@ describe("Cyclic Dependencies: reference", function(){
   it("should not run factory more than once", function(done){
 
     var count_a = 1;
-    define('cyclic@1.1.0/a.js', ['cyclic@1.1.0/index.js'], function(require, exports, module, __filename, __dirname){
+    define('cyclic-local@1.1.0/a.js', ['cyclic-local@1.1.0/index.js'], function(require, exports, module, __filename, __dirname){
       if (count_a ++ > 1) {
-        throw 'Booooooooom, cyclic@1.1.0/a.js runs more than once';
+        throw 'Booooooooom, cyclic-local@1.1.0/a.js runs more than once';
       }
 
       var main = require('./');
@@ -12,14 +12,14 @@ describe("Cyclic Dependencies: reference", function(){
       module.exports.a = true;
     }, {
       map: {
-        './': 'cyclic@1.1.0/index.js'
+        './': 'cyclic-local@1.1.0/index.js'
       }
     });
 
     var count_index = 1;
-    define('cyclic@1.1.0/index.js', ['cyclic@1.1.0/a.js'], function(require, exports, module, __filename, __dirname){
+    define('cyclic-local@1.1.0/index.js', ['cyclic-local@1.1.0/a.js'], function(require, exports, module, __filename, __dirname){
       if (count_index ++ > 1) {
-        throw 'Booooooooom, cyclic@1.1.0/index.js runs more than once';
+        throw 'Booooooooom, cyclic-local@1.1.0/index.js runs more than once';
       }
 
       exports.one = 1;
@@ -31,11 +31,11 @@ describe("Cyclic Dependencies: reference", function(){
     }, {
       main: true,
       map: {
-        './a': 'cyclic@1.1.0/a.js'
+        './a': 'cyclic-local@1.1.0/a.js'
       }
     });
 
-    _use('cyclic@1.1.0', function (mod) {
+    _use('cyclic-local@1.1.0', function (mod) {
       expect(mod.a).to.deep.equal({
         one: 1,
         a: true
@@ -45,3 +45,14 @@ describe("Cyclic Dependencies: reference", function(){
     });
   });
 });
+
+
+describe("Cyclic dependencies: load a file", function(){
+  it("should load remote files", function(done){
+    _use('cyclic@1.0.0', function (exports) {
+      expect(exports.a).to.equal(1);
+      done();
+    });
+  });
+});
+
