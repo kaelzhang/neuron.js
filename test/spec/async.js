@@ -17,3 +17,19 @@ describe("require.async()", function() {
     });
   });
 });
+
+
+describe("#128, a facade require.async main entry", function(){
+  it("should throw error if require.async main, due to not found", function(done){
+    _use('async-main@1.0.0/a.js', function (a) {
+      try {
+        a.load(function (main) {
+        });
+        expect(true).to.equal(1);
+        done();
+      } catch(e) {
+        done();
+      }
+    });
+  });
+});
