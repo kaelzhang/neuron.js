@@ -2,6 +2,7 @@
 dist/
 upgrade/
 test/node/
+.jshintrc
 
 # Folders for Dev & 
 dev/
