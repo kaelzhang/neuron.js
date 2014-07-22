@@ -1,6 +1,6 @@
 {
   "name": "neuronjs",
-  "version": "8.0.7",
+  "version": "8.0.8",
   "description": "Neuron is a very simple CommonJS module loader.",
   "main": "index.js",
   "directories": {
@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "bash test.sh"
+    "test": "sh test.sh"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "version": "7.0.0",
     "scripts": {
       "prebuild": [
-        "grunt build"
+        "sh test.sh"
       ]
     },
     "directories": {
