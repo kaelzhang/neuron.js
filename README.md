@@ -2,11 +2,14 @@
 
 First of all, **neuron is not designed for human developers to use directly**. Most usually, it works together with [cortex](https://github.com/kaelzhang/cortex).
 
-Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader which is used by [dianping.com](http://www.dianping.com), and will be more powerful if working with [Cortex](https://github.com/kaelzhang/cortex).
+Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader which makes your node-style modules run in browsers.
 
 - Implements commonjs [Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0) standard.
 - Fully supports [SemVer](http://semver.org) and [SemVer ranges](https://github.com/mojombo/semver/issues/113): `'^a.b.c'`, `'~a.b.c'`, `'>=a.b.c'`, etc.
-- Implements `require.resolve()` which is similar to node.js.
+- Implements [File Modules](http://nodejs.org/api/modules.html#modules_file_modules) of node.js (Maybe the only one module loader which could do that.)
+- Supports [cyclic dependencies](http://nodejs.org/api/modules.html#modules_cycles).
+- Implements `require.resolve()` for browsers which is similar to node.js.
+- Completely isolated sandboxes.
 
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
