@@ -792,6 +792,8 @@ function generate_exports (module) {
 }
 
 
+var guid = 1;
+
 // Get a shadow module or create a new one if not exists
 // facade({ entry: 'a' })
 function get_module (id, env, strict) {
@@ -812,6 +814,9 @@ function get_module (id, env, strict) {
     // So that `module` could be linked with a unique graph
     module = graph[real_id] = create_shadow_module(mod);
     module.graph = graph;
+
+    // guid
+    module.g || (module.g = guid ++);
   }
 
   return module;
@@ -1225,8 +1230,12 @@ function module_id_to_relative_url_path (id) {
 // @param {function()} callback
 // @param {Array=} stack
 function ready (module, callback, stack) {
+  emit('beforeready', module_id(module) + ':' + module.g);
+
   if (!module.factory) {
+    emit('beforeload', module.id);
     return load_module(module, function () {
+      emit('load', module_id(module));
       ready(module, callback, stack);
     });
   }
@@ -1239,9 +1248,9 @@ function ready (module, callback, stack) {
   // `!callbacks` means the module is ready
   if (!counter || !callbacks) {
     module.r = NULL;
+    emit_ready(module);
     return callback();
   }
-
 
   callbacks.push(callback);
   // if already registered, skip checking
@@ -1253,6 +1262,7 @@ function ready (module, callback, stack) {
     if (!-- counter) {
       stack.length = 0;
       stack = NULL;
+      emit_ready(module);
       run_callbacks(module, 'r');
     }
   };
@@ -1272,6 +1282,15 @@ function ready (module, callback, stack) {
   });
 }
 
+
+function emit_ready (module) {
+  emit('ready', module_id(module) + ':' + module.g);
+}
+
+
+function module_id (module) {
+  return module.main ? module.k : module.id;
+}
 
 // @override
 neuron.ready = ready;

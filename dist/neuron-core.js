@@ -422,6 +422,8 @@ function generate_exports (module) {
 }
 
 
+var guid = 1;
+
 // Get a shadow module or create a new one if not exists
 // facade({ entry: 'a' })
 function get_module (id, env, strict) {
@@ -442,6 +444,9 @@ function get_module (id, env, strict) {
     // So that `module` could be linked with a unique graph
     module = graph[real_id] = create_shadow_module(mod);
     module.graph = graph;
+
+    // guid
+    module.g || (module.g = guid ++);
   }
 
   return module;
