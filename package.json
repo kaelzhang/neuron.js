@@ -32,9 +32,7 @@
     "name": "neuron",
     "version": "7.1.0",
     "scripts": {
-      "prebuild": [
-        "sh test.sh"
-      ],
+      "prebuild": "sh test.sh",
       "prepublish": ""
     },
     "directories": {
