@@ -56,8 +56,9 @@ var core = [
 
 var full = [
      'intro.js',
-     // 'ecma5.js',
+     'ecma5.js',
       'util.js',
+     'event.js',
     'module.js',
      'asset.js',
     'define.js',
