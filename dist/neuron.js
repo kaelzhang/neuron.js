@@ -591,7 +591,7 @@ function get_event_storage_by_type(type) {
 
 
 // Register an event once
-function once(type, fn) {
+function on(type, fn) {
   get_event_storage_by_type(type).push(fn);
 }
 
@@ -602,12 +602,10 @@ function emit(type, data) {
   handlers.forEach(function(handler) {
     handler(data);
   });
-  // Clean
-  handlers.length = 0;
 }
 
 
-neuron.on = once;
+neuron.on = on;
 
 
 // ## Neuron Core: Module Manager

@@ -34,7 +34,8 @@
     "scripts": {
       "prebuild": [
         "sh test.sh"
-      ]
+      ],
+      "prepublish": ""
     },
     "directories": {
       "dist": "dist"
