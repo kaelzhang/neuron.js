@@ -184,6 +184,21 @@ The [directed graph](http://en.wikipedia.org/wiki/Directed_graph) of all depende
 
 The arithmetics to generate the graph is complicated and hard to describe, see [https://github.com/kaelzhang/neuron/blob/master/doc/graph.md](https://github.com/kaelzhang/neuron/blob/master/doc/graph.md) for details (Too Long; Don't Read)
 
+## Events
+
+Event        | Emitted
+------------ | ------------
+beforeready  | when the module is needed by others
+beforeload   | before being downloaded
+load         | when the module is downloaded
+ready        | when the module is ready to be `require()`d
+
+```js
+neuron.on('ready', function(id){
+  console.log('module "' + id + '" is ready to be `require()`d');
+});
+```
+
 ## Related Projects
 
 - [cortex](https://github.com/kaelzhang/cortex)
