@@ -1,6 +1,6 @@
 {
   "name": "neuronjs",
-  "version": "8.1.1",
+  "version": "8.2.0",
   "description": "Neuron is A Full Feature CommonJS Module Manager, Dependency Graph Handler and Loader for Browsers",
   "main": "index.js",
   "directories": {
@@ -26,7 +26,8 @@
   "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "mocha-phantomjs": "^3.5.0"
+    "mocha-phantomjs": "^3.5.0",
+    "tmp": "0.0.24"
   },
   "cortex": {
     "name": "neuron",
@@ -42,6 +43,7 @@
   "dependencies": {
     "async": "^0.9.0",
     "fs-extra": "^0.9.1",
-    "jshint": "^2.5.2"
+    "jshint": "^2.5.2",
+    "read-cortex-json": "^3.3.17"
   }
 }
