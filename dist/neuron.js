@@ -20,6 +20,7 @@ var neuron = {
 };
 
 var NULL = null;
+var FALSE = !1;
 
 var timestamp = + new Date;
 
@@ -453,7 +454,10 @@ function run_callbacks (object, key) {
   var callback;
   // Mark the module is ready
   // `delete module.c` is not safe
-  object[key] = NULL;
+  // #135
+  // Android 2.2 might treat `null` as [object Global] and equal it to true,
+  // So, never confuse `null` and `false`
+  object[key] = FALSE;
   while(callback = callbacks.pop()){
     callback();
   }
@@ -955,7 +959,7 @@ function create_require(env) {
 function test_entries (path, entries) {
   return ~entries.indexOf(path)
     ? path
-    : NULL;
+    : FALSE;
 }
 
 
@@ -1252,7 +1256,7 @@ function ready (module, callback, stack) {
   // `module.r` is `[]` in origin.
   // `!callbacks` means the module is ready
   if (!counter || !callbacks) {
-    module.r = NULL;
+    module.r = FALSE;
     emit_ready(module);
     return callback();
   }
