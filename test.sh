@@ -22,7 +22,13 @@ echo
 
 ./node_modules/.bin/jshint ./dist/neuron.js || abort "jshint not pass"
 
+# test for node
+log "node" "node.js"
+./node_modules/.bin/mocha --reporter spec ./test/node.js
+
 for file in `ls -1 test/*.html`; do
   log "test" "$file"
   ./node_modules/.bin/mocha-phantomjs "$file"
 done
+
+

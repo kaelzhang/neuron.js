@@ -26,6 +26,8 @@
   "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
   "readmeFilename": "README.md",
   "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.21.3",
     "mocha-phantomjs": "^3.5.0",
     "tmp": "0.0.24"
   },
