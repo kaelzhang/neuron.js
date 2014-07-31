@@ -18,6 +18,8 @@ var neuron = {
 
 var NULL = null;
 
+var timestamp = + new Date;
+
 // // Check and make sure the module is downloaded, 
 // // if not, it will download the module
 // neuron.load = function (module, callback){

@@ -21,6 +21,8 @@ var neuron = {
 
 var NULL = null;
 
+var timestamp = + new Date;
+
 // // Check and make sure the module is downloaded, 
 // // if not, it will download the module
 // neuron.load = function (module, callback){
@@ -1109,6 +1111,11 @@ function absolutize_url(pathname) {
   var base = NEURON_CONF.path;
   base || err('config.path must be specified');
   base = base.replace('{n}', pathname.length % 3 + 1);
+
+  pathname += NEURON_CONF.cache === false
+    ? '?f=' + timestamp
+    : '';
+
   return path_resolve(base, pathname);
 }
 
@@ -1320,7 +1327,8 @@ var SETTERS = {
   },
 
   'loaded': justReturn,
-  'graph': justReturn
+  'graph': justReturn,
+  'cache': justReturn
 };
 
 
