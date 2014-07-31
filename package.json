@@ -1,6 +1,6 @@
 {
   "name": "neuron",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "description": "Neuron is a very simple [CommonJS](http://wiki.commonjs.org) module loader.",
   "main": "dist/neuron",
   "directories": {
@@ -26,6 +26,7 @@
   "gitHead": "10a7e25845f06b9ec567a223c4f75f6ead3efd4e",
   "readmeFilename": "README.md",
   "devDependencies": {
+    "grunt-cli": "~0.1.13",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.9.2",
     "grunt-mocha": "~0.4.10",
