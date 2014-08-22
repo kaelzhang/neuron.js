@@ -32,3 +32,22 @@ cases.forEach(function (c) {
 });
 
 });
+
+
+describe("path_join()", function(){
+  var cases = [
+    ['a', 'b', 'a/b'],
+    ['a/b', './c', 'a/b/c'],
+    ['a/b', '../c', 'a/c'],
+    ['a//b', './c', 'a/b/c'],
+    ['../abc', './c', '../abc/c'],
+    ['', './c', 'c'],
+    ['', '../c', '../c']
+  ];
+
+  cases.forEach(function (c) {
+    it(c.join(' '), function(){
+      expect(path_join(c[0], c[1])).to.equal(c[2]);
+    });
+  });
+});
