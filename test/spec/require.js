@@ -45,4 +45,22 @@ describe("require.resolve()", function() {
       done();
     });
   });
+
+  define('require-resolve3@*/index.js', [], function(require, exports, module) {
+    exports.resolve = function(n) {
+      return require.resolve(n);
+    }
+  }, {
+    main: true,
+    map: {}
+  });
+
+  // #140
+  it("should return valid resource when resolve at ./index.js", function(done){
+    _use('require-resolve3', function(r) {
+      expect(r.resolve('./a.png')).to.equal(__root + '/require-resolve3/*/a.png');
+      expect(r.resolve('../a.png')).to.equal(undefined);
+      done();
+    });
+  });
 });
