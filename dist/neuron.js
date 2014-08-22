@@ -16,7 +16,7 @@
 'use strict';
 
 var neuron = {
-  version: '7.1.0'
+  version: '7.1.1'
 };
 
 var NULL = null;
@@ -481,30 +481,51 @@ function dirname(uri) {
 }
 
 
+// Get the relative path to the root of the env
+function resolve_path (path, env) {
+  // '', 'a.png' -> 'a.png'
+  // '', './a.png' -> 'a.png'
+  // '', '../a.png' -> '../a.png'
+  // '/index.js', 'a.png' -> 'a.png'
+  return path_join(
+    // '' -> '' -> ''
+    // '/index.js' -> '/' -> ''
+    dirname(env.p).slice(1),
+    path
+  );
+}
+
+
+// Resolves an id according to env
+function resolve_id (path, env) {
+  path = resolve_path(path, env);
+  return path
+    ? env.k + '/' + path
+    : env.k;
+}
+
+
 // Canonicalize path
-// similar to path.resolve() of node.js
-// NOTICE that the difference between `path_resolve` and `path.resolve` of node.js is:
-// `path_resolve` treats paths which dont begin with './' and '../' as top level paths,
-// but node.js as a relative path.
+// The same as `path.resolve()` of node.js.
 
 // For example:
-// path_resolve('a', 'b')    -> 'b'
-// node_path.resolve('a', 'b')   -> 'a/b'
+// path_join('a', 'b')        -> 'a/b'
+// path_join('a/b', './c')    -> 'a/b/c'
+// path_join('a/b', '../c')   -> 'a/c'
+// path_join('a//b', './c')   -> 'a/b/c'
 
-// path_resolve('a/b', './c')    -> 'a/b/c'
-// path_resolve('a/b', '../c')   -> 'a/c'
-// path_resolve('a//b', './c')   -> 'a//b/c'   - for 'a//b/c' is a valid uri
+// #75:
+// path_join('../abc', './c') -> '../abc/c',
 
-// #75: 
-// path_resolve('../abc', './c') -> '../abc/'
-function path_resolve(from, to) {
-  // relative
-  if (is_path_relative(to)) {
-    var parts = (dirname(from) + '/' + to).split('/');
-    to = normalize_array(parts).join('/');
-  }
-
-  return to;
+// path_join('', './c')       -> 'c'
+// path_join('', '../c')      -> '../c' 
+function path_join(from, to) {
+  var parts = (from + '/' + to)
+    .split('/')
+    // Filter empty string:
+    // ['', '.', 'c'] -> ['.', 'c']
+    .filter(Boolean);
+  return normalize_array(parts).join('/');
 }
 
 
@@ -684,8 +705,7 @@ function parse_id(id, env) {
   if (relative) {
     env.id || module_not_found(id);
 
-    // path_resolve('align', './abc') -> 'align/abc'
-    id = path_resolve(env.id, id);
+    id = resolve_id(id, env);
 
     // Legacy
     // If >= 6.2.0, there is always a map,
@@ -902,7 +922,7 @@ function create_require(env) {
       test_require_id(id);
       var relative = is_path_relative(id);
       if (relative) {
-        id = path_resolve(env.id, id);
+        id = resolve_id(id, env);
         var entries = env.entries;
         id = entries
           ? test_entries(id, entries) 
@@ -938,9 +958,7 @@ function create_require(env) {
 
     // Trying to load the resources of a foreign package is evil.
     if (is_path_relative(path)) {
-      // Prevent leading `'/'`,
-      // which will cause empty item of an array
-      path = path_resolve(env.p.slice(1), path);
+      path = resolve_path(path, env);
 
       // If user try to resolve a url outside the current package
       // it fails silently
@@ -1120,7 +1138,7 @@ function absolutize_url(pathname) {
     ? '?f=' + timestamp
     : '';
 
-  return path_resolve(base, pathname);
+  return path_join(base, pathname);
 }
 
 
@@ -1327,7 +1345,7 @@ var SETTERS = {
     // Make sure 
     // - there's one and only one slash at the end
     // - `conf.path` is a directory 
-    return path.replace(/\/*$/, '/');
+    return path.replace(/\/+$/, '');
   },
 
   'loaded': justReturn,
