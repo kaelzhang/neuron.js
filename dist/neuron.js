@@ -16,7 +16,7 @@
 'use strict';
 
 var neuron = {
-  version: '7.1.1'
+  version: '7.1.2'
 };
 
 var NULL = null;
@@ -804,7 +804,7 @@ function generate_exports (module) {
   // Calculate `filename` ahead of time
   var __filename
     // = module.filename 
-    = absolutize_url(module_id_to_relative_url_path(module.id));
+    = module_id_to_absolute_url(module.id);
   var __dirname = dirname(__filename);
 
   // to keep the object mod away from the executing context of factory,
@@ -963,9 +963,7 @@ function create_require(env) {
       // If user try to resolve a url outside the current package
       // it fails silently
       if (!~path.indexOf('../')) {
-        return absolutize_url(
-          module_id_to_relative_url_path(env.k + '/' + path)
-        );
+        return module_id_to_absolute_url(env.k + '/' + path);
       }
     }
   };
@@ -1126,21 +1124,6 @@ function load_module (module, callback) {
   }
 }
 
-// server: 'http://localhost/abc',
-// -> http://localhost/abc/<relative>
-// @param {string} relative relative module url
-function absolutize_url(pathname) {
-  var base = NEURON_CONF.path;
-  base || err('config.path must be specified');
-  base = base.replace('{n}', pathname.length % 3 + 1);
-
-  pathname += NEURON_CONF.cache === false
-    ? '?f=' + timestamp
-    : '';
-
-  return path_join(base, pathname);
-}
-
 
 // Scenarios:
 // 1. facade('a/path');
@@ -1206,12 +1189,11 @@ function load_by_module(mod) {
     loaded.push(evidence);
   }
 
-  var pathname = generate_module_pathname(mod);
-  load_js(absolutize_url(pathname));
+  load_js(module_to_absolute_url(mod));
 }
 
 
-function generate_module_pathname(mod) {
+function module_to_absolute_url(mod) {
   var id = mod.main
     // if is a main module, we will load the source file by package
 
@@ -1228,13 +1210,24 @@ function generate_module_pathname(mod) {
     // if is an async module, we will load the source file by module id
     : mod.id;
 
-  return module_id_to_relative_url_path(id);
+  return module_id_to_absolute_url(id);
 }
 
 
-// 'a@1.0.0/a' -> './a/1.0.0/a.js'
-function module_id_to_relative_url_path (id) {
-  return './' + id.replace('@', '/');
+// server: 'http://localhost/abc',
+// -> http://localhost/abc/<relative>
+// @param {string} relative relative module url
+function module_id_to_absolute_url(id) {
+  var pathname = id.replace('@', '/');
+  var base = NEURON_CONF.path;
+  base || err('config.path must be specified');
+  base = base.replace('{n}', pathname.length % 3 + 1);
+
+  pathname += NEURON_CONF.cache === false
+    ? '?f=' + timestamp
+    : '';
+
+  return base + pathname;
 }
 
 
@@ -1345,7 +1338,7 @@ var SETTERS = {
     // Make sure 
     // - there's one and only one slash at the end
     // - `conf.path` is a directory 
-    return path.replace(/\/+$/, '');
+    return path.replace(/\/*$/, '/');
   },
 
   'loaded': justReturn,

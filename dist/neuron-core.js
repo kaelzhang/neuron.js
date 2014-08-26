@@ -13,7 +13,7 @@
 'use strict';
 
 var neuron = {
-  version: '7.1.1'
+  version: '7.1.2'
 };
 
 var NULL = null;
@@ -436,7 +436,7 @@ function generate_exports (module) {
   // Calculate `filename` ahead of time
   var __filename
     // = module.filename 
-    = absolutize_url(module_id_to_relative_url_path(module.id));
+    = module_id_to_absolute_url(module.id);
   var __dirname = dirname(__filename);
 
   // to keep the object mod away from the executing context of factory,
@@ -595,9 +595,7 @@ function create_require(env) {
       // If user try to resolve a url outside the current package
       // it fails silently
       if (!~path.indexOf('../')) {
-        return absolutize_url(
-          module_id_to_relative_url_path(env.k + '/' + path)
-        );
+        return module_id_to_absolute_url(env.k + '/' + path);
       }
     }
   };
