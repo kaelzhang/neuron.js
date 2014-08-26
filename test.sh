@@ -28,7 +28,5 @@ log "node" "node.js"
 
 for file in `ls -1 test/*.html`; do
   log "test" "$file"
-  ./node_modules/.bin/mocha-phantomjs "$file"
+  ./node_modules/.bin/mocha-phantomjs "http://localhost:8030/$file"
 done
-
-

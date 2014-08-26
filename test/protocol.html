@@ -2,11 +2,11 @@
 <head>
 <meta charset="UTF-8">
 
-<!-- <script src="../dist/neuron.js" id="neuron-js" data-path="mod"></script> -->
 <script src="../dist/neuron.js"></script>
 <script>
+var __root = 'mod'
 neuron.config({
-  path: 'mod'
+  path: '//localhost:8030/test/mod/'
 });
 </script>
 
@@ -25,8 +25,11 @@ var expect = chai.expect;
 
 <div id="mocha"></div>
 
-<script src="../lib/util.js"></script>
-<script src="spec/util.js"></script>
+<script src="./mod/combo/a.js"></script>
+<script src="./spec/combo.js"></script>
+<script src="./spec/async.js"></script>
+<script src="./spec/cyclic.js"></script>
+<script src="./spec/file-module.js"></script>
 
 <script>
 
