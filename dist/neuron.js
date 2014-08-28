@@ -448,22 +448,6 @@ function mix(receiver, supplier) {
 }
 
 
-// Run the callbacks
-function run_callbacks (object, key) {
-  var callbacks = object[key];
-  var callback;
-  // Mark the module is ready
-  // `delete module.c` is not safe
-  // #135
-  // Android 2.2 might treat `null` as [object Global] and equal it to true,
-  // So, never confuse `null` and `false`
-  object[key] = FALSE;
-  while(callback = callbacks.pop()){
-    callback();
-  }
-}
-
-
 // greedy match:
 var REGEX_DIR_MATCHER = /.*(?=\/.*$)/;
 
@@ -482,6 +466,7 @@ function dirname(uri) {
 
 
 // Get the relative path to the root of the env
+// @returns {string} a module path
 function resolve_path (path, env) {
   // '', 'a.png' -> 'a.png'
   // '', './a.png' -> 'a.png'
@@ -497,6 +482,7 @@ function resolve_path (path, env) {
 
 
 // Resolves an id according to env
+// @returns {string} a module id
 function resolve_id (path, env) {
   path = resolve_path(path, env);
   return path
@@ -752,20 +738,15 @@ function parse_id(id, env) {
 
 
 function get_sub_graph (pkg, graph) {
-  function is_in (map) {
-    return map
-      ? pkg in map
-        ? NEURON_CONF.graph[map[pkg]]
-        // if sub graph not found, always fallback to global graph.
-        : global_graph
-      : global_graph;
-  }
-
   var global_graph = NEURON_CONF.graph._;
-  return graph
-    ? is_in(graph[1]) || is_in(graph[2])
-    // Global
-    : is_in(global_graph);
+  var deps = graph
+    ? graph[1]
+    // If `graph` is undefined, fallback to global_graph
+    : global_graph;
+  return deps && (pkg in deps)
+    // `deps[pkg]` is the graph id for the subtle graph
+    ? NEURON_CONF.graph[deps[pkg]]
+    : global_graph;
 }
 
 
@@ -1104,6 +1085,22 @@ function generate_module_version_map(modules, host) {
     var name = mod.split('@')[0];
     host[name] = mod;
   });
+}
+
+
+// Run the callbacks
+function run_callbacks (object, key) {
+  var callbacks = object[key];
+  var callback;
+  // Mark the module is ready
+  // `delete module.c` is not safe
+  // #135
+  // Android 2.2 might treat `null` as [object Global] and equal it to true,
+  // So, never confuse `null` and `false`
+  object[key] = FALSE;
+  while(callback = callbacks.pop()){
+    callback();
+  }
 }
 
 
