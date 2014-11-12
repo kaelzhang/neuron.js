@@ -30,7 +30,6 @@
     "express": "^4.8.5",
     "jshint": "^2.5.4",
     "mocha": "^1.21.3",
-    "mocha-phantomjs": "^3.5.0",
     "spawns": "^0.3.2",
     "tmp": "0.0.24"
   },
