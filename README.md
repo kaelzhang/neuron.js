@@ -1,4 +1,7 @@
-# Neuron [![NPM version](https://badge.fury.io/js/neuronjs.svg)](http://badge.fury.io/js/neuronjs) [![Build Status](https://travis-ci.org/kaelzhang/neuron.svg?branch=master)](https://travis-ci.org/kaelzhang/neuron)
+[![NPM version](https://badge.fury.io/js/neuronjs.svg)](http://badge.fury.io/js/neuronjs)
+[![Build Status](https://travis-ci.org/kaelzhang/neuron.svg?branch=master)](https://travis-ci.org/kaelzhang/neuron)
+
+# Neuron
 
 > First of all, **neuron is not designed for human developers to use directly**. Most usually, it works together with [cortex](https://github.com/kaelzhang/cortex).
 

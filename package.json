@@ -1,6 +1,6 @@
 {
   "name": "neuronjs",
-  "version": "8.3.1",
+  "version": "8.3.2",
   "description": "Neuron is A Full Feature CommonJS Module Manager, Dependency Graph Handler and Loader for Browsers",
   "main": "index.js",
   "directories": {
