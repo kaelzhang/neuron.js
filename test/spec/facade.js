@@ -11,9 +11,7 @@ describe("facade", function() {
   var POLL_INTERVAL = 10;
 
   describe("facade(mod)", function() {
-    facade({
-      entry: 'require'
-    });
+    facade('require');
 
     it("could load a neuron module", function(done) {
       var timer = setInterval(function() {
@@ -38,9 +36,7 @@ describe("facade", function() {
 
 
   describe("facade({mod}), to suppress interference, we use a new module", function() {
-    facade({
-      entry: 'require-2'
-    });
+    facade('require-2');
 
     it("could load a neuron module", function(done) {
       var timer = setInterval(function() {
@@ -69,11 +65,8 @@ describe("facade", function() {
     it("could assign the value of the argument of `init` by `config`", function(done) {
       var atom = {};
 
-      facade({
-        entry: 'require-3',
-        data: {
-          value: atom
-        }
+      facade('require-3', {
+        value: atom
       });
 
       var timer = setInterval(function() {
@@ -88,12 +81,9 @@ describe("facade", function() {
 
     // test #72:
     it("should apply ranges when facading a package", function(done) {
-      facade({
-        entry: 'range',
-        data: function(n) {
-          expect(n).to.equal(1);
-          done();
-        }
+      facade('range', function(n) {
+        expect(n).to.equal(1);
+        done();
       });
     });
   });
@@ -109,12 +99,9 @@ describe("facade", function() {
     });
 
     it("load a package", function(done){
-      facade({
-        entry: 'facade',
-        data: function(n){
-          expect(n).to.equal(1);
-          done();
-        }
+      facade('facade', function(n){
+        expect(n).to.equal(1);
+        done();
       });
     });
 
@@ -136,12 +123,9 @@ describe("facade", function() {
     });
 
     it("load a script", function(done){
-      facade({
-        entry: 'facade2/a.js',
-        data: function(n){
-          expect(n).to.equal(1);
-          done();
-        }
+      facade('facade2/a.js', function(n){
+        expect(n).to.equal(1);
+        done();
       });
     });
 
@@ -164,12 +148,9 @@ describe("facade", function() {
     });
 
     it("load a script with version", function(done){
-      facade({
-        entry: 'facade3@1.1.0/a.js',
-        data: function(n){
-          expect(n).to.equal(1);
-          done();
-        }
+      facade('facade3@1.1.0/a.js', function(n){
+        expect(n).to.equal(1);
+        done();
       });
     });
   });

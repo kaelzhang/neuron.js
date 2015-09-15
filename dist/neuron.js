@@ -16,7 +16,7 @@
 'use strict';
 
 var neuron = {
-  version: '7.1.2'
+  version: '8.0.0'
 };
 
 var NULL = null;
@@ -1377,16 +1377,13 @@ ENV.define = define;
 // ### Usage 
 // ```
 // // require biz modules with configs
-// facade({
-//   entry: 'app-main-header-bar',
-//   data: {
-//     icon: 'http://kael.me/u/2012-03/icon.png'
-//   }
+// facade('app-main-header-bar', {
+//   icon: 'http://kael.me/u/2012-03/icon.png'
 // });
 //  ```
-ENV.facade = function (item) {
-  use_module_by_id(item.entry, function(method) {
-    method.init && method.init(item.data);
+ENV.facade = function (entry, data) {
+  use_module_by_id(entry, function(method) {
+    method.init && method.init(data);
   });
 };
 
