@@ -47,14 +47,23 @@ function concat (options, callback) {
   });
 }
 
+var FILES = {
+  'normal': [
+     'intro.js',
+     // 'ecma5.js',
+      'util.js',
+     'event.js',
+    'module.js',
+     'asset.js',
+    'define.js',
+      'load.js',
+     'ready.js',
+    'config.js',
+   'exports.js',
+     'outro.js'
+  ],
 
-var core = [
-   'intro.js',
-    'util.js',
-  'module.js'
-];
-
-var full = [
+  'safe-ecma5': [
      'intro.js',
      'ecma5.js',
       'util.js',
@@ -67,21 +76,17 @@ var full = [
     'config.js',
    'exports.js',
      'outro.js'
-];
-
-concat.CORE = core;
-concat.FULL = full;
-concat.core = function (callback) {
-  concat({
-    files: core
-  }, callback);
+  ]
 };
 
-concat.full = function (callback) {
-  concat({
-    intro: '(function(ENV){',
-    outro: '// Use `this`, and never cares about the environment.\n'
-      +    '})(this);',
-    files: full
-  }, callback);
-};
+
+['normal', 'safe-ecma5'].forEach(function (type) {
+  concat[type] = function (callback) {
+    concat({
+      intro: '(function(ENV){',
+      outro: '// Use `this`, and never cares about the environment.\n'
+        +    '})(this);',
+      files: FILES[type]
+    }, callback);
+  };
+});

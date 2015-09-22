@@ -16,7 +16,7 @@ abort() {
   exit 1
 }
 
-node node/build || abort "fails to build neuron"
+node node/build normal || abort "fails to build neuron"
 node node/create-jshintrc || abort "fails to create .jshintrc"
 echo
 

@@ -30,6 +30,12 @@ function write (type, filename) {
   });
 }
 
+var type = process.argv.pop() === 'ecma5'
+  ? 'safe-ecma5'
+  : 'normal';
 
-write('full', 'neuron.js');
-write('core', 'neuron-core.js');
+if (type === 'safe-ecma5') {
+  write('safe-ecma5', 'neuron-ecma5.js');
+} else {
+  write('normal', 'neuron.js');
+}
