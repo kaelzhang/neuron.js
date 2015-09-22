@@ -26,6 +26,19 @@ Neuron is designed to run in the background without your concern, **UNLIKE** [Re
 
 ****
 
+# Build dist
+
+```sh
+$ node node/build
+```
+
+With ecma5 compatibility
+
+```sh
+$ node node/build ecma5
+```
+
+
 # NPM module: neuronjs
 
 A package to get the JavaScript file of neuron.
@@ -130,10 +143,7 @@ define(identifier, dependencies, factory, options);
 ```js
 facade(identifier);
 
-facade({
-	mod: identifier,
-	data: data
-});
+facade(identifier, data);
 ```
 	
 Method `facade` loads a module. If the `module.exports` has a method named `init`, `facade` method will run the `init` method.
