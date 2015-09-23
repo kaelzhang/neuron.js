@@ -59,8 +59,7 @@ var FILES = {
       'load.js',
      'ready.js',
     'config.js',
-   'exports.js',
-     'outro.js'
+   'exports.js'
   ],
 
   'safe-ecma5': [
@@ -74,8 +73,7 @@ var FILES = {
       'load.js',
      'ready.js',
     'config.js',
-   'exports.js',
-     'outro.js'
+   'exports.js'
   ]
 };
 

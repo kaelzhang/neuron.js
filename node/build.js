@@ -15,7 +15,8 @@ function get_version () {
 function write (type, filename) {
   concat[type](function (err, content) {
     if (err) {
-      return console.error(err.stack || err);
+      console.error(err.stack || err);
+      process.exit(1);
     }
 
     var path = node_path.join(__dirname, '..', 'dist', filename);
