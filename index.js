@@ -5,7 +5,6 @@ var neuron = exports;
 var fs = require('fs');
 var fse = require('fs-extra');
 var node_path = require('path');
-var readJson = require('read-cortex-json');
 var file = node_path.join(__dirname, 'dist', 'neuron.js');
 var concat = require('./node/concat');
 
@@ -43,22 +42,3 @@ neuron.write = function (dist, callback, force) {
     });
   });
 };
-
-// neuron.dist = function (dist, callback, force) {
-//   var to = node_path.join(dist, version, 'neuron.js');
-//   async.parallel([
-//     function (done) {
-//       neuron.write(dist, done, force);
-//     },
-
-//     function (done) {
-//       readJson.enhanced(__dirname, function (err, pkg) {
-//         if (err) {
-//           return done(err);
-//         }
-
-//         readJson.save(dist, pkg, done);
-//       });
-//     }
-//   ], callback);
-// };

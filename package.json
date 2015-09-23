@@ -30,6 +30,7 @@
     "express": "^4.8.5",
     "jshint": "^2.5.4",
     "mocha": "^1.21.3",
+    "mocha-phantomjs": "^4.0.0",
     "spawns": "^0.3.2",
     "tmp": "0.0.24"
   },
@@ -46,7 +47,6 @@
   },
   "dependencies": {
     "async": "^1.4.0",
-    "fs-extra": "^0.22.0",
-    "read-cortex-json": "^3.5.0"
+    "fs-extra": "^0.22.0"
   }
 }
