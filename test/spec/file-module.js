@@ -1,6 +1,6 @@
 describe("require a directory", function(){
   it("dir", function(done){
-    _use('dir', function (dir) {
+    neuron._use('dir', function (dir) {
       expect(dir.a).to.equal(1);
       done();
     });
@@ -22,7 +22,7 @@ describe("require a directory", function(){
       }
     });
 
-    _use('dir-2', function (dir) {
+    neuron._use('dir-2', function (dir) {
       expect(dir.a).to.equal(1);
       done();
     });
@@ -32,7 +32,7 @@ describe("require a directory", function(){
 
 describe("file module fallback", function(){
   it("file-module, fallback to .js", function(done){
-    _use('file-module@1.0.0', function (dir) {
+    neuron._use('file-module@1.0.0', function (dir) {
       expect(dir.a).to.equal(1);
       done();
     });
@@ -56,7 +56,7 @@ describe("file module fallback", function(){
       }
     });
 
-    _use('file-module2', function (dir) {
+    neuron._use('file-module2', function (dir) {
       expect(dir.a).to.equal(1);
       done();
     });
@@ -80,7 +80,7 @@ describe("file module fallback", function(){
       }
     });
 
-    _use('file-module3', function (dir) {
+    neuron._use('file-module3', function (dir) {
       expect(dir.a).to.equal(1);
       done();
     });
@@ -166,14 +166,14 @@ describe("file-module4, complex", function(){
   });
 
   it("file-module4, sync deps", function(done){
-    _use('file-module4', function (dir) {
+    neuron._use('file-module4', function (dir) {
       expect(dir.a).to.equal(1);
       done();
     });
   });
 
   it("file-module4, async with asyncDeps", function(done){
-    _use('file-module4', function (dir) {
+    neuron._use('file-module4', function (dir) {
       dir.b(function (b) {
         expect(b).to.equal(2);
         done();
@@ -182,7 +182,7 @@ describe("file-module4, complex", function(){
   });
 
   it("file-module4, async: map > asyncDeps", function(done){
-    _use('file-module4', function (dir) {
+    neuron._use('file-module4', function (dir) {
       dir.c(function (c) {
         expect(c).to.equal(3); // not 4
         done();
@@ -191,7 +191,7 @@ describe("file-module4, complex", function(){
   });
 
   it("file-module4, async an entry which fallbacks to json", function(done){
-    _use('file-module4', function (dir) {
+    neuron._use('file-module4', function (dir) {
       dir.d(function (d) {
         expect(d).to.equal(5); // not 4
         done();

@@ -35,22 +35,22 @@ describe("Graph", function(){
   });
 
   it("could map graph: graph a", function(done){
-    _use('a', function (version) {
+    neuron._use('a', function (version) {
       expect(version).to.equal('4.0.0');
       done();
     });
   });
 
   it("could map graph: graph b", function(done){
-    _use('b', function (version) {
+    neuron._use('b', function (version) {
       expect(version).to.equal('4.1.0');
       done();
     });
   });
 
   it("should create shadow module with different dependency tree", function(done){
-    _use('a', function (version_a) {
-      _use('b', function (version_b) {
+    neuron._use('a', function (version_a) {
+      neuron._use('b', function (version_b) {
         expect(version_a).not.to.equal(version_b);
         done();
       });

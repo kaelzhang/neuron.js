@@ -35,7 +35,7 @@ describe("Cyclic Dependencies: reference", function(){
       }
     });
 
-    _use('cyclic-local@1.1.0', function (mod) {
+    neuron._use('cyclic-local@1.1.0', function (mod) {
       expect(mod.a).to.deep.equal({
         one: 1,
         a: true
@@ -49,7 +49,7 @@ describe("Cyclic Dependencies: reference", function(){
 
 describe("Cyclic dependencies: load a file", function(){
   it("should load remote files", function(done){
-    _use('cyclic@1.0.0', function (exports) {
+    neuron._use('cyclic@1.0.0', function (exports) {
       expect(exports.a).to.equal(1);
       done();
     });

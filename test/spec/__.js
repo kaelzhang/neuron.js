@@ -8,7 +8,7 @@ describe("__filename and __dirname", function(){
       map: {}
     });
 
-    _use('filename', function (f) {
+    neuron._use('filename', function (f) {
       expect(f.__filename).to.equal('mod/filename/*/lib/index.js');
       expect(f.__dirname).to.equal('mod/filename/*/lib');
       done();

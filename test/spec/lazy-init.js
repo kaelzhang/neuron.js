@@ -4,7 +4,7 @@
 
 describe("lazy factory initialization", function() {
   it("only run factories when `require()`d", function(done) {
-    _use('lazy', function(lazy) {
+    neuron._use('lazy', function(lazy) {
       expect(lazy.a).to.equal(1);
       done();
     });
@@ -13,7 +13,7 @@ describe("lazy factory initialization", function() {
   it("the factory should not be invoked more than once", function(done) {
     // If the factory of this module invokes more than once, it will booom!
     // #84, #83
-    _use('circular', function () {
+    neuron._use('circular', function () {
       done();
     });
   });
@@ -44,7 +44,7 @@ describe("lazy loading dependencies", function(){
       }
       lazy_deps_loaded = true;
 
-      _use('lazy-deps', function(lazy) {
+      neuron._use('lazy-deps', function(lazy) {
         expect(lazy).to.equal(2);
         done();
       });
