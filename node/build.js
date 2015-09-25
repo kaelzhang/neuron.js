@@ -20,7 +20,6 @@ function write (type, filename) {
     }
 
     var path = node_path.join(__dirname, '..', 'dist', filename);
-    content = content.replace('@VERSION', get_version());
     fse.outputFile(path, content, function (err) {
       if (err) {
         return console.error(err.stack || err);

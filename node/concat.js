@@ -7,6 +7,7 @@ var fs = require('fs');
 var node_path = require('path');
 var lib = node_path.join(__dirname, '..', 'lib');
 
+
 // - files: {Array}
 // - intro: {String}
 // - outro: {String}
@@ -35,10 +36,9 @@ function concat(options, callback) {
     }
 
     var intro = options.intro ? options.intro + '\n\n\n' : '';
-
     var outro = options.outro ? '\n\n\n' + options.outro : '';
-
     var content = intro + contents.join('\n\n') + outro;
+    content = content.replace(/@VERSION/g, concat.version());
     callback(null, content);
   });
 }
@@ -80,3 +80,9 @@ var FILES = {
     }, callback);
   };
 });
+
+
+var version = require('../package.json').cortex.version;
+concat.version = function () {
+  return version;
+};

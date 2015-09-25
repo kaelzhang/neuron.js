@@ -13,7 +13,7 @@ describe("neuron.version()", function(){
 });
 
 describe("neuron.write()", function(){
-  it("force === false, not exists", function(done){
+  it.only("force === false, not exists", function(done){
     tmp.dir(function (err, dir) {
       expect(err).to.equal(null);
       var file = node_path.join(dir, 'neuron.js');
