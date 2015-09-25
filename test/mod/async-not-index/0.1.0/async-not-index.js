@@ -5,5 +5,8 @@ define('async-not-index@0.1.0/lib/index', [], function(require, exports, module)
         });
     };
 }, {
-    main: true
+    main: true,
+    map: {
+      './relative': 'async-not-index@0.1.0/lib/relative.js'
+    }
 });
