@@ -10,17 +10,17 @@ var lib = node_path.join(__dirname, '..', 'lib');
 // - files: {Array}
 // - intro: {String}
 // - outro: {String}
-function concat (options, callback) {
-  var files = options.files.map(function (file, i) {
+function concat(options, callback) {
+  var files = options.files.map(function(file, i) {
     return {
-      path: node_path.join(lib, file),
+      path: node_path.join(lib, file + '.js'),
       index: i
     }
   });
 
   var contents = [];
-  async.each(files, function (task, done) {
-    fs.readFile(task.path, function (err, content) {
+  async.each(files, function(task, done) {
+    fs.readFile(task.path, function(err, content) {
       if (err) {
         return done(err);
       }
@@ -29,18 +29,14 @@ function concat (options, callback) {
       done(null);
     });
 
-  }, function (err) {
+  }, function(err) {
     if (err) {
       return callback(err);
     }
 
-    var intro = options.intro
-      ? options.intro + '\n\n\n'
-      : '';
+    var intro = options.intro ? options.intro + '\n\n\n' : '';
 
-    var outro = options.outro
-      ? '\n\n\n' + options.outro
-      : '';
+    var outro = options.outro ? '\n\n\n' + options.outro : '';
 
     var content = intro + contents.join('\n\n') + outro;
     callback(null, content);
@@ -49,41 +45,37 @@ function concat (options, callback) {
 
 var FILES = {
   'normal': [
-     'intro.js',
-     // 'ecma5.js',
-      'util.js',
-     'event.js',
-    'module.js',
-     'asset.js',
-    'define.js',
-      'load.js',
-     'ready.js',
-    'config.js',
-   'exports.js'
+    'intro',
+    'util',
+    'event',
+    'module',
+    'asset',
+    'define',
+    'load',
+    'config',
+    'exports'
   ],
 
   'safe-ecma5': [
-     'intro.js',
-     'ecma5.js',
-      'util.js',
-     'event.js',
-    'module.js',
-     'asset.js',
-    'define.js',
-      'load.js',
-     'ready.js',
-    'config.js',
-   'exports.js'
+    'intro',
+    'ecma5',
+    'util',
+    'event',
+    'module',
+    'asset',
+    'define',
+    'load',
+    'config',
+    'exports'
   ]
 };
 
 
-['normal', 'safe-ecma5'].forEach(function (type) {
-  concat[type] = function (callback) {
+['normal', 'safe-ecma5'].forEach(function(type) {
+  concat[type] = function(callback) {
     concat({
       intro: '(function(ENV){',
-      outro: '// Use `this`, and never cares about the environment.\n'
-        +    '})(this);',
+      outro: '// Use `this`, and never cares about the environment.\n' + '})(this);',
       files: FILES[type]
     }, callback);
   };
