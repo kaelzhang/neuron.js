@@ -129,14 +129,6 @@ Returns the resolved absolute path of the resource.
 Returns `undefined` if `path` is not a relative path.
 
 Returns `undefined` if `path` is even outside the current package.
-
-
-### define()
-With [cortex](https://github.com/kaelzhang/cortex), you might **NEVER** use this method.
-
-```js
-define(identifier, dependencies, factory, options);
-```
 	
 ### facade()
 
@@ -196,6 +188,62 @@ neuron.config({
 The [directed graph](http://en.wikipedia.org/wiki/Directed_graph) of all dependencies, which could be parsed by [neuron-graph](https://www.npmjs.org/package/neuron-graph).
 
 The arithmetics to generate the graph is complicated and hard to describe, see [https://github.com/kaelzhang/neuron/blob/master/doc/graph.md](https://github.com/kaelzhang/neuron/blob/master/doc/graph.md) for details (Too Long; Don't Read)
+
+
+## define()
+With [cortex](https://github.com/cortexjs/cortex), you might **NEVER** use this method.
+
+**ALWAYS** use builders to generate 
+
+```js
+define(identifier, dependencies, factory, options);
+```
+
+### id (full module id)
+
+Format: `<package-name>@<version>/<path-with-extension>`
+
+Type: `string` 
+
+The real pathname relative to the root directory of the package.
+
+### dependencies
+
+`Array.<id>`
+
+### factory
+
+`function(require, exports, module, __filename, __dirname){}`
+
+### options
+
+##### options.main 
+Type `Boolean` 
+
+whether the module is the main entry, i.e. the `package.main` field in package.json
+
+##### options.map 
+
+Type `Object` 
+
+`<id>:<full-module-id>`.
+
+```js
+require('./a')
+require('./lib')
+// ->
+// map: {
+//   './a': 'my@1.0.0/a.js'
+//   // require a directory
+//   './lib': 'my@1.0.0/lib/index.js'
+// }
+```
+
+##### options.entries
+
+Type: `Array.<full-module-id>`
+
+
 
 ## Events
 
