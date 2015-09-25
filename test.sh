@@ -26,6 +26,9 @@ echo
 log "node" "node.js"
 ./node_modules/.bin/mocha --reporter spec ./test/node.js
 
+echo "mocha-phantomjs -V"
+./node_modules/.bin/mocha-phantomjs -V
+
 for file in `ls -1 test/*.html`; do
   log "test" "$file"
   ./node_modules/.bin/mocha-phantomjs "http://localhost:8030/$file"
