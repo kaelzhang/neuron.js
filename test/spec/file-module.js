@@ -152,12 +152,8 @@ describe("file-module4, complex", function(){
     };
   }, {
     main: true,
-    asyncDeps: [
-      'file-module4-dep2@100.2.0',
-      'file-module4-dep3@3.1.0'
-    ],
     map: {
-      // map has higher priority
+      'file-module4-dep2': 'file-module4-dep2@100.2.0',
       'file-module4-dep3': 'file-module4-dep3@1.1.0'
     },
     entries: [
@@ -176,15 +172,6 @@ describe("file-module4, complex", function(){
     neuron._use('file-module4', function (dir) {
       dir.b(function (b) {
         expect(b).to.equal(2);
-        done();
-      });
-    });
-  });
-
-  it("file-module4, async: map > asyncDeps", function(done){
-    neuron._use('file-module4', function (dir) {
-      dir.c(function (c) {
-        expect(c).to.equal(3); // not 4
         done();
       });
     });
