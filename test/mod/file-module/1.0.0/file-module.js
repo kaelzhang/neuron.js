@@ -3,7 +3,7 @@ define('file-module@1.0.0/lib/index.js', ['./dir'], function (require, exports) 
 }, {
   main: true,
   map: {
-    './dir': './dir.js'
+    './dir': 'file-module@1.0.0/lib/dir.js'
   }
 });
 

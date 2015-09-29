@@ -18,7 +18,7 @@ describe("require a directory", function(){
     }, {
       main: true,
       map: {
-        './dir': './dir/index.js'
+        './dir': 'dir-2@*/lib/dir/index.js'
       }
     });
 
@@ -52,7 +52,7 @@ describe("file module fallback", function(){
     }, {
       main: true,
       map: {
-        './dir': './dir.json'
+        './dir': 'file-module2@*/lib/dir.json'
       }
     });
 
@@ -154,11 +154,9 @@ describe("file-module4, complex", function(){
     main: true,
     map: {
       'file-module4-dep2': 'file-module4-dep2@100.2.0',
-      'file-module4-dep3': 'file-module4-dep3@1.1.0'
-    },
-    entries: [
-      'file-module4@*/lib/entry.json'
-    ]
+      'file-module4-dep3': 'file-module4-dep3@1.1.0',
+      './entry': 'file-module4@*/lib/entry.json'
+    }
   });
 
   it("file-module4, sync deps", function(done){

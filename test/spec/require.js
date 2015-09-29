@@ -19,7 +19,9 @@ describe("require.resolve()", function() {
     exports.a = require.resolve('./a.png');
   }, {
     main: true,
-    map: {}
+    map: {
+      './a.png': 'require-resolve@*/lib/a.png'
+    }
   });
 
   it("could return the resolved filename", function(done) {
@@ -35,13 +37,21 @@ describe("require.resolve()", function() {
     }
   }, {
     main: true,
-    map: {}
+    map: {
+      '../a.png': 'require-resolve2@*/a.png'
+    }
   });
 
   it("will throw if out of range", function(done) {
     neuron._use('require-resolve2', function(r) {
       expect(r.resolve('../a.png')).to.equal(__root + '/require-resolve2/*/a.png');
-      expect(r.resolve('../../a.png')).to.equal(undefined);
+      var err;
+      try {
+        r.resolve('../../a.png');
+      } catch(e) {
+        err = true;
+      }
+      expect(err).to.equal(true);
       done();
     });
   });
@@ -52,14 +62,22 @@ describe("require.resolve()", function() {
     }
   }, {
     main: true,
-    map: {}
+    map: {
+      './a.png': 'require-resolve3@*/a.png'
+    }
   });
 
   // #140
   it("should return valid resource when resolve at ./index.js", function(done){
     neuron._use('require-resolve3', function(r) {
       expect(r.resolve('./a.png')).to.equal(__root + '/require-resolve3/*/a.png');
-      expect(r.resolve('../a.png')).to.equal(undefined);
+      var err;
+      try {
+        r.resolve('../a.png');
+      } catch(e) {
+        err = true;
+      }
+      expect(err).to.equal(true);
       done();
     });
   });

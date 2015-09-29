@@ -3,6 +3,10 @@ var circular_static_count = -1;
 
 define('circular@*/dep', ['./booooooom'], function(require, exports, module){
   require('./booooooom');
+}, {
+  map: {
+    './booooooom': 'circular@*/booooooom'
+  }
 });
 
 
@@ -15,11 +19,19 @@ define('circular@*/booooooom', [], function(require, exports, module){
 
   // Oops, it produces a circular dependency
   require.async('./dep', function () {});
+}, {
+  map: {
+    './dep': 'circular@*/dep'
+  }
 });
 
 
 define('circular@*/static-dep', ['./static-boom'], function(require, exports, module){
   require('./static-boom');
+}, {
+  map: {
+    './static-boom': 'circular@*/static-boom'
+  }
 });
 
 
@@ -32,6 +44,10 @@ define('circular@*/static-boom', ['./static-dep'], function(require, exports, mo
 
   // Oops, it produces a circular dependency
   require('./static-dep');
+}, {
+  map: {
+    './static-dep': 'circular@*/static-dep'
+  }
 });
 
 
@@ -43,7 +59,10 @@ define('circular@*/index', ['./booooooom'], function(require, exports, module){
   // require('./static-boom');
 
 }, {
-  main: true
+  main: true,
+  map: {
+    './booooooom': 'circular@*/booooooom'
+  }
 });
 
 

@@ -9,7 +9,11 @@ define('lazy@*', ['./booooooom', './ok'], function(require, exports, module){
   }
 
 }, {
-  main: true
+  main: true,
+  map: {
+    './booooooom': 'lazy@*/booooooom',
+    './ok': 'lazy@*/ok'
+  }
 });
 
 

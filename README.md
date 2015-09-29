@@ -193,7 +193,7 @@ The arithmetics to generate the graph is complicated and hard to describe, see [
 ## define()
 With [cortex](https://github.com/cortexjs/cortex), you might **NEVER** use this method.
 
-**ALWAYS** use builders to generate 
+**ALWAYS** use builders to generate this method.
 
 ```js
 define(identifier, dependencies, factory, options);
@@ -238,12 +238,6 @@ require('./lib')
 //   './lib': 'my@1.0.0/lib/index.js'
 // }
 ```
-
-##### options.entries
-
-Type: `Array.<full-module-id>`
-
-
 
 ## Events
 

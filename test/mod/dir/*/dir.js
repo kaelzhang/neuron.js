@@ -9,6 +9,6 @@ define('dir@*/lib/index.js', ['./dir'], function (require, exports) {
 }, {
   main: true,
   map: {
-    './dir': './dir/index.js'
+    './dir': 'dir@*/lib/dir/index.js'
   }
 });
