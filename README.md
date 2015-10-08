@@ -39,12 +39,12 @@ $ node node/build ecma5
 ```
 
 
-# NPM module: neuronjs
+# NPM module: `neuron.js`
 
 A package to get the JavaScript file of neuron.
 
 ```js
-var neuron = require('neuronjs');
+var neuron = require('neuron.js');
 neuron.version(); // 6.0.0
 neuron.content(function(err, content){
   content; // The file content of neuron.js

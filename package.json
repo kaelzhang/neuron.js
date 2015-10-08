@@ -1,5 +1,5 @@
 {
-  "name": "neuronjs",
+  "name": "neuron.js",
   "version": "10.0.3",
   "description": "Neuron is A Full Feature CommonJS Module Manager, Dependency Graph Handler and Loader for Browsers",
   "main": "index.js",
