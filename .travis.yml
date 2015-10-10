@@ -1,3 +1,5 @@
+# to use container-based infrastructure
+sudo: false
 language: node_js
 node_js:
   - "0.11"

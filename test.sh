@@ -30,7 +30,11 @@ echo "mocha-phantomjs -V"
 echo
 
 node node/build normal || abort "fails to build neuron"
+echo 
+echo "build : success"
+
 node node/create-jshintrc || abort "fails to create .jshintrc"
+echo "jshint: success"
 echo
 
 ./node_modules/.bin/jshint ./dist/neuron.js || abort "jshint not pass"
