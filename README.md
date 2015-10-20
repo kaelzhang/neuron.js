@@ -13,6 +13,7 @@ Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader whic
 - Supports [cyclic dependencies](http://nodejs.org/api/modules.html#modules_cycles).
 - Implements `require.resolve()` for browsers which is similar to node.js.
 - Completely isolated sandboxes.
+- Supports [scoped packages](https://docs.npmjs.com/misc/scope)
 
 > Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
 
