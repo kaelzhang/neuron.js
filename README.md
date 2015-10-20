@@ -1,4 +1,3 @@
-[![NPM version](https://badge.fury.io/js/neuronjs.svg)](http://badge.fury.io/js/neuronjs)
 [![Build Status](https://travis-ci.org/kaelzhang/neuron.svg?branch=master)](https://travis-ci.org/kaelzhang/neuron)
 
 # Neuron
