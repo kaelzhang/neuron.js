@@ -10,7 +10,7 @@ Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader whic
 - Fully supports [SemVer](http://semver.org) and [SemVer ranges](https://github.com/mojombo/semver/issues/113): `'^a.b.c'`, `'~a.b.c'`, `'>=a.b.c'`, etc.
 - Implements [File Modules](http://nodejs.org/api/modules.html#modules_file_modules) of node.js (Maybe the only module loader which could do that.)
 - Supports [cyclic dependencies](http://nodejs.org/api/modules.html#modules_cycles).
-- Implements `require.resolve()` for browsers which is similar to node.js.
+- Implements `require.resolve()`, `__filename`, and `__dirname` for browsers which is similar to node.js.
 - Completely isolated sandboxes.
 - Supports [scoped packages](https://docs.npmjs.com/misc/scope)
 
