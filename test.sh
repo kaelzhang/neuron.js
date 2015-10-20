@@ -41,9 +41,9 @@ echo
 
 # test for node
 log "node" "node.js"
-./node_modules/.bin/mocha --reporter spec ./test/node.js
+./node_modules/.bin/mocha --reporter spec ./test/node.js || abort "unit test for node/neuron.js failed"
 
 for file in `ls -1 test/*.html`; do
   log "test" "$file"
-  ./node_modules/.bin/mocha-phantomjs "http://localhost:8030/$file"
+  ./node_modules/.bin/mocha-phantomjs "http://localhost:8030/$file" || abort "unit test for browser/neuron.js failed"
 done
