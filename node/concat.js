@@ -82,7 +82,7 @@ var FILES = {
 });
 
 
-var version = require('../package.json').cortex.version;
+var version = require('../package.json').version;
 concat.version = function () {
   return version;
 };
