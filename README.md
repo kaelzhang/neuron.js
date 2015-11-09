@@ -14,9 +14,7 @@ Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader whic
 - Completely isolated sandboxes.
 - Supports [scoped packages](https://docs.npmjs.com/misc/scope)
 
-> Neurons are the core components of the nervous system. They processes and transmits chemical signals to others as well as javascript modules work with others by passing runtime objects.
-
-With [Cortex](https://github.com/kaelzhang/cortex) and Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [*MD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
+With Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [*MD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
 
 You could remove all those annoying and noisy things out of your mind, and, just focus on the origin and code your web modules like node.js.
 
@@ -26,95 +24,59 @@ Neuron is designed to run in the background without your concern, **UNLIKE** [Re
 
 ****
 
-# Build dist
+# Install and build dist
 
 ```sh
-$ node node/build
+npm install
+node node/build
 ```
 
 With ecma5 compatibility
 
 ```sh
-$ node node/build ecma5
+npm install
+node node/build ecma5
 ```
-
-
-# NPM module: `neuron.js`
-
-A package to get the JavaScript file of neuron.
-
-```js
-var neuron = require('neuron.js');
-neuron.version(); // 6.0.0
-neuron.content(function(err, content){
-  content; // The file content of neuron.js
-});
-```
-
-### neuron.version();
-
-Returns `String` the version of neuron for browsers, not the version of npm module `neuronjs`
-
-### neuron.write(dest, callback)
-
-- dest `path`
-- callback `function(err)`
-
-Writes the content of neuron.js to the `dest`
-
-### neuron.content(callback)
-
-- callback `function(err, content)`
-- content `Buffer` the buffer of the content of neuron.js
-
-Gets the content of neuron.js
-
-****
 
 # Neuron Loader for Browsers
 
-## Getting Started
-
-### Installation
-
-```bash
-npm install
-grunt
-```
-
-### Usage
-
-Frequent configurations, for more, just see `Configuration Hierarchies` section.
+Frequent configurations, for more, just see `Configuration` section.
 
 ```html
 <script src="/dist/neuron.js"></script>
 <script>
-neuron.config({
-	path: 'http://localhost/mod'
-});
 facade('hello', {
   name: 'John'
 });
 </script>
-```	
+```
 
-For the example above:
+### facade()
 
-module `'abc@0.1.1'` will be located at `'http://localhost/mod/abc/0.1.1/abc.js'`
+```js
+facade(identifier);
+facade(identifier, data);
+```
 
-## Methods
+- **identifier** `String` module name with version, seperated with `'@'`. For example: `'async@0.1.0'`
+
+- **data** `Object` will be passed as the parameter of the `module.exports`.
+  
+Method `facade` loads a module. If the `module.exports` is a function, `facade` method will run the function with `data` as its only parameter.
+
+We call this kind of modules as [facade modules](http://en.wikipedia.org/wiki/Facade_pattern) which is much like the `bin`s of nodejs.
 
 ### require(id)
  
-- id `String` module identifier.
+- **id** `String` module identifier.
 
 To require modules. See [CommonJS Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0)
 
 
 ### require.async(id, callback)
 
-- id `String` module identifier.
-- callback `function(exports)` callback must be passed, or `require.async` will do nothing.
+- **id** `String` module identifier.
+- **callback** `function(exports)` callback must be passed, or `require.async` will do nothing.
 
 Asynchronously loads a module by `id`, and then passes the module `exports` to `callback`.
 
@@ -125,33 +87,13 @@ It is **NOT** a good practice if the logic of your code relies on the result of 
 
 ### require.resolve(path)
 
-- path `String` the relative path to be resolved according to the current module.
+- **path** `String` the relative path to be resolved according to the current module.
 
 Returns the resolved absolute path of the resource. 
 
 Returns `undefined` if `path` is not a relative path.
 
 Returns `undefined` if `path` is even outside the current package.
-	
-### facade()
-
-```js
-facade(identifier);
-
-facade(identifier, data);
-```
-	
-Method `facade` loads a module. If the `module.exports` is a function, `facade` method will run the function with `data` as its only parameter.
-
-We call this kind of modules as [facade modules](http://en.wikipedia.org/wiki/Facade_pattern)
-	
-#### identifier `String`
-
-module name with version, seperated with `'@'`. For example: `'async@0.1.0'`
-
-#### data `Object`
-
-If `data` is defined, data will be passed as the parameter of the `init` method.
 
  
 ****
@@ -194,9 +136,9 @@ The arithmetics to generate the graph is complicated and hard to describe, see [
 
 
 ## define()
-With [cortex](https://github.com/cortexjs/cortex), you might **NEVER** use this method.
+You should **NEVER** write this method by hands.
 
-**ALWAYS** use builders to generate this method.
+**ALWAYS** use builders(such as [neuron-builder](https://github.com/kaelzhang/neuron-builder)) to generate this method.
 
 ```js
 define(identifier, dependencies, factory, options);
@@ -256,6 +198,39 @@ neuron.on('ready', function(id){
   console.log('module "' + id + '" is ready to be `require()`d');
 });
 ```
+
+****
+
+# NPM module: `neuron.js`
+
+A package to get the JavaScript file of neuron.
+
+```js
+var neuron = require('neuron.js');
+neuron.version(); // 10.1.0
+neuron.content(function(err, content){
+  content; // The file content of neuron.js
+});
+```
+
+### neuron.version();
+
+Returns `String` the version of neuron for browsers, not the version of npm module `neuronjs`
+
+### neuron.write(dest, callback)
+
+- dest `path`
+- callback `function(err)`
+
+Writes the content of neuron.js to the `dest`
+
+### neuron.content(callback)
+
+- callback `function(err, content)`
+- content `Buffer` the buffer of the content of neuron.js
+
+Gets the content of neuron.js
+
 
 ## Related Projects
 
