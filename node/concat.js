@@ -47,7 +47,6 @@ var FILES = {
   'normal': [
     'intro',
     'util',
-    'event',
     'module',
     'asset',
     'define',
@@ -60,7 +59,6 @@ var FILES = {
     'intro',
     'ecma5',
     'util',
-    'event',
     'module',
     'asset',
     'define',
