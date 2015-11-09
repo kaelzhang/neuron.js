@@ -184,21 +184,6 @@ require('./lib')
 // }
 ```
 
-## Events
-
-Event        | Emitted
------------- | ------------
-beforeready  | when the module is needed by others
-beforeload   | before being downloaded
-load         | when the module is downloaded
-ready        | when the module is ready to be `require()`d
-
-```js
-neuron.on('ready', function(id){
-  console.log('module "' + id + '" is ready to be `require()`d');
-});
-```
-
 ****
 
 # NPM module: `neuron.js`
