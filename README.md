@@ -92,6 +92,9 @@ Frequent configurations, for more, just see `Configuration Hierarchies` section.
 neuron.config({
 	path: 'http://localhost/mod'
 });
+facade('hello', {
+  name: 'John'
+});
 </script>
 ```	
 
@@ -138,7 +141,7 @@ facade(identifier);
 facade(identifier, data);
 ```
 	
-Method `facade` loads a module. If the `module.exports` has a method named `init`, `facade` method will run the `init` method.
+Method `facade` loads a module. If the `module.exports` is a function, `facade` method will run the function with `data` as its only parameter.
 
 We call this kind of modules as [facade modules](http://en.wikipedia.org/wiki/Facade_pattern)
 	

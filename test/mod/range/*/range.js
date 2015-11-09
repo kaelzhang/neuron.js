@@ -1,11 +1,9 @@
 define('range@*', [], function(require, exports, module){
 
 
-module.exports = {
-    init: function(callback) {
-        // the wrong number
-        callback(2);
-    }
+module.exports = function(callback) {
+  // the wrong number
+  callback(2);
 }
 
 

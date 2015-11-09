@@ -90,7 +90,7 @@ describe("facade", function() {
 
   describe("facade({entry}), use a js file", function(){
     define('facade@*/lib/main.js', [], function(require, exports, module){
-      exports.init = function (check) {
+      module.exports = function (check) {
         check(1);
       };
     }, {
@@ -106,7 +106,7 @@ describe("facade", function() {
     });
 
     define('facade2@*/a.js', [], function(require, exports, module){
-      exports.init = function (check) {
+      module.exports = function (check) {
         check(1);
       };
     }, {
@@ -114,7 +114,7 @@ describe("facade", function() {
     });
 
     define('facade2@*/a.js.js', [], function(require, exports, module){
-      exports.init = function (check) {
+      module.exports = function (check) {
         // Booooooooooom!
         check(2);
       };
@@ -131,7 +131,7 @@ describe("facade", function() {
 
 
     define('facade3@1.1.0/a.js', [], function(require, exports, module){
-      exports.init = function (check) {
+      module.exports = function (check) {
         check(1);
       };
     }, {
@@ -139,7 +139,7 @@ describe("facade", function() {
     });
 
     define('facade3@1.1.0/a.js.js', [], function(require, exports, module){
-      exports.init = function (check) {
+      module.exports = function (check) {
         // Booooooooooom!
         check(2);
       };
