@@ -1,53 +1,102 @@
-describe("normalizeArray()", function(){
-
-var cases = [
-{
-  d: 'normal',
-  a: ['a', '.', 'b', 'c'],
-  e: 'a/b/c'
-},
-{
-  d: 'with parent: ..',
-  a: ['a', '..', 'b', 'c'],
-  e: 'b/c'
-},
-{
-  d: 'with many parents: ..',
-  a: ['a', '..', 'b', '..', 'c'],
-  e: 'c'
-},
-{
-  d: 'with more parents: ..',
-  a: ['a', '..', 'b', '..', '..', 'c'],
-  e: '../c'
-}
-];
-
-cases.forEach(function (c) {
-  it(c.d, function(){
-    // var r = normalize_array(c.a);
-    // r = r.join('/')
-    // expect(r).to.equal(c.e);
-  });
-});
-
-});
-
-
-describe("path_join()", function(){
+describe("parse_module_id()", function(){
   var cases = [
-    ['a', 'b', 'a/b'],
-    ['a/b', './c', 'a/b/c'],
-    ['a/b', '../c', 'a/c'],
-    ['a//b', './c', 'a/b/c'],
-    ['../abc', './c', '../abc/c'],
-    ['', './c', 'c'],
-    ['', '../c', '../c']
+    {
+      d: 'only name',
+      a: 'zepto',
+      e: {
+        s: '',
+        n: 'zepto',
+        p: '',
+        v: '*',
+        id: 'zepto@*',
+        k: 'zepto@*'
+      }
+    },
+
+    {
+      d: 'name, path',
+      a: 'zepto/zepto.js',
+      e: {
+        s: '',
+        n: 'zepto',
+        p: '/zepto.js',
+        v: '*',
+        id: 'zepto@*/zepto.js',
+        k: 'zepto@*'
+      }
+    },
+
+    {
+      d: 'name, version, path',
+      a: 'zepto@1.1.0/a.js',
+      e: {
+        s: '',
+        n: 'zepto',
+        p: '/a.js',
+        v: '1.1.0',
+        id: 'zepto@1.1.0/a.js',
+        k: 'zepto@1.1.0'
+      }
+    },
+
+    {
+      d: 'scope, name',
+      a: '@facebook/zepto',
+      e: {
+        s: 'facebook',
+        n: 'zepto',
+        p: '',
+        v: '*',
+        id: '@facebook/zepto@*',
+        k: '@facebook/zepto@*'
+      }
+    },
+
+    {
+      d: 'scope, name, version',
+      a: '@facebook/zepto@1.0.0',
+      e: {
+        s: 'facebook',
+        n: 'zepto',
+        p: '',
+        v: '1.0.0',
+        id: '@facebook/zepto@1.0.0',
+        k: '@facebook/zepto@1.0.0'
+      }
+    },
+
+    {
+      d: 'scope, name, version, path',
+      a: '@facebook/zepto@1.0.0/a.js',
+      e: {
+        s: 'facebook',
+        n: 'zepto',
+        p: '/a.js',
+        v: '1.0.0',
+        id: '@facebook/zepto@1.0.0/a.js',
+        k: '@facebook/zepto@1.0.0'
+      }
+    },
+
+    {
+      d: 'scope, no name, version, path',
+      a: '@facebook/zepto/a.js',
+      e: {
+        s: 'facebook',
+        n: 'zepto',
+        p: '/a.js',
+        v: '*',
+        id: '@facebook/zepto@*/a.js',
+        k: '@facebook/zepto@*'
+      }
+    }
   ];
 
   cases.forEach(function (c) {
-    it(c.join(' '), function(){
-      // expect(path_join(c[0], c[1])).to.equal(c[2]);
+    it(c.d, function(){
+      var p = parse_module_id(c.a);
+      expect(p).to.deep.equal(c.e);
     });
   });
 });
+
