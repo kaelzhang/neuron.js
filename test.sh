@@ -2,19 +2,20 @@
 
 #
 # Log <type> <msg>
+#
+
 log() {
-  local label=$1
-  shift
-  printf "\x1B[36m%s\x1B[0m :" $label
-  printf " \x1B[90m$@\x1B[0m\n"
+  printf "\033[36m%s\033[0m : \033[90m%s\033[0m\n" $1 $2
 }
 
 #
 # Exit with the given <msg ...>
+#
+
 abort() {
-  printf "\n\x1B[31mError: $@\x1B[0m\n\n"
-  exit 1
+  printf "\n\033[31mError: $@\033[0m\n\n" && exit 1
 }
+
 
 # print versions
 echo "npm -v"
