@@ -2,7 +2,7 @@
 
 # Neuron
 
-> First of all, **neuron is not designed for human developers to use directly**. Most usually, it works together with [cortex](https://github.com/kaelzhang/cortex).
+> First of all, **neuron is not designed for human developers to use directly**. Most usually, it works together with [neuron-cli](https://github.com/kaelzhang/neuron-cli).
 
 Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader which makes your node-style modules run in browsers.
 
@@ -109,11 +109,30 @@ You could do all these things in your will (by write your own `lib/load.js` and 
 neuron.config(settings);
 ```
 
+#### settings.resolve `function(id)`
+
+Method to resolve the module id into url paths.
+
+By default, it works with `settings.path`, and resolves the module id into
+
+```js
+settings.path 
++ id
+  // '@facebook/react@1.0.0/react.js' -> 'facebook/react@1.0.0/react.js'
+  .replace(/^@/, '')
+  // 'facebook/react@1.0.0/react.js'  
+  // -> 'facebook/react/1.0.0/react.js'
+  // -> '/mod/facebook/react@1.0.0/react.js'
+  .replace('@', '/');
+``` 
+
 #### settings.path `String`
 
-CommonJS module path, like `NODE_PATH`, default to 'the root directory of neuronjs'.
+CommonJS module path, like `NODE_PATH`, default to `'/mod/'`.
 
 Pay attension that `path` will not be resolved to absolute url. So if you don't want a relative `path`, don't forget `'http://'`.
+
+Actually, `settings.path` only works with `settings.resolve` and provides a simple way to customize the base path of the package resources. If you defines your own `settings.resolve`, `settings.path` will be useless.
 
 
 #### settings.loaded `String|Array.<id>`
