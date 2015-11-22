@@ -16,13 +16,22 @@ Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader whic
 
 With Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [*MD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
 
-You could remove all those annoying and noisy things out of your mind, and, just focus on the origin and code your web modules like node.js.
-
 Neuron is designed to run in the background without your concern, **UNLIKE** [RequireJS](https://github.com/jrburke/requirejs) and many other loaders.
 
-> We're trying to return to the origin of commonjs. There should be only ONE standard, that is, Module/1.0.
-
 ****
+
+# Neuron Loader for Browsers
+
+Frequent configurations, for more, just see `Configuration` section.
+
+```html
+<script src="/dist/neuron.js"></script>
+<script>
+facade('hello', {
+  name: 'John'
+});
+</script>
+```
 
 # Install and build dist
 
@@ -36,19 +45,6 @@ With ecma5 compatibility
 ```sh
 npm install
 node node/build ecma5
-```
-
-# Neuron Loader for Browsers
-
-Frequent configurations, for more, just see `Configuration` section.
-
-```html
-<script src="/dist/neuron.js"></script>
-<script>
-facade('hello', {
-  name: 'John'
-});
-</script>
 ```
 
 ### facade()
