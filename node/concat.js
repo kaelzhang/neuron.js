@@ -73,7 +73,7 @@ var FILES = {
   concat[type] = function(callback) {
     concat({
       intro: '(function(ENV){',
-      outro: '// Use `this`, and never cares about the environment.\n' + '})(this);',
+      outro: '// Use `this`, and never cares about the environment.\n' + '})(this);\n',
       files: FILES[type]
     }, callback);
   };
