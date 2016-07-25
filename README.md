@@ -6,6 +6,7 @@
 
 Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader which makes your node-style modules run in browsers.
 
+- Dynamic resource loading with "module -> resource url" mapping.
 - Implements commonjs [Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0) standard.
 - Fully supports [SemVer](http://semver.org) and [SemVer ranges](https://github.com/mojombo/semver/issues/113): `'^a.b.c'`, `'~a.b.c'`, `'>=a.b.c'`, etc.
 - Implements [File Modules](http://nodejs.org/api/modules.html#modules_file_modules) of node.js (Maybe the only module loader which could do that.)
@@ -14,7 +15,8 @@ Neuron is a full feature [CommonJS](http://wiki.commonjs.org) module loader whic
 - Completely isolated sandboxes.
 - Supports [scoped packages](https://docs.npmjs.com/misc/scope)
 
-With Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [*MD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc. 
+
+With Neuron, we write web modules **exactly** the same as we work with [node.js](http://nodejs.org), with no [Module/Wrappings](http://wiki.commonjs.org/wiki/Modules/Wrappings), no [*MD](http://wiki.commonjs.org/wiki/Modules/AsynchronousDefinition), etc.
 
 Neuron is designed to run in the background without your concern, **UNLIKE** [RequireJS](https://github.com/jrburke/requirejs) and many other loaders.
 
@@ -57,13 +59,13 @@ facade(identifier, data);
 - **identifier** `String` module name with version, seperated with `'@'`. For example: `'async@0.1.0'`
 
 - **data** `Object` will be passed as the parameter of the `module.exports`.
-  
+
 Method `facade` loads a module. If the `module.exports` is a function, `facade` method will run the function with `data` as its only parameter.
 
 We call this kind of modules as [facade modules](http://en.wikipedia.org/wiki/Facade_pattern) which is much like the `bin`s of nodejs.
 
 ### require(id)
- 
+
 - **id** `String` module identifier.
 
 To require modules. See [CommonJS Module/1.0](http://wiki.commonjs.org/wiki/Modules/1.0)
@@ -85,19 +87,17 @@ It is **NOT** a good practice if the logic of your code relies on the result of 
 
 - **path** `String` the relative path to be resolved according to the current module.
 
-Returns the resolved absolute path of the resource. 
+Returns the resolved absolute path of the resource.
 
 Returns `undefined` if `path` is not a relative path.
 
 Returns `undefined` if `path` is even outside the current package.
 
- 
+
 ****
 # Developer Guide
 
 **Neuron CORE** supplies no high-level APIs, which means that neuron core only cares about module dependencies and module wrapping while will do nothing about things such as fetching modules from remote server and injecting them into the current document, and never cares about where a specific module should come from.
-
-You could do all these things in your will (by write your own `lib/load.js` and adjust `Gruntfile.js`). Nevertheless, neuron have a basic configuration file which located at `lib/load.js`.
 
 ## Configuration
 
@@ -112,15 +112,15 @@ Method to resolve the module id into url paths.
 By default, it works with `settings.path`, and resolves the module id into
 
 ```js
-settings.path 
+settings.path
 + id
   // '@facebook/react@1.0.0/react.js' -> 'facebook/react@1.0.0/react.js'
   .replace(/^@/, '')
-  // 'facebook/react@1.0.0/react.js'  
+  // 'facebook/react@1.0.0/react.js'
   // -> 'facebook/react/1.0.0/react.js'
   // -> '/mod/facebook/react@1.0.0/react.js'
   .replace('@', '/');
-``` 
+```
 
 #### settings.path `String`
 
@@ -163,7 +163,7 @@ define(identifier, dependencies, factory, options);
 
 Format: `<package-name>@<version>/<path-with-extension>`
 
-Type: `string` 
+Type: `string`
 
 The real pathname relative to the root directory of the package.
 
@@ -177,14 +177,14 @@ The real pathname relative to the root directory of the package.
 
 ### options
 
-##### options.main 
-Type `Boolean` 
+##### options.main
+Type `Boolean`
 
 whether the module is the main entry, i.e. the `package.main` field in package.json
 
-##### options.map 
+##### options.map
 
-Type `Object` 
+Type `Object`
 
 `<id>:<full-module-id>`.
 
