@@ -8,6 +8,5 @@ define('async@0.0.0/async.js', [], function(require, exports, module){
   map: {
     './relative': 'async@0.0.0/relative.js'
   },
-  main: true,
-  entries: ['async@0.0.0/relative.js']
+  main: true
 });

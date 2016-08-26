@@ -5,8 +5,5 @@ define('async-main@1.0.0/a.js', [], function(require, exports, module, __filenam
     });
   }
 }, {
-  map: {},
-  entries: [
-    'async-main@1.0.0/a.js'
-  ]
+  map: {}
 });
